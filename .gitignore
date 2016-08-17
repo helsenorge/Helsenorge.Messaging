@@ -189,7 +189,6 @@ ClientBin/
 *~
 *.dbmdl
 *.dbproj.schemaview
-*.pfx
 *.publishsettings
 node_modules/
 orleans.codegen.cs
@@ -257,7 +256,6 @@ paket-files/
 
 
 # Custom
-*.snk
 /MAIN/src/Helsenorge.Messaging.Client/Client.json
 /MAIN/src/Helsenorge.Messaging.Client/Client2.json
 /MAIN/src/Helsenorge.Messaging.Server/Server.json
