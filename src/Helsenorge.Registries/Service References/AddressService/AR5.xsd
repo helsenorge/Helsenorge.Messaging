@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://register.nhn.no/HPR" elementFormDefault="qualified" targetNamespace="http://register.nhn.no/HPR" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="https://ws-web.test.nhn.no/v1/AR?xsd=xsd3" namespace="http://register.nhn.no/Common" />
+  <xs:complexType name="Person">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="BirthDate" type="xs:dateTime" />
+      <xs:element xmlns:q1="http://register.nhn.no/Common" minOccurs="0" name="CitizenId" nillable="true" type="q1:CitizenId" />
+      <xs:element minOccurs="0" name="FirstName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="HPRInformation" nillable="true" type="tns:HPRInformation" />
+      <xs:element minOccurs="0" name="LastChanged" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="LastName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MiddleName" nillable="true" type="xs:string" />
+      <xs:element xmlns:q2="http://register.nhn.no/Common" minOccurs="0" name="Sex" nillable="true" type="q2:Code" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Person" nillable="true" type="tns:Person" />
+  <xs:complexType name="HPRInformation">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Authorizations" nillable="true" type="tns:ArrayOfAuthorization" />
+      <xs:element minOccurs="0" name="HPRNo" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="HPRNumber" type="xs:int" />
+      <xs:element minOccurs="0" name="LastChanged" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="SpecialCompetences" nillable="true" type="tns:ArrayOfSpecialCompetence" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="HPRInformation" nillable="true" type="tns:HPRInformation" />
+  <xs:complexType name="ArrayOfAuthorization">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Authorization" nillable="true" type="tns:Authorization" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAuthorization" nillable="true" type="tns:ArrayOfAuthorization" />
+  <xs:complexType name="Authorization">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="LastChanged" type="xs:dateTime" />
+      <xs:element xmlns:q3="http://register.nhn.no/Common" minOccurs="0" name="Profession" nillable="true" type="q3:Code" />
+      <xs:element minOccurs="0" name="Requisition" nillable="true" type="tns:Requisition" />
+      <xs:element minOccurs="0" name="Specialities" nillable="true" type="tns:ArrayOfSpeciality" />
+      <xs:element xmlns:q4="http://register.nhn.no/Common" minOccurs="0" name="Type" nillable="true" type="q4:Code" />
+      <xs:element xmlns:q5="http://register.nhn.no/Common" minOccurs="0" name="Valid" nillable="true" type="q5:Period" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Authorization" nillable="true" type="tns:Authorization" />
+  <xs:complexType name="Requisition">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="LastChanged" type="xs:dateTime" />
+      <xs:element xmlns:q6="http://register.nhn.no/Common" minOccurs="0" name="Type" nillable="true" type="q6:Code" />
+      <xs:element xmlns:q7="http://register.nhn.no/Common" minOccurs="0" name="Valid" nillable="true" type="q7:Period" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Requisition" nillable="true" type="tns:Requisition" />
+  <xs:complexType name="ArrayOfSpeciality">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Speciality" nillable="true" type="tns:Speciality" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfSpeciality" nillable="true" type="tns:ArrayOfSpeciality" />
+  <xs:complexType name="Speciality">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="LastChanged" type="xs:dateTime" />
+      <xs:element xmlns:q8="http://register.nhn.no/Common" minOccurs="0" name="Type" nillable="true" type="q8:Code" />
+      <xs:element xmlns:q9="http://register.nhn.no/Common" minOccurs="0" name="Valid" nillable="true" type="q9:Period" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Speciality" nillable="true" type="tns:Speciality" />
+  <xs:complexType name="ArrayOfSpecialCompetence">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="SpecialCompetence" nillable="true" type="tns:SpecialCompetence" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfSpecialCompetence" nillable="true" type="tns:ArrayOfSpecialCompetence" />
+  <xs:complexType name="SpecialCompetence">
+    <xs:sequence>
+      <xs:element xmlns:q10="http://register.nhn.no/Common" minOccurs="0" name="Type" nillable="true" type="q10:Code" />
+      <xs:element xmlns:q11="http://register.nhn.no/Common" minOccurs="0" name="Valid" nillable="true" type="q11:Period" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SpecialCompetence" nillable="true" type="tns:SpecialCompetence" />
+</xs:schema>
