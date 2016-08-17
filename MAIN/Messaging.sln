@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging", "src\Helsenorge.Messaging\Helsenorge.Messaging.csproj", "{A0BA02E7-C2EA-496B-85ED-10ACD42B4DE8}"
 EndProject
@@ -55,29 +55,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 7
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.helsedirektoratet.no:8081/tfs/helsedirektoratet
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = src\\Helsenorge.Messaging.Client\\Helsenorge.Messaging.Client.csproj
-		SccProjectName1 = src/Helsenorge.Messaging.Client
-		SccLocalPath1 = src\\Helsenorge.Messaging.Client
-		SccProjectUniqueName2 = src\\Helsenorge.Messaging.Server\\Helsenorge.Messaging.Server.csproj
-		SccProjectName2 = src/Helsenorge.Messaging.Server
-		SccLocalPath2 = src\\Helsenorge.Messaging.Server
-		SccProjectUniqueName3 = test\\Helsenorge.Messaging.Tests\\Helsenorge.Messaging.Tests.csproj
-		SccProjectName3 = test/Helsenorge.Messaging.Tests
-		SccLocalPath3 = test\\Helsenorge.Messaging.Tests
-		SccProjectUniqueName4 = src\\Helsenorge.Messaging\\Helsenorge.Messaging.csproj
-		SccProjectName4 = src/Helsenorge.Messaging
-		SccLocalPath4 = src\\Helsenorge.Messaging
-		SccProjectUniqueName5 = src\\Helsenorge.Registries\\Helsenorge.Registries.csproj
-		SccProjectName5 = src/Helsenorge.Registries
-		SccLocalPath5 = src\\Helsenorge.Registries
-		SccProjectUniqueName6 = test\\Helsenorge.Registries.Tests\\Helsenorge.Registries.Tests.csproj
-		SccProjectName6 = test/Helsenorge.Registries.Tests
-		SccLocalPath6 = test\\Helsenorge.Registries.Tests
 	EndGlobalSection
 EndGlobal
