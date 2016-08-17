@@ -1,0 +1,480 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.Xml.Schema;
+using Helsenorge.Messaging.Abstractions;
+using Helsenorge.Messaging.ServiceBus;
+using Helsenorge.Messaging.ServiceBus.Receivers;
+using Helsenorge.Messaging.Tests.Mocks;
+using Helsenorge.Registries.Abstractions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
+{
+	[TestClass]
+	public class AsynchronousReceiveTests : BaseTest
+	{
+		private bool _startingCalled;
+		private bool _receivedCalled;
+		private bool _completedCalled;
+		private bool _handledExceptionCalled;
+		private bool _unhandledExceptionCalled;
+
+
+		[TestInitialize]
+		public override void Setup()
+		{
+			base.Setup();
+			_startingCalled = false;
+			_receivedCalled = false;
+			_completedCalled = false;
+		}
+
+		[TestMethod]
+		public void Asynchronous_Receive_OK()
+		{
+			// postition of arguments have been reversed so that we inster the name of the argument without getting a resharper indication
+			// makes it easier to read
+			RunAsynchronousReceive(
+				postValidation: () =>
+				{
+					Assert.IsTrue(_startingCalled);
+					Assert.IsTrue(_receivedCalled);
+					Assert.IsTrue(_completedCalled);
+					Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				},
+				wait: () => _completedCalled,
+				received: (m) =>
+				{
+					Assert.AreEqual(MockFactory.HelsenorgeHerId, m.ToHerId);
+					Assert.AreEqual(MockFactory.OtherHerId, m.FromHerId);
+					Assert.AreEqual("DIALOG_INNBYGGER_EKONTAKT", m.MessageFunction);
+				},
+				messageModification: (m) => { });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_MissingFunction()
+		{
+			RunAsynchronousReceive(
+				postValidation: () =>
+				{
+					Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+					Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+					CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-field-value", "One or more fields are missing", "Label;");
+
+				},
+				wait: () => _handledExceptionCalled,
+				received: (m) => { },
+				messageModification: (m) => { m.MessageFunction = null; });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_MissingToHerId()
+		{
+			RunAsynchronousReceive(
+			postValidation: () =>
+			{
+				Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+				CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-field-value", "One or more fields are missing", "toHerId;");
+
+			},
+			wait: () => _handledExceptionCalled,
+			received: (m) => { },
+			messageModification: (m) => { m.ToHerId = 0; });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_MissingFromHerId()
+		{
+			RunAsynchronousReceive(
+			postValidation: () =>
+			{
+				Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				// we don't have enough information to know where to send it back
+				Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+			},
+			wait: () => _handledExceptionCalled,
+			received: (m) => { },
+			messageModification: (m) => { m.FromHerId = 0; });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_MissingApplicationTimeStamp()
+		{
+			RunAsynchronousReceive(
+			postValidation: () =>
+			{
+				Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+				CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-field-value", "One or more fields are missing", "applicationTimeStamp;");
+			},
+			wait: () => _handledExceptionCalled,
+			received: (m) => { },
+			messageModification: (m) => { m.ApplicationTimestamp = DateTime.MinValue; });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_ContentType()
+		{
+			RunAsynchronousReceive(
+			postValidation: () =>
+			{
+				Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+				CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-field-value", "One or more fields are missing", "ContentType;");
+			},
+			wait: () => _handledExceptionCalled,
+			received: (m) => { },
+			messageModification: (m) => { m.ContentType = null; });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_XmlSchemaError()
+		{
+			RunAsynchronousReceive(
+			postValidation: () =>
+			{
+				Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+				CheckError(MockFactory.OtherParty.Error.Messages, "transport:not-well-formed-xml", "XML-Error", string.Empty);
+			},
+			wait: () => _handledExceptionCalled,
+			received: (m) => {  throw new XmlSchemaValidationException("XML-Error");},
+			messageModification: (m) => { });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_ReceivedDataMismatch()
+		{
+			RunAsynchronousReceive(
+			postValidation: () =>
+			{
+				Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+				CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-field-value", "Mismatch", "Expected;Received;");
+			},
+			wait: () => _handledExceptionCalled,
+			received: (m) => { throw new ReceivedDataMismatchException("Mismatch") { ExpectedValue = "Expected", ReceivedValue = "Received"}; },
+			messageModification: (m) => { });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_NotifySender()
+		{
+			RunAsynchronousReceive(
+			postValidation: () =>
+			{
+				Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+				CheckError(MockFactory.OtherParty.Error.Messages, "transport:internal-error", "NotifySender", string.Empty);
+			},
+			wait: () => _handledExceptionCalled,
+			received: (m) => { throw new NotifySenderException("NotifySender"); },
+			messageModification: (m) => { });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_GenericException()
+		{
+			RunAsynchronousReceive(
+			postValidation: () =>
+			{
+				Assert.AreEqual(1, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+			},
+			wait: () => _unhandledExceptionCalled,
+			received: (m) => { throw new ArgumentOutOfRangeException(); },
+			messageModification: (m) => { });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_LocalCertificateStartDate()
+		{
+			CertificateValidator.SetError(
+				(c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.StartDate : CertificateErrors.None);
+
+			RunAsynchronousReceive(
+			   postValidation: () =>
+			   {
+					Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+					Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+					Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificateStartDate));
+			   },
+			   wait: () => _completedCalled,
+			   received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
+			   messageModification: (m) => { });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_LocalCertificateEndDate()
+		{
+			CertificateValidator.SetError(
+				(c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.EndDate : CertificateErrors.None);
+
+			RunAsynchronousReceive(
+			   postValidation: () =>
+			   {
+				   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				   Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+				   Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificateEndDate));
+			   },
+			   wait: () => _completedCalled,
+			   received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
+			   messageModification: (m) => { });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_LocalCertificateUsage()
+		{
+			CertificateValidator.SetError(
+				(c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.Usage : CertificateErrors.None);
+
+			RunAsynchronousReceive(
+			   postValidation: () =>
+			   {
+				   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				   Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+				   Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificateUsage));
+			   },
+			   wait: () => _completedCalled,
+			   received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
+			   messageModification: (m) => { });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_LocalCertificateRevoked()
+		{
+			CertificateValidator.SetError(
+				(c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.Revoked : CertificateErrors.None);
+
+			RunAsynchronousReceive(
+			   postValidation: () =>
+			   {
+				   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				   Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+				   Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificateRevocation));
+			   },
+			   wait: () => _completedCalled,
+			   received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
+			   messageModification: (m) => { });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_LocalCertificateRevokedUnknown()
+		{
+			CertificateValidator.SetError(
+				(c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.RevokedUnknown : CertificateErrors.None);
+
+			RunAsynchronousReceive(
+			   postValidation: () =>
+			   {
+				   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				   Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+				   Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificateRevocation));
+			   },
+			   wait: () => _completedCalled,
+			   received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
+			   messageModification: (m) => { });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_LocalCertificateMultiple()
+		{
+			CertificateValidator.SetError(
+				(c, u) =>
+					(u == X509KeyUsageFlags.DataEncipherment)
+						? CertificateErrors.StartDate | CertificateErrors.EndDate
+						: CertificateErrors.None);
+
+			RunAsynchronousReceive(
+			   postValidation: () =>
+			   {
+				   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				   Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+				   Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificate));
+			   },
+			   wait: () => _completedCalled,
+			   received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
+			   messageModification: (m) => { });
+		}
+
+		[TestMethod]
+		public void Asynchronous_Receive_RemoteCertificateStartDate()
+		{
+			CertificateValidator.SetError(
+				(c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.StartDate : CertificateErrors.None);
+
+			RunAsynchronousReceive(
+			   postValidation: () =>
+			   {
+				   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				   Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+				   Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateStartDate));
+				   CheckError(MockFactory.OtherParty.Error.Messages, "transport:expired-certificate", "Invalid start date", string.Empty);
+			   },
+			   wait: () => _completedCalled,
+			   received: (m) => { Assert.IsTrue(m.SignatureError != CertificateErrors.None); },
+			   messageModification: (m) => { });
+		}
+		[TestMethod]
+		public void Asynchronous_ReceiveRemoteCertificateEndDate()
+		{
+			CertificateValidator.SetError(
+			(c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.EndDate : CertificateErrors.None);
+
+			RunAsynchronousReceive(
+			   postValidation: () =>
+			   {
+				   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				   Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+				   Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateEndDate));
+				   CheckError(MockFactory.OtherParty.Error.Messages, "transport:expired-certificate", "Invalid end date", string.Empty);
+			   },
+			   wait: () => _completedCalled,
+			   received: (m) => { Assert.IsTrue(m.SignatureError != CertificateErrors.None); },
+			   messageModification: (m) => { });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_RemoteCertificateUsage()
+		{
+			CertificateValidator.SetError(
+			   (c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.Usage : CertificateErrors.None);
+
+			RunAsynchronousReceive(
+			   postValidation: () =>
+			   {
+				   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				   Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+				   Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateUsage));
+				   CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-certificate", "Invalid usage", string.Empty);
+			   },
+			   wait: () => _completedCalled,
+			   received: (m) => { Assert.IsTrue(m.SignatureError != CertificateErrors.None); },
+			   messageModification: (m) => { });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_RemoteCertificateRevoked()
+		{
+			CertificateValidator.SetError(
+				  (c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.Revoked : CertificateErrors.None);
+
+			RunAsynchronousReceive(
+			   postValidation: () =>
+			   {
+				   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				   Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+				   Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateRevocation));
+				   CheckError(MockFactory.OtherParty.Error.Messages, "transport:revoked-certificate", "Certificate has been revoked", string.Empty);
+			   },
+			   wait: () => _completedCalled,
+			   received: (m) => { Assert.IsTrue(m.SignatureError != CertificateErrors.None); },
+			   messageModification: (m) => { });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_RemoteCertificateRevokedUnknown()
+		{
+			CertificateValidator.SetError(
+				  (c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.RevokedUnknown : CertificateErrors.None);
+
+			RunAsynchronousReceive(
+				  postValidation: () =>
+				  {
+					  Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+					  Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+					  Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateRevocation));
+					  CheckError(MockFactory.OtherParty.Error.Messages, "transport:revoked-certificate", "Unable to determine revocation status", string.Empty);
+				  },
+				  wait: () => _completedCalled,
+				  received: (m) => { Assert.IsTrue(m.SignatureError != CertificateErrors.None); },
+				  messageModification: (m) => { });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_RemoteCertificateMultiple()
+		{
+			CertificateValidator.SetError(
+				   (c, u) =>
+					   (u == X509KeyUsageFlags.NonRepudiation)
+						   ? CertificateErrors.StartDate | CertificateErrors.EndDate
+						   : CertificateErrors.None);
+
+			RunAsynchronousReceive(
+			   postValidation: () =>
+			   {
+				   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				   Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+				   Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificate));
+				   CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-certificate", "More than one error with certificate", string.Empty);
+			   },
+			   wait: () => _completedCalled,
+			   received: (m) => { Assert.IsTrue(m.SignatureError != CertificateErrors.None); },
+			   messageModification: (m) => { });
+		}
+
+		private static void CheckError(IEnumerable<IMessagingMessage> queue, string errorCondition, string errorDescription, string errorConditionData)
+		{
+			var m = queue.First();
+			Assert.AreEqual(errorCondition, m.Properties["errorCondition"].ToString());
+			Assert.AreEqual(errorDescription, m.Properties["errorDescription"].ToString());
+			if (string.IsNullOrEmpty(errorConditionData) == false)
+			{
+				Assert.AreEqual(errorConditionData, m.Properties["errorConditionData"].ToString());
+			}
+		}
+
+		private void RunAsynchronousReceive(
+			Action<MockMessage> messageModification, 
+			Action<IncomingMessage> received, 
+			Func<bool> wait,
+			Action postValidation )
+		{
+			// create and post message
+			var message = CreateAsynchronousMessage();
+			messageModification(message);
+			MockFactory.Helsenorge.Asynchronous.Messages.Add(message);
+
+			// configure notifications
+			Server.RegisterAsynchronousMessageReceivedStartingCallback((m) => _startingCalled = true);
+			Server.RegisterAsynchronousMessageReceivedCallback((m) =>
+			{
+				received(m);
+				_receivedCalled = true;
+			});
+			Server.RegisterAsynchronousMessageReceivedCompletedCallback((m) => _completedCalled = true);
+			Server.RegisterUnhandledExceptionCallback((m, e) => _unhandledExceptionCalled = true);
+			Server.RegisterHandledExceptionCallback((m, e) => _handledExceptionCalled = true);
+
+			Server.Start();
+
+			Wait(15, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout
+			Server.Stop(TimeSpan.FromSeconds(10));
+			
+			// check the state of the system
+			postValidation();
+		}
+
+		/// <summary>
+		/// Utility function that waits until a condition is true
+		/// </summary>
+		/// <param name="timeout">timeout in seconds</param>
+		/// <param name="check"></param>
+		private static void Wait(int timeout, Func<bool> check)
+		{
+			var max = DateTime.Now.Add(TimeSpan.FromSeconds(timeout));
+
+			while (true)
+			{
+				if(DateTime.Now > max) throw new TimeoutException();
+
+				if (check()) return;
+				System.Threading.Thread.Sleep(50);
+			}
+		}
+
+		private MockMessage CreateAsynchronousMessage()
+		{
+			var messageId = Guid.NewGuid().ToString("D");
+			return new MockMessage(GenericResponse)
+			{
+				MessageFunction = "DIALOG_INNBYGGER_EKONTAKT",
+				ApplicationTimestamp = DateTime.Now,
+				ContentType = ContentType.SignedAndEnveloped,
+				MessageId = messageId,
+				CorrelationId = messageId,
+				FromHerId = MockFactory.OtherHerId,
+				ToHerId = MockFactory.HelsenorgeHerId,
+				ScheduledEnqueueTimeUtc = DateTime.UtcNow,
+				TimeToLive = TimeSpan.FromSeconds(15),
+				ReplyTo = MockFactory.OtherParty.Asynchronous.Name,
+				Queue = MockFactory.Helsenorge.Asynchronous.Messages,
+			};
+		}
+	}
+}

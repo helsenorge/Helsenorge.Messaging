@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project DefaultTargets="Rebuild"
+                 ToolsVersion="4.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <DropLocation>Nuget_Result</DropLocation>
+  </PropertyGroup>
+
+  <!-- list of solutions that need release version build-->
+  <ItemGroup>
+    <ReleaseBuild Include="Messaging.sln">
+      <Properties>Configuration=$(Config)</Properties>
+    </ReleaseBuild>
+  </ItemGroup>
+
+  <!-- List of projects that should be packaged-->
+  <ItemGroup>
+    <NugetBuild Include="src\HelseNorge\Helsenorge.Messaging\Helsenorge.messaging.csproj" />
+	<!--
+	<NugetBuild Include="src\HelseNorge\Helsenorge.Messaging.Client\Helsenorge.messaging.Client.csproj" />
+	<NugetBuild Include="src\HelseNorge\Helsenorge.Messaging.Server\Helsenorge.messaging.Server.csproj" />
+	-->
+  </ItemGroup>
+
+  <!-- The target that does everything-->
+  <Target Name="Rebuild">
+
+    <ItemGroup>
+		<Directories Include="$(DropLocation)" />
+    </ItemGroup>
+
+	<MakeDir Directories="@(Directories)" />
+    <Message Importance="high" Text="Compiling source code"/>
+    <MSBuild Projects="@(ReleaseBuild)" Properties="v=q;Configuration=$(Config);SignAssemblies=$(SignAssemblies)" Targets="Rebuild"  />
+
+    <Exec Command="nuget.exe pack src\Helsenorge.Messaging\Helsenorge.messaging.csproj -IncludeReferencedProjects -OutputDirectory Nuget_Result -Prop Configuration=$(Config)" />
+	<!--
+	<Exec Command="nuget.exe pack src\Helsenorge.Messaging.Client\Helsenorge.messaging.Client.csproj -IncludeReferencedProjects -OutputDirectory Nuget_Result -Prop Configuration=$(Config)" />
+	<Exec Command="nuget.exe pack src\Helsenorge.Messaging.Server\Helsenorge.messaging.Server.csproj -IncludeReferencedProjects -OutputDirectory Nuget_Result -Prop Configuration=$(Config)" />
+	-->
+  </Target>
+
+</Project>

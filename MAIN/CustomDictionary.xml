@@ -1,0 +1,24 @@
+<Dictionary>
+  <Words>
+    <Recognized>
+      <Word>Helsenorge</Word>
+			<Word>Cpa</Word>
+			<Word>MessagingEntityCache</Word>
+			<Word>ChannelId</Word>
+			<Word>TransportId</Word>
+			<Word>Amqp</Word>
+			<Word>EnqueuedTimeUtc</Word>
+			<Word>TransportReceiver</Word>
+			<Word>partyInfo</Word>
+    </Recognized>
+    <Unrecognized>
+    </Unrecognized>
+    <Compound>
+    </Compound>
+  </Words>
+  <Acronyms>
+    <CasingExceptions>
+      <Acronym>Cpa</Acronym>
+		</CasingExceptions>
+  </Acronyms>
+</Dictionary>

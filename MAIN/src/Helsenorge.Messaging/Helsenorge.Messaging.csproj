@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A0BA02E7-C2EA-496B-85ED-10ACD42B4DE8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Helsenorge.Messaging</RootNamespace>
+    <AssemblyName>Helsenorge.Messaging</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Helsenorge.Messaging.XML</DocumentationFile>
+    <CodeAnalysisRuleSet>..\..\HNCodeAnalysisRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Helsenorge.Messaging.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssemblies>False</SignAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(SignAssemblies)' == 'True' ">
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\tools\key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Extensions.Logging.Abstractions.1.0.0\lib\netstandard1.1\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Extensions.Primitives.1.0.0\lib\netstandard1.0\Microsoft.Extensions.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ServiceBus, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\WindowsAzure.ServiceBus.3.2.4\lib\net45-full\Microsoft.ServiceBus.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Abstractions\ICachedMessagingEntity.cs" />
+    <Compile Include="Abstractions\IMessagingFactory.cs" />
+    <Compile Include="Abstractions\IMessagingMessage.cs" />
+    <Compile Include="Abstractions\IMessagingNotification.cs" />
+    <Compile Include="Abstractions\IMessagingClient.cs" />
+    <Compile Include="Abstractions\IMessagingReceiver.cs" />
+    <Compile Include="Abstractions\IMessagingSender.cs" />
+    <Compile Include="Abstractions\IMessagingServer.cs" />
+    <Compile Include="Abstractions\IncomingMessage.cs" />
+    <Compile Include="Abstractions\MessagingEntityCache.cs" />
+    <Compile Include="Abstractions\OutgoingMessage.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="MessagingSettings.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Abstractions\IMessageProtection.cs" />
+    <Compile Include="Security\NoMessageProtection.cs" />
+    <Compile Include="Security\SignThenEncryptMessageProtection.cs" />
+    <Compile Include="MessagingClient.cs" />
+    <Compile Include="MessagingServer.cs" />
+    <Compile Include="ServiceBus\Receivers\HeaderValidationException.cs" />
+    <Compile Include="ServiceBus\ServiceBusFactoryPool.cs" />
+    <Compile Include="ServiceBus\ServiceBusMessage.cs" />
+    <Compile Include="Abstractions\ContentType.cs" />
+    <Compile Include="ServiceBus\QueueType.cs" />
+    <Compile Include="ServiceBus\Receivers\SynchronousReplyListener.cs" />
+    <Compile Include="ServiceBus\ServiceBusCore.cs" />
+    <Compile Include="ServiceBus\ServiceBusReceiver.cs" />
+    <Compile Include="ServiceBus\ServiceBusReceiverPool.cs" />
+    <Compile Include="ServiceBus\ServiceBusSender.cs" />
+    <Compile Include="MessagingCore.cs" />
+    <Compile Include="ServiceBus\ServiceBusFactory.cs" />
+    <Compile Include="ServiceBus\Receivers\AsynchronousMessageListener.cs" />
+    <Compile Include="ServiceBus\Receivers\ErrorMessageListener.cs" />
+    <Compile Include="ServiceBus\Receivers\MessageListener.cs" />
+    <Compile Include="ServiceBus\Receivers\ReceivedDataMismatchException.cs" />
+    <Compile Include="ServiceBus\Receivers\SynchronousMessageListener.cs" />
+    <Compile Include="ServiceBus\ReportableErrorException.cs" />
+    <Compile Include="ServiceBus\Senders\AsynchronousSender.cs" />
+    <Compile Include="ServiceBus\Senders\SynchronousSender.cs" />
+    <Compile Include="Abstractions\MessagingException.cs" />
+    <Compile Include="ServiceBus\ServiceBusLoggingExtensions.cs" />
+    <Compile Include="ServiceBus\ServiceBusSenderPool.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Helsenorge.Registries\Helsenorge.Registries.csproj">
+      <Project>{bd2883c9-4806-4216-a577-893b3c4cc174}</Project>
+      <Name>Helsenorge.Registries</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\tools\key.snk">
+      <Link>Properties\key.snk</Link>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="..\..\CustomDictionary.xml">
+      <Link>Properties\CustomDictionary.xml</Link>
+    </CodeAnalysisDictionary>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Security\Abstractions\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
