@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="6ee8bb8b-6558-44e0-8835-109d1bd0edc3" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>true</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="https://ws-web.test.nhn.no/v1/CPPA?wsdl" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="CPPA.xsd" MetadataType="Schema" ID="ebfd59ae-120a-4889-9099-d442f4c46d4b" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/CPPA?xsd=xsd1" />
+    <MetadataFile FileName="CPPA1.xsd" MetadataType="Schema" ID="1c317f66-2c86-44c9-9a9f-8c02e1fc0aa1" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/CPPA?xsd=xsd3" />
+    <MetadataFile FileName="CPPA2.xsd" MetadataType="Schema" ID="2df437ae-1913-42ec-9625-8a458565545a" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/CPPA?xsd=xsd0" />
+    <MetadataFile FileName="CPPA.wsdl" MetadataType="Wsdl" ID="72b65554-918f-489c-a3ce-8f47de06f0b1" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/CPPA?wsdl=wsdl0" />
+    <MetadataFile FileName="CPPAService.wsdl" MetadataType="Wsdl" ID="fdcf2838-86ac-4dba-aaba-2605ea0de3b1" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/CPPA?wsdl" />
+    <MetadataFile FileName="CPPA3.xsd" MetadataType="Schema" ID="58bd883c-fcc5-40f4-8712-4c1b7f6fa886" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/CPPA?xsd=xsd5" />
+    <MetadataFile FileName="CPPA4.xsd" MetadataType="Schema" ID="187492fc-e125-4277-a56c-d9b2b5ebfbf8" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/CPPA?xsd=xsd4" />
+    <MetadataFile FileName="CPPA5.xsd" MetadataType="Schema" ID="2c639bb6-0642-43d0-b283-98f9b03fc792" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/CPPA?xsd=xsd2" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>
