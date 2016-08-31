@@ -36,10 +36,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Helsenorge.Registries.XML</DocumentationFile>
   </PropertyGroup>
-   <PropertyGroup>
-    <SignAssemblies>False</SignAssemblies>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(SignAssemblies)' == 'True' ">
+  <PropertyGroup>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\tools\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
