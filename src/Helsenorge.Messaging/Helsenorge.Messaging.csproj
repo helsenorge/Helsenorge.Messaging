@@ -37,9 +37,6 @@
     <DocumentationFile>bin\Release\Helsenorge.Messaging.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssemblies>False</SignAssemblies>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(SignAssemblies)' == 'True' ">
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\tools\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
