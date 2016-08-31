@@ -5,6 +5,7 @@ using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml.Linq;
 using System.Security.Cryptography.Pkcs;
+using System.Text;
 using System.Xml;
 using Helsenorge.Messaging.Abstractions;
 
@@ -34,9 +35,7 @@ namespace Helsenorge.Messaging.Security
 			if (signingCertificate == null) throw new ArgumentNullException(nameof(signingCertificate));
 
 			// convert xml to a byte array the CMS API's can use
-			var ms = new MemoryStream();
-			data.Save(ms);
-			var raw = ms.ToArray();
+			var raw = Encoding.UTF8.GetBytes(data.ToString());
 
 			// first we sign the message
 			var signed = new SignedCms(new ContentInfo(raw));
