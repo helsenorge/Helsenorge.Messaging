@@ -84,7 +84,7 @@ addressRegistrySettings.CachingInterval = TimeSpan.FromHours(12);
 var addressRegistry = new AddressRegistry(addressRegistrySettings, distributedCache);
 
 var collaborationProtocolRegistrySettings = new CollaborationProtocolRegistrySettings();
-collaborationProtocolRegistrySettings.MyHerId = "1234;
+collaborationProtocolRegistrySettings.MyHerId = "1234";
 collaborationProtocolRegistrySettings.UserName = "user name";
 collaborationProtocolRegistrySettings.Password = "password";
 collaborationProtocolRegistrySettings.WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
@@ -99,10 +99,10 @@ MessagingClient klassen er designet for å være singleton. Dersom den ikke er det
 
 ```cs
 var messagingSettings = new MessagingSettings(); // denne har mange verdier satt som standard som man kan overstyre
-messagingSettings.MyHerId = "1234;			
+messagingSettings.MyHerId = "1234";			
 messagingSettings.DecryptionCertificate = "aaaaabbbbbbb";
 messagingSettings.SigningCertificate = "ccccccddddd";
-messagingSettings.ServiceBus.Synchronous.ReplyQueue = "MyReplyQueue;
+messagingSettings.ServiceBus.Synchronous.ReplyQueue = "MyReplyQueue";
 messagingSettings.ServiceBus.ConnectionString = "connection string";
 
 var client = new MessagingClient(messagingSettings, collaborationProtocolRegistry, addressRegistry);
