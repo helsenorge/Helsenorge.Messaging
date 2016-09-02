@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{5D87F89A
 	ProjectSection(SolutionItems) = preProject
 		CustomDictionary.xml = CustomDictionary.xml
 		GlobalAssemblyInfo.cs = GlobalAssemblyInfo.cs
+		src\Helsenorge.Messaging\Helsenorge.Messaging.nuspec = src\Helsenorge.Messaging\Helsenorge.Messaging.nuspec
 		tools\key.snk = tools\key.snk
 	EndProjectSection
 EndProject

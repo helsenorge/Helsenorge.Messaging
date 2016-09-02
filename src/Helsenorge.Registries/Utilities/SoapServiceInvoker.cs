@@ -50,7 +50,7 @@ namespace Helsenorge.Registries.Utilities
 
 				response = await action(channel).ConfigureAwait(false);
 
-				logger.LogInformation("Start-ServiceCall: {OperationName} {Address}",
+				logger.LogInformation("End-ServiceCall: {OperationName} {Address}",
 					operationName, factory.Endpoint.Address.Uri.AbsoluteUri);
 		
 				var communicatonObject = (channel as ICommunicationObject);

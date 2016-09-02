@@ -127,10 +127,19 @@ namespace Helsenorge.Messaging.ServiceBus
 			var stream = protection.Protect(outgoingMessage.Payload, encryption, signature);
 
 			var messagingMessage = FactoryPool.CreateMessage(logger, stream);
-			messagingMessage.ReplyTo = replyTo ?? await ConstructQueueName(logger, Core.Settings.MyHerId, queueType).ConfigureAwait(false);
+			
+			if (queueType != QueueType.SynchronousReply)
+			{
+				messagingMessage.ReplyTo = 
+					replyTo ?? await ConstructQueueName(logger, Core.Settings.MyHerId, queueType).ConfigureAwait(false);
+			}
 			messagingMessage.ContentType = protection.ContentType;
 			messagingMessage.MessageId = outgoingMessage.MessageId;
-			messagingMessage.To = await ConstructQueueName(logger, outgoingMessage.ToHerId, queueType).ConfigureAwait(false);
+			// when we are replying to a synchronous message, we need to use the replyto of the original message
+			messagingMessage.To = 
+				(queueType == QueueType.SynchronousReply) ? 
+				replyTo : 
+				await ConstructQueueName(logger, outgoingMessage.ToHerId, queueType).ConfigureAwait(false);
 			messagingMessage.MessageFunction = outgoingMessage.MessageFunction;
 			messagingMessage.CorrelationId = correlationId ?? outgoingMessage.MessageId;
 			messagingMessage.TimeToLive = (queueType == QueueType.Asynchronous)

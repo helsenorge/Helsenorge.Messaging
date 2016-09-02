@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 					Assert.IsTrue(_receivedCalled);
 					Assert.IsTrue(_completedCalled);
 					Assert.AreEqual(0, MockFactory.Helsenorge.Synchronous.Messages.Count);
-					Assert.AreEqual(1, MockFactory.OtherParty.Synchronous.Messages.Count);
+					Assert.AreEqual(1, MockFactory.OtherParty.SynchronousReply.Messages.Count);
 				},
 				wait: () => _completedCalled,
 				received: (m) =>
@@ -105,7 +105,8 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 				ToHerId = MockFactory.HelsenorgeHerId,
 				ScheduledEnqueueTimeUtc = DateTime.UtcNow.AddSeconds(2),
 				TimeToLive = TimeSpan.FromSeconds(15),
-				ReplyTo = MockFactory.OtherParty.Synchronous.Name,
+				ReplyTo = MockFactory.OtherParty.SynchronousReply.Name,
+				To = MockFactory.OtherParty.Synchronous.Name,
 				Queue = MockFactory.Helsenorge.Synchronous.Messages,
 			};
 		}
