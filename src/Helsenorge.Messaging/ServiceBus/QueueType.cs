@@ -16,6 +16,10 @@
 		/// <summary>
 		/// Queue used for error messages
 		/// </summary>
-		Error
+		Error,
+		/// <summary>
+		/// Queue used for synchronous reply messages
+		/// </summary>
+		SynchronousReply
 	}
 }

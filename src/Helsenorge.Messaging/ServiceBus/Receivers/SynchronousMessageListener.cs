@@ -62,7 +62,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 				ScheduledSendTimeUtc = DateTime.UtcNow,
 				CpaId = message.CollaborationAgreement.CpaId,
 			};
-			Task.WaitAll(Core.Send(Logger, outgoingMessage, QueueType.Synchronous, rawMessage.ReplyTo, rawMessage.CorrelationId));
+			Task.WaitAll(Core.Send(Logger, outgoingMessage, QueueType.SynchronousReply, rawMessage.ReplyTo, rawMessage.CorrelationId));
 		}
 		/// <summary>
 		/// Called when message processing is complete
