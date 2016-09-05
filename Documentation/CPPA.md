@@ -46,7 +46,8 @@ Et mere avansert alternativ er å lage en egen implementasjon av ICollaborationP
 #### Prossesversjoner og XML versjoner
 
 En prossess kan få ny versjon av to grunner.
-1. Ny funksonlitet
+
+1. Ny funksjonalitet
 2. Underliggende XML har endret seg. 
 
 I tilleg til protokoll, så spesifiserer en kommunikasjonsprosses hvilke XSD'er og XML namespace som skal benyttes.
