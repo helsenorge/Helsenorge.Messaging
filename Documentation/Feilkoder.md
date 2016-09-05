@@ -1,33 +1,26 @@
 # Helsenorge Messaging Feilkoder
 
-I utgangspunktet så prøver vi å gi relevante feilmeldinger som et menneske klarer å forstå; disse kan endre seg over tid. 
-For feilmeldinger så legger vi ved en ID som ikke endrer seg; denne kan da benyttes av maskiner for å identifisere en gitt feilmelding. 
-
-Drift kan da benytte disse feilkodene til å bestemme hva slag varsling som man anser som nødvendig. 
-
-Følgende feilkoder kan rapporteres. 
-
 ## Helsenorge.Registries
 
 ### REG-1
-Problemer med å hente kommunikasjons detaljer.
+Problemer med Ã¥ hente kommunikasjons detaljer.
  
 ### REG-2
-Problemer med å finne CPP for en motpart
+Problemer med Ã¥ finne CPP for en motpart
 
 ### REG-3
-Problemer med å finne CPA for en motpart.
+Problemer med Ã¥ finne CPA for en motpart.
 
 ## Helsenorge.Messaging
 
 ### MUG-1
-Generell feil med å motta meldinger.
+Generell feil med Ã¥ motta meldinger.
 
 ### MUG-2
-Generell feil med å sende meldinger.
+Generell feil med Ã¥ sende meldinger.
 
 ### MUG-3
-Kønavnet er tomt.
+KÃ¸navnet er tomt.
 
 ### MUG-4
 Avsender mangler i adresseregisteret.
@@ -69,22 +62,22 @@ Mottatt melding er ikke XML.
 Mottatt melding mangler data i AMQP header.
 
 ### MUG-22
-Mottatt melding har feil data i header kontra det som ligger i meldingen. Denne brukes av hodemelding for å sjekke at avsender id i fagmeldingen stemmer med det som står i AMQP header. 
+Mottatt melding har feil data i header kontra det som ligger i meldingen. Denne brukes av hodemelding for Ã¥ sjekke at avsender id i fagmeldingen stemmer med det som stÃ¥r i AMQP header. 
 
 ### MUG-23
 Meldingsmottaket har rapportert en feil som skal sendes til avsender. 
 
 ### MUG-30
-Avsender svarte ikke på en synkron melding innen en gitt tid (timeout).
+Avsender svarte ikke pÃ¥ en synkron melding innen en gitt tid (timeout).
 
 ### MUG-31
-Avsender svarte på en synkron melding etter at tiden gikk ut. Meldingen har ikke blitt prosessert.
+Avsender svarte pÃ¥ en synkron melding etter at tiden gikk ut. Meldingen har ikke blitt prosessert.
 
 ### MUG-33
 Ugyldig meldingsfunksjon.
 
 ### MUG-34
-Feil som avsender har rapportert. Ting som kommer inn på error køen.
+Feil som avsender har rapportert. Ting som kommer inn pÃ¥ error kÃ¸en.
 
 ### MUG-35
-Ukjent feil har oppstått.
+Ukjent feil har oppstÃ¥tt.
