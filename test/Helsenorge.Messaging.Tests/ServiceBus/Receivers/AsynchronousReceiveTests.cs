@@ -93,8 +93,8 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 				// we don't have enough information to know where to send it back
 				Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
 			},
-			wait: () => _handledExceptionCalled,
-			received: (m) => { },
+			wait: () => _receivedCalled,
+			received: (m) => { Assert.AreEqual(CertificateErrors.Missing, m.SignatureError); },
 			messageModification: (m) => { m.FromHerId = 0; });
 		}
 		[TestMethod]

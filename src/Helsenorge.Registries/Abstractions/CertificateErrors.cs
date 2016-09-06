@@ -32,6 +32,10 @@ namespace Helsenorge.Registries.Abstractions
 		/// <summary>
 		/// Unable to determine revocation status. Service may be unavailable
 		/// </summary>
-		RevokedUnknown = 6
+		RevokedUnknown = 6,
+		/// <summary>
+		/// The certificate is missing
+		/// </summary>
+		Missing = 7
 	}
 }

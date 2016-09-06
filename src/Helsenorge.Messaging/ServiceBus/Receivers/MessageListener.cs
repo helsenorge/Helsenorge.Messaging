@@ -238,7 +238,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 				// invalid certificates are flagged to the application layer processing the decrypted message.
 				// with the decrypted content, they may have a chance to figure out who sent it
 				var decryption = Core.Settings.DecryptionCertificate.Certificate;
-				var signature = incomingMessage.CollaborationAgreement.SignatureCertificate;
+				var signature = incomingMessage.CollaborationAgreement?.SignatureCertificate;
 
 				incomingMessage.DecryptionError = Core.DefaultCertificateValidator.Validate(decryption, X509KeyUsageFlags.DataEncipherment);
 				ReportErrorOnLocalCertificate(originalMessage, decryption, incomingMessage.DecryptionError);
@@ -256,12 +256,16 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 		{
 			string errorCode;
 			string description;
-			var additionalInformation = new[] {certificate.Subject, certificate.Thumbprint};
 			EventId id;
+
 			switch (error)
 			{
 				case CertificateErrors.None:
-					return; // no error
+					// no error
+				case CertificateErrors.Missing:
+					// if the certificate is missing, it's because we don't know where it came from
+					// and have no idea where to send an error message
+					return;
 				case CertificateErrors.StartDate:
 					errorCode = "transport:expired-certificate";
 					description = "Invalid start date";
@@ -293,6 +297,11 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 					id = EventIds.RemoteCertificate;
 					break;
 			}
+			var additionalInformation =
+				(error != CertificateErrors.Missing) || (error != CertificateErrors.None) ? 
+				new[] { certificate.Subject, certificate.Thumbprint } : 
+				new string[] { };
+
 			Core.ReportErrorToExternalSender(Logger, id, originalMessage, errorCode, description, additionalInformation);
 		}
 
@@ -339,10 +348,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 			Logger.LogDebug("Validating message header");
 			var missingFields = new List<string>();
 
-			if (message.FromHerId == 0)
-			{
-				missingFields.Add(ServiceBusCore.FromHerIdHeaderKey);
-			}
+			// the FromHerId is not checked by design. If this validation fails, we need to send a message back to the sender
+			// but we have no idea who the sender is because the information is missing
 			if (message.ToHerId == 0)
 			{
 				missingFields.Add(ServiceBusCore.ToHerIdHeaderKey);

@@ -5,6 +5,7 @@ using System.Linq;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
+using Helsenorge.Registries.AddressService;
 using Helsenorge.Registries.CPAService;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
@@ -20,6 +21,7 @@ namespace Helsenorge.Registries.Mocks
 		private Func<int, string> _findProtocolForCounterparty;
 		private Func<int, string> _findAgreementForCounterparty;
 		private Func<Guid, string> _findAgreementById;
+
 		/// <summary>
 		/// Constructor
 		/// </summary>
@@ -30,6 +32,7 @@ namespace Helsenorge.Registries.Mocks
 			IDistributedCache cache) : base(settings, cache)
 		{
 		}
+
 		/// <summary>
 		/// Configures a func to be called when calling the actual method
 		/// </summary>
@@ -38,6 +41,7 @@ namespace Helsenorge.Registries.Mocks
 		{
 			_findProtocolForCounterparty = func;
 		}
+
 		/// <summary>
 		/// Configures a func to be called when calling the actual method
 		/// </summary>
@@ -46,6 +50,7 @@ namespace Helsenorge.Registries.Mocks
 		{
 			_findAgreementById = func;
 		}
+
 		/// <summary>
 		/// Configures a func to be called when calling the actual method
 		/// </summary>
@@ -63,16 +68,36 @@ namespace Helsenorge.Registries.Mocks
 		/// <returns></returns>
 		protected override Task<string> FindProtocolForCounterparty(ILogger logger, int counterpartyHerId)
 		{
-			return Task.FromResult(_findProtocolForCounterparty(counterpartyHerId));
+			try
+			{
+				return Task.FromResult(_findProtocolForCounterparty(counterpartyHerId));
+			}
+			catch (FileNotFoundException)
+			{
+				throw new FaultException<AddressService.GenericFault>(new AddressService.GenericFault()
+				{
+					ErrorCode = "NotFound"
+				});
+			}
 		}
 
 		internal override Task<CpaXmlDetails> FindAgreementForCounterparty(ILogger logger, int counterpartyHerId)
 		{
-			var details = new CpaXmlDetails()
+			try
 			{
-				CollaborationProtocolAgreementXml = _findAgreementForCounterparty(counterpartyHerId)
-			};
-			return Task.FromResult(details);
+				var details = new CpaXmlDetails()
+				{
+					CollaborationProtocolAgreementXml = _findAgreementForCounterparty(counterpartyHerId)
+				};
+				return Task.FromResult(details);
+			}
+			catch (FileNotFoundException)
+			{
+				throw new FaultException<AddressService.GenericFault>(new AddressService.GenericFault()
+				{
+					ErrorCode = "NotFound"
+				});
+			}
 		}
 
 		internal override Task<CpaXmlDetails> FindAgreementById(ILogger logger, Guid id)

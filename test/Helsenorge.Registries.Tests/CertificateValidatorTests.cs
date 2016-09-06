@@ -10,11 +10,11 @@ namespace Helsenorge.Registries.Tests
 	public class CertificateValidatorTests
 	{
 		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void CertificateValidation_ArgumentNullException()
 		{
 			var validator = new CertificateValidator();
-			validator.Validate(null, X509KeyUsageFlags.NonRepudiation);
+			var error = validator.Validate(null, X509KeyUsageFlags.NonRepudiation);
+			Assert.AreEqual(CertificateErrors.Missing, error);
 		}
 		[TestMethod]
 		[TestCategory("X509Chain")]
