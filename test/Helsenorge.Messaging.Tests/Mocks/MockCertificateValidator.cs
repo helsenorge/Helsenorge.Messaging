@@ -12,6 +12,8 @@ namespace Helsenorge.Messaging.Tests.Mocks
 
 		public CertificateErrors Validate(X509Certificate2 certificate, X509KeyUsageFlags usage)
 		{
+			if(certificate == null) return CertificateErrors.Missing;
+
 			return _error?.Invoke(certificate, usage) ?? CertificateErrors.None;
 		}
 	}

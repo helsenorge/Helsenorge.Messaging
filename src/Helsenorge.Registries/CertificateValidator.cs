@@ -19,7 +19,7 @@ namespace Helsenorge.Registries
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		public CertificateErrors Validate(X509Certificate2 certificate, X509KeyUsageFlags usage)
 		{
-			if (certificate == null) throw new ArgumentNullException(nameof(certificate));
+			if (certificate == null) return CertificateErrors.Missing;
 
 			var result = CertificateErrors.None;
 
