@@ -7,8 +7,6 @@ I dag så støtter pakken bare AMQP protokollen, men på sikt så kan andre prot
 Meldingene som sendes sikres gjennom krypering signering. System støtter både funksjonell asynkron og synkron meldingsutveksling.
 
 
-
-
 1. [Forutsetninger](Documentation/Forutsetninger.md "Forutsetninger")
 2. [Registre](Documentation/Registre.md "Registere")
 3. [CPP og CPA](Documentation/CPPA.md "CPP og CPA")
