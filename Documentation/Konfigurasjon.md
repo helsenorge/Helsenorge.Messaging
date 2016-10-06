@@ -62,3 +62,19 @@ Dette er et eksempel på hvordan en slik fil kan se ut.
 			"StoreLocation": "LocalMachine"
 		}
 	}
+
+### NHN Miljøer
+NHN tilbyr to forsjellige miljøer for meldingsutveksling; test og produksjon. Man kan kontakte meldingsutveksleren via .NET protokoll, eller AMPQ. Sistnevnt vil bli benyttet for Java applikasjoner.
+
+Connection stringene som er vist nedenfor illustrerer .NET versjonen. Den inneholder en del porter som må være åpne. For AMQP så benyttes port 5671. 
+
+For mer informasjon, kontakt NHN Kundeservice.  
+#### Test
+Dette miljøet er tilgjengelig på internett. Det er Her-Id'en som bestemer hvilken kø som skal benyttes. Man kan ha fint ha 10 forskjellige testmiljøer og gå mot samme meldingsutveksler så lenge man har unike Her-Id'er. 
+
+    Endpoint=sb://sb.test.nhn.no/DigitalDialog;StsEndpoint=https://sb.test.nhn.no:9355/DigitalDialog;RuntimePort=9354;ManagementPort=9355;OAuthUsername=[username];OAuthPassword=[password]
+    
+#### Produksjon
+Dette miljøet er bare tilgjengelig på helsenettet. NHN må innvolveres for å komme inn på dette. 
+
+    Endpoint=sb://sb.nhn.no/NHNPRODServiceBus;StsEndpoint=https://sb.nhn.no:9355/NHNPRODServiceBus;RuntimePort=9354;ManagementPort=9355;OAuthUsername=[username];OAuthPassword=[password]
