@@ -83,7 +83,7 @@ namespace Helsenorge.Messaging
 				: message.ReceiptForMessageFunction;
 
 			var profile = await FindProfile(logger, message).ConfigureAwait(false);
-			var collaborationProtocolMessage = profile.FindMessageForReceiver(messageFunction);
+			var collaborationProtocolMessage = profile?.FindMessageForReceiver(messageFunction);
 
 			if (collaborationProtocolMessage == null)
 			{
