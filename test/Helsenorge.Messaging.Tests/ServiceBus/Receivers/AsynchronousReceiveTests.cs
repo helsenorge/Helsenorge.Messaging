@@ -398,6 +398,38 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 			   messageModification: (m) => { });
 		}
 
+		[TestMethod]
+		public void Asynchronous_Receive_UseLegacyOK()
+		{
+			Settings.DecryptionCertificate = new CertificateSettings()
+			{
+				Certificate = TestCertificates.CounterpartyPrivateEncryption
+			};
+			Settings.LegacyDecryptionCertificate = new CertificateSettings()
+			{
+				Certificate =  TestCertificates.HelsenorgePrivateEncryption
+			};
+
+			// postition of arguments have been reversed so that we instert the name of the argument without getting a resharper indication
+			// makes it easier to read
+			RunAsynchronousReceive(
+				postValidation: () =>
+				{
+					Assert.IsTrue(_startingCalled);
+					Assert.IsTrue(_receivedCalled);
+					Assert.IsTrue(_completedCalled);
+					Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				},
+				wait: () => _completedCalled,
+				received: (m) =>
+				{
+					Assert.AreEqual(MockFactory.HelsenorgeHerId, m.ToHerId);
+					Assert.AreEqual(MockFactory.OtherHerId, m.FromHerId);
+					Assert.AreEqual("DIALOG_INNBYGGER_EKONTAKT", m.MessageFunction);
+				},
+				messageModification: (m) => { });
+		}
+
 		private static void CheckError(IEnumerable<IMessagingMessage> queue, string errorCondition, string errorDescription, string errorConditionData)
 		{
 			var m = queue.First();

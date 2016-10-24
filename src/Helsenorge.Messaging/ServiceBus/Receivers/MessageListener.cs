@@ -154,7 +154,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 				ValidateMessageHeader(message);
 				// we need the certificates for decryption and certificate use
 				incomingMessage.CollaborationAgreement =
-					await Core.ResolveCollaborationProtocolAgreement(Logger, message.CpaId, message.FromHerId);
+				await Core.ResolveCollaborationProtocolAgreement(Logger, message.CpaId, message.FromHerId);
 
 				var payload = HandlePayload(message, bodyStream, message.ContentType, incomingMessage);
 				if (payload != null)
@@ -226,7 +226,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 				contentType.Equals(ContentType.Soap, StringComparison.OrdinalIgnoreCase))
 			{
 				// no certificates to validate
-				payload = new NoMessageProtection().Unprotect(bodyStream, null, null);
+				payload = new NoMessageProtection().Unprotect(bodyStream, null, null, null);
 			}
 			else
 			{
@@ -239,14 +239,23 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 				// with the decrypted content, they may have a chance to figure out who sent it
 				var decryption = Core.Settings.DecryptionCertificate.Certificate;
 				var signature = incomingMessage.CollaborationAgreement?.SignatureCertificate;
+				var legacyDecryption = Core.Settings.LegacyDecryptionCertificate?.Certificate;
 
 				incomingMessage.DecryptionError = Core.DefaultCertificateValidator.Validate(decryption, X509KeyUsageFlags.DataEncipherment);
-				ReportErrorOnLocalCertificate(originalMessage, decryption, incomingMessage.DecryptionError);
+				ReportErrorOnLocalCertificate(originalMessage, decryption, incomingMessage.DecryptionError, true);
 
 				incomingMessage.SignatureError = Core.DefaultCertificateValidator.Validate(signature, X509KeyUsageFlags.NonRepudiation);
 				ReportErrorOnRemoteCertificate(originalMessage, signature, incomingMessage.SignatureError);
 
-				payload = Core.DefaultMessageProtection.Unprotect(bodyStream, decryption, signature);
+				if (legacyDecryption != null) 
+				{
+					// this is optional information that should only be in effect durin a short transition period
+					incomingMessage.LegacyDecryptionError = Core.DefaultCertificateValidator.Validate(legacyDecryption, X509KeyUsageFlags.DataEncipherment);
+					// if someone forgets to remove the legacy configuration, we log an error message but don't remove it
+					ReportErrorOnLocalCertificate(originalMessage, legacyDecryption, incomingMessage.LegacyDecryptionError, false);
+				}
+
+				payload = Core.DefaultMessageProtection.Unprotect(bodyStream, decryption, signature, legacyDecryption);
 			}
 			return payload;
 		}
@@ -305,7 +314,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 			Core.ReportErrorToExternalSender(Logger, id, originalMessage, errorCode, description, additionalInformation);
 		}
 
-		private void ReportErrorOnLocalCertificate(IMessagingMessage originalMessage, X509Certificate2 certificate, CertificateErrors error)
+		private void ReportErrorOnLocalCertificate(IMessagingMessage originalMessage, X509Certificate2 certificate, CertificateErrors error, bool removeMessage)
 		{
 			string description;
 			EventId id;
@@ -340,7 +349,11 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 			}
 			Logger.LogError(id, null, "Description: {Description} Subject: {Subject} Thumbprint: {Thumbprint}", 
 				description, certificate.Subject, certificate.Thumbprint);
-			ServiceBusCore.RemoveMessageFromQueueAfterError(Logger, originalMessage);
+
+			if (removeMessage)
+			{
+				ServiceBusCore.RemoveMessageFromQueueAfterError(Logger, originalMessage);
+			}
 		}
 
 		private void ValidateMessageHeader(IMessagingMessage message)

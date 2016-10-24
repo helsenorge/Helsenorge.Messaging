@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.ServiceBus.Management;
 
 namespace Helsenorge.Messaging
 {
@@ -22,6 +23,10 @@ namespace Helsenorge.Messaging
 		/// The certificate used to decrypt messages
 		/// </summary>
 		public CertificateSettings DecryptionCertificate { get; set; }
+		/// <summary>
+		/// The old certificate used for decryption when we have moved over to a new one.
+		/// </summary>
+		public CertificateSettings LegacyDecryptionCertificate { get; set; }
 		/// <summary>
 		/// Indicates if we should ignore certificate errors when sending
 		/// </summary>
@@ -105,6 +110,10 @@ namespace Helsenorge.Messaging
 		/// The certificate used to decrypt messages
 		/// </summary>
 		public CertificateSettings DecryptionCertificate => _settings.DecryptionCertificate;
+		/// <summary>
+		/// The old certificate used for decryption when we have moved over to a new one.
+		/// </summary>
+		public CertificateSettings LegacyDecryptionCertificate => _settings.LegacyDecryptionCertificate;
 		
 		internal ServiceBusSettings(MessagingSettings settings)
 		{

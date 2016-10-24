@@ -46,6 +46,10 @@ namespace Helsenorge.Messaging.Abstractions
 		/// </summary>
 		public CertificateErrors DecryptionError { get; set; }
 		/// <summary>
+		/// Status indication of the legacy decryption certificate. Allows application layer to take appropriate action.
+		/// </summary>
+		public CertificateErrors LegacyDecryptionError { get; set; }
+		/// <summary>
 		/// Indication of how signature validation succeeded. Allows application layer to take appropriate action.
 		/// </summary>
 		public CertificateErrors SignatureError { get; set; }

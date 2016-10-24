@@ -90,7 +90,7 @@ namespace Helsenorge.Messaging.ServiceBus
 			if (outgoingMessage == null) throw new ArgumentNullException(nameof(outgoingMessage));
 			if (string.IsNullOrEmpty(outgoingMessage.MessageId)) throw new ArgumentNullException(nameof(outgoingMessage.MessageId));
 			if (outgoingMessage.Payload == null) throw new ArgumentNullException(nameof(outgoingMessage.Payload));
-			
+
 			var profile = await ResolveCollaborationProtocolAgreement(logger, outgoingMessage.CpaId, outgoingMessage.ToHerId).ConfigureAwait(false);
 			var signature = Settings.SigningCertificate.Certificate;
 			var encryption = profile.EncryptionCertificate;
@@ -212,9 +212,7 @@ namespace Helsenorge.Messaging.ServiceBus
 				logger.LogError(EventIds.MissingField, "FromHerId is missing. No idea where to send the error");
 				return;
 			}
-
-			logger.LogError("Reporting error to sender. ErrorCode: {0} ErrorDescription: {1}", errorCode, errorDescription);
-
+			
 			var clonedMessage = originalMessage.Clone();
 			// update some properties on the cloned message
 			clonedMessage.To = await ConstructQueueName(logger, originalMessage.FromHerId, QueueType.Error); // change target 
@@ -239,6 +237,7 @@ namespace Helsenorge.Messaging.ServiceBus
 				clonedMessage.Properties.Add(ErrorDescriptionHeaderKey, errorDescription);
 			}
 
+			var additionDataValue = "None";
 			if (additionalData != null)
 			{
 				var sb = new StringBuilder();
@@ -250,11 +249,14 @@ namespace Helsenorge.Messaging.ServiceBus
 						sb.Append($"{item};");
 					}
 				}
+				additionDataValue = sb.ToString();
+
 				if (clonedMessage.Properties.ContainsKey(ErrorConditionDataHeaderKey) == false)
 				{
-					clonedMessage.Properties.Add(ErrorConditionDataHeaderKey, sb.ToString());
+					clonedMessage.Properties.Add(ErrorConditionDataHeaderKey, additionDataValue);
 				}
 			}
+			logger.LogError("Reporting error to sender. ErrorCode: {0} ErrorDescription: {1} AdditionalData: {2}", errorCode, errorDescription, additionDataValue);
 			await Send(logger, clonedMessage, QueueType.Error).ConfigureAwait(false);
 		}
 		/// <summary>
@@ -326,11 +328,11 @@ namespace Helsenorge.Messaging.ServiceBus
 		/// <returns></returns>
 		private Task<CollaborationProtocolProfile> ResolveCollaborationProtocolAgreement(ILogger logger, Guid cpaId, int herId)
 		{
-			return cpaId != Guid.Empty ? 
-				Core.CollaborationProtocolRegistry.FindAgreementByIdAsync(logger, cpaId) : 
+			return cpaId != Guid.Empty ?
+				Core.CollaborationProtocolRegistry.FindAgreementByIdAsync(logger, cpaId) :
 				Core.CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, herId);
 		}
-
+		
 		/// <summary>
 		/// Sends a message to the remote sender with information about what is wrong.
 		/// Loggs information to our logs.
