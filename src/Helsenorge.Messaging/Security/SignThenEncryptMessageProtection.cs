@@ -52,14 +52,16 @@ namespace Helsenorge.Messaging.Security
 			// convert back to a memory stream other systems can leverage
 			return new MemoryStream(raw);
 		}
+
 		/// <summary>
 		/// Removes protection from the message data
 		/// </summary>
 		/// <param name="data">Protected data</param>
 		/// <param name="encryptionCertificate">Certificate use for encryption</param>
 		/// <param name="signingCertificate">Certificate used for signature</param>
+		/// <param name="legacyEncryptionCertificate">Old encryption certificate</param>
 		/// <returns>Data that has been decrypted and verified</returns>
-		public XDocument Unprotect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate)
+		public XDocument Unprotect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate, X509Certificate2 legacyEncryptionCertificate)
 		{
 			if (data == null) throw new ArgumentNullException(nameof(data));
 			if (encryptionCertificate == null) throw new ArgumentNullException(nameof(encryptionCertificate));
@@ -67,11 +69,17 @@ namespace Helsenorge.Messaging.Security
 			var ms = new MemoryStream();
 			data.CopyTo(ms);
 
+			var encryptionCertificates = new X509Certificate2Collection(encryptionCertificate);
+			if (legacyEncryptionCertificate != null)
+			{
+				encryptionCertificates.Add(legacyEncryptionCertificate);
+			}
+
 			var raw = ms.ToArray();
 			// first we decrypt the data
 			var envelopedCm = new EnvelopedCms();
 			envelopedCm.Decode(raw);
-			envelopedCm.Decrypt(envelopedCm.RecipientInfos[0], new X509Certificate2Collection(encryptionCertificate));
+			envelopedCm.Decrypt(envelopedCm.RecipientInfos[0], encryptionCertificates);
 			raw = envelopedCm.ContentInfo.Content;
 
 			// then we validate the signature

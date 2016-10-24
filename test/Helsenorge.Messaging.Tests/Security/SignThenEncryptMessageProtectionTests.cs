@@ -31,7 +31,25 @@ namespace Helsenorge.Messaging.Tests.Security
 			var result = _protection.Unprotect(
 				stream, 
 				TestCertificates.HelsenorgePrivateEncryption,
-				TestCertificates.CounterpartyPublicSignature);
+				TestCertificates.CounterpartyPublicSignature, null);
+
+			Assert.AreEqual(_content.ToString(), result.ToString());
+		}
+
+		[TestMethod]
+		[TestCategory("X509Chain")]
+		public void Protect_And_Unprotect_UsingLegacy_OK()
+		{
+			var stream = _protection.Protect(
+				_content,
+				TestCertificates.HelsenorgePublicEncryption,
+				TestCertificates.CounterpartyPrivateSigntature);
+
+			var result = _protection.Unprotect(
+				stream,
+				TestCertificates.CounterpartyPrivateEncryption, // set some random as the primary
+				TestCertificates.CounterpartyPublicSignature,
+				TestCertificates.HelsenorgePrivateEncryption); // set the actual as legacy
 
 			Assert.AreEqual(_content.ToString(), result.ToString());
 		}
@@ -65,7 +83,7 @@ namespace Helsenorge.Messaging.Tests.Security
 				TestCertificates.HelsenorgePublicEncryption,
 				TestCertificates.CounterpartyPrivateSigntature);
 
-			_protection.Unprotect(null, TestCertificates.HelsenorgePrivateEncryption, TestCertificates.CounterpartyPublicSignature);
+			_protection.Unprotect(null, TestCertificates.HelsenorgePrivateEncryption, TestCertificates.CounterpartyPublicSignature, null);
 		}
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
@@ -77,7 +95,7 @@ namespace Helsenorge.Messaging.Tests.Security
 				TestCertificates.HelsenorgePublicEncryption,
 				TestCertificates.CounterpartyPrivateSigntature);
 
-			_protection.Unprotect(stream, null, TestCertificates.CounterpartyPublicSignature);
+			_protection.Unprotect(stream, null, TestCertificates.CounterpartyPublicSignature, null);
 		}
 		[TestMethod]
 		[TestCategory("X509Chain")]
@@ -88,7 +106,7 @@ namespace Helsenorge.Messaging.Tests.Security
 				TestCertificates.HelsenorgePublicEncryption,
 				TestCertificates.CounterpartyPrivateSigntature);
 
-			var result = _protection.Unprotect(stream, TestCertificates.HelsenorgePrivateEncryption, null);
+			var result = _protection.Unprotect(stream, TestCertificates.HelsenorgePrivateEncryption, null, null);
 			Assert.AreEqual(_content.ToString(), result.ToString());
 		}
 	}
