@@ -41,7 +41,16 @@ namespace Helsenorge.Registries.Tests
 			var distributedCache = new MemoryDistributedCache(memoryCache);
 
 			_registry = new CollaborationProtocolRegistryMock(settings, distributedCache);
-			_registry.SetupFindAgreementById(i => File.ReadAllText(Path.Combine("Files", $"CPA_{i:D}.xml")));
+			_registry.SetupFindAgreementById(i =>
+			{
+				var file = Path.Combine("Files", $"CPA_{i:D}.xml");
+				return File.Exists(file) == false ? null : File.ReadAllText(file);
+			});
+			_registry.SetupFindAgreementForCounterparty(i =>
+			{
+				var file = Path.Combine("Files", $"CPA_{i}.xml");
+				return File.Exists(file) == false ? null : File.ReadAllText(file);
+			});
 			_registry.SetupFindProtocolForCounterparty(i =>
 			{
 				if (i < 0)
@@ -73,6 +82,7 @@ namespace Helsenorge.Registries.Tests
 		public void Read_CollaborationProfile()
 		{
 			var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
+			Assert.AreEqual(profile.CpaId, Guid.Empty);
 			Assert.AreEqual("Digitale innbyggertjenester", profile.Name);
 			Assert.AreEqual(14, profile.Roles.Count);
 			Assert.IsNotNull(profile.SignatureCertificate);
@@ -97,6 +107,13 @@ namespace Helsenorge.Registries.Tests
 		}
 
 		[TestMethod]
+		public void Read_CollaborationProfile_NotFound()
+		{
+			var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 1234).Result;
+			Assert.IsNull(profile);
+		}
+
+		[TestMethod]
 		public void Read_CollaborationProfile_FromCache()
 		{
 			var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
@@ -109,7 +126,7 @@ namespace Helsenorge.Registries.Tests
 		}
 
 		[TestMethod]
-		public void Read_CollaborationAgreement()
+		public void Read_CollaborationAgreement_ById()
 		{
 			var profile = _registry.FindAgreementByIdAsync(_logger, Guid.Parse("49391409-e528-4919-b4a3-9ccdab72c8c1")).Result;
 
@@ -119,6 +136,24 @@ namespace Helsenorge.Registries.Tests
 
 			Assert.IsNotNull(profile.SignatureCertificate);
 			Assert.IsNotNull(profile.EncryptionCertificate);
+		}
+		[TestMethod]
+		public void Read_CollaborationAgreement_ByCounterparty()
+		{
+			var profile = _registry.FindAgreementForCounterpartyAsync(_logger, 93252).Result;
+
+			Assert.AreEqual(profile.HerId, 93252);
+			Assert.AreEqual(profile.Name, "Testlege Testlege");
+			Assert.AreEqual(profile.CpaId, new Guid("{9333f3de-e85c-4c26-9066-6800055b1b8e}"));
+			Assert.IsNotNull(profile.EncryptionCertificate);
+			Assert.IsNotNull(profile.SignatureCertificate);
+			Assert.AreEqual(profile.Roles.Count, 14);
+		}
+		[TestMethod]
+		public void Read_CollaborationAgreement_NotFound()
+		{
+			var profile = _registry.FindAgreementForCounterpartyAsync(_logger, 1234).Result;
+			Assert.IsNull(profile);
 		}
 
 		[TestMethod]

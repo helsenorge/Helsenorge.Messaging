@@ -84,9 +84,21 @@ namespace Helsenorge.Messaging.Tests
 			});
 
 			CollaborationRegistry = new CollaborationProtocolRegistryMock(collaborationRegistrySettings, distributedCache);
-			CollaborationRegistry.SetupFindProtocolForCounterparty(i => File.ReadAllText(Path.Combine("Files", $"CPP_{i}.xml")));
-			CollaborationRegistry.SetupFindAgreementForCounterparty(i => File.ReadAllText(Path.Combine("Files", $"CPA_{i}.xml")));
-			CollaborationRegistry.SetupFindAgreementById(i => File.ReadAllText(Path.Combine("Files", $"CPA_{i:D}.xml")));
+			CollaborationRegistry.SetupFindProtocolForCounterparty(i =>
+			{
+				var file = Path.Combine("Files", $"CPP_{i}.xml");
+				return File.Exists(file) == false ? null : File.ReadAllText(file);
+			});
+			CollaborationRegistry.SetupFindAgreementForCounterparty(i =>
+			{
+				var file = Path.Combine("Files", $"CPA_{i}.xml");
+				return File.Exists(file) == false ? null : File.ReadAllText(file);
+			});
+			CollaborationRegistry.SetupFindAgreementById(i =>
+			{
+				var file = Path.Combine("Files", $"CPA_{i:D}.xml");
+				return File.Exists(file) == false ? null : File.ReadAllText(file);
+			});
 
 			Settings = new MessagingSettings()
 			{

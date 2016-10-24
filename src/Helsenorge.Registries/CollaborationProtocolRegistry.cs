@@ -155,7 +155,7 @@ namespace Helsenorge.Registries
 				};
 			}
 		
-			if (string.IsNullOrEmpty(details.CollaborationProtocolAgreementXml)) return null;
+			if (string.IsNullOrEmpty(details?.CollaborationProtocolAgreementXml)) return null;
 			var doc = XDocument.Parse(details.CollaborationProtocolAgreementXml);
 			if (doc.Root == null) return null;
 

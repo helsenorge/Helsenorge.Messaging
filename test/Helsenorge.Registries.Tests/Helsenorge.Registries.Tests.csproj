@@ -102,6 +102,10 @@
     <Compile Include="CertificateValidatorTests.cs" />
     <Compile Include="CollaborationRegistryTests.cs" />
     <Compile Include="TestCertificates.cs" />
+    <Content Include="Files\CPA_93252.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Files\CPA_49391409-e528-4919-b4a3-9ccdab72c8c1.xml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
