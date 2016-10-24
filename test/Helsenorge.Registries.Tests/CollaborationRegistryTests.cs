@@ -118,9 +118,12 @@ namespace Helsenorge.Registries.Tests
 		{
 			var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
 			Assert.IsNotNull(profile);
-			// read a couple of times to ensure that serialization doesn't cause any exceptions
-			profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
-			Assert.IsNotNull(profile);
+
+			// if it's not found in cache, it will cause an exception
+			_registry.SetupFindProtocolForCounterparty(i =>
+			{
+				throw new NotImplementedException();
+			});
 			profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
 			Assert.IsNotNull(profile);
 		}
@@ -154,6 +157,20 @@ namespace Helsenorge.Registries.Tests
 		{
 			var profile = _registry.FindAgreementForCounterpartyAsync(_logger, 1234).Result;
 			Assert.IsNull(profile);
+		}
+		[TestMethod]
+		public void Read_CollaborationAgreement_FromCache()
+		{
+			var profile = _registry.FindAgreementForCounterpartyAsync(_logger, 93252).Result;
+			Assert.IsNotNull(profile);
+
+			// if it's not found in cache, it will cause an exception
+			_registry.SetupFindAgreementForCounterparty(i =>
+			{
+				throw new NotImplementedException();
+			});
+			profile = _registry.FindAgreementForCounterpartyAsync(_logger, 93252).Result;
+			Assert.IsNotNull(profile);
 		}
 
 		[TestMethod]
