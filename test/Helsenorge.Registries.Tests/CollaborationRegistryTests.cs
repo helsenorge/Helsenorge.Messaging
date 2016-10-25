@@ -41,7 +41,7 @@ namespace Helsenorge.Registries.Tests
 			var distributedCache = new MemoryDistributedCache(memoryCache);
 
             IAddressRegistry addressRegistry = AddressRegistryTests.GetDefaultAddressRegistryMock();
-            _registry = new CollaborationProtocolRegistryMock(settings, distributedCache);
+            _registry = new CollaborationProtocolRegistryMock(settings, distributedCache, addressRegistry);
 			_registry.SetupFindAgreementById(i =>
 			{
 				var file = Path.Combine("Files", $"CPA_{i:D}.xml");
@@ -125,7 +125,8 @@ namespace Helsenorge.Registries.Tests
 		public void Read_CollaborationProfile_NotFound()
 		{
 			var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 1234).Result;
-			Assert.IsNull(profile);
+			Assert.IsNotNull(profile);
+            Assert.AreEqual("DummyCollaborationProtocolProfile", profile.Name);
 		}
 
 		[TestMethod]
@@ -171,7 +172,8 @@ namespace Helsenorge.Registries.Tests
 		public void Read_CollaborationAgreement_NotFound()
 		{
 			var profile = _registry.FindAgreementForCounterpartyAsync(_logger, 1234).Result;
-			Assert.IsNull(profile);
+			Assert.IsNotNull(profile);
+            Assert.AreEqual("DummyCollaborationProtocolProfile", profile.Name);
 		}
 		[TestMethod]
 		public void Read_CollaborationAgreement_FromCache()

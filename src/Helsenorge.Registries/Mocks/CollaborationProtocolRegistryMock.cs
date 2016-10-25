@@ -88,7 +88,7 @@ namespace Helsenorge.Registries.Mocks
 			{
                 CpaXmlDetails details = null;
                 var cpaXml = _findAgreementForCounterparty(counterpartyHerId);
-                if(!cpaXml.Contains("CpaXmlDetails i:nil=\"true\""))
+                if(cpaXml != null && !cpaXml.Contains("CpaXmlDetails i:nil=\"true\""))
                 {
                     details = new CpaXmlDetails
                     {
