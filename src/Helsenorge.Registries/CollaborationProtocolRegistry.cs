@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -11,6 +11,7 @@ using Helsenorge.Registries.Abstractions;
 using Helsenorge.Registries.Utilities;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Helsenorge.Registries.AddressService;
 
 namespace Helsenorge.Registries
 {
@@ -22,28 +23,35 @@ namespace Helsenorge.Registries
 	{
 		XNamespace _ns = "http://www.oasis-open.org/committees/ebxml-cppa/schema/cpp-cpa-2_0.xsd";
 
+        private const string DummyPartyName = "DummyCollaborationProtocolProfile";
+
 		private readonly SoapServiceInvoker _invoker;
 		private readonly CollaborationProtocolRegistrySettings _settings;
 		private readonly IDistributedCache _cache;
+        private readonly IAddressRegistry _adressRegistry;
 		/// <summary>
 		/// The certificate validator to use
 		/// </summary>
 		public ICertificateValidator CertificateValidator { get; set; }
 
-		/// <summary>
-		/// Contstructor
-		/// </summary>
-		/// <param name="settings">Options for this instance</param>
-		/// <param name="cache">Cache implementation to use</param>
-		public CollaborationProtocolRegistry(
+        /// <summary>
+        /// Contstructor
+        /// </summary>
+        /// <param name="settings">Options for this instance</param>
+        /// <param name="cache">Cache implementation to use</param>
+        /// <param name="adressRegistry">AdressRegistry implementation to use</param>
+        public CollaborationProtocolRegistry(
 			CollaborationProtocolRegistrySettings settings,
-			IDistributedCache cache)
+			IDistributedCache cache,
+            IAddressRegistry adressRegistry)
 		{
 			if (settings == null) throw new ArgumentNullException(nameof(settings));
 			if (cache == null) throw new ArgumentNullException(nameof(cache));
+            if (adressRegistry == null) throw new ArgumentNullException(nameof(adressRegistry));
 
 			_settings = settings;
 			_cache = cache;
+            _adressRegistry = adressRegistry;
 			_invoker = new SoapServiceInvoker(settings.WcfConfiguration);
 			_invoker.SetClientCredentials(_settings.UserName, _settings.Password);
 			CertificateValidator = new CertificateValidator();
@@ -99,9 +107,17 @@ namespace Helsenorge.Registries
 					Data = { { "HerId", counterpartyHerId } }
 				};
 			}
-			if (string.IsNullOrEmpty(xmlString)) return null;
-			var doc = XDocument.Parse(xmlString);
-			result = doc.Root == null ? null : MapFrompartyInfo(doc.Root.Element(_ns + "PartyInfo"));
+            if (string.IsNullOrEmpty(xmlString))
+            {
+                result = CreateDummyCollaborationProtocolProfile(counterpartyHerId,
+                    await _adressRegistry.GetCertificateDetailsForEncryptionAsync(logger, counterpartyHerId),
+                    await _adressRegistry.GetCertificateDetailsForValidatingSignatureAsync(logger, counterpartyHerId));
+            }
+            else
+            {
+                var doc = XDocument.Parse(xmlString);
+                result = doc.Root == null ? null : MapFrompartyInfo(doc.Root.Element(_ns + "PartyInfo"));
+            }
 
 			await CacheExtensions.WriteValueToCache(logger, _cache, key, result, _settings.CachingInterval).ConfigureAwait(false);
 			return result;
@@ -222,36 +238,60 @@ namespace Helsenorge.Registries
 				};
 			}
 
-			if (string.IsNullOrEmpty(details?.CollaborationProtocolAgreementXml)) return null;
-			var doc = XDocument.Parse(details.CollaborationProtocolAgreementXml);
-			if (doc.Root == null) return null;
+            if (details == null)
+            {
+                result = CreateDummyCollaborationProtocolProfile(counterpartyHerId,
+                    await _adressRegistry.GetCertificateDetailsForEncryptionAsync(logger, counterpartyHerId),
+                    await _adressRegistry.GetCertificateDetailsForValidatingSignatureAsync(logger, counterpartyHerId));
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(details?.CollaborationProtocolAgreementXml)) return null;
+                var doc = XDocument.Parse(details.CollaborationProtocolAgreementXml);
+                if (doc.Root == null) return null;
 
-			var node = (from x in doc.Root.Elements(_ns + "PartyInfo").Elements(_ns + "PartyId")
-						where x.Value != _settings.MyHerId.ToString()
-						select x.Parent).First();
+                var node = (from x in doc.Root.Elements(_ns + "PartyInfo").Elements(_ns + "PartyId")
+                            where x.Value != _settings.MyHerId.ToString()
+                            select x.Parent).First();
 
-			result = MapFrompartyInfo(node);
-			result.CpaId = Guid.Parse(doc.Root.Attribute(_ns + "cpaid").Value);
-
+                result = MapFrompartyInfo(node);
+                result.CpaId = Guid.Parse(doc.Root.Attribute(_ns + "cpaid").Value);
+            }
 			await CacheExtensions.WriteValueToCache(logger, _cache, key, result, _settings.CachingInterval).ConfigureAwait(false);
 			return result;
 		}
+        
+        private CollaborationProtocolProfile CreateDummyCollaborationProtocolProfile(int herId, Abstractions.CertificateDetails encryptionCertificate, Abstractions.CertificateDetails signatureCertificate)
+        {
+            return new CollaborationProtocolProfile
+            {
+                Roles = new List<CollaborationProtocolRole>(),
+                HerId = herId,
+                Name = DummyPartyName,
+                EncryptionCertificate = encryptionCertificate?.Certificate,
+                SignatureCertificate = signatureCertificate?.Certificate
+            };
+        }
 
-		/// <summary>
-		/// Makes the actual call to the registry. Virtual so that it can overriden by mocks.
-		/// </summary>
-		/// <param name="logger"></param>
-		/// <param name="counterpartyHerId"></param>
-		/// <returns></returns>
-		[ExcludeFromCodeCoverage] // requires wire communication
+        /// <summary>
+        /// Makes the actual call to the registry. Virtual so that it can overriden by mocks.
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="counterpartyHerId"></param>
+        /// <returns></returns>
+        [ExcludeFromCodeCoverage] // requires wire communication
 		internal virtual Task<CPAService.CpaXmlDetails> FindAgreementForCounterparty(ILogger logger, int counterpartyHerId)
 			=> Invoke(logger, x => x.GetCpaForCommunicationPartiesXmlAsync(_settings.MyHerId, counterpartyHerId), "GetCpaForCommunicationPartiesXmlAsync");
 
 		[ExcludeFromCodeCoverage] // requires wire communication
 		private Task<T> Invoke<T>(ILogger logger, Func<CPAService.ICPPAService, Task<T>> action, string methodName)
 			=> _invoker.Execute(logger, action, methodName, _settings.EndpointName);
-		
-		private CollaborationProtocolProfile MapFrompartyInfo(XElement partyInfo)
+
+        [ExcludeFromCodeCoverage] // requires wire communication
+        private Task<T> Invoke<T>(ILogger logger, Func<ICommunicationPartyService, Task<T>> action, string methodName)
+            => _invoker.Execute(logger, action, methodName, _settings.EndpointName);
+
+        private CollaborationProtocolProfile MapFrompartyInfo(XElement partyInfo)
 		{
 			if (partyInfo == null) throw new ArgumentNullException(nameof(partyInfo));
 

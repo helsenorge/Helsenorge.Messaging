@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Helsenorge.Messaging.Abstractions;
@@ -8,8 +8,9 @@ namespace Helsenorge.Messaging.Tests.Mocks
 	internal class MockFactory : IMessagingFactory
 	{
 		public const int HelsenorgeHerId = 93238;
-		public const int OtherHerId = 93252;
+		
 
+        public int OtherHerId { get; }
 		public MockCommunicationParty Helsenorge { get; }
 		public MockCommunicationParty OtherParty { get; }
 
@@ -17,8 +18,9 @@ namespace Helsenorge.Messaging.Tests.Mocks
 		
 		public bool IsClosed => false;
 
-		public MockFactory()
+		public MockFactory(int otherHerID)
 		{
+            OtherHerId = otherHerID;
 			Helsenorge = new MockCommunicationParty(this, HelsenorgeHerId);
 			OtherParty = new MockCommunicationParty(this, OtherHerId);
 		}

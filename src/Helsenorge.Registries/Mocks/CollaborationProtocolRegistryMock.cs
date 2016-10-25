@@ -1,35 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.IO;
-using System.Linq;
 using System.ServiceModel;
-using System.Text;
 using System.Threading.Tasks;
-using Helsenorge.Registries.AddressService;
 using Helsenorge.Registries.CPAService;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Helsenorge.Registries.Abstractions;
+using System.Runtime.Serialization;
+using System.Xml;
 
 namespace Helsenorge.Registries.Mocks
 {
-	/// <summary>
-	/// Provides a mock implementation of CollaborationProtocolRegistry.
-	/// This code exists in this assembly so we don't have to make service reference code publicly available
-	/// </summary>
-	public class CollaborationProtocolRegistryMock : CollaborationProtocolRegistry
+    /// <summary>
+    /// Provides a mock implementation of CollaborationProtocolRegistry.
+    /// This code exists in this assembly so we don't have to make service reference code publicly available
+    /// </summary>
+    public class CollaborationProtocolRegistryMock : CollaborationProtocolRegistry
 	{
 		private Func<int, string> _findProtocolForCounterparty;
 		private Func<int, string> _findAgreementForCounterparty;
 		private Func<Guid, string> _findAgreementById;
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="settings"></param>
-		/// <param name="cache"></param>
-		public CollaborationProtocolRegistryMock(
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="cache"></param>
+        /// <param name="addressRegistry"></param>
+        public CollaborationProtocolRegistryMock(
 			CollaborationProtocolRegistrySettings settings,
-			IDistributedCache cache) : base(settings, cache)
+			IDistributedCache cache,
+            IAddressRegistry addressRegistry) : base(settings, cache, addressRegistry)
 		{
 		}
 
@@ -85,11 +86,17 @@ namespace Helsenorge.Registries.Mocks
 		{
 			try
 			{
-				var details = new CpaXmlDetails()
-				{
-					CollaborationProtocolAgreementXml = _findAgreementForCounterparty(counterpartyHerId)
-				};
-				return Task.FromResult(details);
+                CpaXmlDetails details = null;
+                var cpaXml = _findAgreementForCounterparty(counterpartyHerId);
+                if(!cpaXml.Contains("CpaXmlDetails i:nil=\"true\""))
+                {
+                    details = new CpaXmlDetails
+                    {
+                        CollaborationProtocolAgreementXml = cpaXml
+                    };
+                }
+
+                return Task.FromResult(details);
 			}
 			catch (FileNotFoundException)
 			{

@@ -1,40 +1,46 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using Helsenorge.Registries.Abstractions;
 
 namespace Helsenorge.Messaging
 {
-	/// <summary>
-	/// Specfies settings for the messaging system
-	/// </summary>
-	public class MessagingSettings
-	{
-		/// <summary>
-		/// The Her id that we represent
-		/// </summary>
-		public int MyHerId { get; set; }
-		/// <summary>
-		/// The certificate used for signing messages
-		/// </summary>
-		public CertificateSettings SigningCertificate { get; set; }
-		/// <summary>
-		/// The certificate used to decrypt messages
-		/// </summary>
-		public CertificateSettings DecryptionCertificate { get; set; }
-		/// <summary>
-		/// Indicates if we should ignore certificate errors when sending
-		/// </summary>
-		public bool IgnoreCertificateErrorOnSend { get; set; }
+    /// <summary>
+    /// Specfies settings for the messaging system
+    /// </summary>
+    public class MessagingSettings
+    {
+        /// <summary>
+        /// The Her id that we represent
+        /// </summary>
+        public int MyHerId { get; set; }
+        /// <summary>
+        /// The certificate used for signing messages
+        /// </summary>
+        public CertificateSettings SigningCertificate { get; set; }
+        /// <summary>
+        /// The certificate used to decrypt messages
+        /// </summary>
+        public CertificateSettings DecryptionCertificate { get; set; }
+        /// <summary>
+        /// Indicates if we should ignore certificate errors when sending
+        /// </summary>
+        public bool IgnoreCertificateErrorOnSend { get; set; }
 
-		/// <summary>
-		/// Provides access to service bus settings
-		/// </summary>
-		public ServiceBusSettings ServiceBus { get; }
-		/// <summary>
-		/// Indicates if the payload should be logged. This is false by default since the payload can contain sensitive information
-		/// </summary>
-		public bool LogPayload { get; set; }
+        /// <summary>
+        /// Provides access to service bus settings
+        /// </summary>
+        public ServiceBusSettings ServiceBus { get; }
+        /// <summary>
+        /// Indicates if the payload should be logged. This is false by default since the payload can contain sensitive information
+        /// </summary>
+        public bool LogPayload { get; set; }
+
+        /// <summary>
+        /// Indiciates the default delivery protocol
+        /// </summary>
+        public DeliveryProtocol DefaultDeliveryProtocol { get; set; }
 
 		/// <summary>
 		/// Default contructor
