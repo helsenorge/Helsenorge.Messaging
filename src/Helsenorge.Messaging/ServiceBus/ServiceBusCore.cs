@@ -91,7 +91,14 @@ namespace Helsenorge.Messaging.ServiceBus
 			if (string.IsNullOrEmpty(outgoingMessage.MessageId)) throw new ArgumentNullException(nameof(outgoingMessage.MessageId));
 			if (outgoingMessage.Payload == null) throw new ArgumentNullException(nameof(outgoingMessage.Payload));
 
-			var profile = await ResolveCollaborationProtocolAgreement(logger, outgoingMessage.CpaId, outgoingMessage.ToHerId).ConfigureAwait(false);
+			var hasAgreement = true;
+			// first we try and find an agreement
+			var profile = await CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(logger, outgoingMessage.ToHerId).ConfigureAwait(false);
+			if (profile == null)
+			{
+				hasAgreement = false; // if we don't have an agreement, we try to find the specific profile
+				profile = await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, outgoingMessage.ToHerId).ConfigureAwait(false);
+			}
 			var signature = Settings.SigningCertificate.Certificate;
 			var encryption = profile.EncryptionCertificate;
 
@@ -149,7 +156,11 @@ namespace Helsenorge.Messaging.ServiceBus
 			messagingMessage.FromHerId = Core.Settings.MyHerId;
 			messagingMessage.ToHerId = outgoingMessage.ToHerId;
 			messagingMessage.ApplicationTimestamp = DateTime.Now;
-			
+
+			if (hasAgreement)
+			{
+				messagingMessage.CpaId = profile.CpaId.ToString("D");
+			}
 			await Send(logger, messagingMessage, queueType, outgoingMessage.PersonalId, (LogPayload) ? outgoingMessage.Payload : null).ConfigureAwait(false);
 		}
 
@@ -300,39 +311,6 @@ namespace Helsenorge.Messaging.ServiceBus
 			}
 		}
 
-		/// <summary>
-		/// Figures out what collaboration profile to use. If an id is specified, that will be used over the her id. 
-		/// Her id is just a fallback.
-		/// </summary>
-		/// <param name="logger"></param>
-		/// <param name="cpaId">Id of CPA</param>
-		/// <param name="herId">Her if of counterparty</param>
-		/// <returns></returns>
-		internal Task<CollaborationProtocolProfile> ResolveCollaborationProtocolAgreement(ILogger logger, string cpaId, int herId)
-		{
-			Guid id;
-			if (Guid.TryParse(cpaId, out id) == false)
-			{
-				id = Guid.Empty;
-			}
-			return ResolveCollaborationProtocolAgreement(logger, id, herId);
-		}
-
-		/// <summary>
-		/// Figures out what collaboration profile to use. If an id is specified, that will be used over the her id. 
-		/// Her id is just a fallback.
-		/// </summary>
-		/// <param name="logger"></param>
-		/// <param name="cpaId">Id of CPA</param>
-		/// <param name="herId">Her if of counterparty</param>
-		/// <returns></returns>
-		private Task<CollaborationProtocolProfile> ResolveCollaborationProtocolAgreement(ILogger logger, Guid cpaId, int herId)
-		{
-			return cpaId != Guid.Empty ?
-				Core.CollaborationProtocolRegistry.FindAgreementByIdAsync(logger, cpaId) :
-				Core.CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, herId);
-		}
-		
 		/// <summary>
 		/// Sends a message to the remote sender with information about what is wrong.
 		/// Loggs information to our logs.

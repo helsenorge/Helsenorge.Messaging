@@ -17,7 +17,6 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
 			return  new OutgoingMessage()
 			{
 				ToHerId = MockFactory.OtherHerId,
-				CpaId = Guid.Empty,
 				Payload = GenericMessage,
 				MessageFunction = "DIALOG_INNBYGGER_EKONTAKT",
 				MessageId = Guid.NewGuid().ToString("D"),
@@ -26,12 +25,26 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
 			};
 		}
 		[TestMethod]
-		public void Send_Asynchronous_OK()
+		public void Send_Asynchronous_Using_CPA()
 		{
 			var message = CreateMessage();
+			message.ToHerId = MockFactory.HerIdWithCpa;
 			RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
 
 			Assert.AreEqual(1, MockFactory.OtherParty.Asynchronous.Messages.Count);
+			// message includes CPA id
+			Assert.IsNotNull(MockFactory.OtherParty.Asynchronous.Messages[0].CpaId);
+		}
+		[TestMethod]
+		public void Send_Asynchronous_Using_CPP()
+		{
+			var message = CreateMessage();
+			message.ToHerId = MockFactory.HerIdWithOnlyCpp;
+			RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+
+			Assert.AreEqual(1, MockFactory.OtherPartyWithOnlyCpp.Asynchronous.Messages.Count);
+			// no CPA id specified
+			Assert.IsNull(MockFactory.OtherPartyWithOnlyCpp.Asynchronous.Messages[0].CpaId);
 		}
 
 		[TestMethod]

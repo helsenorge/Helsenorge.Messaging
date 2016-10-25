@@ -50,7 +50,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 			var reply = MessagingNotification.NotifySynchronousMessageReceived(message);
 			if (reply == null)
 			{
-				throw new InvalidOperationException("Message handler for function " + message.MessageFunction + " returned null");
+				throw new InvalidOperationException($"Message handler for function {message.MessageFunction} returned null");
 			}
 
 			var outgoingMessage = new OutgoingMessage()
@@ -60,7 +60,6 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 				MessageFunction = message.MessageFunction,
 				MessageId = Guid.NewGuid().ToString(),
 				ScheduledSendTimeUtc = DateTime.UtcNow,
-				CpaId = message.CollaborationAgreement.CpaId,
 			};
 			Task.WaitAll(Core.Send(Logger, outgoingMessage, QueueType.SynchronousReply, rawMessage.ReplyTo, rawMessage.CorrelationId));
 		}
