@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
@@ -39,18 +39,28 @@ namespace Helsenorge.Messaging
 		/// <returns></returns>
 		public async Task SendAndContinueAsync(ILogger logger, OutgoingMessage message)
 		{
+            // set a default value
+            var protocol = Settings.DefaultDeliveryProtocol;
 			var collaborationProtocolMessage = await PreCheck(logger, message).ConfigureAwait(false);
-
-			switch (collaborationProtocolMessage.DeliveryProtocol)
+            // override with message specific value
+            if(collaborationProtocolMessage != null)
+            {
+                protocol = collaborationProtocolMessage.DeliveryProtocol;
+            }
+            
+			switch (protocol)
 			{
 				case DeliveryProtocol.Amqp:
 					await _asynchronousServiceBusSender.SendAsync(logger, message).ConfigureAwait(false);
 					return;
 				case DeliveryProtocol.Unknown:
 				default:
-					throw new NotImplementedException();
-			}
-		}
+                    throw new MessagingException("Invalid delivery protocol: " + message.MessageFunction)
+                    {
+                        EventId = EventIds.InvalidMessageFunction
+                    };
+            }
+        }
 
 		/// <summary>
 		/// Sends a message and blocks the calling code until we have an answer
@@ -60,16 +70,26 @@ namespace Helsenorge.Messaging
 		/// <returns>The received XML</returns>
 		public async Task<XDocument> SendAndWaitAsync(ILogger logger, OutgoingMessage message)
 		{
-			var collaborationProtocolMessage = await PreCheck(logger, message).ConfigureAwait(false);
+            // set a default value
+            var protocol = Settings.DefaultDeliveryProtocol;
+            var collaborationProtocolMessage = await PreCheck(logger, message).ConfigureAwait(false);
+            // override with message specific value
+            if (collaborationProtocolMessage != null)
+            {
+                protocol = collaborationProtocolMessage.DeliveryProtocol;
+            }
 
-			switch (collaborationProtocolMessage.DeliveryProtocol)
-			{
+            switch (protocol)
+            {
 				case DeliveryProtocol.Amqp:
 					return await _synchronousServiceBusSender.SendAsync(logger, message).ConfigureAwait(false);
 				case DeliveryProtocol.Unknown:
 				default:
-					throw new NotImplementedException();
-			}
+                    throw new MessagingException("Invalid delivery protocol: " + message.MessageFunction)
+                    {
+                        EventId = EventIds.InvalidMessageFunction
+                    };
+            }
 		}
 
 		private async Task<CollaborationProtocolMessage> PreCheck(ILogger logger, OutgoingMessage message)
@@ -85,13 +105,6 @@ namespace Helsenorge.Messaging
 			var profile = await FindProfile(logger, message).ConfigureAwait(false);
 			var collaborationProtocolMessage = profile?.FindMessageForReceiver(messageFunction);
 
-			if (collaborationProtocolMessage == null)
-			{
-				throw new MessagingException("Invalid message function: " + messageFunction)
-				{
-					EventId = EventIds.InvalidMessageFunction
-				};
-			}
 			return collaborationProtocolMessage;
 		}
 

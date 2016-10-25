@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Configuration;
 using System.IO;
 using System.Xml.Linq;
@@ -88,7 +88,7 @@ namespace Helsenorge.Messaging.Server
 			collaborationProtocolRegistrySettings.WcfConfiguration =
 				ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
-			var collaborationProtocolRegistry = new CollaborationProtocolRegistry(collaborationProtocolRegistrySettings, distributedCache);
+			var collaborationProtocolRegistry = new CollaborationProtocolRegistry(collaborationProtocolRegistrySettings, distributedCache, addressRegistry);
 
 			_serverSettings = new ServerSettings();
 			configurationRoot.GetSection("ServerSettings").Bind(_serverSettings);

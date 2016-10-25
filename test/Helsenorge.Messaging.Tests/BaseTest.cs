@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Helsenorge.Registries;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,40 +12,48 @@ using Helsenorge.Messaging.Security;
 using Helsenorge.Messaging.Tests.Mocks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Helsenorge.Registries.Abstractions;
+using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Tests
 {
-	[TestClass]
-	[DeploymentItem(@"Files", @"Files")]
-	public class BaseTest
-	{
-		//public const int MyHerId = 93238;
-		///public const int OhterHerId = 93252;
-		public Guid CpaId = new Guid("49391409-e528-4919-b4a3-9ccdab72c8c1");
+    [TestClass]
+    [DeploymentItem(@"Files", @"Files")]
+    public class BaseTest
+    {
+        //public const int MyHerId = 93238;
+        ///public const int OhterHerId = 93252;
+        public Guid CpaId = new Guid("49391409-e528-4919-b4a3-9ccdab72c8c1");
+        public const int DefaultOtherHerId = 93252;
 
-		protected AddressRegistryMock AddressRegistry { get; private set; }
-		protected CollaborationProtocolRegistryMock CollaborationRegistry { get; private set; }
-		protected ILoggerFactory LoggerFactory { get; private set; }
-		internal ILogger Logger { get; private set; }
+        protected AddressRegistryMock AddressRegistry { get; private set; }
+        protected CollaborationProtocolRegistryMock CollaborationRegistry { get; private set; }
+        protected ILoggerFactory LoggerFactory { get; private set; }
+        internal ILogger Logger { get; private set; }
 
-		protected MessagingClient Client { get; set; }
-		protected MessagingServer Server { get; set; }
-		protected MessagingSettings Settings { get; set; }
-		internal MockFactory MockFactory { get; set; }
+        protected MessagingClient Client { get; set; }
+        protected MessagingServer Server { get; set; }
+        protected MessagingSettings Settings { get; set; }
+        internal MockFactory MockFactory { get; set; }
 
-		internal MockLoggerProvider MockLoggerProvider { get; set; }
+        internal MockLoggerProvider MockLoggerProvider { get; set; }
 
-		internal MockCertificateValidator CertificateValidator { get; set; }
+        internal MockCertificateValidator CertificateValidator { get; set; }
 
-		protected XDocument GenericMessage => new XDocument(new XElement("SomeDummyXmlUsedForTesting"));
+        protected XDocument GenericMessage => new XDocument(new XElement("SomeDummyXmlUsedForTesting"));
 
-		protected XDocument GenericResponse => new XDocument(new XElement("SomeDummyXmlResponseUsedForTesting"));
+        protected XDocument GenericResponse => new XDocument(new XElement("SomeDummyXmlResponseUsedForTesting"));
 
-		protected XDocument SoapFault => XDocument.Load(File.OpenRead(@"Files\SoapFault.xml"));
+        protected XDocument SoapFault => XDocument.Load(File.OpenRead(@"Files\SoapFault.xml"));
 
 
-		[TestInitialize]
-		public virtual void Setup()
+        [TestInitialize]
+        public virtual void Setup()
+        {
+            SetupInternal(DefaultOtherHerId);
+        }
+
+        internal void SetupInternal(int otherHerId)
 		{
 			var addressRegistrySettings = new AddressRegistrySettings()
 			{
@@ -82,8 +90,18 @@ namespace Helsenorge.Messaging.Tests
 				var file = Path.Combine("Files", $"CommunicationDetails_{i}.xml");
 				return File.Exists(file) == false ? null : XElement.Load(file);
 			});
+            AddressRegistry.SetupGetCertificateDetailsForEncryption(i =>
+            {
+                var path = Path.Combine("Files", $"GetCertificateDetailsForEncryption_{i}.xml");
+                return File.Exists(path) == false ? null : XElement.Load(path);
+            });
+            AddressRegistry.SetupGetCertificateDetailsForValidatingSignature(i =>
+            {
+                var path = Path.Combine("Files", $"GetCertificateDetailsForValidatingSignature_{i}.xml");
+                return File.Exists(path) == false ? null : XElement.Load(path);
+            });
 
-			CollaborationRegistry = new CollaborationProtocolRegistryMock(collaborationRegistrySettings, distributedCache);
+			CollaborationRegistry = new CollaborationProtocolRegistryMock(collaborationRegistrySettings, distributedCache, AddressRegistry);
 			CollaborationRegistry.SetupFindProtocolForCounterparty(i =>
 			{
 				var file = Path.Combine("Files", $"CPP_{i}.xml");
@@ -110,7 +128,8 @@ namespace Helsenorge.Messaging.Tests
 				DecryptionCertificate = new CertificateSettings()
 				{
 					Certificate = TestCertificates.HelsenorgePrivateEncryption
-				}
+				},
+                DefaultDeliveryProtocol = DeliveryProtocol.Amqp
 			};
 			
 			Settings.ServiceBus.ConnectionString = "connection string";
@@ -120,7 +139,7 @@ namespace Helsenorge.Messaging.Tests
 			Settings.ServiceBus.Synchronous.ProcessingTasks = 1;
 			Settings.ServiceBus.Error.ProcessingTasks = 1;
 
-			MockFactory = new MockFactory();
+			MockFactory = new MockFactory(otherHerId);
 			CertificateValidator = new MockCertificateValidator();
 
 			Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry)
@@ -153,5 +172,36 @@ namespace Helsenorge.Messaging.Tests
 				TimeToLive = TimeSpan.FromSeconds(15),
 			};
 		}
-	}
+
+        protected void RunAndHandleException(Task task)
+        {
+            try
+            {
+                Task.WaitAll(task);
+            }
+            catch (AggregateException ex)
+            {
+
+                throw ex.InnerException;
+            }
+        }
+
+        protected void RunAndHandleMessagingException(Task task, EventId id)
+        {
+            try
+            {
+                Task.WaitAll(task);
+            }
+            catch (AggregateException ex)
+            {
+                var messagingException = ex.InnerException as MessagingException;
+                if ((messagingException != null) && (messagingException.EventId.Id == id.Id))
+                {
+                    throw ex.InnerException;
+                }
+
+                throw new InvalidOperationException("Expected a messaging exception");
+            }
+        }
+    }
 }
