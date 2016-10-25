@@ -102,54 +102,99 @@ namespace Helsenorge.Messaging
 		/// </summary>
 		/// <param name="action">The delegate that should be called</param>
 		public void RegisterAsynchronousMessageReceivedCallback(Action<IncomingMessage> action) => _onAsynchronousMessageReceived = action;
-		void IMessagingNotification.NotifyAsynchronousMessageReceived(IncomingMessage message) => _onAsynchronousMessageReceived?.Invoke(message);
+
+		void IMessagingNotification.NotifyAsynchronousMessageReceived(IncomingMessage message)
+		{
+			_logger.LogDebug("NotifyAsynchronousMessageReceived");
+			_onAsynchronousMessageReceived?.Invoke(message);
+		} 
 		/// <summary>
 		/// Registers a delegate that should be called as we start processing a message
 		/// </summary>
 		/// <param name="action">The delegate that should be called</param>
 		public void RegisterAsynchronousMessageReceivedStartingCallback(Action<IncomingMessage> action) => _onAsynchronousMessageReceivedStarting = action;
-		void IMessagingNotification.NotifyAsynchronousMessageReceivedStarting(IncomingMessage message) => _onAsynchronousMessageReceivedStarting?.Invoke(message);
+
+		void IMessagingNotification.NotifyAsynchronousMessageReceivedStarting(IncomingMessage message)
+		{
+			_logger.LogDebug("NotifyAsynchronousMessageReceivedStarting");
+			_onAsynchronousMessageReceivedStarting?.Invoke(message);
+		}
 		/// <summary>
 		/// Registers a delegate that should be called when we are finished processing the message.
 		/// </summary>
 		/// <param name="action">The delegate that should be called</param>
 		public void RegisterAsynchronousMessageReceivedCompletedCallback(Action<IncomingMessage> action) => _onAsynchronousMessageReceivedCompleted = action;
-		void IMessagingNotification.NotifyAsynchronousMessageReceivedCompleted(IncomingMessage message) => _onAsynchronousMessageReceivedCompleted?.Invoke(message);
+
+		void IMessagingNotification.NotifyAsynchronousMessageReceivedCompleted(IncomingMessage message)
+		{
+			_logger.LogDebug("NotifyAsynchronousMessageReceivedCompleted");
+			_onAsynchronousMessageReceivedCompleted?.Invoke(message);
+		}
 		/// <summary>
 		/// Registers a delegate that should be called when we receive an error message
 		/// </summary>
 		/// <param name="action">The delegate that should be called</param>
 		public void RegisterErrorMessageReceivedCallback(Action<IMessagingMessage> action) => _onErrorMessageReceived = action;
-		void IMessagingNotification.NotifyErrorMessageReceived(IMessagingMessage message) => _onErrorMessageReceived?.Invoke(message);
+
+		void IMessagingNotification.NotifyErrorMessageReceived(IMessagingMessage message)
+		{
+			_logger.LogDebug("NotifyErrorMessageReceived");
+			_onErrorMessageReceived?.Invoke(message);
+		}
 		/// <summary>
 		/// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
 		/// </summary>
 		/// <param name="action">The delegate that should be called</param>
 		public void RegisterSynchronousMessageReceivedCallback(Func<IncomingMessage, XDocument> action) => _onSynchronousMessageReceived = action;
-		XDocument IMessagingNotification.NotifySynchronousMessageReceived(IncomingMessage message) => _onSynchronousMessageReceived?.Invoke(message);
+
+		XDocument IMessagingNotification.NotifySynchronousMessageReceived(IncomingMessage message)
+		{
+			_logger.LogDebug("NotifySynchronousMessageReceived");
+			return _onSynchronousMessageReceived?.Invoke(message);
+		}
 		/// <summary>
 		/// Registers a delegate that should be called when we are finished processing the message.
 		/// </summary>
 		/// <param name="action">The delegate that should be called</param>
 		public void RegisterSynchronousMessageReceivedCompletedCallback(Action<IncomingMessage> action) => _onSynchronousMessageReceivedCompleted = action;
-		void IMessagingNotification.NotifySynchronousMessageReceivedCompleted(IncomingMessage message) => _onSynchronousMessageReceivedCompleted?.Invoke(message);
+
+		void IMessagingNotification.NotifySynchronousMessageReceivedCompleted(IncomingMessage message)
+		{
+			_logger.LogDebug("NotifySynchronousMessageReceivedCompleted");
+			_onSynchronousMessageReceivedCompleted?.Invoke(message);
+		}
 		/// <summary>
 		/// Registers a delegate that should be called as we start processing a message
 		/// </summary>
 		/// <param name="action">The delegate that should be called</param>
 		public void RegisterSynchronousMessageReceivedStartingCallback(Action<IncomingMessage> action) => _onSynchronousMessageReceivedStarting = action;
-		void IMessagingNotification.NotifySynchronousMessageReceivedStarting(IncomingMessage message) => _onSynchronousMessageReceivedStarting?.Invoke(message);
+
+		void IMessagingNotification.NotifySynchronousMessageReceivedStarting(IncomingMessage message)
+		{
+			_logger.LogDebug("NotifySynchronousMessageReceivedStarting");
+			_onSynchronousMessageReceivedStarting?.Invoke(message);
+		}
 		/// <summary>
 		/// Registers a delegate that should be called when we have an handled exception
 		/// </summary>
 		/// <param name="action">The delegate that should be called</param>
 		public void RegisterHandledExceptionCallback(Action<IMessagingMessage, Exception> action) => _onHandledException = action;
-		void IMessagingNotification.NotifyHandledException(IMessagingMessage message, Exception ex) => _onHandledException?.Invoke(message, ex);
+
+		void IMessagingNotification.NotifyHandledException(IMessagingMessage message, Exception ex)
+		{
+			_logger.LogDebug("NotifyHandledException");
+			_onHandledException?.Invoke(message, ex);
+		}
 		/// <summary>
 		/// Registers a delegate that should be called when we have an unhandled exception
 		/// </summary>
 		/// <param name="action">The delegate that should be called</param>
 		public void RegisterUnhandledExceptionCallback(Action<IMessagingMessage, Exception> action) => _onUnhandledException = action;
-		void IMessagingNotification.NotifyUnhandledException(IMessagingMessage message, Exception ex) => _onUnhandledException?.Invoke(message, ex);
+
+		void IMessagingNotification.NotifyUnhandledException(IMessagingMessage message, Exception ex)
+		{
+			_logger.LogDebug("NotifyUnhandledException");
+			_onUnhandledException?.Invoke(message, ex);
+		}
 	}
 }

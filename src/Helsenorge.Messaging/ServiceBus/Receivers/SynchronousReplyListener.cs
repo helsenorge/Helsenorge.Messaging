@@ -34,6 +34,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 		/// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
 		protected override void NotifyMessageProcessingStarted(IncomingMessage message)
 		{
+			Logger.LogDebug("NotifyMessageProcessingStarted");
 			// Not relevant for this implementation
 		}
 		/// <summary>
@@ -42,6 +43,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 		/// <param name="message">Reference to the incoming message</param>
 		protected override void NotifyMessageProcessingCompleted(IncomingMessage message)
 		{
+			Logger.LogDebug("NotifyMessageProcessingCompleted");
 			// Not relevant for this implementation
 		}
 		/// <summary>
@@ -51,6 +53,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 		/// <param name="message">The refined message data. All information should now be present</param>
 		protected override void NotifyMessageProcessingReady(IMessagingMessage rawMessage, IncomingMessage message)
 		{
+			Logger.LogDebug("NotifyMessageProcessingReady");
 			// Not relevant for this implementation
 		}
 	}
