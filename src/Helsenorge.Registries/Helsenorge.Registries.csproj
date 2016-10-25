@@ -70,6 +70,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Abstractions\CertificateDetails.cs" />
     <Compile Include="Abstractions\CertificateErrors.cs" />
     <Compile Include="Abstractions\CollaborationProtocolProfile.cs" />
     <Compile Include="Abstractions\CollaborationProtocolMessage.cs" />
