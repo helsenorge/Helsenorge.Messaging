@@ -1,4 +1,4 @@
-{
+﻿{
 	"AddressRegistrySettings": {
 		"UserName": "???",
 		"Password": "???"
@@ -14,25 +14,25 @@
 				"ConnectionString": "????",
 				"Synchronous": {
 					"ReplyQueueMapping": {
-						"WIN81-JMV4TUJ3": "93252_sync"
+						"DESKTOP-G62FEE8": "93252_sync"
 					}
 				}
 			},
 		"DecryptionCertificate": {
-			"Thumbprint": "b1fae38326a6cefa72708f7633541262e8633b2c",
+			"Thumbprint": "‎fddbcfbb3231f0c66ee2168358229d3cac95e88a",
 			"StoreName": "My",
 			"StoreLocation": "LocalMachine"
 		},
 		"SigningCertificate": {
-			"Thumbprint": "76b0195ba41374d5f372f4b70f907e7f9725fc02",
+			"Thumbprint": "‎bd302b20fcdcf3766bf0bcba485dfb4b2bfe1379",
 			"StoreName": "My",
 			"StoreLocation": "LocalMachine"
 		}
 	},
 	"ClientSettings": {
-		"ToHerId": "6789",
+		"ToHerId": "93245",
 		"MessageFunction": "DIALOG_INNBYGGER_EKONTAKT",
-		"SourceDirectory": "Samples",
+		"SourceDirectory": "Samples2",
 		"Threads": "1"
 	} 
 }
