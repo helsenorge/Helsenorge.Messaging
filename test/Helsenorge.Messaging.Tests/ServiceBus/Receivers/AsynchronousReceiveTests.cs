@@ -32,7 +32,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 		}
 
 		[TestMethod]
-		public void Asynchronous_Receive_OK()
+		public void Asynchronous_Receive_NoCpaId()
 		{
 			// postition of arguments have been reversed so that we inster the name of the argument without getting a resharper indication
 			// makes it easier to read
@@ -52,6 +52,26 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 					Assert.AreEqual("DIALOG_INNBYGGER_EKONTAKT", m.MessageFunction);
 				},
 				messageModification: (m) => { });
+		}
+		[TestMethod]
+		public void Asynchronous_Receive_WithCpaId()
+		{
+			RunAsynchronousReceive(
+				postValidation: () =>
+				{
+					Assert.IsTrue(_startingCalled);
+					Assert.IsTrue(_receivedCalled);
+					Assert.IsTrue(_completedCalled);
+					Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+				},
+				wait: () => _completedCalled,
+				received: (m) =>
+				{
+					Assert.AreEqual(MockFactory.HelsenorgeHerId, m.ToHerId);
+					Assert.AreEqual(MockFactory.OtherHerId, m.FromHerId);
+					Assert.AreEqual("DIALOG_INNBYGGER_EKONTAKT", m.MessageFunction);
+				},
+				messageModification: (m) => { m.CpaId = "49391409-e528-4919-b4a3-9ccdab72c8c1"; });
 		}
 		[TestMethod]
 		public void Asynchronous_Receive_MissingFunction()

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Helsenorge.Messaging.Abstractions
@@ -38,10 +34,6 @@ namespace Helsenorge.Messaging.Abstractions
 		/// </summary>
 		public string PersonalId { get; set; }
 		/// <summary>
-		/// If this message is sent based on an incoming message connected to a CPA, use the information when sending reply
-		/// </summary>
-		public Guid CpaId { get; set; }
-		/// <summary>
 		/// Time when the message should be sent
 		/// </summary>
 		public DateTime ScheduledSendTimeUtc { get; set; }
@@ -50,7 +42,6 @@ namespace Helsenorge.Messaging.Abstractions
 		/// </summary>
 		public OutgoingMessage()
 		{
-			CpaId = Guid.Empty;
 			ScheduledSendTimeUtc = DateTime.UtcNow;
 		}
 	}

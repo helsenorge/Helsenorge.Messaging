@@ -29,7 +29,6 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
 			return new OutgoingMessage()
 			{
 				ToHerId = MockFactory.OtherHerId,
-				CpaId = Guid.Empty,
 				Payload = GenericMessage,
 				MessageFunction = "DIALOG_INNBYGGER_EKONTAKT",
 				MessageId = Guid.NewGuid().ToString("D"),

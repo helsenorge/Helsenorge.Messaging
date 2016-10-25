@@ -57,6 +57,8 @@ namespace Helsenorge.Registries
 		/// <returns></returns>
 		public async Task<CollaborationProtocolProfile> FindProtocolForCounterpartyAsync(ILogger logger, int counterpartyHerId)
 		{
+			logger.LogDebug($"FindProtocolForCounterpartyAsync {counterpartyHerId}");
+
 			var key = $"CPA_FindProtocolForCounterpartyAsync_{counterpartyHerId}";
 			var result = await CacheExtensions.ReadValueFromCache<CollaborationProtocolProfile>(logger, _cache, key).ConfigureAwait(false);
 			string xmlString;
@@ -125,6 +127,8 @@ namespace Helsenorge.Registries
 		/// <returns></returns>
 		public async Task<CollaborationProtocolProfile> FindAgreementByIdAsync(ILogger logger, Guid id)
 		{
+			logger.LogDebug($"FindAgreementByIdAsync {id}");
+
 			var key = $"CPA_FindAgreementByIdAsync_{id}";
 			var result = await CacheExtensions.ReadValueFromCache<CollaborationProtocolProfile>(logger, _cache, key).ConfigureAwait(false);
 
@@ -188,6 +192,8 @@ namespace Helsenorge.Registries
 		/// <returns></returns>
 		public async Task<CollaborationProtocolProfile> FindAgreementForCounterpartyAsync(ILogger logger, int counterpartyHerId)
 		{
+			logger.LogDebug($"FindAgreementForCounterpartyAsync {counterpartyHerId}");
+
 			var key = $"CPA_FindAgreementForCounterpartyAsync_{_settings.MyHerId}_{counterpartyHerId}";
 			var result = await CacheExtensions.ReadValueFromCache<CollaborationProtocolProfile>(logger, _cache, key).ConfigureAwait(false);
 

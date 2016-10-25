@@ -153,9 +153,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 
 				ValidateMessageHeader(message);
 				// we need the certificates for decryption and certificate use
-				incomingMessage.CollaborationAgreement =
-				await Core.ResolveCollaborationProtocolAgreement(Logger, message.CpaId, message.FromHerId);
-
+				incomingMessage.CollaborationAgreement = await ResolveProfile(message).ConfigureAwait(false);
+					
 				var payload = HandlePayload(message, bodyStream, message.ContentType, incomingMessage);
 				if (payload != null)
 				{
@@ -216,6 +215,14 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 				message.Dispose();
 			}
 			return null;
+		}
+
+		private Task<CollaborationProtocolProfile> ResolveProfile(IMessagingMessage message)
+		{
+			Guid id;
+			return Guid.TryParse(message.CpaId, out id) ? 
+				Core.CollaborationProtocolRegistry.FindAgreementByIdAsync(Logger, id) : 
+				Core.CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(Logger, message.FromHerId);
 		}
 
 		private XDocument HandlePayload(IMessagingMessage originalMessage, Stream bodyStream, string contentType, IncomingMessage incomingMessage)

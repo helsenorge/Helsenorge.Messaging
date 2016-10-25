@@ -9,9 +9,12 @@ namespace Helsenorge.Messaging.Tests.Mocks
 	{
 		public const int HelsenorgeHerId = 93238;
 		public const int OtherHerId = 93252;
+		public const int HerIdWithCpa = 93252;
+		public const int HerIdWithOnlyCpp = 91462;
 
 		public MockCommunicationParty Helsenorge { get; }
 		public MockCommunicationParty OtherParty { get; }
+		public MockCommunicationParty OtherPartyWithOnlyCpp { get; }
 
 		public Dictionary<string, List<IMessagingMessage>> Qeueues { get; } = new Dictionary<string, List<IMessagingMessage>>();
 		
@@ -21,6 +24,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
 		{
 			Helsenorge = new MockCommunicationParty(this, HelsenorgeHerId);
 			OtherParty = new MockCommunicationParty(this, OtherHerId);
+			OtherPartyWithOnlyCpp = new MockCommunicationParty(this, HerIdWithOnlyCpp);
 		}
 
 		public void Close()

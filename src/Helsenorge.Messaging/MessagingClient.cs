@@ -95,11 +95,12 @@ namespace Helsenorge.Messaging
 			return collaborationProtocolMessage;
 		}
 
-		private Task<CollaborationProtocolProfile> FindProfile(ILogger logger, OutgoingMessage message)
+		private async Task<CollaborationProtocolProfile> FindProfile(ILogger logger, OutgoingMessage message)
 		{
-			return message.CpaId != Guid.Empty ? 
-				CollaborationProtocolRegistry.FindAgreementByIdAsync(logger, message.CpaId) : 
-				CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(logger, message.ToHerId);
+			var profile = 
+				await CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(logger, message.ToHerId).ConfigureAwait(false) ??
+				await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, message.ToHerId).ConfigureAwait(false);
+			return profile;
 		}
 	}
 }
