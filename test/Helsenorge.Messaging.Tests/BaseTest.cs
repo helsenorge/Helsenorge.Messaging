@@ -101,22 +101,22 @@ namespace Helsenorge.Messaging.Tests
                 return File.Exists(path) == false ? null : XElement.Load(path);
             });
 
-			CollaborationRegistry = new CollaborationProtocolRegistryMock(collaborationRegistrySettings, distributedCache, AddressRegistry);
-			CollaborationRegistry.SetupFindProtocolForCounterparty(i => 
-            {
-                var path = Path.Combine("Files", $"CPP_{i}.xml");
-                return File.Exists(path) == false ? null : File.ReadAllText(path);
-            });
+			CollaborationRegistry = new CollaborationProtocolRegistryMock(collaborationRegistrySettings, distributedCache);
+			CollaborationRegistry.SetupFindProtocolForCounterparty(i =>
+			{
+				var file = Path.Combine("Files", $"CPP_{i}.xml");
+				return File.Exists(file) == false ? null : File.ReadAllText(file);
+			});
 			CollaborationRegistry.SetupFindAgreementForCounterparty(i =>
-            {
-                var path = Path.Combine("Files", $"CPA_{i}.xml");
-                return File.Exists(path) == false ? null : File.ReadAllText(path);
-            });
-            CollaborationRegistry.SetupFindAgreementById(i =>
-            {
-                var path = Path.Combine("Files", $"CPA_{i:D}.xml");
-                return File.Exists(path) == false ? null : File.ReadAllText(path);
-            });
+			{
+				var file = Path.Combine("Files", $"CPA_{i}.xml");
+				return File.Exists(file) == false ? null : File.ReadAllText(file);
+			});
+			CollaborationRegistry.SetupFindAgreementById(i =>
+			{
+				var file = Path.Combine("Files", $"CPA_{i:D}.xml");
+				return File.Exists(file) == false ? null : File.ReadAllText(file);
+			});
 
 			Settings = new MessagingSettings()
 			{

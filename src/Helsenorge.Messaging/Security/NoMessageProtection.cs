@@ -34,14 +34,16 @@ namespace Helsenorge.Messaging.Security
 			data.Save(ms);
 			return ms;
 		}
+
 		/// <summary>
 		/// Unprotects the information based on the certificates
 		/// </summary>
 		/// <param name="data"></param>
 		/// <param name="encryptionCertificate">Not relevant for this implementation</param>
 		/// <param name="signingCertificate">Not relevant for this implementation</param>
+		/// <param name="legacyEncryptionCertificate">Not relevant for this implementation</param>
 		/// <returns></returns>
-		public XDocument Unprotect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate)
+		public XDocument Unprotect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate, X509Certificate2 legacyEncryptionCertificate)
 		{
 			if (data == null) throw new ArgumentNullException(nameof(data));
 

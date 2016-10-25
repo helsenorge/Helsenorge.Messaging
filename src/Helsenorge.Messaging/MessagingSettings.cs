@@ -2,31 +2,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.ServiceBus.Management;
 using Helsenorge.Registries.Abstractions;
 
 namespace Helsenorge.Messaging
 {
-    /// <summary>
-    /// Specfies settings for the messaging system
-    /// </summary>
-    public class MessagingSettings
-    {
-        /// <summary>
-        /// The Her id that we represent
-        /// </summary>
-        public int MyHerId { get; set; }
-        /// <summary>
-        /// The certificate used for signing messages
-        /// </summary>
-        public CertificateSettings SigningCertificate { get; set; }
-        /// <summary>
-        /// The certificate used to decrypt messages
-        /// </summary>
-        public CertificateSettings DecryptionCertificate { get; set; }
-        /// <summary>
-        /// Indicates if we should ignore certificate errors when sending
-        /// </summary>
-        public bool IgnoreCertificateErrorOnSend { get; set; }
+	/// <summary>
+	/// Specfies settings for the messaging system
+	/// </summary>
+	public class MessagingSettings
+	{
+		/// <summary>
+		/// The Her id that we represent
+		/// </summary>
+		public int MyHerId { get; set; }
+		/// <summary>
+		/// The certificate used for signing messages
+		/// </summary>
+		public CertificateSettings SigningCertificate { get; set; }
+		/// <summary>
+		/// The certificate used to decrypt messages
+		/// </summary>
+		public CertificateSettings DecryptionCertificate { get; set; }
+		/// <summary>
+		/// The old certificate used for decryption when we have moved over to a new one.
+		/// </summary>
+		public CertificateSettings LegacyDecryptionCertificate { get; set; }
+		/// <summary>
+		/// Indicates if we should ignore certificate errors when sending
+		/// </summary>
+		public bool IgnoreCertificateErrorOnSend { get; set; }
 
         /// <summary>
         /// Provides access to service bus settings
@@ -111,6 +116,10 @@ namespace Helsenorge.Messaging
 		/// The certificate used to decrypt messages
 		/// </summary>
 		public CertificateSettings DecryptionCertificate => _settings.DecryptionCertificate;
+		/// <summary>
+		/// The old certificate used for decryption when we have moved over to a new one.
+		/// </summary>
+		public CertificateSettings LegacyDecryptionCertificate => _settings.LegacyDecryptionCertificate;
 		
 		internal ServiceBusSettings(MessagingSettings settings)
 		{
