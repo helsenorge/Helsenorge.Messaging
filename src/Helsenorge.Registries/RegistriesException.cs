@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.Serialization;
 using Microsoft.Extensions.Logging;
 
@@ -11,6 +11,7 @@ namespace Helsenorge.Registries
 		public static EventId CommunicationPartyDetails = new EventId(1, Name);
 		public static EventId CollaborationProfile = new EventId(2, Name);
 		public static EventId CollaborationAgreement = new EventId(3, Name);
+        public static EventId CerificateDetails = new EventId(4, Name);
 	}
 
 	/// <summary>
