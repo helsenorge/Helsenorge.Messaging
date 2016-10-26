@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
@@ -23,36 +23,63 @@ namespace Helsenorge.Registries.Tests
 		private LoggerFactory _loggerFactory;
 		private ILogger _logger;
 
+        internal static AddressRegistryMock GetDefaultAddressRegistryMock()
+        {
+            var settings = new AddressRegistrySettings()
+            {
+                UserName = "username",
+                Password = "password",
+                EndpointName = "BasicHttpBinding_ICommunicationPartyService",
+                WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
+                CachingInterval = TimeSpan.FromSeconds(5)
+            };
+
+            var memoryCache = new MemoryCache(new MemoryCacheOptions());
+            var distributedCache = new MemoryDistributedCache(memoryCache);
+
+            var registry = new AddressRegistryMock(settings, distributedCache);
+
+            registry.SetupFindCommunicationPartyDetails(i =>
+            {
+                if (i < 0)
+                {
+                    throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."));
+                }
+                var file = Path.Combine("Files", $"CommunicationDetails_{i}.xml");
+                return File.Exists(file) == false ? null : XElement.Load(file);
+            });
+
+            registry.SetupGetCertificateDetailsForEncryption(i =>
+            {
+                if (i < 0)
+                {
+                    throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."));
+                }
+                var file = Path.Combine("Files", $"GetCertificateDetailsForEncryption_{i}.xml");
+                return File.Exists(file) == false ? null : XElement.Load(file);
+            });
+
+            registry.SetupGetCertificateDetailsForValidatingSignature(i =>
+            {
+                if (i < 0)
+                {
+                    throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."));
+                }
+                var file = Path.Combine("Files", $"GetCertificateDetailsForValidatingSignature_{i}.xml");
+                return File.Exists(file) == false ? null : XElement.Load(file);
+            });
+
+            return registry;
+        }
+
 		[TestInitialize]
 		public void Setup()
 		{
-			var settings = new AddressRegistrySettings()
-			{
-				UserName = "username",
-				Password = "password",
-				EndpointName = "BasicHttpBinding_ICommunicationPartyService",
-				WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
-				CachingInterval = TimeSpan.FromSeconds(5)
-			};
-
 			_loggerFactory = new LoggerFactory();
 			_loggerFactory.AddDebug();
 			_logger = _loggerFactory.CreateLogger<AddressRegistryTests>();
-
-			var memoryCache = new MemoryCache(new MemoryCacheOptions());
-			var distributedCache = new MemoryDistributedCache(memoryCache);
-
-			_registry = new AddressRegistryMock(settings, distributedCache);
-
-			_registry.SetupFindCommunicationPartyDetails(i =>
-			{
-				if (i < 0)
-				{
-					throw new FaultException(new FaultReason("Dummy fault from mock"));
-				}
-				var file = Path.Combine("Files", $"CommunicationDetails_{i}.xml");
-				return File.Exists(file) == false ? null : XElement.Load(file);
-			});
+            
+            _registry = GetDefaultAddressRegistryMock();
 		}
 		[TestMethod]
 		public void Read_CommunicationDetails_Found()
@@ -102,5 +129,67 @@ namespace Helsenorge.Registries.Tests
 		{
 			new AddressRegistry(new AddressRegistrySettings(), null);
 		}
-	}
+
+        [TestMethod]
+        public void Read_GetCertificateDetailsForEncryption_Found()
+        {
+            var certificateDetails = _registry.GetCertificateDetailsForEncryptionAsync(_logger, 93252).Result;
+
+            Assert.IsNotNull(certificateDetails);
+            Assert.AreEqual(93252, certificateDetails.HerId);
+            Assert.IsNotNull(certificateDetails.Certificate);
+        }
+
+        [TestMethod]
+        public void Read_GetCertificateDetailsForEncryption_NotFound()
+        {
+            var certificateDetails = _registry.GetCertificateDetailsForEncryptionAsync(_logger, 2234).Result;
+
+            Assert.IsNull(certificateDetails);
+        }
+
+        [TestMethod]
+        public void Read_GetCertificateDetailsForEncryption_ExpectRegistriesException()
+        {
+            try
+            {
+                var certificateDetails = _registry.GetCertificateDetailsForEncryptionAsync(_logger, -1).Result;
+            }
+            catch (AggregateException ex)
+            {
+                Assert.IsInstanceOfType(ex.InnerException, typeof(RegistriesException));
+            }
+        }
+
+        [TestMethod]
+        public void Read_GetCertificateDetailsForValidatingSignature_Found()
+        {
+            var certificateDetails = _registry.GetCertificateDetailsForValidatingSignatureAsync(_logger, 93252).Result;
+
+            Assert.IsNotNull(certificateDetails);
+            Assert.AreEqual(93252, certificateDetails.HerId);
+            Assert.IsNotNull(certificateDetails.Certificate);
+        }
+
+        [TestMethod]
+        public void Read_GetCertificateDetailsForValidatingSignature_NotFound()
+        {
+            var certificateDetails = _registry.GetCertificateDetailsForValidatingSignatureAsync(_logger, 1234).Result;
+
+            Assert.IsNull(certificateDetails);
+        }
+
+        [TestMethod]
+        public void Read_GetCertificateDetailsForValidatingSignature_ExpectRegistriesException()
+        {
+            try
+            {
+                var certificateDetails = _registry.GetCertificateDetailsForValidatingSignatureAsync(_logger, -1).Result;
+            }
+            catch (AggregateException ex)
+            {
+                Assert.IsInstanceOfType(ex.InnerException, typeof(RegistriesException));
+            }
+        }
+    }
 }

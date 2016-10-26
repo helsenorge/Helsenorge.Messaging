@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
@@ -72,7 +72,7 @@ namespace Helsenorge.Messaging.Client
 				ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
 			var collaborationProtocolRegistry = new CollaborationProtocolRegistry(collaborationProtocolRegistrySettings, 
-				distributedCache);
+				distributedCache, addressRegistry);
 
 			_clientSettings = new ClientSettings();
 			configurationRoot.GetSection("ClientSettings").Bind(_clientSettings);

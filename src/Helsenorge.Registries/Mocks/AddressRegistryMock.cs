@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,12 +19,15 @@ namespace Helsenorge.Registries.Mocks
 	public class AddressRegistryMock : AddressRegistry
 	{
 		private Func<int, XElement> _findCommunicationPartyDetails;
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="settings"></param>
-		/// <param name="cache"></param>
-		public AddressRegistryMock(
+        private Func<int, XElement> _getCertificateDetailsForEncryption;
+        private Func<int, XElement> _getCertificateDetailsForValidatingSignature;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <param name="cache"></param>
+        public AddressRegistryMock(
 			AddressRegistrySettings settings,
 			IDistributedCache cache) : base(settings, cache)
 		{
@@ -38,7 +41,25 @@ namespace Helsenorge.Registries.Mocks
 			_findCommunicationPartyDetails = func;
 		}
 
-		internal override async Task<CommunicationParty> FindCommunicationPartyDetails(ILogger logger, int herId)
+        /// <summary>
+        /// Receives a delegate which will be exectud when the method GetCerificateDetailsForEncryption is called.
+        /// </summary>
+        /// <param name="func">The encapsulated method</param>
+        public void SetupGetCertificateDetailsForEncryption(Func<int, XElement> func)
+        {
+            _getCertificateDetailsForEncryption = func;
+        }
+
+        /// <summary>
+        /// Receives a delegate which will be exectud when the method GetCertificateDetailsForValidatingSignature is called.
+        /// </summary>
+        /// <param name="func">The encapsulated method</param>
+        public void SetupGetCertificateDetailsForValidatingSignature(Func<int, XElement> func)
+        {
+            _getCertificateDetailsForValidatingSignature = func;
+        }
+
+        internal override async Task<CommunicationParty> FindCommunicationPartyDetails(ILogger logger, int herId)
 		{
 			var xml = _findCommunicationPartyDetails(herId);
 			if (xml == null)
@@ -47,5 +68,25 @@ namespace Helsenorge.Registries.Mocks
 			}
 			return await Task.FromResult(Utils.Deserialize<CommunicationParty>(xml)).ConfigureAwait(false);
 		}
-	}
+
+        internal override async Task<CertificateDetails> GetCertificateDetailsForEncryptionInternal(ILogger logger, int herId)
+        {
+            var xml = _getCertificateDetailsForEncryption(herId);
+            if(xml == null)
+            {
+                return default(CertificateDetails);
+            }
+            return await Task.FromResult(Utils.Deserialize<CertificateDetails>(xml)).ConfigureAwait(false);
+        }
+
+        internal override async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureInternal(ILogger logger, int herId)
+        {
+            var xml = _getCertificateDetailsForValidatingSignature(herId);
+            if (xml == null)
+            {
+                return default(CertificateDetails);
+            }
+            return await Task.FromResult(Utils.Deserialize<CertificateDetails>(xml)).ConfigureAwait(false);
+        }
+    }
 }

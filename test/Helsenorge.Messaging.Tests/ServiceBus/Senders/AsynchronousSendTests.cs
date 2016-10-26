@@ -1,15 +1,13 @@
-﻿using System;
+using System;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Tests.Mocks;
 using Helsenorge.Registries.Abstractions;
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
 {
-	[TestClass]
+    [TestClass]
 	public class AsynchronousSendTests : BaseTest
 	{
 		private OutgoingMessage CreateMessage()
@@ -24,11 +22,12 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
 				PersonalId = "12345"
 			};
 		}
+
 		[TestMethod]
 		public void Send_Asynchronous_Using_CPA()
 		{
 			var message = CreateMessage();
-			message.ToHerId = MockFactory.HerIdWithCpa;
+			message.ToHerId = MockFactory.OtherHerId;
 			RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
 
 			Assert.AreEqual(1, MockFactory.OtherParty.Asynchronous.Messages.Count);
@@ -103,6 +102,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
 		{
 			var message = CreateMessage();
 			message.MessageFunction = "BOB";
+            Settings.DefaultDeliveryProtocol = DeliveryProtocol.Unknown;
 			RunAndHandleMessagingException(Client.SendAndContinueAsync(Logger, message), EventIds.InvalidMessageFunction);
 		}
 		[TestMethod]
@@ -134,37 +134,5 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
 			var message = CreateMessage();
 			RunAndHandleMessagingException(Client.SendAndContinueAsync(Logger, message), EventIds.LocalCertificate);
 		}
-
-		private static void RunAndHandleException(Task task)
-		{
-			try
-			{
-				Task.WaitAll(task);
-			}
-			catch (AggregateException ex)
-			{
-
-				throw ex.InnerException;
-			}
-		}
-		
-		private static void RunAndHandleMessagingException(Task task, EventId id)
-		{
-			try
-			{
-				Task.WaitAll(task);
-			}
-			catch (AggregateException ex)
-			{
-				var messagingException = ex.InnerException as MessagingException;
-				if ((messagingException != null) && (messagingException.EventId.Id == id.Id))
-				{
-					throw ex.InnerException;
-				}
-
-				throw new InvalidOperationException("Expected a messaging exception");
-			}
-		}
-		
 	}
 }
