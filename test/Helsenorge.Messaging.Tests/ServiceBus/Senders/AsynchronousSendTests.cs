@@ -102,8 +102,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
 		{
 			var message = CreateMessage();
 			message.MessageFunction = "BOB";
-            Settings.DefaultDeliveryProtocol = DeliveryProtocol.Unknown;
-			RunAndHandleMessagingException(Client.SendAndContinueAsync(Logger, message), EventIds.InvalidMessageFunction);
+            RunAndHandleMessagingException(Client.SendAndContinueAsync(Logger, message), EventIds.InvalidMessageFunction);
 		}
 		[TestMethod]
 		[ExpectedException(typeof(MessagingException))]
