@@ -128,8 +128,7 @@ namespace Helsenorge.Messaging.Tests
 				DecryptionCertificate = new CertificateSettings()
 				{
 					Certificate = TestCertificates.HelsenorgePrivateEncryption
-				},
-                DefaultDeliveryProtocol = DeliveryProtocol.Amqp
+				}
 			};
 			
 			Settings.ServiceBus.ConnectionString = "connection string";

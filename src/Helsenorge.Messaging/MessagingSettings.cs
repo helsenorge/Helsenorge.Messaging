@@ -42,11 +42,6 @@ namespace Helsenorge.Messaging
         /// </summary>
         public bool LogPayload { get; set; }
 
-        /// <summary>
-        /// Indiciates the default delivery protocol
-        /// </summary>
-        public DeliveryProtocol DefaultDeliveryProtocol { get; set; }
-
 		/// <summary>
 		/// Default contructor
 		/// </summary>

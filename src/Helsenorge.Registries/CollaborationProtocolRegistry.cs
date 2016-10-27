@@ -23,7 +23,13 @@ namespace Helsenorge.Registries
 	{
 		XNamespace _ns = "http://www.oasis-open.org/committees/ebxml-cppa/schema/cpp-cpa-2_0.xsd";
 
-        private const string DummyPartyName = "DummyCollaborationProtocolProfile";
+        /// <summary>
+        /// A constant that is used to indicate a Dummy Collaboration Protocol Profile (CPP) in case the Communication Party completely lacks a CPP.
+        /// </summary>
+        /// <remarks>
+        /// This will be removed in a future version without warning, since lacking a CPP is not considered good or acceptable practice
+        /// </remarks>
+        public const string DummyPartyName = "DummyCollaborationProtocolProfile";
 
 		private readonly SoapServiceInvoker _invoker;
 		private readonly CollaborationProtocolRegistrySettings _settings;
