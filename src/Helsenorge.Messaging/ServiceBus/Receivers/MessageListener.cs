@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
@@ -154,7 +155,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 				ValidateMessageHeader(message);
 				// we need the certificates for decryption and certificate use
 				incomingMessage.CollaborationAgreement = await ResolveProfile(message).ConfigureAwait(false);
-					
+
 				var payload = HandlePayload(message, bodyStream, message.ContentType, incomingMessage);
 				if (payload != null)
 				{
@@ -170,6 +171,11 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 
 				Logger.LogEndReceive(QueueType, incomingMessage);
 				return incomingMessage;
+			}
+			catch (SecurityException ex)
+			{
+				Core.ReportErrorToExternalSender(Logger, EventIds.RemoteCertificate, message, "transport:invalid-certificate", ex.Message, null, ex);
+				MessagingNotification.NotifyHandledException(message, ex);
 			}
 			catch (HeaderValidationException ex)
 			{

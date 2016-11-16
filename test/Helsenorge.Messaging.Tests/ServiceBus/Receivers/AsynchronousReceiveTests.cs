@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Xml.Linq;
 using System.Xml.Schema;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.ServiceBus;
@@ -449,6 +452,43 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 				},
 				messageModification: (m) => { });
 		}
+
+		[TestMethod]
+		public void Asynchronous_Receive_SecurityException()
+		{
+			Server.DefaultMessageProtection = new SecurityExceptionMessageProtection();
+
+			RunAsynchronousReceive(
+				postValidation: () =>
+				{
+					
+					Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+					CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-certificate", "Invalid certificate", string.Empty);
+				},
+				wait: () => _handledExceptionCalled,
+				received: (m) => { },
+				messageModification: (m) => { });
+		}
+
+		class SecurityExceptionMessageProtection : IMessageProtection
+		{
+			public string ContentType => Messaging.Abstractions.ContentType.SignedAndEnveloped;
+			
+			public MemoryStream Protect(XDocument data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate)
+			{
+				if (data == null) throw new ArgumentNullException(nameof(data));
+
+				var ms = new MemoryStream();
+				data.Save(ms);
+				return ms;
+			}
+
+			public XDocument Unprotect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate, X509Certificate2 legacyEncryptionCertificate)
+			{
+				throw new SecurityException("Invalid certificate");
+			}
+		}
+
 
 		private static void CheckError(IEnumerable<IMessagingMessage> queue, string errorCondition, string errorDescription, string errorConditionData)
 		{
