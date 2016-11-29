@@ -239,15 +239,9 @@ namespace Helsenorge.Registries
 			}
 			catch (FaultException ex)
 			{
-				throw new RegistriesException(ex.Message, ex)
-				{
-					EventId = EventIds.CollaborationAgreement,
-					Data =
-					{
-						{ "PartyA", _settings.MyHerId },
-						{ "PartyB", counterpartyHerId }
-					}
-				};
+				// if there are error getting a proper CPA, we fallback to getting CPP.
+				logger.LogWarning($"Failed to resolve CPA between {_settings.MyHerId} and {counterpartyHerId}. {ex.Message}");
+				return await FindProtocolForCounterpartyAsync(logger, counterpartyHerId);
 			}
 
             if (string.IsNullOrEmpty(details?.CollaborationProtocolAgreementXml)) return null;

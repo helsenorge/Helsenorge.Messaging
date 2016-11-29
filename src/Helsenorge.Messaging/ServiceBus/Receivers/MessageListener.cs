@@ -226,7 +226,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 		private Task<CollaborationProtocolProfile> ResolveProfile(IMessagingMessage message)
 		{
 			Guid id;
-			return Guid.TryParse(message.CpaId, out id) ? 
+			return Guid.TryParse(message.CpaId, out id) && (id != Guid.Empty) ? 
 				Core.CollaborationProtocolRegistry.FindAgreementByIdAsync(Logger, id) : 
 				Core.CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(Logger, message.FromHerId);
 		}
