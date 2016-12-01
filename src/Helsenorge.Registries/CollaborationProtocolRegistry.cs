@@ -75,7 +75,7 @@ namespace Helsenorge.Registries
 
 			var key = $"CPA_FindProtocolForCounterpartyAsync_{counterpartyHerId}";
 			var result = await CacheExtensions.ReadValueFromCache<CollaborationProtocolProfile>(logger, _cache, key).ConfigureAwait(false);
-			string xmlString;
+			var xmlString = string.Empty;
 
 			if (result != null)
 			{
@@ -92,22 +92,12 @@ namespace Helsenorge.Registries
 			{
 				xmlString = await FindProtocolForCounterparty(logger, counterpartyHerId).ConfigureAwait(false);
 			}
-			catch (FaultException<AddressService.GenericFault> ex)
+			catch (FaultException<CPAService.GenericFault> ex)
 			{
-				// if we don't find the other party, we currently return null
-				// this may be because they  haven't had time to set up CPP yet
-				// when CPA becomes more widely used, this code should be remove. This function will probably be removed
-				if (ex.Detail.ErrorCode == "NotFound")
-				{
-					return null;
-				}
-				throw new RegistriesException(ex.Message, ex)
-				{
-					EventId = EventIds.CollaborationProfile,
-					Data = { { "HerId", counterpartyHerId } }
-				};
+				// if this happens, we fall back to the dummy profile further down
+				logger.LogWarning($"Error resolving protocol for counterparty. ErrorCode: {ex.Detail.ErrorCode} Message: {ex.Detail.Message}");
 			}
-			catch (FaultException ex)
+			catch (Exception ex)
 			{
 				throw new RegistriesException(ex.Message, ex)
 				{

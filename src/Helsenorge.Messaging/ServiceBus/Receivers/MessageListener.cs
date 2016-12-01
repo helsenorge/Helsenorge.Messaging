@@ -223,12 +223,19 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 			return null;
 		}
 
-		private Task<CollaborationProtocolProfile> ResolveProfile(IMessagingMessage message)
+		private async Task<CollaborationProtocolProfile> ResolveProfile(IMessagingMessage message)
 		{
 			Guid id;
-			return Guid.TryParse(message.CpaId, out id) && (id != Guid.Empty) ? 
-				Core.CollaborationProtocolRegistry.FindAgreementByIdAsync(Logger, id) : 
-				Core.CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(Logger, message.FromHerId);
+
+			if (Guid.TryParse(message.CpaId, out id) && (id != Guid.Empty))
+			{
+				return await Core.CollaborationProtocolRegistry.FindAgreementByIdAsync(Logger, id).ConfigureAwait(false);
+			}
+			return
+				// try first to find an agreement
+				await Core.CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(Logger, message.FromHerId).ConfigureAwait(false) ?? 
+				// if we cannot find that, we fallback to protocol (which may return a dummy protocol if things are really missing in AR)
+				await Core.CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(Logger, message.FromHerId).ConfigureAwait(false);
 		}
 
 		private XDocument HandlePayload(IMessagingMessage originalMessage, Stream bodyStream, string contentType, IncomingMessage incomingMessage)
