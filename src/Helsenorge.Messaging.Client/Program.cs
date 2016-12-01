@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
+using Helsenorge.Messaging.Security;
 using Helsenorge.Registries;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
@@ -23,7 +24,7 @@ namespace Helsenorge.Messaging.Client
 		private static Stack<string> _files;
 	
 		private static ILogger _logger;
-		private static IMessagingClient _messagingClient;
+		private static MessagingClient _messagingClient;
 		private static ILoggerFactory _loggerFactory;
 		private static ClientSettings _clientSettings;
 
@@ -89,6 +90,7 @@ namespace Helsenorge.Messaging.Client
 		private static void HandleAsyncMessage(CommandLineApplication command)
 		{
 			var profileArgument = command.Argument("[profile]", "The name of the json profile file to use (excluded file extension)");
+			var noProtection = command.Option("--noprotection", "Don't sign or encrypt message", CommandOptionType.NoValue);
 
 			command.HelpOption("-?|-h|--help");
 			command.OnExecute(() =>
@@ -108,6 +110,10 @@ namespace Helsenorge.Messaging.Client
 				}
 				_files = new Stack<string>(Directory.GetFiles(_clientSettings.SourceDirectory));
 
+				if (noProtection.HasValue())
+				{
+					_messagingClient.DefaultMessageProtection = new NoMessageProtection();
+				}
 				var tasks = new List<Task>();
 				for (var i = 0; i < _clientSettings.Threads; i++)
 				{
@@ -136,6 +142,7 @@ namespace Helsenorge.Messaging.Client
 		private static void HandleSyncMessage(CommandLineApplication command)
 		{
 			var profileArgument = command.Argument("[profile]", "The name of the json profile file to use (excluded file extension)");
+			var noProtection = command.Option("--noprotection", "Don't sign or encrypt message", CommandOptionType.NoValue);
 
 			command.HelpOption("-?|-h|--help");
 			command.OnExecute(() =>
@@ -155,6 +162,10 @@ namespace Helsenorge.Messaging.Client
 				}
 				_files = new Stack<string>(Directory.GetFiles(_clientSettings.SourceDirectory));
 
+				if (noProtection.HasValue())
+				{
+					_messagingClient.DefaultMessageProtection = new NoMessageProtection();
+				}
 				// since we are synchronous, we don't fire off multiple tasks, we do them sequentially
 				for (var s = GetNextPath(); !string.IsNullOrEmpty(s); s = GetNextPath())
 				{

@@ -32,6 +32,7 @@ namespace Helsenorge.Messaging.Security
 
 			var ms = new MemoryStream();
 			data.Save(ms);
+			ms.Position = 0;
 			return ms;
 		}
 
