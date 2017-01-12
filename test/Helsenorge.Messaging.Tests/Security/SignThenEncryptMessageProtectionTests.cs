@@ -76,7 +76,24 @@ namespace Helsenorge.Messaging.Tests.Security
 				null);
 		}
 
-		[TestMethod]
+        [TestMethod]
+        [TestCategory("X509Chain")]
+        [ExpectedException(typeof(SecurityException))]
+        public void Protect_And_Unprotect_WrongEncryptionCertificate()
+        {
+            var stream = _protection.Protect(
+                _content,
+                TestCertificates.CounterpartyPublicEncryption, //random encryption certificate
+                TestCertificates.CounterpartyPrivateSigntature);
+
+            var result = _protection.Unprotect(
+                stream,
+                TestCertificates.HelsenorgePrivateEncryption,
+                TestCertificates.CounterpartyPublicSignature,
+                null);
+        }
+
+        [TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void Protect_Data_ArgumentNullException()
 		{
