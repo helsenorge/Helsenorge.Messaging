@@ -88,7 +88,7 @@ namespace Helsenorge.Messaging.Security
                 var cert = envelopedCm?.RecipientInfos[0]?.RecipientIdentifier?.Value as System.Security.Cryptography.Xml.X509IssuerSerial?;
                 throw new SecurityException(
                     string.Format(null, 
-                    "Message signed with certificate SerialNumber {0}, IssueName {1} could not be decrypted. Exception: {2}", 
+                    "Message encrypted with certificate SerialNumber {0}, IssueName {1} could not be decrypted. Exception: {2}", 
                     cert.HasValue ? cert.Value.SerialNumber : "unknown", 
                     cert.HasValue ? cert.Value.IssuerName : "unknown", 
                     ce.Message));
