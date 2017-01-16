@@ -52,8 +52,16 @@ namespace Helsenorge.Messaging.Server
 				_messagingServer.Stop(TimeSpan.FromSeconds(10));
 				return 0;
 			});
-			return app.Execute(args);
-		}
+
+            int exitCode = app.Execute(args);
+
+#if DEBUG
+            Console.WriteLine();
+            Console.WriteLine("Press any key to continue. . .");
+            Console.ReadKey(true);
+#endif
+            return exitCode;
+        }
 
 		private static void Configure(string profile)
 		{
