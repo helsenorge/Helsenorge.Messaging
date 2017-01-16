@@ -79,8 +79,22 @@ namespace Helsenorge.Messaging.Security
 			// first we decrypt the data
 			var envelopedCm = new EnvelopedCms();
 			envelopedCm.Decode(raw);
-			envelopedCm.Decrypt(envelopedCm.RecipientInfos[0], encryptionCertificates);
-			raw = envelopedCm.ContentInfo.Content;
+            try
+            {
+                envelopedCm.Decrypt(envelopedCm.RecipientInfos[0], encryptionCertificates);
+            }
+            catch (System.Security.Cryptography.CryptographicException ce)
+            {
+                var cert = envelopedCm?.RecipientInfos[0]?.RecipientIdentifier?.Value as System.Security.Cryptography.Xml.X509IssuerSerial?;
+                throw new SecurityException(
+                    string.Format(null, 
+                    "Message encrypted with certificate SerialNumber {0}, IssueName {1} could not be decrypted. Exception: {2}", 
+                    cert.HasValue ? cert.Value.SerialNumber : "unknown", 
+                    cert.HasValue ? cert.Value.IssuerName : "unknown", 
+                    ce.Message));
+            }
+
+            raw = envelopedCm.ContentInfo.Content;
 
 			// then we validate the signature
 			var signed = new SignedCms();
