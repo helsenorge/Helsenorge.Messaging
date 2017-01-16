@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
@@ -124,10 +124,17 @@ namespace Helsenorge.Messaging.ServiceBus
 			// this is our certificate, something we can fix 
 			if (signatureStatus != CertificateErrors.None)
 			{
-				throw new MessagingException("Locally installed signing certificate is not valid")
-				{
-					EventId = EventIds.LocalCertificate
-				};
+                if (Core.Settings.IgnoreCertificateErrorOnSend)
+                {
+                    logger.LogError(EventIds.LocalCertificate, "Locally installed signing certificate is not valid");
+                }
+                else
+                {
+                    throw new MessagingException("Locally installed signing certificate is not valid")
+                    {
+                        EventId = EventIds.LocalCertificate
+                    };
+                }
 			}
 
 			var protection = Core.DefaultMessageProtection;
