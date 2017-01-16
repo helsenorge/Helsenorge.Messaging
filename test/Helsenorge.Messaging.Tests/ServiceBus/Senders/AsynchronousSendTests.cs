@@ -123,6 +123,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
 			var message = CreateMessage();
 			RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
 		}
+
 		[TestMethod]
 		[ExpectedException(typeof(MessagingException))]
 		public void Send_Asynchronous_InvalidSignature()
@@ -133,5 +134,14 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
 			var message = CreateMessage();
 			RunAndHandleMessagingException(Client.SendAndContinueAsync(Logger, message), EventIds.LocalCertificate);
 		}
-	}
+        [TestMethod]
+        public void Send_Asynchronous_InvalidSignature_Ignore()
+        {
+            Settings.IgnoreCertificateErrorOnSend = true;
+            CertificateValidator.SetError((c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.StartDate : CertificateErrors.None);
+
+            var message = CreateMessage();
+            RunAndHandleMessagingException(Client.SendAndContinueAsync(Logger, message), EventIds.LocalCertificate);
+        }
+    }
 }
