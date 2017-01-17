@@ -40,11 +40,19 @@ namespace Helsenorge.Messaging.Client
 				app.ShowHelp();
 				return 2;
 			});
-			return app.Execute(args);
+
+            int exitCode = app.Execute(args);
+
+#if DEBUG
+            Console.WriteLine();
+            Console.WriteLine("Press any key to continue. . .");
+            Console.ReadKey(true);
+#endif
+            return exitCode;
 		}
 
-		private static void Configure(string profile)
-		{
+        private static void Configure(string profile, bool ignoreCertificateErrors)
+        {
 			// read configuration values
 			var builder = new ConfigurationBuilder()
 				.SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
@@ -82,6 +90,7 @@ namespace Helsenorge.Messaging.Client
 			var messagingSettings = new MessagingSettings();
 			configurationRoot.GetSection("MessagingSettings").Bind(messagingSettings);
 
+            messagingSettings.IgnoreCertificateErrorOnSend = ignoreCertificateErrors;
 			messagingSettings.LogPayload = true;
 
 			_messagingClient = new MessagingClient(messagingSettings, collaborationProtocolRegistry, addressRegistry);
@@ -100,9 +109,10 @@ namespace Helsenorge.Messaging.Client
 					command.ShowHelp();
 					return 2;
 				}
-				Configure(profileArgument.Value);
 
-				if (Directory.Exists(_clientSettings.SourceDirectory) == false)
+                Configure(profileArgument.Value, noProtection.HasValue());
+
+                if (Directory.Exists(_clientSettings.SourceDirectory) == false)
 				{
 					_logger.LogError("Directory does not exist");
 					command.ShowHelp();
@@ -152,7 +162,7 @@ namespace Helsenorge.Messaging.Client
 					command.ShowHelp();
 					return 2;
 				}
-				Configure(profileArgument.Value);
+				Configure(profileArgument.Value, noProtection.HasValue());
 
 				if (Directory.Exists(_clientSettings.SourceDirectory) == false)
 				{
