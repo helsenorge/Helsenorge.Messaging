@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using Helsenorge.Messaging.Abstractions;
+using Helsenorge.Messaging.ServiceBus.Receivers;
 using Helsenorge.Messaging.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -12,6 +14,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 		private bool _startingCalled;
 		private bool _receivedCalled;
 		private bool _completedCalled;
+	    private bool _handledExceptionCalled;
 
 		[TestInitialize]
 		public override void Setup()
@@ -20,6 +23,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 			_startingCalled = false;
 			_receivedCalled = false;
 			_completedCalled = false;
+		    _handledExceptionCalled = false;
 		}
 
 		[TestMethod]
@@ -43,6 +47,24 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 				messageModification: (m) => { });
 		}
 
+        [TestMethod]
+        public void Synchronous_ReceiveHerIdMismatch_ErrorQueueWithSpoofingErrorCode()
+        {
+            RunReceive(
+
+                postValidation: () =>
+                {
+                    Assert.IsTrue(_startingCalled);
+                    Assert.IsTrue(_handledExceptionCalled);
+                    Assert.AreEqual(0, MockFactory.Helsenorge.Synchronous.Messages.Count);
+                    Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                    Assert.AreEqual("abuse:spoofing-attack", MockFactory.OtherParty.Error.Messages.First().Properties["errorCondition"]);
+                },
+                wait: () => _handledExceptionCalled,
+                received: m => { throw new SenderHerIdMismatchException(); },
+                messageModification: m => { });
+        }
+
 		private void RunReceive(
 			Action<MockMessage> messageModification,
 			Action<IncomingMessage> received,
@@ -63,7 +85,8 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 				return GenericResponse;
 			});
 			Server.RegisterSynchronousMessageReceivedCompletedCallback((m) => _completedCalled = true);
-			
+			Server.RegisterHandledExceptionCallback((messagingMessage, exception) => _handledExceptionCalled = true);
+
 			Server.Start();
 
 			Wait(15, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout
