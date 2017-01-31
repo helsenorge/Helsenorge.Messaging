@@ -112,6 +112,7 @@
     <Compile Include="Abstractions\MessagingException.cs" />
     <Compile Include="ServiceBus\ServiceBusLoggingExtensions.cs" />
     <Compile Include="ServiceBus\ServiceBusSenderPool.cs" />
+    <Compile Include="StringFormatConstants.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Helsenorge.Registries\Helsenorge.Registries.csproj">
