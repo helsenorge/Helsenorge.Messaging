@@ -197,6 +197,11 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 				Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:internal-error", ex.Message, null, ex);
 				MessagingNotification.NotifyHandledException(message, ex);
 			}
+			catch (SenderHerIdMismatchException ex) // reportable error from message handler (application)
+			{
+				Core.ReportErrorToExternalSender(Logger, EventIds.DataMismatch, message, "abuse:spoofing-attack", ex.Message, null, ex);
+				MessagingNotification.NotifyHandledException(message, ex);
+			}
 			catch (Exception ex) // unknown error
 			{
 				message.AddDetailsToException(ex);

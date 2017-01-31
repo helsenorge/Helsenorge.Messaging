@@ -90,6 +90,7 @@
     <Compile Include="MessagingClient.cs" />
     <Compile Include="MessagingServer.cs" />
     <Compile Include="ServiceBus\Receivers\HeaderValidationException.cs" />
+    <Compile Include="ServiceBus\Receivers\SenderHerIdMismatchException.cs" />
     <Compile Include="ServiceBus\ServiceBusFactoryPool.cs" />
     <Compile Include="ServiceBus\ServiceBusMessage.cs" />
     <Compile Include="Abstractions\ContentType.cs" />
