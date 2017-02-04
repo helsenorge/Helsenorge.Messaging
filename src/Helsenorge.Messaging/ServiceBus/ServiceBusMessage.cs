@@ -124,7 +124,7 @@ namespace Helsenorge.Messaging.ServiceBus
 		}
 
 		private void SetValue(string key, string value) => _implementation.Properties[key] = value;
-		private void SetValue(string key, DateTime value) => _implementation.Properties[key] = value.ToString(DateTimeFormatInfo.InvariantInfo);
+		private void SetValue(string key, DateTime value) => _implementation.Properties[key] = value.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo);
 		private void SetValue(string key, int value) => _implementation.Properties[key] = value.ToString(CultureInfo.InvariantCulture);
 
 		private string GetValue(string key, string value) => _implementation.Properties.ContainsKey(key) ? _implementation.Properties[key].ToString() : value;
