@@ -23,7 +23,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 		/// </summary>
 		/// <param name="core">Reference to core service bus infrastructure</param>
 		/// <param name="logger">Logger used for diagnostic purposes</param>
-		internal SynchronousReplyListener(ServiceBusCore core, ILogger logger) : base(core, logger, null)
+		/// <param name="messagingNotification"></param>
+		internal SynchronousReplyListener(ServiceBusCore core, ILogger logger, IMessagingNotification messagingNotification) : base(core, logger, messagingNotification)
 		{
 			ReadTimeout = Core.Settings.Synchronous.ReadTimeout;
 		}
@@ -54,7 +55,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 		protected override void NotifyMessageProcessingReady(IMessagingMessage rawMessage, IncomingMessage message)
 		{
 			Logger.LogDebug("NotifyMessageProcessingReady");
-			// Not relevant for this implementation
+			MessagingNotification.NotifySynchronousMessageReceived(message);
 		}
 	}
 }
