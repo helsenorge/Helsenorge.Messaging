@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 using Helsenorge.Messaging.Abstractions;
-using Helsenorge.Messaging.Tests.Mocks;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -56,6 +56,28 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
 			// message should be gone from our sync reply
 			Assert.AreEqual(0, MockFactory.Helsenorge.SynchronousReply.Messages.Count);
 		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(MessagingException))]
+		public void Send_Synchronous_ErrorQueue()
+		{
+			var message = CreateMessage();
+
+			// post a reply on the syncreply queue before posting the actual message
+			var mockMessage = CreateMockMessage(message);
+			mockMessage.To = MockFactory.Helsenorge.SynchronousReply.Name;
+			mockMessage.ReplyTo = MockFactory.OtherParty.Synchronous.Name;
+			mockMessage.Queue = MockFactory.Helsenorge.SynchronousReply.Messages;
+			MockFactory.Helsenorge.SynchronousReply.Messages.Add(mockMessage);
+			Client.RegisterSynchronousReplyMessageReceivedCallback(m => { throw new XmlSchemaValidationException(); });
+
+			//This call will timeout while waiting for the sync reply message
+			var response = RunAndHandleException(Client.SendAndWaitAsync(Logger, message));
+
+			// message should be moved to the error queue
+			Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+		}
+
 		[TestMethod]
 		[ExpectedException(typeof(MessagingException))]
 		public void Send_Synchronous_Timeout()
