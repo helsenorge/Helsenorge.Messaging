@@ -12,7 +12,7 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
 	/// <summary>
 	/// Handles synchronous sending
 	/// </summary>
-	internal class SynchronousSender
+	internal class SynchronousSender : IMessagingNotification
 	{
 		private readonly ConcurrentDictionary<string, MessageEntry> _pendingSynchronousRequests = new ConcurrentDictionary<string, MessageEntry>();
 
@@ -37,11 +37,13 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
 			_core = core;
 		}
 
+		public Action<IncomingMessage> OnSynchronousReplyMessageReceived { get; set; }
+
 		public async Task<XDocument> SendAsync(ILogger logger, OutgoingMessage message)
 		{
 			await _core.Send(logger, message, QueueType.Synchronous, _core.Settings.Synchronous.FindReplyQueueForMe()).ConfigureAwait(false);
 
-			var listener = new SynchronousReplyListener(_core, logger);
+			var listener = new SynchronousReplyListener(_core, logger, this);
 			var start = DateTime.UtcNow;
 			var correlationId = message.MessageId;
 
@@ -159,6 +161,52 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
 						entry.ReplyEnqueuedTimeUtc);
 				}
 			}
+		}
+
+		public void NotifyAsynchronousMessageReceived(IncomingMessage message)
+		{
+
+		}
+
+		public void NotifyAsynchronousMessageReceivedStarting(IncomingMessage message)
+		{
+
+		}
+
+		public void NotifyAsynchronousMessageReceivedCompleted(IncomingMessage message)
+		{
+
+		}
+
+		public void NotifyErrorMessageReceived(IMessagingMessage message)
+		{
+
+		}
+
+		public XDocument NotifySynchronousMessageReceived(IncomingMessage message)
+		{
+			OnSynchronousReplyMessageReceived?.Invoke(message);
+			return message.Payload;
+		}
+
+		public void NotifySynchronousMessageReceivedCompleted(IncomingMessage message)
+		{
+
+		}
+
+		public void NotifySynchronousMessageReceivedStarting(IncomingMessage message)
+		{
+
+		}
+
+		public void NotifyUnhandledException(IMessagingMessage message, Exception ex)
+		{
+
+		}
+
+		public void NotifyHandledException(IMessagingMessage message, Exception ex)
+		{
+
 		}
 	}
 }
