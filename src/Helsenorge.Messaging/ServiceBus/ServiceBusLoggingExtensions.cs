@@ -53,36 +53,37 @@ namespace Helsenorge.Messaging.ServiceBus
 		{
 			StartReceive = LoggerMessage.Define<QueueType, string, int, int, string>(
 				LogLevel.Information, 
-				1,
+				EventIds.ServiceBusReceive,
 				"Start-ServiceBusReceive{QueueType}: {MessageFunction} From: {FromHerId} To: {ToHerId} Id: {MessageId}");
 
 			EndReceive = LoggerMessage.Define<QueueType, string, int, int, string>(
 				LogLevel.Information,
-				1,
+                EventIds.ServiceBusReceive,
 				"End-ServiceBusReceive{QueueType}: {MessageFunction} From: {FromHerId} To: {ToHerId} Id: {MessageId}");
 
 			StartSend = LoggerMessage.Define<QueueType, string, int, int, string, string>(
 				LogLevel.Information,
-				1,
+                EventIds.ServiceBusSend,
 				"Start-ServiceBusSend{QueueType}: {MessageFunction} From: {FromHerId} To: {ToHerId} Id: {MessageId} UserId: {UserId}");
 
 			EndSend = LoggerMessage.Define<QueueType, string, int, int, string, string>(
 				LogLevel.Information,
-				1,
+                EventIds.ServiceBusSend,
 				"End-ServiceBusSend{QueueType}: {MessageFunction} From: {FromHerId} To: {ToHerId} Id: {MessageId} UserId: {UserId}");
 
 			ExternalReportedError = LoggerMessage.Define<string>(
 				LogLevel.Error,
 				EventIds.ExternalReportedError,
 				"{Message}");
+
 			RemoveMessageFromQueueNormal = LoggerMessage.Define<string>(
 				LogLevel.Information,
-				1,
+                EventIds.RemoveMessageFromQueue,
 				"Removing processed message {MessageId} from queue");
 
 			RemoveMessageFromQueueError = LoggerMessage.Define<string>(
-				LogLevel.Error,
-				1,
+				LogLevel.Information,
+                EventIds.RemoveMessageFromQueue,
 				"Removing message {MessageId} from queue after reporting error");
 		}
 

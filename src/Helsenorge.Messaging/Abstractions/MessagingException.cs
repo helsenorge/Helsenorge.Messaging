@@ -108,7 +108,19 @@ namespace Helsenorge.Messaging.Abstractions
 		/// An unknwown error has occured
 		/// </summary>
 		public static EventId UnknownError = new EventId(35, EventIdName);
-	}
+        /// <summary>
+        /// Event Id used for informational purposes when starting/ending the Receive process
+        /// </summary>
+        public static EventId ServiceBusReceive = new EventId(1001, EventIdName);
+        /// <summary>
+        /// Event Id used for informational purposes when starting/ending the Send process
+        /// </summary>
+        public static EventId ServiceBusSend = new EventId(1002, EventIdName);
+        /// <summary>
+        /// Event Id used for informational purposes when removing the message from queue
+        /// </summary>
+        public static EventId RemoveMessageFromQueue = new EventId(1003, EventIdName);
+    }
 
 	/// <summary>
 	/// Generic exception for Service bus related errors
