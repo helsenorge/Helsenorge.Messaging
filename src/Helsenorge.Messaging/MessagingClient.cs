@@ -5,6 +5,8 @@ using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.ServiceBus.Senders;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace Helsenorge.Messaging
 {
@@ -97,14 +99,33 @@ namespace Helsenorge.Messaging
 			var profile = await FindProfile(logger, message).ConfigureAwait(false);
 			var collaborationProtocolMessage = profile?.FindMessageForReceiver(messageFunction);
 
-            if(profile.Name == Registries.CollaborationProtocolRegistry.DummyPartyName)
+            if ((profile != null || profile.Name == Registries.CollaborationProtocolRegistry.DummyPartyName)
+                || (collaborationProtocolMessage == null && messageFunction.ToUpper().Contains("DIALOG_INNBYGGER_TIMERESERVASJON")))
             {
                 collaborationProtocolMessage = new CollaborationProtocolMessage
                 {
-                    DeliveryProtocol = DeliveryProtocol.Amqp
+                    Name = messageFunction,
+                    DeliveryProtocol = DeliveryProtocol.Amqp,
+                    Parts = new List<CollaborationProtocolMessagePart>
+                    {
+                        new CollaborationProtocolMessagePart
+                        {
+                            MaxOccurrence = 1,
+                            MinOccurrence = 0,
+                            XmlNamespace = "http://www.kith.no/xmlstds/msghead/2006-05-24",
+                            XmlSchema = "MsgHead-v1_2.xsd"
+                        },
+                        new CollaborationProtocolMessagePart
+                        {
+                            MaxOccurrence = 1,
+                            MinOccurrence = 0,
+                            XmlNamespace = "http://www.kith.no/xmlstds/dialog/2013-01-23",
+                            XmlSchema = "dialogmelding-1.1.xsd"
+                        }
+                    }
                 };
             }
-            if(collaborationProtocolMessage == null)
+            else if (collaborationProtocolMessage == null)
             {
                 throw new MessagingException("Invalid delivery protocol: " + message.MessageFunction)
                 {
@@ -112,7 +133,7 @@ namespace Helsenorge.Messaging
                 };
             }
 
-			return collaborationProtocolMessage;
+            return collaborationProtocolMessage;
 		}
 
 		private async Task<CollaborationProtocolProfile> FindProfile(ILogger logger, OutgoingMessage message)
