@@ -63,6 +63,7 @@ namespace Helsenorge.Messaging
 		public void Start()
 		{
 			_logger.LogInformation("Messaging Server starting up");
+
 			for (var i = 0; i < Settings.ServiceBus.Asynchronous.ProcessingTasks; i++)
 			{
 				_listeners.Add(new AsynchronousMessageListener(ServiceBus, _loggerFactory.CreateLogger($"AsyncListener_{i}"), this));
