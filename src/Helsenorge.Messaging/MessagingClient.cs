@@ -5,7 +5,6 @@ using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.ServiceBus.Senders;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace Helsenorge.Messaging
