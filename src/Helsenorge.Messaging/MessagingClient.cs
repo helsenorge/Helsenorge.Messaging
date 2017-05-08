@@ -98,7 +98,7 @@ namespace Helsenorge.Messaging
 			var profile = await FindProfile(logger, message).ConfigureAwait(false);
 			var collaborationProtocolMessage = profile?.FindMessageForReceiver(messageFunction);
 
-            if ((profile != null || profile.Name == Registries.CollaborationProtocolRegistry.DummyPartyName)
+            if ((profile != null && profile.Name == Registries.CollaborationProtocolRegistry.DummyPartyName)
                 || (collaborationProtocolMessage == null && messageFunction.ToUpper().Contains("DIALOG_INNBYGGER_TIMERESERVASJON")))
             {
                 collaborationProtocolMessage = new CollaborationProtocolMessage
