@@ -78,7 +78,7 @@ namespace Helsenorge.Messaging.ServiceBus
 		public TimeSpan TimeToLive
 		{
 			[DebuggerStepThrough] get { return _implementation.TimeToLive; }
-			[DebuggerStepThrough] set { _implementation.TimeToLive = value; }
+            [DebuggerStepThrough] set { if(value > TimeSpan.Zero) _implementation.TimeToLive = value; }
 		}
 		public string To
 		{

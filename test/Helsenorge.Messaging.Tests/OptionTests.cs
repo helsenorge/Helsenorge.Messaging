@@ -98,7 +98,6 @@ namespace Helsenorge.Messaging.Tests
 			Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry);
 		}
 		[TestMethod]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void Asynchronous_TimeToLive_NotSet()
 		{
 			Settings.ServiceBus.Asynchronous.TimeToLive = TimeSpan.Zero;
