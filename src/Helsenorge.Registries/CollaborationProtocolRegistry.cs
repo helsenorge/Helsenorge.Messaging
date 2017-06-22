@@ -130,19 +130,31 @@ namespace Helsenorge.Registries
 		[ExcludeFromCodeCoverage] // requires wire communication
 		protected virtual Task<string> FindProtocolForCounterparty(ILogger logger, int counterpartyHerId)
 			=> Invoke(logger, x => x.GetCppXmlForCommunicationPartyAsync(counterpartyHerId),"GetCppXmlForCommunicationPartyAsync");
-		
-		/// <summary>
-		/// Finds a CPA based on an id, and returns the CPP profile for the other communication party
-		/// </summary>
-		/// <param name="logger"></param>
-		/// <param name="id">CPA id</param>
-		/// <returns></returns>
-		public async Task<CollaborationProtocolProfile> FindAgreementByIdAsync(ILogger logger, Guid id)
+
+	    /// <summary>
+	    /// Finds a CPA based on an id, and returns the CPP profile for the other communication party
+	    /// </summary>
+	    /// <param name="logger"></param>
+	    /// <param name="id">CPA id</param>
+	    /// <returns></returns>
+	    public async Task<CollaborationProtocolProfile> FindAgreementByIdAsync(ILogger logger, Guid id)
+	    {
+	        return await FindAgreementByIdAsync(logger, id, false);
+	    }
+
+        /// <summary>
+        /// Finds a CPA based on an id, and returns the CPP profile for the other communication party
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="id">CPA id</param>
+        /// <param name="forceUpdate">Set to true to force cache update.</param>
+        /// <returns></returns>
+        public async Task<CollaborationProtocolProfile> FindAgreementByIdAsync(ILogger logger, Guid id, bool forceUpdate)
 		{
 			logger.LogDebug($"FindAgreementByIdAsync {id}");
 
 			var key = $"CPA_FindAgreementByIdAsync_{id}";
-			var result = await CacheExtensions.ReadValueFromCache<CollaborationProtocolProfile>(logger, _cache, key).ConfigureAwait(false);
+			var result = forceUpdate ? null : await CacheExtensions.ReadValueFromCache<CollaborationProtocolProfile>(logger, _cache, key).ConfigureAwait(false);
 
 			if (result != null)
 			{
@@ -195,19 +207,32 @@ namespace Helsenorge.Registries
 		[ExcludeFromCodeCoverage] // requires wire communication
 		internal virtual Task<CPAService.CpaXmlDetails> FindAgreementById(ILogger logger, Guid id)
 			=> Invoke(logger, x => x.GetCpaXmlAsync(id), "GetCpaXmlAsync");
-		
-		/// <summary>
-		/// Finds the counterparty between us and some other communication party
-		/// </summary>
-		/// <param name="logger"></param>
-		/// <param name="counterpartyHerId">Her id of counterparty</param>
-		/// <returns></returns>
-		public async Task<CollaborationProtocolProfile> FindAgreementForCounterpartyAsync(ILogger logger, int counterpartyHerId)
+
+
+        /// <summary>
+        /// Finds the counterparty between us and some other communication party
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="counterpartyHerId">Her id of counterparty</param>
+        /// <returns></returns>
+        public async Task<CollaborationProtocolProfile> FindAgreementForCounterpartyAsync(ILogger logger, int counterpartyHerId)
+	    {
+	        return await FindAgreementForCounterpartyAsync(logger, counterpartyHerId, false);
+	    }
+
+        /// <summary>
+        /// Finds the counterparty between us and some other communication party
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="counterpartyHerId">Her id of counterparty</param>
+        /// <param name="forceUpdate">Set to true to force cache update.</param>
+        /// <returns></returns>
+        public async Task<CollaborationProtocolProfile> FindAgreementForCounterpartyAsync(ILogger logger, int counterpartyHerId, bool forceUpdate)
 		{
 			logger.LogDebug($"FindAgreementForCounterpartyAsync {counterpartyHerId}");
 
 			var key = $"CPA_FindAgreementForCounterpartyAsync_{_settings.MyHerId}_{counterpartyHerId}";
-			var result = await CacheExtensions.ReadValueFromCache<CollaborationProtocolProfile>(logger, _cache, key).ConfigureAwait(false);
+			var result = forceUpdate ? null : await CacheExtensions.ReadValueFromCache<CollaborationProtocolProfile>(logger, _cache, key).ConfigureAwait(false);
 
 			if (result != null)
 			{

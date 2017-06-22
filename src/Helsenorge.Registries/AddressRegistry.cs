@@ -36,17 +36,30 @@ namespace Helsenorge.Registries
 			_cache = cache;
 			_invoker = new SoapServiceInvoker(settings.WcfConfiguration);
 			_invoker.SetClientCredentials(_settings.UserName, _settings.Password);
-		}
-		/// <summary>
-		/// Returns communication details for a specific counterparty
-		/// </summary>
-		/// <param name="logger"></param>
-		/// <param name="herId">Her id of counterpary</param>
-		/// <returns>Communication details if found, otherwise null</returns>
-		public async Task<CommunicationPartyDetails> FindCommunicationPartyDetailsAsync(ILogger logger, int herId)
+        }
+
+	    /// <summary>
+	    /// Returns communication details for a specific counterparty
+	    /// </summary>
+	    /// <param name="logger"></param>
+	    /// <param name="herId">Her id of counterpary</param>
+	    /// <returns>Communication details if found, otherwise null</returns>
+	    public async Task<CommunicationPartyDetails> FindCommunicationPartyDetailsAsync(ILogger logger, int herId)
+	    {
+	        return await FindCommunicationPartyDetailsAsync(logger, herId, false);
+	    }
+
+        /// <summary>
+        /// Returns communication details for a specific counterparty
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="herId">Her id of counterpary</param>
+        /// <param name="forceUpdate">Set to true to force cache update.</param>
+        /// <returns>Communication details if found, otherwise null</returns>
+        public async Task<CommunicationPartyDetails> FindCommunicationPartyDetailsAsync(ILogger logger, int herId, bool forceUpdate)
 		{
 			var key = $"AR_FindCommunicationPartyDetailsAsync_{herId}";
-			var party = await CacheExtensions.ReadValueFromCache<CommunicationParty>(logger, _cache, key).ConfigureAwait(false);
+			var party = forceUpdate ? null : await CacheExtensions.ReadValueFromCache<CommunicationParty>(logger, _cache, key).ConfigureAwait(false);
 
 			if (party == null)
 			{
@@ -65,18 +78,30 @@ namespace Helsenorge.Registries
 				await CacheExtensions.WriteValueToCache(logger, _cache, key, party, _settings.CachingInterval).ConfigureAwait(false);
 			}
 			return party == null ? default(CommunicationPartyDetails) : MapCommunicationPartyDetails(party);
-		}
+        }
+
+	    /// <summary>
+	    /// Returns encryption ceritficate for a specific communcation party.
+	    /// </summary>
+	    /// <param name="logger"></param>
+	    /// <param name="herId">Her-ID of the communication party</param>
+	    /// <returns></returns>
+	    public async Task<Abstractions.CertificateDetails> GetCertificateDetailsForEncryptionAsync(ILogger logger, int herId)
+	    {
+	        return await GetCertificateDetailsForEncryptionAsync(logger, herId, false);
+	    }
 
         /// <summary>
         /// Returns encryption ceritficate for a specific communcation party.
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="herId">Her-ID of the communication party</param>
+        /// <param name="forceUpdate">Set to true to force cache update.</param>
         /// <returns></returns>
-        public async Task<Abstractions.CertificateDetails> GetCertificateDetailsForEncryptionAsync(ILogger logger, int herId)
+        public async Task<Abstractions.CertificateDetails> GetCertificateDetailsForEncryptionAsync(ILogger logger, int herId, bool forceUpdate)
         {
             var key = $"AR_GetCertificateDetailsForEncryption{herId}";
-            var certificateDetails = await CacheExtensions.ReadValueFromCache<AddressService.CertificateDetails>(logger, _cache, key).ConfigureAwait(false);
+            var certificateDetails = forceUpdate ? null : await CacheExtensions.ReadValueFromCache<AddressService.CertificateDetails>(logger, _cache, key).ConfigureAwait(false);
 
             if(certificateDetails == null)
             {
@@ -97,16 +122,28 @@ namespace Helsenorge.Registries
             return certificateDetails == null ? default(Abstractions.CertificateDetails) : MapCertificateDetails(herId, certificateDetails);
         }
 
+	    /// <summary>
+	    /// Returns the signature certificate for a specific communication party.
+	    /// </summary>
+	    /// <param name="logger"></param>
+	    /// <param name="herId">Her-ID of the communication party</param>
+	    /// <returns></returns>
+	    public async Task<Abstractions.CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(ILogger logger, int herId)
+	    {
+	        return await GetCertificateDetailsForValidatingSignatureAsync(logger, herId, false);
+	    }
+
         /// <summary>
         /// Returns the signature certificate for a specific communication party.
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="herId">Her-ID of the communication party</param>
+        /// <param name="forceUpdate">Set to true to force cache update.</param>
         /// <returns></returns>
-        public async Task<Abstractions.CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(ILogger logger, int herId)
+        public async Task<Abstractions.CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(ILogger logger, int herId, bool forceUpdate)
         {
             var key = $"AR_GetCertificateDetailsForValidationSignature{herId}";
-            var certificateDetails = await CacheExtensions.ReadValueFromCache<AddressService.CertificateDetails>(logger, _cache, key).ConfigureAwait(false);
+            var certificateDetails = forceUpdate ? null : await CacheExtensions.ReadValueFromCache<AddressService.CertificateDetails>(logger, _cache, key).ConfigureAwait(false);
 
             if (certificateDetails == null)
             {
