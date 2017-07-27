@@ -87,6 +87,8 @@ namespace Helsenorge.Messaging.ServiceBus
 		/// <returns></returns>
 		internal async Task Send(ILogger logger, OutgoingMessage outgoingMessage, QueueType queueType, string replyTo = null, string correlationId = null)
 		{
+            logger.LogDebug($"Start-ServiceBusCore::Send QueueType: {queueType} replyTo: {replyTo} correlationId: {correlationId}");
+
 			if (outgoingMessage == null) throw new ArgumentNullException(nameof(outgoingMessage));
 			if (string.IsNullOrEmpty(outgoingMessage.MessageId)) throw new ArgumentNullException(nameof(outgoingMessage.MessageId));
 			if (outgoingMessage.Payload == null) throw new ArgumentNullException(nameof(outgoingMessage.Payload));
@@ -99,6 +101,8 @@ namespace Helsenorge.Messaging.ServiceBus
 				hasAgreement = false; // if we don't have an agreement, we try to find the specific profile
 				profile = await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, outgoingMessage.ToHerId).ConfigureAwait(false);
 			}
+
+            logger.LogDebug($"ServiceBusCore::Send - Start retrieving and valiating certificates - correlationId: {correlationId}");
 			var signature = Settings.SigningCertificate.Certificate;
 			var encryption = profile.EncryptionCertificate;
 
@@ -136,18 +140,23 @@ namespace Helsenorge.Messaging.ServiceBus
                     };
                 }
 			}
+            logger.LogDebug($"ServiceBusCore::Send - End retrieving and valiating certificates - correlationId: {correlationId}");
 
-			var protection = Core.DefaultMessageProtection;
+            logger.LogDebug($"ServiceBusCore::Send - Start encrypting message - correlationId: {correlationId}");
+            var protection = Core.DefaultMessageProtection;
 			var stream = protection.Protect(outgoingMessage.Payload, encryption, signature);
+            logger.LogDebug($"ServiceBusCore::Send - End encrypting message - correlationId: {correlationId}");
 
-			var messagingMessage = FactoryPool.CreateMessage(logger, stream);
+            logger.LogDebug($"ServiceBusCore::Send - Start Create and Initialize message - correlationId: {correlationId}");
+            var messagingMessage = FactoryPool.CreateMessage(logger, stream);
 			
 			if (queueType != QueueType.SynchronousReply)
 			{
 				messagingMessage.ReplyTo = 
 					replyTo ?? await ConstructQueueName(logger, Core.Settings.MyHerId, queueType).ConfigureAwait(false);
 			}
-			messagingMessage.ContentType = protection.ContentType;
+
+            messagingMessage.ContentType = protection.ContentType;
 			messagingMessage.MessageId = outgoingMessage.MessageId;
 			// when we are replying to a synchronous message, we need to use the replyto of the original message
 			messagingMessage.To = 
@@ -164,12 +173,16 @@ namespace Helsenorge.Messaging.ServiceBus
 			messagingMessage.ToHerId = outgoingMessage.ToHerId;
 			messagingMessage.ApplicationTimestamp = DateTime.Now;
 
-			if (hasAgreement)
+            if (hasAgreement)
 			{
 				messagingMessage.CpaId = profile.CpaId.ToString("D");
 			}
-			await Send(logger, messagingMessage, queueType, outgoingMessage.PersonalId, (LogPayload) ? outgoingMessage.Payload : null).ConfigureAwait(false);
-		}
+            logger.LogDebug($"ServiceBusCore::Send - End Create and Initialize message - correlationId: {correlationId}");
+
+            await Send(logger, messagingMessage, queueType, outgoingMessage.PersonalId, (LogPayload) ? outgoingMessage.Payload : null).ConfigureAwait(false);
+
+            logger.LogDebug($"End-ServiceBusCore::Send QueueType: {queueType} replyTo: {replyTo} correlationId: {correlationId}");
+        }
 
 		/// <summary>
 		/// Sends a prepared message 
@@ -189,9 +202,14 @@ namespace Helsenorge.Messaging.ServiceBus
 
 			try
 			{
+                logger.LogDebug("ServiceBusCore::Send - Start-SenderPool::CreateCachedMessageSender");
 				messageSender = SenderPool.CreateCachedMessageSender(logger, message.To);
-				await messageSender.SendAsync(message).ConfigureAwait(false);
-			}
+                logger.LogDebug("ServiceBusCore::Send - End-SenderPool::CreateCachedMessageSender");
+
+                logger.LogDebug("ServiceBusCore::Send - Start-MessageSender::SendAsync");
+                await messageSender.SendAsync(message).ConfigureAwait(false);
+                logger.LogDebug("ServiceBusCore::Send - End-MessageSender::SendAsync");
+            }
 			catch (Exception ex)
 			{
 				throw new MessagingException(ex.Message)
