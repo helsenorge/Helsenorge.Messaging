@@ -141,6 +141,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BaseTest.cs" />
+    <Compile Include="Http\TestHttpSerialization.cs" />
     <Compile Include="Mocks\MockLogger.cs" />
     <Compile Include="Mocks\MockLoggerProvider.cs" />
     <Compile Include="ServiceBus\Receivers\ErrorReceiveTests.cs" />
