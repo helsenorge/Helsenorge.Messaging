@@ -8,7 +8,7 @@ using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
-
+using Helsenorge.Messaging.Http;
 
 namespace Helsenorge.Messaging.ServiceBus
 {
@@ -57,7 +57,7 @@ namespace Helsenorge.Messaging.ServiceBus
 		/// </summary>
 		private MessagingCore Core { get; }
 
-		internal ServiceBusFactoryPool FactoryPool { get; }
+		internal IServiceBusFactoryPool FactoryPool { get; }
 		internal ServiceBusSenderPool SenderPool { get; }
 		internal ServiceBusReceiverPool ReceiverPool { get; }
 
@@ -71,7 +71,21 @@ namespace Helsenorge.Messaging.ServiceBus
 			if (core == null) throw new ArgumentNullException(nameof(core));
 			
 			Core = core;
-			FactoryPool = new ServiceBusFactoryPool(core.Settings.ServiceBus);
+            
+            var connectionString = core.Settings.ServiceBus.ConnectionString;
+            if (connectionString == null)
+            {
+                throw new ArgumentNullException("connectionString");
+            }
+            if (connectionString.StartsWith("http://") || connectionString.StartsWith("https://"))
+            {
+                FactoryPool = new HttpServiceBusFactoryPool(core.Settings.ServiceBus);
+            }
+            else
+            {
+                FactoryPool = new ServiceBusFactoryPool(core.Settings.ServiceBus);
+            }
+			
 			SenderPool = new ServiceBusSenderPool(core.Settings.ServiceBus, FactoryPool);
 			ReceiverPool = new ServiceBusReceiverPool(core.Settings.ServiceBus, FactoryPool);
 		}
@@ -148,7 +162,7 @@ namespace Helsenorge.Messaging.ServiceBus
             logger.LogDebug($"ServiceBusCore::Send - End encrypting message - correlationId: {correlationId}");
 
             logger.LogDebug($"ServiceBusCore::Send - Start Create and Initialize message - correlationId: {correlationId}");
-            var messagingMessage = FactoryPool.CreateMessage(logger, stream);
+            var messagingMessage = FactoryPool.CreateMessage(logger, stream, outgoingMessage);
 			
 			if (queueType != QueueType.SynchronousReply)
 			{

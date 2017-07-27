@@ -8,7 +8,7 @@ using System.IO;
 
 namespace Helsenorge.Messaging.ServiceBus
 {
-	internal class ServiceBusFactoryPool : MessagingEntityCache<IMessagingFactory>
+	internal class ServiceBusFactoryPool : MessagingEntityCache<IMessagingFactory>, IServiceBusFactoryPool
 	{
 		private readonly ServiceBusSettings _settings;
 		private readonly object _lock= new object();
@@ -21,7 +21,7 @@ namespace Helsenorge.Messaging.ServiceBus
 			_settings = settings;
 		}
 
-		internal void RegisterAlternateMessagingFactory(IMessagingFactory alternateMessagingFactory)
+		public void RegisterAlternateMessagingFactory(IMessagingFactory alternateMessagingFactory)
 		{
 			_alternateMessagingFactor = alternateMessagingFactory;
 		}
@@ -35,12 +35,12 @@ namespace Helsenorge.Messaging.ServiceBus
 			factory.RetryPolicy = RetryPolicy.Default;
 			return new ServiceBusFactory(factory);
 		}
-		public IMessagingMessage CreateMessage(ILogger logger, Stream stream)
+		public IMessagingMessage CreateMessage(ILogger logger, Stream stream, OutgoingMessage outgoingMessage)
 		{
 			var factory = FindNextFactory(logger);
-			return factory.CreteMessage(stream);
+			return factory.CreteMessage(stream, outgoingMessage);
 		}
-		internal IMessagingFactory FindNextFactory(ILogger logger)
+		public IMessagingFactory FindNextFactory(ILogger logger)
 		{
 			lock (_lock)
 			{

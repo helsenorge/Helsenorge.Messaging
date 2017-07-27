@@ -8,9 +8,9 @@ namespace Helsenorge.Messaging.ServiceBus
 {
 	internal class ServiceBusSenderPool : MessagingEntityCache<IMessagingSender>
 	{
-		private readonly ServiceBusFactoryPool _factoryPool;
+		private readonly IServiceBusFactoryPool _factoryPool;
 		
-		public ServiceBusSenderPool(ServiceBusSettings settings,  ServiceBusFactoryPool factoryPool) :
+		public ServiceBusSenderPool(ServiceBusSettings settings,  IServiceBusFactoryPool factoryPool) :
 			base("SenderPool", settings.MaxSenders)
 		{
 			_factoryPool = factoryPool;
