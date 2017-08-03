@@ -9,12 +9,12 @@ namespace Helsenorge.Registries.Utilities
 {
 	internal static class CacheExtensions
 	{
-		public static async Task<T> ReadValueFromCache<T>(ILogger logger, IDistributedCache cache, string key) where T : class 
-		{
-			var cached = await cache.GetAsync(key).ConfigureAwait(false);
-			try
+		public static async Task<T> ReadValueFromCache<T>(ILogger logger, IDistributedCache cache, string key) where T : class
+        {
+            var cached = cache.Get(key);
+            try
 			{
-				return cached != null ? ByteArrayToObject<T>(cached) : default(T);
+                return cached != null ? ByteArrayToObject<T>(cached) : default(T);
 			}
 			catch (Exception ex)
 			{
