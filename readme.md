@@ -18,3 +18,4 @@ Meldingene som sendes sikres gjennom krypering signering. System støtter både 
 8. [Konfigurasjon](Documentation/Konfigurasjon.md "Konfigurasjon")
 9. [Nuget](Documentation/Nuget.md "Nuget")
 10. [Referanseeksempler](Documentation/ReferanseEksempler.md "Referanseeksempler")
+11. [Meldingsutveksling over HTTP](Documentation/HTTP.md "Meldingsutveksling over HTTP")
