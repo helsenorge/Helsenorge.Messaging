@@ -37,7 +37,7 @@ namespace Helsenorge.Messaging.Http
                 new StringContent(
                     (message as OutgoingHttpMessage).CreateHttpBody().ToString()
                 )
-            );
+            ).ConfigureAwait(false); // TODO: MUST FIX caller code!
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
