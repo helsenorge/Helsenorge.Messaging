@@ -34,33 +34,33 @@ namespace Helsenorge.Messaging.Http
 
         public int FromHerId
         {
-            get => int.Parse(GetAMQPMessageField("FromHerId"));
-            set => throw new NotImplementedException();
+            get { return int.Parse(GetAMQPMessageField("FromHerId")); }
+            set { throw new NotImplementedException(); }
         }
 
         public int ToHerId
         {
-            get => int.Parse(GetAMQPMessageField("ToHerId"));
-            set => throw new NotImplementedException();
+            get { return int.Parse(GetAMQPMessageField("ToHerId")); }
+            set { throw new NotImplementedException(); }
         }
 
 
         public DateTime ApplicationTimestamp
         {
-            get => XmlConvert.ToDateTime(GetAMQPMessageField("ApplicationTimestamp"), XmlDateTimeSerializationMode.Unspecified);
-            set => throw new NotImplementedException();
+            get { return XmlConvert.ToDateTime(GetAMQPMessageField("ApplicationTimestamp"), XmlDateTimeSerializationMode.Unspecified); }
+            set { throw new NotImplementedException(); }
         }
 
         public string CpaId
         {
-            get => GetAMQPMessageField("CpaId");
-            set => throw new NotImplementedException();
+            get { return GetAMQPMessageField("CpaId"); }
+            set { throw new NotImplementedException(); }
         }
 
         public DateTime EnqueuedTimeUtc
         {
-            get => XmlConvert.ToDateTime(GetAMQPMessageField("EnqueuedTimeUtc"), XmlDateTimeSerializationMode.Unspecified);
-            set => throw new NotImplementedException();
+            get { return XmlConvert.ToDateTime(GetAMQPMessageField("EnqueuedTimeUtc"), XmlDateTimeSerializationMode.Unspecified); }
+            set { throw new NotImplementedException(); }
         }
 
         public DateTime ExpiresAtUtc //Get from XML?
@@ -84,57 +84,57 @@ namespace Helsenorge.Messaging.Http
 
         public string ContentType
         {
-            get => GetAMQPMessageField("ContentType");
-            set => throw new NotImplementedException();
+            get { return GetAMQPMessageField("ContentType"); }
+            set { throw new NotImplementedException(); }
         }
 
 
         public string CorrelationId
         {
-            get => GetAMQPMessageField("CorrelationId");
-            set => throw new NotImplementedException();
+            get { return GetAMQPMessageField("CorrelationId"); }
+            set { throw new NotImplementedException(); }
         }
 
         public string MessageFunction
         {
-            get => GetAMQPMessageField("MessageFunction");
-            set => throw new NotImplementedException();
+            get { return GetAMQPMessageField("MessageFunction"); }
+            set { throw new NotImplementedException(); }
         }
 
         
         public string MessageId {
-            get => GetAMQPMessageField("MessageId");
-            set => throw new NotImplementedException();
+            get { return GetAMQPMessageField("MessageId"); }
+            set { throw new NotImplementedException(); }
         }
 
         
         public string ReplyTo
         {
-            get => GetAMQPMessageField("ReplyTo");
-            set => throw new NotImplementedException();
+            get { return GetAMQPMessageField("ReplyTo"); }
+            set { throw new NotImplementedException(); }
         }
 
         public DateTime ScheduledEnqueueTimeUtc
         {
-            get => XmlConvert.ToDateTime(GetAMQPMessageField("ScheduledEnqueueTimeUtc"), XmlDateTimeSerializationMode.Unspecified);
-            set => throw new NotImplementedException();
+            get { return XmlConvert.ToDateTime(GetAMQPMessageField("ScheduledEnqueueTimeUtc"), XmlDateTimeSerializationMode.Unspecified); }
+            set { throw new NotImplementedException(); }
         }
 
         public TimeSpan TimeToLive
         {
-            get => TimeSpan.Parse(GetAMQPMessageField("TimeToLive"));
-            set => throw new NotImplementedException();
+            get { return TimeSpan.Parse(GetAMQPMessageField("TimeToLive")); }
+            set { throw new NotImplementedException(); }
         }
 
         public string To
         {
-            get => GetAMQPMessageField("To");
-            set => throw new NotImplementedException();
+            get { return GetAMQPMessageField("To"); }
+            set { throw new NotImplementedException(); }
         }
 
         public object OriginalObject
         {
-            get => throw new NotImplementedException();
+            get { throw new NotImplementedException(); }
         }
 
         public void Complete()
