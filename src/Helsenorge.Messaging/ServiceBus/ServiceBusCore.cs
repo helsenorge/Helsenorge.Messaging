@@ -251,8 +251,8 @@ namespace Helsenorge.Messaging.ServiceBus
 		/// <param name="errorDescription">The error description to report</param>
 		/// <param name="additionalData">Additional information to include</param>
 		/// <returns></returns>
-		private async Task SendError(ILogger logger, IMessagingMessage originalMessage, string errorCode, string errorDescription, IEnumerable<string> additionalData)
-		{
+		private async Task SendError(ILogger logger, IMessagingMessage originalMessage, string errorCode, string errorDescription, IEnumerable<string> additionalData) //TODO: Sjekk at SendError fungerer med Http-meldinger
+        {            
 			if (originalMessage == null) throw new ArgumentNullException(nameof(originalMessage));
 			if (string.IsNullOrEmpty(errorCode)) throw new ArgumentNullException(nameof(errorCode));
 			if (string.IsNullOrEmpty(errorDescription)) throw new ArgumentNullException(nameof(errorDescription));
