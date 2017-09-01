@@ -130,9 +130,16 @@
     <Compile Include="Abstractions\IMessagingSender.cs" />
     <Compile Include="Abstractions\IMessagingServer.cs" />
     <Compile Include="Abstractions\IncomingMessage.cs" />
+    <Compile Include="Abstractions\IServiceBusFactoryPool.cs" />
     <Compile Include="Abstractions\MessagingEntityCache.cs" />
     <Compile Include="Abstractions\OutgoingMessage.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Http\HttpServiceBusFactory.cs" />
+    <Compile Include="Http\HttpServiceBusFactoryPool.cs" />
+    <Compile Include="Http\HttpServiceBusReceiver.cs" />
+    <Compile Include="Http\HttpServiceBusSender.cs" />
+    <Compile Include="Http\IncomingHttpMessage.cs" />
+    <Compile Include="Http\OutgoingHttpMessage.cs" />
     <Compile Include="MessagingSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Abstractions\IMessageProtection.cs" />
