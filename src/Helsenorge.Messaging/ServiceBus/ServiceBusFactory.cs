@@ -26,6 +26,6 @@ namespace Helsenorge.Messaging.ServiceBus
 		}
 		bool ICachedMessagingEntity.IsClosed => _implementation.IsClosed;
 		void ICachedMessagingEntity.Close() => _implementation.Close();
-		public IMessagingMessage CreteMessage(Stream stream) => new ServiceBusMessage(new BrokeredMessage(stream, true));
+		public IMessagingMessage CreteMessage(Stream stream, OutgoingMessage outgoingMessage) => new ServiceBusMessage(new BrokeredMessage(stream, true));
 	}
 }

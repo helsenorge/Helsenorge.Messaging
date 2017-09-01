@@ -3,6 +3,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.ServiceBus.Messaging;
+using System.Xml.Linq;
+using System.Diagnostics;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
 
 namespace Helsenorge.Messaging.ServiceBus
 {
@@ -18,7 +23,7 @@ namespace Helsenorge.Messaging.ServiceBus
 		public async Task SendAsync(IMessagingMessage message)
 		{
 			if (message == null) throw new ArgumentNullException(nameof(message));
-
+            
 			var brokeredMessage = message.OriginalObject as BrokeredMessage;
 			if(brokeredMessage == null) throw new InvalidOperationException("OriginalObject is not a Brokered message");
 
