@@ -30,6 +30,6 @@ namespace Helsenorge.Messaging.Abstractions
 		/// </summary>
 		/// <param name="stream">Stream containing the information</param>
 		/// <returns></returns>
-		IMessagingMessage CreteMessage(Stream stream);
+		IMessagingMessage CreteMessage(Stream stream, OutgoingMessage outgoingMessage);
 	}
 }

@@ -6,9 +6,9 @@ namespace Helsenorge.Messaging.ServiceBus
 {
 	internal class ServiceBusReceiverPool : MessagingEntityCache<IMessagingReceiver>
 	{
-		private readonly ServiceBusFactoryPool _factoryPool;
+		private readonly IServiceBusFactoryPool _factoryPool;
 		
-		public ServiceBusReceiverPool(ServiceBusSettings settings, ServiceBusFactoryPool factoryPool) :
+		public ServiceBusReceiverPool(ServiceBusSettings settings, IServiceBusFactoryPool factoryPool) :
 			base("ReceiverPool", settings.MaxReceivers)
 		{
 			_factoryPool = factoryPool;
