@@ -143,7 +143,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     ToHerId = message.ToHerId,
                     MessageId = message.MessageId,
                     CorrelationId = message.CorrelationId,
-                    EnqueuedTimeUtc = message.EnqueuedTimeUtc
+                    EnqueuedTimeUtc = message.EnqueuedTimeUtc,
                 };
                 NotifyMessageProcessingStarted(incomingMessage);
                 Logger.LogStartReceive(QueueType, incomingMessage);
@@ -155,7 +155,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 // we need the certificates for decryption and certificate use
                 incomingMessage.CollaborationAgreement = await ResolveProfile(message).ConfigureAwait(false);
 
-                var payload = HandlePayload(message, bodyStream, message.ContentType, incomingMessage);
+                bool contentWasSigned;
+                var payload = HandlePayload(message, bodyStream, message.ContentType, incomingMessage, out contentWasSigned);
+                incomingMessage.ContentWasSigned = contentWasSigned;
                 if (payload != null)
                 {
                     if (Core.LogPayload)
@@ -242,18 +244,20 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 await Core.CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(Logger, message.FromHerId).ConfigureAwait(false);
         }
 
-        private XDocument HandlePayload(IMessagingMessage originalMessage, Stream bodyStream, string contentType, IncomingMessage incomingMessage)
+        private XDocument HandlePayload(IMessagingMessage originalMessage, Stream bodyStream, string contentType, IncomingMessage incomingMessage, out bool contentWasSigned)
         {
             XDocument payload;
 
             if (contentType.Equals(ContentType.Text, StringComparison.OrdinalIgnoreCase) ||
                 contentType.Equals(ContentType.Soap, StringComparison.OrdinalIgnoreCase))
             {
+                contentWasSigned = false;
                 // no certificates to validate
                 payload = new NoMessageProtection().Unprotect(bodyStream, null, null, null);
             }
             else
             {
+                contentWasSigned = true;
                 // if we receive enrypted messages on the error queue, we have no idea what to do with them
                 // Since this can be message we sent, it's encrypted with their certificate and we don't have that private key
                 if (QueueType == QueueType.Error) return null;
