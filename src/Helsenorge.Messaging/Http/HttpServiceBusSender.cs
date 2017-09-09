@@ -32,12 +32,12 @@ namespace Helsenorge.Messaging.Http
         {
             Debug.Assert(message is OutgoingHttpMessage);
             var httpClient = new HttpClient();
-            var response = await httpClient.PostAsync(
-                new Uri(new Uri(_url), _id), 
-                new StringContent(
-                    (message as OutgoingHttpMessage).CreateHttpBody().ToString()
-                )
-            ).ConfigureAwait(false); // TODO: MUST FIX caller code!
+            var request = new HttpRequestMessage(HttpMethod.Post, new Uri(new Uri(_url), _id));
+            request.Headers.Add(HttpServiceBusReceiver.CLIENT_HEADER_NAME, HttpServiceBusReceiver.GetClientHeaderValue());
+            request.Content = new StringContent(
+                (message as OutgoingHttpMessage).CreateHttpBody().ToString()
+            );
+            var response = await httpClient.SendAsync(request).ConfigureAwait(false);
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
