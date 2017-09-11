@@ -1,6 +1,7 @@
 ﻿using Helsenorge.Messaging.Abstractions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -27,10 +28,21 @@ namespace Helsenorge.Messaging.Http
             
         }
 
+
+        public const string CLIENT_HEADER_NAME = "AMQP_HTTP_CLIENT";
+
+        public static string GetClientHeaderValue()
+        {
+            var cp = Process.GetCurrentProcess();
+            return $"{cp.ProcessName} pid:{cp.Id} on {Environment.MachineName}";
+        }
+
         public async Task<IMessagingMessage> ReceiveAsync(TimeSpan serverWaitTime)
         {
             var httpClient = new HttpClient();
-            var response = await httpClient.GetAsync(new Uri(new Uri(_url), _id));            
+            var request = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(_url), _id));
+            request.Headers.Add(CLIENT_HEADER_NAME, GetClientHeaderValue());
+            var response = await httpClient.SendAsync(request).ConfigureAwait(false);            
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 await Task.Delay(serverWaitTime);
