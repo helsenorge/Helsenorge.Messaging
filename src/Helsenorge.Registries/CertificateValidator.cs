@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Helsenorge.Registries.Abstractions;
@@ -10,6 +11,16 @@ namespace Helsenorge.Registries
 	/// </summary>
 	public class CertificateValidator : ICertificateValidator
 	{
+	    private readonly bool _useOnlineRevocationCheck;
+
+        /// <summary>
+        /// CertificateValidator constructor
+        /// </summary>
+        /// <param name="useOnlineRevocationCheck">Should online certificate revocation list be used. Optional, default true.</param>
+	    public CertificateValidator(bool useOnlineRevocationCheck = true)
+	    {
+	        _useOnlineRevocationCheck = useOnlineRevocationCheck;
+	    }
 		/// <summary>
 		/// Validates the provided certificate
 		/// </summary>
@@ -50,7 +61,7 @@ namespace Helsenorge.Registries
 			{
 				ChainPolicy =
 				{
-					RevocationMode = X509RevocationMode.Online,
+					RevocationMode = _useOnlineRevocationCheck ? X509RevocationMode.Online : X509RevocationMode.NoCheck,
 					RevocationFlag = X509RevocationFlag.EntireChain,
 					UrlRetrievalTimeout = TimeSpan.FromSeconds(30),
 					VerificationTime = DateTime.Now,
@@ -77,6 +88,7 @@ namespace Helsenorge.Registries
 					}
 					sb.AppendLine(status.StatusInformation);
 				}
+                Debug.WriteLine(sb.ToString());
 				return result;
 			}
 		}
