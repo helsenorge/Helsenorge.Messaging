@@ -45,8 +45,20 @@ namespace Helsenorge.Registries
 		/// <returns>Communication details if found, otherwise null</returns>
 		public async Task<CommunicationPartyDetails> FindCommunicationPartyDetailsAsync(ILogger logger, int herId)
 		{
+			return await FindCommunicationPartyDetailsAsync(logger, herId, false);
+		}
+
+		/// <summary>
+		/// Returns communication details for a specific counterparty
+		/// </summary>
+		/// <param name="logger"></param>
+		/// <param name="herId">Her id of counterpary</param>
+		/// <param name="forceUpdate">Set to true to force cache update.</param>
+		/// <returns>Communication details if found, otherwise null</returns>
+		public async Task<CommunicationPartyDetails> FindCommunicationPartyDetailsAsync(ILogger logger, int herId, bool forceUpdate)
+		{
 			var key = $"AR_FindCommunicationPartyDetailsAsync_{herId}";
-			var party = await CacheExtensions.ReadValueFromCache<CommunicationParty>(logger, _cache, key).ConfigureAwait(false);
+			var party = forceUpdate ? null : await CacheExtensions.ReadValueFromCache<CommunicationParty>(logger, _cache, key).ConfigureAwait(false);
 
 			if (party == null)
 			{
@@ -67,97 +79,121 @@ namespace Helsenorge.Registries
 			return party == null ? default(CommunicationPartyDetails) : MapCommunicationPartyDetails(party);
 		}
 
-        /// <summary>
-        /// Returns encryption ceritficate for a specific communcation party.
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="herId">Her-ID of the communication party</param>
-        /// <returns></returns>
-        public async Task<Abstractions.CertificateDetails> GetCertificateDetailsForEncryptionAsync(ILogger logger, int herId)
-        {
-            var key = $"AR_GetCertificateDetailsForEncryption{herId}";
-            var certificateDetails = await CacheExtensions.ReadValueFromCache<AddressService.CertificateDetails>(logger, _cache, key).ConfigureAwait(false);
+		/// <summary>
+		/// Returns encryption ceritficate for a specific communcation party.
+		/// </summary>
+		/// <param name="logger"></param>
+		/// <param name="herId">Her-ID of the communication party</param>
+		/// <returns></returns>
+		public async Task<Abstractions.CertificateDetails> GetCertificateDetailsForEncryptionAsync(ILogger logger, int herId)
+		{
+			return await GetCertificateDetailsForEncryptionAsync(logger, herId, false);
+		}
 
-            if(certificateDetails == null)
-            {
-                try
-                {
-                    certificateDetails = await GetCertificateDetailsForEncryptionInternal(logger, herId).ConfigureAwait(false);
-                }
-                catch(FaultException ex)
-                {
-                    throw new RegistriesException(ex.Message, ex)
-                    {
-                        EventId = EventIds.CerificateDetails,
-                        Data = { { "HerId", herId } }
-                    };
-                }
-                await CacheExtensions.WriteValueToCache(logger, _cache, key, certificateDetails, _settings.CachingInterval).ConfigureAwait(false);
-            }
-            return certificateDetails == null ? default(Abstractions.CertificateDetails) : MapCertificateDetails(herId, certificateDetails);
-        }
+		/// <summary>
+		/// Returns encryption ceritficate for a specific communcation party.
+		/// </summary>
+		/// <param name="logger"></param>
+		/// <param name="herId">Her-ID of the communication party</param>
+		/// <param name="forceUpdate">Set to true to force cache update.</param>
+		/// <returns></returns>
+		public async Task<Abstractions.CertificateDetails> GetCertificateDetailsForEncryptionAsync(ILogger logger, int herId, bool forceUpdate)
+		{
+			var key = $"AR_GetCertificateDetailsForEncryption{herId}";
+			var certificateDetails = forceUpdate ? null : await CacheExtensions.ReadValueFromCache<AddressService.CertificateDetails>(logger, _cache, key).ConfigureAwait(false);
 
-        /// <summary>
-        /// Returns the signature certificate for a specific communication party.
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="herId">Her-ID of the communication party</param>
-        /// <returns></returns>
-        public async Task<Abstractions.CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(ILogger logger, int herId)
-        {
-            var key = $"AR_GetCertificateDetailsForValidationSignature{herId}";
-            var certificateDetails = await CacheExtensions.ReadValueFromCache<AddressService.CertificateDetails>(logger, _cache, key).ConfigureAwait(false);
+			if(certificateDetails == null)
+			{
+				try
+				{
+					certificateDetails = await GetCertificateDetailsForEncryptionInternal(logger, herId).ConfigureAwait(false);
+				}
+				catch(FaultException ex)
+				{
+					throw new RegistriesException(ex.Message, ex)
+					{
+						EventId = EventIds.CerificateDetails,
+						Data = { { "HerId", herId } }
+					};
+				}
+				await CacheExtensions.WriteValueToCache(logger, _cache, key, certificateDetails, _settings.CachingInterval).ConfigureAwait(false);
+			}
+			return certificateDetails == null ? default(Abstractions.CertificateDetails) : MapCertificateDetails(herId, certificateDetails);
+		}
 
-            if (certificateDetails == null)
-            {
-                try
-                {
-                    certificateDetails = await GetCertificateDetailsForValidatingSignatureInternal(logger, herId).ConfigureAwait(false);
-                }
-                catch (FaultException ex)
-                {
-                    throw new RegistriesException(ex.Message, ex)
-                    {
-                        EventId = EventIds.CerificateDetails,
-                        Data = { { "HerId", herId } }
-                    };
-                }
-                await CacheExtensions.WriteValueToCache(logger, _cache, key, certificateDetails, _settings.CachingInterval).ConfigureAwait(false);
-            }
-            return certificateDetails == null ? default(Abstractions.CertificateDetails) : MapCertificateDetails(herId, certificateDetails);
-        }
-        
-        /// <summary>
-        /// Makes the actual call to the registry. This is virtual so that it can be mocked by unit tests
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="herId">Her id of communication party</param>
-        /// <returns></returns>
-        [ExcludeFromCodeCoverage] // requires wire communication
+		/// <summary>
+		/// Returns the signature certificate for a specific communication party.
+		/// </summary>
+		/// <param name="logger"></param>
+		/// <param name="herId">Her-ID of the communication party</param>
+		/// <returns></returns>
+		public async Task<Abstractions.CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(ILogger logger, int herId)
+		{
+			return await GetCertificateDetailsForValidatingSignatureAsync(logger, herId, false);
+		}
+
+		/// <summary>
+		/// Returns the signature certificate for a specific communication party.
+		/// </summary>
+		/// <param name="logger"></param>
+		/// <param name="herId">Her-ID of the communication party</param>
+		/// <param name="forceUpdate">Set to true to force cache update.</param>
+		/// <returns></returns>
+		public async Task<Abstractions.CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(ILogger logger, int herId, bool forceUpdate)
+		{
+			var key = $"AR_GetCertificateDetailsForValidationSignature{herId}";
+			var certificateDetails = forceUpdate ? null : await CacheExtensions.ReadValueFromCache<AddressService.CertificateDetails>(logger, _cache, key).ConfigureAwait(false);
+
+			if (certificateDetails == null)
+			{
+				try
+				{
+					certificateDetails = await GetCertificateDetailsForValidatingSignatureInternal(logger, herId).ConfigureAwait(false);
+				}
+				catch (FaultException ex)
+				{
+					throw new RegistriesException(ex.Message, ex)
+					{
+						EventId = EventIds.CerificateDetails,
+						Data = { { "HerId", herId } }
+					};
+				}
+				await CacheExtensions.WriteValueToCache(logger, _cache, key, certificateDetails, _settings.CachingInterval).ConfigureAwait(false);
+			}
+			return certificateDetails == null ? default(Abstractions.CertificateDetails) : MapCertificateDetails(herId, certificateDetails);
+		}
+		
+		/// <summary>
+		/// Makes the actual call to the registry. This is virtual so that it can be mocked by unit tests
+		/// </summary>
+		/// <param name="logger"></param>
+		/// <param name="herId">Her id of communication party</param>
+		/// <returns></returns>
+		[ExcludeFromCodeCoverage] // requires wire communication
 		internal virtual Task<CommunicationParty> FindCommunicationPartyDetails(ILogger logger, int herId)
 			=> Invoke(logger, x => x.GetCommunicationPartyDetailsAsync(herId), "GetCommunicationPartyDetailsAsync");
 
-        /// <summary>
-        /// Makes the actual call to the registry. This is a virtual function so that it can be mocked by unit tests.
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="herId">Her-ID of the communication party</param>
-        /// <returns></returns>
-        [ExcludeFromCodeCoverage]
-        internal virtual Task<AddressService.CertificateDetails> GetCertificateDetailsForEncryptionInternal(ILogger logger, int herId)
-            => Invoke(logger, x => x.GetCertificateDetailsForEncryptionAsync(herId), "GetCertificateDetailsForEncryptionAsync");
+		/// <summary>
+		/// Makes the actual call to the registry. This is a virtual function so that it can be mocked by unit tests.
+		/// </summary>
+		/// <param name="logger"></param>
+		/// <param name="herId">Her-ID of the communication party</param>
+		/// <returns></returns>
+		[ExcludeFromCodeCoverage]
+		internal virtual Task<AddressService.CertificateDetails> GetCertificateDetailsForEncryptionInternal(ILogger logger, int herId)
+			=> Invoke(logger, x => x.GetCertificateDetailsForEncryptionAsync(herId), "GetCertificateDetailsForEncryptionAsync");
 
-        /// <summary>
-        /// Makes the actual call to the registry. This is a virtual function so that it can be mocked by unit tests.
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="herId">Her-ID of the communication party</param>
-        /// <returns></returns>
-        [ExcludeFromCodeCoverage]
-        internal virtual Task<AddressService.CertificateDetails> GetCertificateDetailsForValidatingSignatureInternal(ILogger logger, int herId)
-            => Invoke(logger, x => x.GetCertificateDetailsForValidatingSignatureAsync(herId), "GetCertificateDetailsForValidatingSignatureAsync");
+		/// <summary>
+		/// Makes the actual call to the registry. This is a virtual function so that it can be mocked by unit tests.
+		/// </summary>
+		/// <param name="logger"></param>
+		/// <param name="herId">Her-ID of the communication party</param>
+		/// <returns></returns>
+		[ExcludeFromCodeCoverage]
+		internal virtual Task<AddressService.CertificateDetails> GetCertificateDetailsForValidatingSignatureInternal(ILogger logger, int herId)
+			=> Invoke(logger, x => x.GetCertificateDetailsForValidatingSignatureAsync(herId), "GetCertificateDetailsForValidatingSignatureAsync");
 
-        private static CommunicationPartyDetails MapCommunicationPartyDetails(CommunicationParty communicationParty)
+		private static CommunicationPartyDetails MapCommunicationPartyDetails(CommunicationParty communicationParty)
 		{
 			var details = new CommunicationPartyDetails
 			{
@@ -183,15 +219,15 @@ namespace Helsenorge.Registries
 			return details;
 		}
 
-        private static Abstractions.CertificateDetails MapCertificateDetails(int herId, AddressService.CertificateDetails certificateDetails)
-        {
-            return new Abstractions.CertificateDetails
-            {
-                HerId = herId,
-                Certificate = new X509Certificate2(certificateDetails.Certificate),
-                LdapUrl = certificateDetails.LdapUrl
-            };
-        }
+		private static Abstractions.CertificateDetails MapCertificateDetails(int herId, AddressService.CertificateDetails certificateDetails)
+		{
+			return new Abstractions.CertificateDetails
+			{
+				HerId = herId,
+				Certificate = new X509Certificate2(certificateDetails.Certificate),
+				LdapUrl = certificateDetails.LdapUrl
+			};
+		}
 
 		[ExcludeFromCodeCoverage] // requires wire communication
 		private Task<T> Invoke<T>(ILogger logger, Func<ICommunicationPartyService, Task<T>> action, string methodName)
