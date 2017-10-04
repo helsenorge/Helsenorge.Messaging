@@ -60,7 +60,7 @@ namespace Helsenorge.Registries
             _adressRegistry = adressRegistry;
 			_invoker = new SoapServiceInvoker(settings.WcfConfiguration);
 			_invoker.SetClientCredentials(_settings.UserName, _settings.Password);
-			CertificateValidator = new CertificateValidator();
+			CertificateValidator = new CertificateValidator(_settings.UseOnlineRevocationCheck);
 		}
 
 		/// <summary>
