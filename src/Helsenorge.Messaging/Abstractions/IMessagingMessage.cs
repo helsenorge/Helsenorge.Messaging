@@ -97,10 +97,15 @@ namespace Helsenorge.Messaging.Abstractions
 		/// </summary>
 		/// <returns></returns>
 		Stream GetBody();
-		/// <summary>
-		/// Adds relevant information to the Data dictionary of an exception
-		/// </summary>
-		/// <param name="ex"></param>
-		void AddDetailsToException(Exception ex);
+
+	    /// <summary>
+	    /// Renews the peerlock of the message
+	    /// </summary>
+	    void RenewLock();
+        /// <summary>
+        /// Adds relevant information to the Data dictionary of an exception
+        /// </summary>
+        /// <param name="ex"></param>
+        void AddDetailsToException(Exception ex);
 	}
 }

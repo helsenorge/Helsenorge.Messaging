@@ -88,6 +88,11 @@ namespace Helsenorge.Messaging.Http
             throw new NotImplementedException();
         }
 
+        public void RenewLock()
+        {
+            throw new NotImplementedException();
+        }
+
         public void AddDetailsToException(Exception ex)
         {
             throw new NotImplementedException();
