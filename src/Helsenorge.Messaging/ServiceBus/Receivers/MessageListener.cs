@@ -144,6 +144,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     MessageId = message.MessageId,
                     CorrelationId = message.CorrelationId,
                     EnqueuedTimeUtc = message.EnqueuedTimeUtc,
+                    RenewLock = message.RenewLock
                 };
                 NotifyMessageProcessingStarted(incomingMessage);
                 Logger.LogStartReceive(QueueType, incomingMessage);
