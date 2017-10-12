@@ -32,5 +32,9 @@ namespace Helsenorge.Registries
 		/// The HerId that belongs to me. In CPA operations, two communication parties may be returned, need to know which one is us
 		/// </summary>
 		public int MyHerId { get; set; }
+	    /// <summary>
+	    /// Use online certificate revocation list (CRL) check. Default true.
+	    /// </summary>
+	    public bool UseOnlineRevocationCheck { get; set; } = true;
 	}
 }

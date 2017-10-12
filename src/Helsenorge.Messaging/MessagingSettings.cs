@@ -32,7 +32,10 @@ namespace Helsenorge.Messaging
 		/// Indicates if we should ignore certificate errors when sending
 		/// </summary>
 		public bool IgnoreCertificateErrorOnSend { get; set; }
-
+        /// <summary>
+        /// Use online certificate revocation list (CRL) check. Default true.
+        /// </summary>
+        public bool UseOnlineRevocationCheck { get; set; } = true;
         /// <summary>
         /// Provides access to service bus settings
         /// </summary>
