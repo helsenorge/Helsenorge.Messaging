@@ -228,7 +228,6 @@ namespace Helsenorge.Registries
 		/// <returns></returns>
 		public async Task<CollaborationProtocolProfile> FindAgreementForCounterpartyAsync(ILogger logger, int counterpartyHerId, bool forceUpdate)
 		{
-			logger.LogDebug($"Start-FindAgreementForCounterpartyAsync {counterpartyHerId}");
 
 			var key = $"CPA_FindAgreementForCounterpartyAsync_{_settings.MyHerId}_{counterpartyHerId}";
 			var result = forceUpdate ? null : await CacheExtensions.ReadValueFromCache<CollaborationProtocolProfile>(logger, _cache, key).ConfigureAwait(false);
@@ -249,10 +248,8 @@ namespace Helsenorge.Registries
 
 			try
 			{
-                logger.LogDebug($"StartServiceCall-FindAgreementForCounterparty {counterpartyHerId}");
 				details = await FindAgreementForCounterparty(logger, counterpartyHerId).ConfigureAwait(false);
-                logger.LogDebug($"EndServiceCall-FindAgreementForCounterparty {counterpartyHerId}");
-            }
+			}
 			catch (FaultException ex)
 			{
 				// if there are error getting a proper CPA, we fallback to getting CPP.
@@ -272,10 +269,7 @@ namespace Helsenorge.Registries
 			result.CpaId = Guid.Parse(doc.Root.Attribute(_ns + "cpaid").Value);
 			
 			await CacheExtensions.WriteValueToCache(logger, _cache, key, result, _settings.CachingInterval).ConfigureAwait(false);
-
-            logger.LogDebug($"End-FindAgreementForCounterpartyAsync {counterpartyHerId}");
-
-            return result;
+			return result;
 		}
 		
 		private CollaborationProtocolProfile CreateDummyCollaborationProtocolProfile(int herId, Abstractions.CertificateDetails encryptionCertificate, Abstractions.CertificateDetails signatureCertificate)
