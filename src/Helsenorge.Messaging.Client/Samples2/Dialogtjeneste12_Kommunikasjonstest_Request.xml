@@ -1,59 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Eksempel på bruk av hodemeldingen sammen med dialogmeldingen -->
 <MsgHead xmlns="http://www.kith.no/xmlstds/msghead/2006-05-24" xmlns:xsd="http://www.w3.org/2001/XMLSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kith.no/xmlstds/msghead/2006-05-24 MsgHead-v1_2.xsd">
-	<MsgInfo>
-		<Type V="DIALOG_INNBYGGER_TEST" DN="Dialog med innbygger - test"/>
-		<MIGversion>v1.2 2006-05-24</MIGversion>
-		<GenDate>2015-05-04T09:31:47.0Z</GenDate>
-		<MsgId>8325fcc2-89a9-11e3-baa8-0800200c9a66</MsgId>
-		<Ack DN="Nei" V="N"/>
-		<Sender>
-			<Organisation>
-				<OrganisationName>Nanset legekontor</OrganisationName>
-				<Ident>
-					<Id>987654</Id>
-					<TypeId DN="HER-id" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
-				</Ident>
-				<HealthcareProfessional>
-					<RoleToPatient DN="Fastlege" V="6" S="2.16.578.1.12.4.1.1.9034"/>
-					<FamilyName>September</FamilyName>
-					<GivenName>August</GivenName>
-					<Ident>
-						<Id>93238</Id>
-						<TypeId DN="Identifikator fra Helsetjenesteenhetsregisteret (HER-id)" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
-					</Ident>
-				</HealthcareProfessional>
-			</Organisation>
-		</Sender>
-		<Receiver>
-			<Organisation>
-				<OrganisationName>Helsedirektoratet</OrganisationName>
-				<Ident>
-					<Id>2359</Id>
-					<TypeId DN="HER-id" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
-				</Ident>
-				<Organisation>
-					<OrganisationName>Digitale innbyggertjenester, DD.QA</OrganisationName>
-					<Ident>
-						<Id>93246</Id>
-						<TypeId DN="Identifikator fra Helsetjenesteenhetsregisteret (HER-id)" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
-					</Ident>
-				</Organisation>
-			</Organisation>
-		</Receiver>
-	</MsgInfo>
-	<Document>
-		<ContentDescription>Kommunikasjonstest</ContentDescription>
-		<RefDoc>
-			<IssueDate V="2012-11-14T09:30:47.0Z"/>
-			<MsgType V="XML" DN="XML-instans"/>
-			<Content>
-				<Dialogmelding xmlns="http://www.kith.no/xmlstds/dialog/2013-01-23" xmlns:xsd="http://www.w3.org/2001/XMLSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kith.no/xmlstds/dialog/2015-05-04 dialogmelding-v1.2.xsd">
-					<Foresporsel>
-						<TypeForesp V="KT" DN="Kommunikasjonstest" S="2.16.578.1.12.4.1.1.7603"/>
-					</Foresporsel>
-				</Dialogmelding>
-			</Content>
-		</RefDoc>
-	</Document>
+    <MsgInfo>
+        <Type V="DIALOG_INNBYGGER_TEST" DN="Dialog med innbygger - test"/>
+        <MIGversion>v1.2 2006-05-24</MIGversion>
+        <GenDate>2015-05-04T09:31:47.0Z</GenDate>
+        <MsgId>8325fcc2-89a9-11e3-baa8-0800200c9a66</MsgId>
+        <Ack DN="Nei" V="N"/>
+        <Sender>
+            <Organisation>
+                <OrganisationName>Nanset legekontor</OrganisationName>
+                <Ident>
+                    <Id>987654</Id>
+                    <TypeId DN="HER-id" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
+                </Ident>
+                <HealthcareProfessional>
+                    <RoleToPatient DN="Fastlege" V="6" S="2.16.578.1.12.4.1.1.9034"/>
+                    <FamilyName>September</FamilyName>
+                    <GivenName>August</GivenName>
+                    <Ident>
+                        <Id>93238</Id>
+                        <TypeId DN="Identifikator fra Helsetjenesteenhetsregisteret (HER-id)" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
+                    </Ident>
+                </HealthcareProfessional>
+            </Organisation>
+        </Sender>
+        <Receiver>
+            <Organisation>
+                <OrganisationName>Helsedirektoratet</OrganisationName>
+                <Ident>
+                    <Id>2359</Id>
+                    <TypeId DN="HER-id" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
+                </Ident>
+                <Organisation>
+                    <OrganisationName>Digitale innbyggertjenester, DD.QA</OrganisationName>
+                    <Ident>
+                        <Id>93246</Id>
+                        <TypeId DN="Identifikator fra Helsetjenesteenhetsregisteret (HER-id)" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
+                    </Ident>
+                </Organisation>
+            </Organisation>
+        </Receiver>
+    </MsgInfo>
+    <Document>
+        <ContentDescription>Kommunikasjonstest</ContentDescription>
+        <RefDoc>
+            <IssueDate V="2012-11-14T09:30:47.0Z"/>
+            <MsgType V="XML" DN="XML-instans"/>
+            <Content>
+                <Dialogmelding xmlns="http://www.kith.no/xmlstds/dialog/2013-01-23" xmlns:xsd="http://www.w3.org/2001/XMLSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kith.no/xmlstds/dialog/2015-05-04 dialogmelding-v1.2.xsd">
+                    <Foresporsel>
+                        <TypeForesp V="KT" DN="Kommunikasjonstest" S="2.16.578.1.12.4.1.1.7603"/>
+                    </Foresporsel>
+                </Dialogmelding>
+            </Content>
+        </RefDoc>
+    </Document>
 </MsgHead>

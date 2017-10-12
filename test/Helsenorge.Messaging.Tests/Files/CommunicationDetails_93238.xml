@@ -1,199 +1,199 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <CommunicationParty i:type="OrganizationPerson" xmlns="http://register.nhn.no/CommunicationParty" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
-	<Active>true</Active>
-	<DisplayName i:nil="true"/>
-	<ElectronicAddresses xmlns:a="http://register.nhn.no/Common">
-		<a:ElectronicAddress>
-			<a:Address>sb.test.nhn.no/DigitalDialog/93238_error</a:Address>
-			<a:Inherited>false</a:Inherited>
-			<a:LastChanged>2015-05-12T15:19:55.133</a:LastChanged>
-			<a:Type>
-				<a:Active>true</a:Active>
-				<a:CodeText>Feilmelding AMQP kø</a:CodeText>
-				<a:CodeValue>E_SB_ERROR</a:CodeValue>
-				<a:OID>9044</a:OID>
-				<a:SimpleType>type_adressekomponeneter</a:SimpleType>
-			</a:Type>
-			<a:TypeCodeValue>E_SB_ERROR</a:TypeCodeValue>
-		</a:ElectronicAddress>
-		<a:ElectronicAddress>
-			<a:Address>sb.test.nhn.no/DigitalDialog/93238_async</a:Address>
-			<a:Inherited>false</a:Inherited>
-			<a:LastChanged>2015-05-12T15:19:55.133</a:LastChanged>
-			<a:Type>
-				<a:Active>true</a:Active>
-				<a:CodeText>Asynkron AMQP kø</a:CodeText>
-				<a:CodeValue>E_SB_ASYNC</a:CodeValue>
-				<a:OID>9044</a:OID>
-				<a:SimpleType>type_adressekomponeneter</a:SimpleType>
-			</a:Type>
-			<a:TypeCodeValue>E_SB_ASYNC</a:TypeCodeValue>
-		</a:ElectronicAddress>
-		<a:ElectronicAddress>
-			<a:Address>ldap://ldap.test4.buypass.no/dc=Buypass,dc=no,CN=Buypass%20Class%203%20Test4%20CA%203?usercertificate;binary?sub?(|(certificateSerialNumber=78582546985489742573738)(certificateSerialNumber=78562091626959712290424))</a:Address>
-			<a:Inherited>false</a:Inherited>
-			<a:LastChanged>2016-04-19T08:16:26.133</a:LastChanged>
-			<a:Type>
-				<a:Active>true</a:Active>
-				<a:CodeText>Digital sertifikat</a:CodeText>
-				<a:CodeValue>E_DS</a:CodeValue>
-				<a:OID>9044</a:OID>
-				<a:SimpleType>type_adressekomponeneter</a:SimpleType>
-			</a:Type>
-			<a:TypeCodeValue>E_DS</a:TypeCodeValue>
-		</a:ElectronicAddress>
-		<a:ElectronicAddress>
-			<a:Address>sb.test.nhn.no/DigitalDialog/93238_sync</a:Address>
-			<a:Inherited>false</a:Inherited>
-			<a:LastChanged>2015-05-12T15:19:55.133</a:LastChanged>
-			<a:Type>
-				<a:Active>true</a:Active>
-				<a:CodeText>Synkron AMQP kø</a:CodeText>
-				<a:CodeValue>E_SB_SYNC</a:CodeValue>
-				<a:OID>9044</a:OID>
-				<a:SimpleType>type_adressekomponeneter</a:SimpleType>
-			</a:Type>
-			<a:TypeCodeValue>E_SB_SYNC</a:TypeCodeValue>
-		</a:ElectronicAddress>
-		<a:ElectronicAddress>
-			<a:Address/>
-			<a:Inherited>true</a:Inherited>
-			<a:LastChanged>2016-06-06T10:57:44.483</a:LastChanged>
-			<a:Type>
-				<a:Active>true</a:Active>
-				<a:CodeText>Hjemmeside</a:CodeText>
-				<a:CodeValue>E_URL</a:CodeValue>
-				<a:OID>9044</a:OID>
-				<a:SimpleType>type_adressekomponeneter</a:SimpleType>
-			</a:Type>
-			<a:TypeCodeValue>E_URL</a:TypeCodeValue>
-		</a:ElectronicAddress>
-		<a:ElectronicAddress>
-			<a:Address>48484848</a:Address>
-			<a:Inherited>true</a:Inherited>
-			<a:LastChanged>2016-06-06T10:57:44.483</a:LastChanged>
-			<a:Type>
-				<a:Active>true</a:Active>
-				<a:CodeText>Sentralbordnummer</a:CodeText>
-				<a:CodeValue>E_CEN</a:CodeValue>
-				<a:OID>9044</a:OID>
-				<a:SimpleType>type_adressekomponeneter</a:SimpleType>
-			</a:Type>
-			<a:TypeCodeValue>E_CEN</a:TypeCodeValue>
-		</a:ElectronicAddress>
-		<a:ElectronicAddress>
-			<a:Address>24163000</a:Address>
-			<a:Inherited>true</a:Inherited>
-			<a:LastChanged>2016-06-06T10:57:44.483</a:LastChanged>
-			<a:Type>
-				<a:Active>true</a:Active>
-				<a:CodeText>Telefonnummer</a:CodeText>
-				<a:CodeValue>E_TLF</a:CodeValue>
-				<a:OID>9044</a:OID>
-				<a:SimpleType>type_adressekomponeneter</a:SimpleType>
-			</a:Type>
-			<a:TypeCodeValue>E_TLF</a:TypeCodeValue>
-		</a:ElectronicAddress>
-		<a:ElectronicAddress>
-			<a:Address>24163001</a:Address>
-			<a:Inherited>true</a:Inherited>
-			<a:LastChanged>2016-06-06T10:57:44.483</a:LastChanged>
-			<a:Type>
-				<a:Active>true</a:Active>
-				<a:CodeText>Faxnummer</a:CodeText>
-				<a:CodeValue>E_FAX</a:CodeValue>
-				<a:OID>9044</a:OID>
-				<a:SimpleType>type_adressekomponeneter</a:SimpleType>
-			</a:Type>
-			<a:TypeCodeValue>E_FAX</a:TypeCodeValue>
-		</a:ElectronicAddress>
-		<a:ElectronicAddress>
-			<a:Address>postmottak@helsedir.no</a:Address>
-			<a:Inherited>true</a:Inherited>
-			<a:LastChanged>2016-06-06T10:57:44.483</a:LastChanged>
-			<a:Type>
-				<a:Active>true</a:Active>
-				<a:CodeText>Epost-adresse</a:CodeText>
-				<a:CodeValue>E_EPO</a:CodeValue>
-				<a:OID>9044</a:OID>
-				<a:SimpleType>type_adressekomponeneter</a:SimpleType>
-			</a:Type>
-			<a:TypeCodeValue>E_EPO</a:TypeCodeValue>
-		</a:ElectronicAddress>
-	</ElectronicAddresses>
-	<HerId>93238</HerId>
-	<IsValidCommunicationParty>true</IsValidCommunicationParty>
-	<LastChanged>2015-05-12T15:19:55.133</LastChanged>
-	<Municipality xmlns:a="http://register.nhn.no/Common">
-		<a:Active>true</a:Active>
-		<a:CodeText>OSLO</a:CodeText>
-		<a:CodeValue>301</a:CodeValue>
-		<a:OID>3402</a:OID>
-		<a:SimpleType>kommunenummer</a:SimpleType>
-	</Municipality>
-	<Name>Digitale innbyggertjenester</Name>
-	<ParentBusinessType xmlns:a="http://register.nhn.no/Common">
-		<a:Active>true</a:Active>
-		<a:CodeText>Offentlig forvaltning</a:CodeText>
-		<a:CodeValue>113</a:CodeValue>
-		<a:OID>9040</a:OID>
-		<a:SimpleType>helsevirksomhet_type</a:SimpleType>
-	</ParentBusinessType>
-	<ParentHerId>2397</ParentHerId>
-	<ParentName>HELSEDIREKTORATET</ParentName>
-	<ParentOrganizationNumber>983544622</ParentOrganizationNumber>
-	<PhysicalAddresses xmlns:a="http://register.nhn.no/Common">
-		<a:PhysicalAddress>
-			<a:City>OSLO</a:City>
-			<a:Country i:nil="true"/>
-			<a:Description/>
-			<a:Inherited>true</a:Inherited>
-			<a:LastChanged>2016-06-06T10:57:44.483</a:LastChanged>
-			<a:PostalCode>164</a:PostalCode>
-			<a:Postbox/>
-			<a:StreetAddress>Universitetsgata 2</a:StreetAddress>
-			<a:Type>
-				<a:Active>true</a:Active>
-				<a:CodeText>Besøksadresse</a:CodeText>
-				<a:CodeValue>RES</a:CodeValue>
-				<a:OID>3401</a:OID>
-				<a:SimpleType>adressetype</a:SimpleType>
-			</a:Type>
-			<a:TypeCodeValue>RES</a:TypeCodeValue>
-		</a:PhysicalAddress>
-		<a:PhysicalAddress>
-			<a:City>OSLO</a:City>
-			<a:Country i:nil="true"/>
-			<a:Description/>
-			<a:Inherited>true</a:Inherited>
-			<a:LastChanged>2016-06-06T10:57:44.483</a:LastChanged>
-			<a:PostalCode>130</a:PostalCode>
-			<a:Postbox/>
-			<a:StreetAddress>Postboks 7000 St Olavs plas</a:StreetAddress>
-			<a:Type>
-				<a:Active>true</a:Active>
-				<a:CodeText>Postadresse</a:CodeText>
-				<a:CodeValue>PST</a:CodeValue>
-				<a:OID>3401</a:OID>
-				<a:SimpleType>adressetype</a:SimpleType>
-			</a:Type>
-			<a:TypeCodeValue>PST</a:TypeCodeValue>
-		</a:PhysicalAddress>
-	</PhysicalAddresses>
-	<ServerTime>2016-06-10T13:02:02.0834387+02:00</ServerTime>
-	<Type>Service</Type>
-	<Valid xmlns:a="http://register.nhn.no/Common">
-		<a:From>2015-05-12T00:00:00</a:From>
-		<a:To>9999-12-31T00:00:00</a:To>
-	</Valid>
-	<Code xmlns:a="http://register.nhn.no/Common">
-		<a:Active>true</a:Active>
-		<a:CodeText>Digitale innbyggertjenester</a:CodeText>
-		<a:CodeValue>4</a:CodeValue>
-		<a:OID>8658</a:OID>
-		<a:SimpleType>Meldingsmottak i offentlig forvaltning</a:SimpleType>
-	</Code>
-	<Description i:nil="true"/>
-	<LocationDescription>DD.UTV.01</LocationDescription>
-	<Properties xmlns:a="http://register.nhn.no/Common"/>
+    <Active>true</Active>
+    <DisplayName i:nil="true"/>
+    <ElectronicAddresses xmlns:a="http://register.nhn.no/Common">
+        <a:ElectronicAddress>
+            <a:Address>sb.test.nhn.no/DigitalDialog/93238_error</a:Address>
+            <a:Inherited>false</a:Inherited>
+            <a:LastChanged>2015-05-12T15:19:55.133</a:LastChanged>
+            <a:Type>
+                <a:Active>true</a:Active>
+                <a:CodeText>Feilmelding AMQP kø</a:CodeText>
+                <a:CodeValue>E_SB_ERROR</a:CodeValue>
+                <a:OID>9044</a:OID>
+                <a:SimpleType>type_adressekomponeneter</a:SimpleType>
+            </a:Type>
+            <a:TypeCodeValue>E_SB_ERROR</a:TypeCodeValue>
+        </a:ElectronicAddress>
+        <a:ElectronicAddress>
+            <a:Address>sb.test.nhn.no/DigitalDialog/93238_async</a:Address>
+            <a:Inherited>false</a:Inherited>
+            <a:LastChanged>2015-05-12T15:19:55.133</a:LastChanged>
+            <a:Type>
+                <a:Active>true</a:Active>
+                <a:CodeText>Asynkron AMQP kø</a:CodeText>
+                <a:CodeValue>E_SB_ASYNC</a:CodeValue>
+                <a:OID>9044</a:OID>
+                <a:SimpleType>type_adressekomponeneter</a:SimpleType>
+            </a:Type>
+            <a:TypeCodeValue>E_SB_ASYNC</a:TypeCodeValue>
+        </a:ElectronicAddress>
+        <a:ElectronicAddress>
+            <a:Address>ldap://ldap.test4.buypass.no/dc=Buypass,dc=no,CN=Buypass%20Class%203%20Test4%20CA%203?usercertificate;binary?sub?(|(certificateSerialNumber=78582546985489742573738)(certificateSerialNumber=78562091626959712290424))</a:Address>
+            <a:Inherited>false</a:Inherited>
+            <a:LastChanged>2016-04-19T08:16:26.133</a:LastChanged>
+            <a:Type>
+                <a:Active>true</a:Active>
+                <a:CodeText>Digital sertifikat</a:CodeText>
+                <a:CodeValue>E_DS</a:CodeValue>
+                <a:OID>9044</a:OID>
+                <a:SimpleType>type_adressekomponeneter</a:SimpleType>
+            </a:Type>
+            <a:TypeCodeValue>E_DS</a:TypeCodeValue>
+        </a:ElectronicAddress>
+        <a:ElectronicAddress>
+            <a:Address>sb.test.nhn.no/DigitalDialog/93238_sync</a:Address>
+            <a:Inherited>false</a:Inherited>
+            <a:LastChanged>2015-05-12T15:19:55.133</a:LastChanged>
+            <a:Type>
+                <a:Active>true</a:Active>
+                <a:CodeText>Synkron AMQP kø</a:CodeText>
+                <a:CodeValue>E_SB_SYNC</a:CodeValue>
+                <a:OID>9044</a:OID>
+                <a:SimpleType>type_adressekomponeneter</a:SimpleType>
+            </a:Type>
+            <a:TypeCodeValue>E_SB_SYNC</a:TypeCodeValue>
+        </a:ElectronicAddress>
+        <a:ElectronicAddress>
+            <a:Address/>
+            <a:Inherited>true</a:Inherited>
+            <a:LastChanged>2016-06-06T10:57:44.483</a:LastChanged>
+            <a:Type>
+                <a:Active>true</a:Active>
+                <a:CodeText>Hjemmeside</a:CodeText>
+                <a:CodeValue>E_URL</a:CodeValue>
+                <a:OID>9044</a:OID>
+                <a:SimpleType>type_adressekomponeneter</a:SimpleType>
+            </a:Type>
+            <a:TypeCodeValue>E_URL</a:TypeCodeValue>
+        </a:ElectronicAddress>
+        <a:ElectronicAddress>
+            <a:Address>48484848</a:Address>
+            <a:Inherited>true</a:Inherited>
+            <a:LastChanged>2016-06-06T10:57:44.483</a:LastChanged>
+            <a:Type>
+                <a:Active>true</a:Active>
+                <a:CodeText>Sentralbordnummer</a:CodeText>
+                <a:CodeValue>E_CEN</a:CodeValue>
+                <a:OID>9044</a:OID>
+                <a:SimpleType>type_adressekomponeneter</a:SimpleType>
+            </a:Type>
+            <a:TypeCodeValue>E_CEN</a:TypeCodeValue>
+        </a:ElectronicAddress>
+        <a:ElectronicAddress>
+            <a:Address>24163000</a:Address>
+            <a:Inherited>true</a:Inherited>
+            <a:LastChanged>2016-06-06T10:57:44.483</a:LastChanged>
+            <a:Type>
+                <a:Active>true</a:Active>
+                <a:CodeText>Telefonnummer</a:CodeText>
+                <a:CodeValue>E_TLF</a:CodeValue>
+                <a:OID>9044</a:OID>
+                <a:SimpleType>type_adressekomponeneter</a:SimpleType>
+            </a:Type>
+            <a:TypeCodeValue>E_TLF</a:TypeCodeValue>
+        </a:ElectronicAddress>
+        <a:ElectronicAddress>
+            <a:Address>24163001</a:Address>
+            <a:Inherited>true</a:Inherited>
+            <a:LastChanged>2016-06-06T10:57:44.483</a:LastChanged>
+            <a:Type>
+                <a:Active>true</a:Active>
+                <a:CodeText>Faxnummer</a:CodeText>
+                <a:CodeValue>E_FAX</a:CodeValue>
+                <a:OID>9044</a:OID>
+                <a:SimpleType>type_adressekomponeneter</a:SimpleType>
+            </a:Type>
+            <a:TypeCodeValue>E_FAX</a:TypeCodeValue>
+        </a:ElectronicAddress>
+        <a:ElectronicAddress>
+            <a:Address>postmottak@helsedir.no</a:Address>
+            <a:Inherited>true</a:Inherited>
+            <a:LastChanged>2016-06-06T10:57:44.483</a:LastChanged>
+            <a:Type>
+                <a:Active>true</a:Active>
+                <a:CodeText>Epost-adresse</a:CodeText>
+                <a:CodeValue>E_EPO</a:CodeValue>
+                <a:OID>9044</a:OID>
+                <a:SimpleType>type_adressekomponeneter</a:SimpleType>
+            </a:Type>
+            <a:TypeCodeValue>E_EPO</a:TypeCodeValue>
+        </a:ElectronicAddress>
+    </ElectronicAddresses>
+    <HerId>93238</HerId>
+    <IsValidCommunicationParty>true</IsValidCommunicationParty>
+    <LastChanged>2015-05-12T15:19:55.133</LastChanged>
+    <Municipality xmlns:a="http://register.nhn.no/Common">
+        <a:Active>true</a:Active>
+        <a:CodeText>OSLO</a:CodeText>
+        <a:CodeValue>301</a:CodeValue>
+        <a:OID>3402</a:OID>
+        <a:SimpleType>kommunenummer</a:SimpleType>
+    </Municipality>
+    <Name>Digitale innbyggertjenester</Name>
+    <ParentBusinessType xmlns:a="http://register.nhn.no/Common">
+        <a:Active>true</a:Active>
+        <a:CodeText>Offentlig forvaltning</a:CodeText>
+        <a:CodeValue>113</a:CodeValue>
+        <a:OID>9040</a:OID>
+        <a:SimpleType>helsevirksomhet_type</a:SimpleType>
+    </ParentBusinessType>
+    <ParentHerId>2397</ParentHerId>
+    <ParentName>HELSEDIREKTORATET</ParentName>
+    <ParentOrganizationNumber>983544622</ParentOrganizationNumber>
+    <PhysicalAddresses xmlns:a="http://register.nhn.no/Common">
+        <a:PhysicalAddress>
+            <a:City>OSLO</a:City>
+            <a:Country i:nil="true"/>
+            <a:Description/>
+            <a:Inherited>true</a:Inherited>
+            <a:LastChanged>2016-06-06T10:57:44.483</a:LastChanged>
+            <a:PostalCode>164</a:PostalCode>
+            <a:Postbox/>
+            <a:StreetAddress>Universitetsgata 2</a:StreetAddress>
+            <a:Type>
+                <a:Active>true</a:Active>
+                <a:CodeText>Besøksadresse</a:CodeText>
+                <a:CodeValue>RES</a:CodeValue>
+                <a:OID>3401</a:OID>
+                <a:SimpleType>adressetype</a:SimpleType>
+            </a:Type>
+            <a:TypeCodeValue>RES</a:TypeCodeValue>
+        </a:PhysicalAddress>
+        <a:PhysicalAddress>
+            <a:City>OSLO</a:City>
+            <a:Country i:nil="true"/>
+            <a:Description/>
+            <a:Inherited>true</a:Inherited>
+            <a:LastChanged>2016-06-06T10:57:44.483</a:LastChanged>
+            <a:PostalCode>130</a:PostalCode>
+            <a:Postbox/>
+            <a:StreetAddress>Postboks 7000 St Olavs plas</a:StreetAddress>
+            <a:Type>
+                <a:Active>true</a:Active>
+                <a:CodeText>Postadresse</a:CodeText>
+                <a:CodeValue>PST</a:CodeValue>
+                <a:OID>3401</a:OID>
+                <a:SimpleType>adressetype</a:SimpleType>
+            </a:Type>
+            <a:TypeCodeValue>PST</a:TypeCodeValue>
+        </a:PhysicalAddress>
+    </PhysicalAddresses>
+    <ServerTime>2016-06-10T13:02:02.0834387+02:00</ServerTime>
+    <Type>Service</Type>
+    <Valid xmlns:a="http://register.nhn.no/Common">
+        <a:From>2015-05-12T00:00:00</a:From>
+        <a:To>9999-12-31T00:00:00</a:To>
+    </Valid>
+    <Code xmlns:a="http://register.nhn.no/Common">
+        <a:Active>true</a:Active>
+        <a:CodeText>Digitale innbyggertjenester</a:CodeText>
+        <a:CodeValue>4</a:CodeValue>
+        <a:OID>8658</a:OID>
+        <a:SimpleType>Meldingsmottak i offentlig forvaltning</a:SimpleType>
+    </Code>
+    <Description i:nil="true"/>
+    <LocationDescription>DD.UTV.01</LocationDescription>
+    <Properties xmlns:a="http://register.nhn.no/Common"/>
 </CommunicationParty>

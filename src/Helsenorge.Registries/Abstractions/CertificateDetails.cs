@@ -8,8 +8,8 @@ namespace Helsenorge.Registries.Abstractions
     public class CertificateDetails
     {
         /// <summary>
-		/// The HER-ID of the communication party. This is identifies this party in the Address Registry
-		/// </summary>
+        /// The HER-ID of the communication party. This is identifies this party in the Address Registry
+        /// </summary>
         public int HerId { get; set; }
 
         /// <summary>

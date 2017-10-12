@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ns0:Envelope xmlns:ns0="http://www.w3.org/2003/05/soap-envelope">
-	<ns0:Body>
-		<ns0:Fault>
-			<ns0:Code>
-				<ns0:Value>ns0:Sender</ns0:Value>
-			</ns0:Code>
-			<ns0:Reason>
-				<ns0:Text xml:lang="US">Signaturen lot seg ikke verifiseres</ns0:Text>
-			</ns0:Reason>
-			<ns0:Detail>
-				<ns1:messageId xmlns:ns1="http://www.kith.no/xmlstds/digitaldialog/2013-10-08">469eb15c-8e40-4720-9e0f-d83fcc4470e8</ns1:messageId>
-				<ns1:applicationTimeStamp xmlns:ns1="http://www.kith.no/xmlstds/digitaldialog/2013-10-08">07/30/2015 13:16:55</ns1:applicationTimeStamp>
-			</ns0:Detail>
-		</ns0:Fault>
-	</ns0:Body>
+    <ns0:Body>
+        <ns0:Fault>
+            <ns0:Code>
+                <ns0:Value>ns0:Sender</ns0:Value>
+            </ns0:Code>
+            <ns0:Reason>
+                <ns0:Text xml:lang="US">Signaturen lot seg ikke verifiseres</ns0:Text>
+            </ns0:Reason>
+            <ns0:Detail>
+                <ns1:messageId xmlns:ns1="http://www.kith.no/xmlstds/digitaldialog/2013-10-08">469eb15c-8e40-4720-9e0f-d83fcc4470e8</ns1:messageId>
+                <ns1:applicationTimeStamp xmlns:ns1="http://www.kith.no/xmlstds/digitaldialog/2013-10-08">07/30/2015 13:16:55</ns1:applicationTimeStamp>
+            </ns0:Detail>
+        </ns0:Fault>
+    </ns0:Body>
 </ns0:Envelope>

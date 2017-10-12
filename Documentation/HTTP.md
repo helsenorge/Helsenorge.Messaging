@@ -20,18 +20,18 @@ Legge en melding på køen q1:
 
 ```
 <AMQPMessage>	
-	<MessageFunction>msgfunc</MessageFunction>
-	<FromHerId>123</FromHerId>
-	<ToHerId>456</ToHerId>
-	<MessageId>msgid</MessageId>
-	<CorrelationId>correlationid</CorrelationId>
-	<EnqueuedTimeUtc>2017-01-01T13:30:10Z</EnqueuedTimeUtc>
-	<ContentType>text/plain</ContentType>
-	<Payload>
-		<foo>a</foo>
-	</Payload>
-	<ApplicationTimestamp>2017-01-01T13:30:10</ApplicationTimestamp>
-	<CpaId>cpaid</CpaId>
+    <MessageFunction>msgfunc</MessageFunction>
+    <FromHerId>123</FromHerId>
+    <ToHerId>456</ToHerId>
+    <MessageId>msgid</MessageId>
+    <CorrelationId>correlationid</CorrelationId>
+    <EnqueuedTimeUtc>2017-01-01T13:30:10Z</EnqueuedTimeUtc>
+    <ContentType>text/plain</ContentType>
+    <Payload>
+        <foo>a</foo>
+    </Payload>
+    <ApplicationTimestamp>2017-01-01T13:30:10</ApplicationTimestamp>
+    <CpaId>cpaid</CpaId>
 </AMQPMessage>
 ```
 

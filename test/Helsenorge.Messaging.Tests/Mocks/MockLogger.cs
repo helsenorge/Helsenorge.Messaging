@@ -9,16 +9,16 @@ using System.Diagnostics;
 
 namespace Helsenorge.Messaging.Tests.Mocks
 {
-	class MockLogger : ILogger
-	{
-		private readonly Func<string, LogLevel, bool> _filter; 
+    class MockLogger : ILogger
+    {
+        private readonly Func<string, LogLevel, bool> _filter; 
         private readonly string _name;
-		private MockLoggerProvider _provider;
+        private MockLoggerProvider _provider;
 
         public MockLogger(string name, MockLoggerProvider provider)
             : this(name, filter: null)
         {
-	        _provider = provider;
+            _provider = provider;
         } 
         public MockLogger(string name, Func<string, LogLevel, bool> filter)
         { 
@@ -31,7 +31,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
         } 
         public bool IsEnabled(LogLevel logLevel)
         {
-	        return true;
+            return true;
         } 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         { 
@@ -54,16 +54,16 @@ namespace Helsenorge.Messaging.Tests.Mocks
             { 
                 message += Environment.NewLine + Environment.NewLine + exception.ToString(); 
             }
-			Debug.WriteLine(message, _name);
+            Debug.WriteLine(message, _name);
 
-			_provider.Entries.Add(new MockLoggerProvider.Entry()
-			{
-				LogLevel = logLevel,
-				EventId = eventId,
-				Exception = exception,
-				Message = formatter(state, exception)
-			});
-		} 
+            _provider.Entries.Add(new MockLoggerProvider.Entry()
+            {
+                LogLevel = logLevel,
+                EventId = eventId,
+                Exception = exception,
+                Message = formatter(state, exception)
+            });
+        } 
         private class NoopDisposable : IDisposable 
         { 
             public static NoopDisposable Instance = new NoopDisposable(); 
@@ -72,5 +72,5 @@ namespace Helsenorge.Messaging.Tests.Mocks
             { 
             } 
         } 
-	}
+    }
 }

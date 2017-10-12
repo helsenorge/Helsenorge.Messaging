@@ -53,8 +53,8 @@ Avsender skal varsles om data som mangler/ikke stemmer. errorCondition = transpo
 ```cs
 throw new ReceivedDataMismatchException("Mismatch") 
 { 
-	ExpectedValue = "Expected", 
-	ReceivedValue = "Received"
+    ExpectedValue = "Expected", 
+    ReceivedValue = "Received"
 };
 ``` 
 

@@ -54,42 +54,42 @@ namespace Helsenorge.Messaging.Tests
         }
 
         internal void SetupInternal(int otherHerId)
-		{
-			var addressRegistrySettings = new AddressRegistrySettings()
-			{
-				UserName = "username",
-				Password = "password",
-				EndpointName = "SomeEndpointName",
-				WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
-				CachingInterval = TimeSpan.FromSeconds(5)
-			};
-			var collaborationRegistrySettings = new CollaborationProtocolRegistrySettings()
-			{
-				UserName = "username",
-				Password = "password",
-				EndpointName = "SomeEndpointName",
-				WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
-				CachingInterval = TimeSpan.FromSeconds(5)
-			};
+        {
+            var addressRegistrySettings = new AddressRegistrySettings()
+            {
+                UserName = "username",
+                Password = "password",
+                EndpointName = "SomeEndpointName",
+                WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
+                CachingInterval = TimeSpan.FromSeconds(5)
+            };
+            var collaborationRegistrySettings = new CollaborationProtocolRegistrySettings()
+            {
+                UserName = "username",
+                Password = "password",
+                EndpointName = "SomeEndpointName",
+                WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
+                CachingInterval = TimeSpan.FromSeconds(5)
+            };
 
-			LoggerFactory = new LoggerFactory();
+            LoggerFactory = new LoggerFactory();
 
-			MockLoggerProvider = new MockLoggerProvider(null);
-			LoggerFactory.AddProvider(MockLoggerProvider);
+            MockLoggerProvider = new MockLoggerProvider(null);
+            LoggerFactory.AddProvider(MockLoggerProvider);
 
-			//LoggerFactory.AddDebug();
-			//Logger = new LoggerMock(LoggerFactory.CreateLogger<BaseTest>());
-			Logger = LoggerFactory.CreateLogger<BaseTest>();
+            //LoggerFactory.AddDebug();
+            //Logger = new LoggerMock(LoggerFactory.CreateLogger<BaseTest>());
+            Logger = LoggerFactory.CreateLogger<BaseTest>();
 
-			var memoryCache = new MemoryCache(new MemoryCacheOptions());
-			var distributedCache = new MemoryDistributedCache(memoryCache);
+            var memoryCache = new MemoryCache(new MemoryCacheOptions());
+            var distributedCache = new MemoryDistributedCache(memoryCache);
 
-			AddressRegistry = new AddressRegistryMock(addressRegistrySettings, distributedCache);
-			AddressRegistry.SetupFindCommunicationPartyDetails(i =>
-			{
-				var file = Path.Combine("Files", $"CommunicationDetails_{i}.xml");
-				return File.Exists(file) == false ? null : XElement.Load(file);
-			});
+            AddressRegistry = new AddressRegistryMock(addressRegistrySettings, distributedCache);
+            AddressRegistry.SetupFindCommunicationPartyDetails(i =>
+            {
+                var file = Path.Combine("Files", $"CommunicationDetails_{i}.xml");
+                return File.Exists(file) == false ? null : XElement.Load(file);
+            });
             AddressRegistry.SetupGetCertificateDetailsForEncryption(i =>
             {
                 var path = Path.Combine("Files", $"GetCertificateDetailsForEncryption_{i}.xml");
@@ -101,76 +101,76 @@ namespace Helsenorge.Messaging.Tests
                 return File.Exists(path) == false ? null : XElement.Load(path);
             });
 
-			CollaborationRegistry = new CollaborationProtocolRegistryMock(collaborationRegistrySettings, distributedCache, AddressRegistry);
-			CollaborationRegistry.SetupFindProtocolForCounterparty(i =>
-			{
-				var file = Path.Combine("Files", $"CPP_{i}.xml");
-				return File.Exists(file) == false ? null : File.ReadAllText(file);
-			});
-			CollaborationRegistry.SetupFindAgreementForCounterparty(i =>
-			{
-				var file = Path.Combine("Files", $"CPA_{i}.xml");
-				return File.Exists(file) == false ? null : File.ReadAllText(file);
-			});
-			CollaborationRegistry.SetupFindAgreementById(i =>
-			{
-				var file = Path.Combine("Files", $"CPA_{i:D}.xml");
-				return File.Exists(file) == false ? null : File.ReadAllText(file);
-			});
+            CollaborationRegistry = new CollaborationProtocolRegistryMock(collaborationRegistrySettings, distributedCache, AddressRegistry);
+            CollaborationRegistry.SetupFindProtocolForCounterparty(i =>
+            {
+                var file = Path.Combine("Files", $"CPP_{i}.xml");
+                return File.Exists(file) == false ? null : File.ReadAllText(file);
+            });
+            CollaborationRegistry.SetupFindAgreementForCounterparty(i =>
+            {
+                var file = Path.Combine("Files", $"CPA_{i}.xml");
+                return File.Exists(file) == false ? null : File.ReadAllText(file);
+            });
+            CollaborationRegistry.SetupFindAgreementById(i =>
+            {
+                var file = Path.Combine("Files", $"CPA_{i:D}.xml");
+                return File.Exists(file) == false ? null : File.ReadAllText(file);
+            });
 
-			Settings = new MessagingSettings()
-			{
-				MyHerId = MockFactory.HelsenorgeHerId,
-				SigningCertificate = new CertificateSettings()
-				{
-					Certificate = TestCertificates.HelsenorgePrivateSigntature
-				},
-				DecryptionCertificate = new CertificateSettings()
-				{
-					Certificate = TestCertificates.HelsenorgePrivateEncryption
-				}
-			};
-			
-			Settings.ServiceBus.ConnectionString = "connection string";
-			Settings.ServiceBus.Synchronous.ReplyQueueMapping.Add(Environment.MachineName.ToLower(), "RepliesGoHere");
-			// make things easier by only having one processing task per queue
-			Settings.ServiceBus.Asynchronous.ProcessingTasks = 1;
-			Settings.ServiceBus.Synchronous.ProcessingTasks = 1;
-			Settings.ServiceBus.Error.ProcessingTasks = 1;
+            Settings = new MessagingSettings()
+            {
+                MyHerId = MockFactory.HelsenorgeHerId,
+                SigningCertificate = new CertificateSettings()
+                {
+                    Certificate = TestCertificates.HelsenorgePrivateSigntature
+                },
+                DecryptionCertificate = new CertificateSettings()
+                {
+                    Certificate = TestCertificates.HelsenorgePrivateEncryption
+                }
+            };
+            
+            Settings.ServiceBus.ConnectionString = "connection string";
+            Settings.ServiceBus.Synchronous.ReplyQueueMapping.Add(Environment.MachineName.ToLower(), "RepliesGoHere");
+            // make things easier by only having one processing task per queue
+            Settings.ServiceBus.Asynchronous.ProcessingTasks = 1;
+            Settings.ServiceBus.Synchronous.ProcessingTasks = 1;
+            Settings.ServiceBus.Error.ProcessingTasks = 1;
 
-			MockFactory = new MockFactory(otherHerId);
-			CertificateValidator = new MockCertificateValidator();
+            MockFactory = new MockFactory(otherHerId);
+            CertificateValidator = new MockCertificateValidator();
 
-			Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry)
-			{
-				DefaultMessageProtection = new NoMessageProtection(),   // disable protection for most tests
-				DefaultCertificateValidator = CertificateValidator
-			};
-			Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
+            Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry)
+            {
+                DefaultMessageProtection = new NoMessageProtection(),   // disable protection for most tests
+                DefaultCertificateValidator = CertificateValidator
+            };
+            Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
-			Server = new MessagingServer(Settings, Logger, LoggerFactory, CollaborationRegistry, AddressRegistry)
-			{
-				DefaultMessageProtection = new NoMessageProtection(),   // disable protection for most tests
-				DefaultCertificateValidator = CertificateValidator
-			};
-			Server.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
-		}
+            Server = new MessagingServer(Settings, Logger, LoggerFactory, CollaborationRegistry, AddressRegistry)
+            {
+                DefaultMessageProtection = new NoMessageProtection(),   // disable protection for most tests
+                DefaultCertificateValidator = CertificateValidator
+            };
+            Server.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
+        }
 
-		internal MockMessage CreateMockMessage(OutgoingMessage message)
-		{
-			return new MockMessage(GenericResponse)
-			{
-				MessageFunction = message.MessageFunction,
-				ApplicationTimestamp = DateTime.Now,
-				ContentType = ContentType.SignedAndEnveloped,
-				MessageId = Guid.NewGuid().ToString("D"),
-				CorrelationId = message.MessageId,
-				FromHerId = MockFactory.OtherHerId,
-				ToHerId = MockFactory.HelsenorgeHerId,
-				ScheduledEnqueueTimeUtc = DateTime.UtcNow,
-				TimeToLive = TimeSpan.FromSeconds(15),
-			};
-		}
+        internal MockMessage CreateMockMessage(OutgoingMessage message)
+        {
+            return new MockMessage(GenericResponse)
+            {
+                MessageFunction = message.MessageFunction,
+                ApplicationTimestamp = DateTime.Now,
+                ContentType = ContentType.SignedAndEnveloped,
+                MessageId = Guid.NewGuid().ToString("D"),
+                CorrelationId = message.MessageId,
+                FromHerId = MockFactory.OtherHerId,
+                ToHerId = MockFactory.HelsenorgeHerId,
+                ScheduledEnqueueTimeUtc = DateTime.UtcNow,
+                TimeToLive = TimeSpan.FromSeconds(15),
+            };
+        }
 
         protected void RunAndHandleException(Task task)
         {

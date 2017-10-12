@@ -7,7 +7,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
     [TestClass]
     public class AsynchronousSendTestsWithoutCpp : BaseTest
     {
-	    private const int CommunicationPartyWithoutCppHerId = 94867;
+        private const int CommunicationPartyWithoutCppHerId = 94867;
 
         [TestInitialize]
         public override void Setup()
