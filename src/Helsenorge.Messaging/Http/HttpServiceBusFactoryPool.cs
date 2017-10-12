@@ -17,8 +17,8 @@ namespace Helsenorge.Messaging.Http
         private IMessagingFactory _alternateMessagingFactor;
 
         public HttpServiceBusFactoryPool(ServiceBusSettings settings) :
-			base("FactoryPool", settings.MaxFactories)
-		{
+            base("FactoryPool", settings.MaxFactories)
+        {
             _settings = settings;
         }
 

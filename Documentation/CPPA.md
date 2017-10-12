@@ -31,12 +31,12 @@ var collaborationProtocolMessage = await PreCheck(logger, message).ConfigureAwai
 
 switch (collaborationProtocolMessage.DeliveryProtocol)
 {
-	case DeliveryProtocol.Amqp:
-		await _asynchronousServiceBusSender.SendAsync(logger, message).ConfigureAwait(false);
-		return;
-	case DeliveryProtocol.Unknown:
-	default:
-		throw new NotImplementedException();
+    case DeliveryProtocol.Amqp:
+        await _asynchronousServiceBusSender.SendAsync(logger, message).ConfigureAwait(false);
+        return;
+    case DeliveryProtocol.Unknown:
+    default:
+        throw new NotImplementedException();
 }
 ```
 

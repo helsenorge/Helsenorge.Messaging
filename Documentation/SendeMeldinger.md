@@ -9,12 +9,12 @@ Den synkrone håndteringen tar utgangspunktet i at hver prosess/maskin har sin e
 Når vi sender er en synkron melding, så setter vi eksplisitt hvilken kø svaret skal tilbake på.    
 Koblingen mellom maskin og kønavn settes opp i konfigurasjonen.
 
-	"Synchronous": {
-		"CallTimeout":  "00:00:15",
-		"ReplyQueueMapping": {
-			"MACHINE-NAME": "11111_syncreply"
-			}
-	}
+    "Synchronous": {
+        "CallTimeout":  "00:00:15",
+        "ReplyQueueMapping": {
+            "MACHINE-NAME": "11111_syncreply"
+            }
+    }
  
 Siden synkrone meldinger har begrenset levetid og alle trådene som venter er blokkert, så er koden skrevet slik at de sammarbeider. Alle tråder som venter, henter meldinger fra køen og legger de i et internt minnebuffer. Før en tråd sjekker køen, så sjekker de om en annen tråd har hentet den de er interessert i. 
 
@@ -32,13 +32,13 @@ var client = new MessagingClient(messagingSettings, collaborationProtocolRegistr
 
 var outgoingMessage = new OutgoingMessage()
 {
-	ToHerId = 789,
-	CpaId = Guid.Empty,
-	Payload = new XDocument(),
-	MessageFunction = "DUMMY_MESSAGE_FUNCTION",
-	MessageId = Guid.NewGuid().ToString("D"),
-	ScheduledSendTimeUtc = DateTime.Now,
-	PersonalId = "12345",
+    ToHerId = 789,
+    CpaId = Guid.Empty,
+    Payload = new XDocument(),
+    MessageFunction = "DUMMY_MESSAGE_FUNCTION",
+    MessageId = Guid.NewGuid().ToString("D"),
+    ScheduledSendTimeUtc = DateTime.Now,
+    PersonalId = "12345",
 };
 
 // for asynkrone meldinger

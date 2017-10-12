@@ -7,11 +7,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.Tests.Mocks
 {
-	class MockLoggerProvider : ILoggerProvider 
+    class MockLoggerProvider : ILoggerProvider 
     {
-		// teh server creates multiple loggers, this acts as the hub for all logger output
-		public List<Entry> Entries { get; set; } = new List<Entry>();
-		private readonly Func<string, LogLevel, bool> _filter; 
+        // teh server creates multiple loggers, this acts as the hub for all logger output
+        public List<Entry> Entries { get; set; } = new List<Entry>();
+        private readonly Func<string, LogLevel, bool> _filter; 
 
          public MockLoggerProvider(Func<string, LogLevel, bool> filter)
          { 
@@ -28,18 +28,18 @@ namespace Helsenorge.Messaging.Tests.Mocks
          {             
          }
 
-		public Entry FindEntry(EventId id)
-		{
-			var r = (from e in Entries where e.EventId.Id == id.Id && e.EventId.Name == id.Name select e).FirstOrDefault();
-			return r;
-		}
+        public Entry FindEntry(EventId id)
+        {
+            var r = (from e in Entries where e.EventId.Id == id.Id && e.EventId.Name == id.Name select e).FirstOrDefault();
+            return r;
+        }
 
-		internal class Entry
-		{
-			public LogLevel LogLevel { get; set; }
-			public EventId EventId { get; set; }
-			public Exception Exception { get; set; }
-			public string Message { get; set; }
-		}
-	} 
+        internal class Entry
+        {
+            public LogLevel LogLevel { get; set; }
+            public EventId EventId { get; set; }
+            public Exception Exception { get; set; }
+            public string Message { get; set; }
+        }
+    } 
 }

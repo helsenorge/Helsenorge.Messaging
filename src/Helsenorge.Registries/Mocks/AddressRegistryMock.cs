@@ -12,13 +12,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Registries.Mocks
 {
-	/// <summary>
-	/// Provides a mock implementation of AddressRegistry.
-	/// This code exists in this assembly so we don't have to make service reference code publicly available
-	/// </summary>
-	public class AddressRegistryMock : AddressRegistry
-	{
-		private Func<int, XElement> _findCommunicationPartyDetails;
+    /// <summary>
+    /// Provides a mock implementation of AddressRegistry.
+    /// This code exists in this assembly so we don't have to make service reference code publicly available
+    /// </summary>
+    public class AddressRegistryMock : AddressRegistry
+    {
+        private Func<int, XElement> _findCommunicationPartyDetails;
         private Func<int, XElement> _getCertificateDetailsForEncryption;
         private Func<int, XElement> _getCertificateDetailsForValidatingSignature;
 
@@ -28,18 +28,18 @@ namespace Helsenorge.Registries.Mocks
         /// <param name="settings"></param>
         /// <param name="cache"></param>
         public AddressRegistryMock(
-			AddressRegistrySettings settings,
-			IDistributedCache cache) : base(settings, cache)
-		{
-		}
-		/// <summary>
-		/// Configures a func to be called when calling the actual method
-		/// </summary>
-		/// <param name="func"></param>
-		public void SetupFindCommunicationPartyDetails(Func<int, XElement> func)
-		{
-			_findCommunicationPartyDetails = func;
-		}
+            AddressRegistrySettings settings,
+            IDistributedCache cache) : base(settings, cache)
+        {
+        }
+        /// <summary>
+        /// Configures a func to be called when calling the actual method
+        /// </summary>
+        /// <param name="func"></param>
+        public void SetupFindCommunicationPartyDetails(Func<int, XElement> func)
+        {
+            _findCommunicationPartyDetails = func;
+        }
 
         /// <summary>
         /// Receives a delegate which will be exectud when the method GetCerificateDetailsForEncryption is called.
@@ -60,14 +60,14 @@ namespace Helsenorge.Registries.Mocks
         }
 
         internal override async Task<CommunicationParty> FindCommunicationPartyDetails(ILogger logger, int herId)
-		{
-			var xml = _findCommunicationPartyDetails(herId);
-			if (xml == null)
-			{
-				return default(CommunicationParty);
-			}
-			return await Task.FromResult(Utils.Deserialize<CommunicationParty>(xml)).ConfigureAwait(false);
-		}
+        {
+            var xml = _findCommunicationPartyDetails(herId);
+            if (xml == null)
+            {
+                return default(CommunicationParty);
+            }
+            return await Task.FromResult(Utils.Deserialize<CommunicationParty>(xml)).ConfigureAwait(false);
+        }
 
         internal override async Task<CertificateDetails> GetCertificateDetailsForEncryptionInternal(ILogger logger, int herId)
         {

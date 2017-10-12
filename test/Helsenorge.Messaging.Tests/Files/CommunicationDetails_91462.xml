@@ -1,215 +1,215 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <CommunicationParty i:type="OrganizationPerson" xmlns="http://register.nhn.no/CommunicationParty" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
-	<Active>true</Active>
-	<DisplayName>Alexander Dahl</DisplayName>
-	<ElectronicAddresses xmlns:a="http://register.nhn.no/Common">
-		<a:ElectronicAddress>
-			<a:Address>sb.test.nhn.no/DigitalDialog/91462_async</a:Address>
-			<a:Inherited>false</a:Inherited>
-			<a:LastChanged>2015-05-18T10:44:06.663</a:LastChanged>
-			<a:Type>
-				<a:Active>true</a:Active>
-				<a:CodeText>Asynkron AMQP kø</a:CodeText>
-				<a:CodeValue>E_SB_ASYNC</a:CodeValue>
-				<a:OID>9044</a:OID>
-				<a:SimpleType>type_adressekomponeneter</a:SimpleType>
-			</a:Type>
-			<a:TypeCodeValue>E_SB_ASYNC</a:TypeCodeValue>
-		</a:ElectronicAddress>
-		<a:ElectronicAddress>
-			<a:Address>sb.test.nhn.no/DigitalDialog/91462_error</a:Address>
-			<a:Inherited>false</a:Inherited>
-			<a:LastChanged>2015-05-18T10:44:06.663</a:LastChanged>
-			<a:Type>
-				<a:Active>true</a:Active>
-				<a:CodeText>Feilmelding AMQP kø</a:CodeText>
-				<a:CodeValue>E_SB_ERROR</a:CodeValue>
-				<a:OID>9044</a:OID>
-				<a:SimpleType>type_adressekomponeneter</a:SimpleType>
-			</a:Type>
-			<a:TypeCodeValue>E_SB_ERROR</a:TypeCodeValue>
-		</a:ElectronicAddress>
-		<a:ElectronicAddress>
-			<a:Address>sb.test.nhn.no/DigitalDialog/91462_sync</a:Address>
-			<a:Inherited>false</a:Inherited>
-			<a:LastChanged>2015-05-18T10:44:06.663</a:LastChanged>
-			<a:Type>
-				<a:Active>true</a:Active>
-				<a:CodeText>Synkron AMQP kø</a:CodeText>
-				<a:CodeValue>E_SB_SYNC</a:CodeValue>
-				<a:OID>9044</a:OID>
-				<a:SimpleType>type_adressekomponeneter</a:SimpleType>
-			</a:Type>
-			<a:TypeCodeValue>E_SB_SYNC</a:TypeCodeValue>
-		</a:ElectronicAddress>
-		<a:ElectronicAddress>
-			<a:Address>ldap://ldap.test4.buypass.no/dc=Buypass,dc=NO,CN=Buypass%20Class%203%20Test4%20CA%203?usercertificate;binary?sub?(&amp;(sn=983544622)(cn=TEST - DDFL))</a:Address>
-			<a:Inherited>true</a:Inherited>
-			<a:LastChanged>2015-05-18T10:44:12.4</a:LastChanged>
-			<a:Type>
-				<a:Active>true</a:Active>
-				<a:CodeText>Digital sertifikat</a:CodeText>
-				<a:CodeValue>E_DS</a:CodeValue>
-				<a:OID>9044</a:OID>
-				<a:SimpleType>type_adressekomponeneter</a:SimpleType>
-			</a:Type>
-			<a:TypeCodeValue>E_DS</a:TypeCodeValue>
-		</a:ElectronicAddress>
-	</ElectronicAddresses>
-	<HerId>91462</HerId>
-	<IsValidCommunicationParty>true</IsValidCommunicationParty>
-	<LastChanged>2015-05-18T10:41:04.557</LastChanged>
-	<Municipality xmlns:a="http://register.nhn.no/Common">
-		<a:Active>true</a:Active>
-		<a:CodeText>OSLO</a:CodeText>
-		<a:CodeValue>301</a:CodeValue>
-		<a:OID>3402</a:OID>
-		<a:SimpleType>kommunenummer</a:SimpleType>
-	</Municipality>
-	<Name>Alexander Dahl</Name>
-	<ParentBusinessType xmlns:a="http://register.nhn.no/Common">
-		<a:Active>true</a:Active>
-		<a:CodeText>Privatpraktiserende autorisert helsepersonell</a:CodeText>
-		<a:CodeValue>103</a:CodeValue>
-		<a:OID>9040</a:OID>
-		<a:SimpleType>helsevirksomhet_type</a:SimpleType>
-	</ParentBusinessType>
-	<ParentHerId>93237</ParentHerId>
-	<ParentName>DD fastlege UTV MUG</ParentName>
-	<ParentOrganizationNumber>999944999</ParentOrganizationNumber>
-	<PhysicalAddresses xmlns:a="http://register.nhn.no/Common"/>
-	<ServerTime>2016-06-02T08:42:59.3977016+02:00</ServerTime>
-	<Type>Person</Type>
-	<Valid xmlns:a="http://register.nhn.no/Common">
-		<a:From>2015-05-18T00:00:00</a:From>
-		<a:To>9999-12-31T00:00:00</a:To>
-	</Valid>
-	<Departments/>
-	<Organizations>
-		<Organization>
-			<Active>true</Active>
-			<DisplayName>DD fastlege UTV MUG</DisplayName>
-			<ElectronicAddresses xmlns:a="http://register.nhn.no/Common">
-				<a:ElectronicAddress>
-					<a:Address>ldap://ldap.test4.buypass.no/dc=Buypass,dc=NO,CN=Buypass%20Class%203%20Test4%20CA%203?usercertificate;binary?sub?(&amp;(sn=983544622)(cn=TEST - DDFL))</a:Address>
-					<a:Inherited>false</a:Inherited>
-					<a:LastChanged>2015-05-18T10:44:12.4</a:LastChanged>
-					<a:Type>
-						<a:Active>true</a:Active>
-						<a:CodeText>Digital sertifikat</a:CodeText>
-						<a:CodeValue>E_DS</a:CodeValue>
-						<a:OID>9044</a:OID>
-						<a:SimpleType>type_adressekomponeneter</a:SimpleType>
-					</a:Type>
-					<a:TypeCodeValue>E_DS</a:TypeCodeValue>
-				</a:ElectronicAddress>
-			</ElectronicAddresses>
-			<HerId>93237</HerId>
-			<IsValidCommunicationParty>false</IsValidCommunicationParty>
-			<LastChanged>2015-10-07T21:45:16.1</LastChanged>
-			<Municipality xmlns:a="http://register.nhn.no/Common">
-				<a:Active>true</a:Active>
-				<a:CodeText>OSLO</a:CodeText>
-				<a:CodeValue>301</a:CodeValue>
-				<a:OID>3402</a:OID>
-				<a:SimpleType>kommunenummer</a:SimpleType>
-			</Municipality>
-			<Name>DD fastlege UTV MUG</Name>
-			<ParentBusinessType i:nil="true" xmlns:a="http://register.nhn.no/Common"/>
-			<ParentHerId>-1</ParentHerId>
-			<ParentName i:nil="true"/>
-			<ParentOrganizationNumber>-1</ParentOrganizationNumber>
-			<PhysicalAddresses xmlns:a="http://register.nhn.no/Common"/>
-			<ServerTime>2016-06-02T08:42:59.4602046+02:00</ServerTime>
-			<Type>Organization</Type>
-			<Valid xmlns:a="http://register.nhn.no/Common">
-				<a:From>1990-01-01T00:00:00</a:From>
-				<a:To>9999-12-31T23:59:59.997</a:To>
-			</Valid>
-			<BusinessType xmlns:a="http://register.nhn.no/Common">
-				<a:Active>true</a:Active>
-				<a:CodeText>Privatpraktiserende autorisert helsepersonell</a:CodeText>
-				<a:CodeValue>103</a:CodeValue>
-				<a:OID>9040</a:OID>
-				<a:SimpleType>helsevirksomhet_type</a:SimpleType>
-			</BusinessType>
-			<Departments/>
-			<IndustryCodes xmlns:a="http://register.nhn.no/Common"/>
-			<OrganizationNumber>999944999</OrganizationNumber>
-			<People/>
-			<Properties xmlns:a="http://register.nhn.no/Common"/>
-			<Services/>
-		</Organization>
-	</Organizations>
-	<Person xmlns:a="http://register.nhn.no/HPR">
-		<a:BirthDate>1939-06-06T00:00:00</a:BirthDate>
-		<a:CitizenId xmlns:b="http://register.nhn.no/Common">
-			<b:CitizenIdType>Invalid</b:CitizenIdType>
-			<b:Id/>
-			<b:Sex>
-				<b:Active>true</b:Active>
-				<b:CodeText>Ikke spesifisert</b:CodeText>
-				<b:CodeValue>9</b:CodeValue>
-				<b:OID>3101</b:OID>
-				<b:SimpleType>kjonn</b:SimpleType>
-			</b:Sex>
-		</a:CitizenId>
-		<a:FirstName>Alexander</a:FirstName>
-		<a:HPRInformation>
-			<a:Authorizations>
-				<a:Authorization>
-					<a:LastChanged>2016-06-02T08:42:59.3977016</a:LastChanged>
-					<a:Profession xmlns:b="http://register.nhn.no/Common">
-						<b:Active>true</b:Active>
-						<b:CodeText>Lege</b:CodeText>
-						<b:CodeValue>LE</b:CodeValue>
-						<b:OID>9060</b:OID>
-						<b:SimpleType>kategori_helsepersonell</b:SimpleType>
-					</a:Profession>
-					<a:Requisition>
-						<a:LastChanged>2016-06-02T08:42:59.3977016</a:LastChanged>
-						<a:Type xmlns:b="http://register.nhn.no/Common">
-							<b:Active>true</b:Active>
-							<b:CodeText>Full rekvisisjonsrett</b:CodeText>
-							<b:CodeValue>1</b:CodeValue>
-							<b:OID>7701</b:OID>
-							<b:SimpleType>helsepersonellregisterets_hpr_klassifikasjon_av_rekvisisjonsrett</b:SimpleType>
-						</a:Type>
-						<a:Valid xmlns:b="http://register.nhn.no/Common">
-							<b:From>2004-04-20T00:00:00</b:From>
-							<b:To>2040-04-20T00:00:00</b:To>
-						</a:Valid>
-					</a:Requisition>
-					<a:Specialities/>
-					<a:Type xmlns:b="http://register.nhn.no/Common">
-						<b:Active>true</b:Active>
-						<b:CodeText>Autorisasjon</b:CodeText>
-						<b:CodeValue>1</b:CodeValue>
-						<b:OID>7704</b:OID>
-						<b:SimpleType>helsepersonellregisterets_hpr_klassifikasjon_av_autorisasjoner</b:SimpleType>
-					</a:Type>
-					<a:Valid xmlns:b="http://register.nhn.no/Common">
-						<b:From>2004-04-20T00:00:00</b:From>
-						<b:To>2040-04-20T00:00:00</b:To>
-					</a:Valid>
-				</a:Authorization>
-			</a:Authorizations>
-			<a:HPRNo>1010037</a:HPRNo>
-			<a:HPRNumber>1010037</a:HPRNumber>
-			<a:LastChanged>2016-06-02T08:42:59.3977016</a:LastChanged>
-			<a:SpecialCompetences/>
-		</a:HPRInformation>
-		<a:LastChanged>2013-12-19T15:34:59.95</a:LastChanged>
-		<a:LastName>Dahl</a:LastName>
-		<a:MiddleName i:nil="true"/>
-		<a:Sex xmlns:b="http://register.nhn.no/Common">
-			<b:Active>true</b:Active>
-			<b:CodeText>Kvinne</b:CodeText>
-			<b:CodeValue>2</b:CodeValue>
-			<b:OID>3101</b:OID>
-			<b:SimpleType>kjonn</b:SimpleType>
-		</a:Sex>
-	</Person>
-	<Properties xmlns:a="http://register.nhn.no/Common"/>
-	<Title i:nil="true"/>
+    <Active>true</Active>
+    <DisplayName>Alexander Dahl</DisplayName>
+    <ElectronicAddresses xmlns:a="http://register.nhn.no/Common">
+        <a:ElectronicAddress>
+            <a:Address>sb.test.nhn.no/DigitalDialog/91462_async</a:Address>
+            <a:Inherited>false</a:Inherited>
+            <a:LastChanged>2015-05-18T10:44:06.663</a:LastChanged>
+            <a:Type>
+                <a:Active>true</a:Active>
+                <a:CodeText>Asynkron AMQP kø</a:CodeText>
+                <a:CodeValue>E_SB_ASYNC</a:CodeValue>
+                <a:OID>9044</a:OID>
+                <a:SimpleType>type_adressekomponeneter</a:SimpleType>
+            </a:Type>
+            <a:TypeCodeValue>E_SB_ASYNC</a:TypeCodeValue>
+        </a:ElectronicAddress>
+        <a:ElectronicAddress>
+            <a:Address>sb.test.nhn.no/DigitalDialog/91462_error</a:Address>
+            <a:Inherited>false</a:Inherited>
+            <a:LastChanged>2015-05-18T10:44:06.663</a:LastChanged>
+            <a:Type>
+                <a:Active>true</a:Active>
+                <a:CodeText>Feilmelding AMQP kø</a:CodeText>
+                <a:CodeValue>E_SB_ERROR</a:CodeValue>
+                <a:OID>9044</a:OID>
+                <a:SimpleType>type_adressekomponeneter</a:SimpleType>
+            </a:Type>
+            <a:TypeCodeValue>E_SB_ERROR</a:TypeCodeValue>
+        </a:ElectronicAddress>
+        <a:ElectronicAddress>
+            <a:Address>sb.test.nhn.no/DigitalDialog/91462_sync</a:Address>
+            <a:Inherited>false</a:Inherited>
+            <a:LastChanged>2015-05-18T10:44:06.663</a:LastChanged>
+            <a:Type>
+                <a:Active>true</a:Active>
+                <a:CodeText>Synkron AMQP kø</a:CodeText>
+                <a:CodeValue>E_SB_SYNC</a:CodeValue>
+                <a:OID>9044</a:OID>
+                <a:SimpleType>type_adressekomponeneter</a:SimpleType>
+            </a:Type>
+            <a:TypeCodeValue>E_SB_SYNC</a:TypeCodeValue>
+        </a:ElectronicAddress>
+        <a:ElectronicAddress>
+            <a:Address>ldap://ldap.test4.buypass.no/dc=Buypass,dc=NO,CN=Buypass%20Class%203%20Test4%20CA%203?usercertificate;binary?sub?(&amp;(sn=983544622)(cn=TEST - DDFL))</a:Address>
+            <a:Inherited>true</a:Inherited>
+            <a:LastChanged>2015-05-18T10:44:12.4</a:LastChanged>
+            <a:Type>
+                <a:Active>true</a:Active>
+                <a:CodeText>Digital sertifikat</a:CodeText>
+                <a:CodeValue>E_DS</a:CodeValue>
+                <a:OID>9044</a:OID>
+                <a:SimpleType>type_adressekomponeneter</a:SimpleType>
+            </a:Type>
+            <a:TypeCodeValue>E_DS</a:TypeCodeValue>
+        </a:ElectronicAddress>
+    </ElectronicAddresses>
+    <HerId>91462</HerId>
+    <IsValidCommunicationParty>true</IsValidCommunicationParty>
+    <LastChanged>2015-05-18T10:41:04.557</LastChanged>
+    <Municipality xmlns:a="http://register.nhn.no/Common">
+        <a:Active>true</a:Active>
+        <a:CodeText>OSLO</a:CodeText>
+        <a:CodeValue>301</a:CodeValue>
+        <a:OID>3402</a:OID>
+        <a:SimpleType>kommunenummer</a:SimpleType>
+    </Municipality>
+    <Name>Alexander Dahl</Name>
+    <ParentBusinessType xmlns:a="http://register.nhn.no/Common">
+        <a:Active>true</a:Active>
+        <a:CodeText>Privatpraktiserende autorisert helsepersonell</a:CodeText>
+        <a:CodeValue>103</a:CodeValue>
+        <a:OID>9040</a:OID>
+        <a:SimpleType>helsevirksomhet_type</a:SimpleType>
+    </ParentBusinessType>
+    <ParentHerId>93237</ParentHerId>
+    <ParentName>DD fastlege UTV MUG</ParentName>
+    <ParentOrganizationNumber>999944999</ParentOrganizationNumber>
+    <PhysicalAddresses xmlns:a="http://register.nhn.no/Common"/>
+    <ServerTime>2016-06-02T08:42:59.3977016+02:00</ServerTime>
+    <Type>Person</Type>
+    <Valid xmlns:a="http://register.nhn.no/Common">
+        <a:From>2015-05-18T00:00:00</a:From>
+        <a:To>9999-12-31T00:00:00</a:To>
+    </Valid>
+    <Departments/>
+    <Organizations>
+        <Organization>
+            <Active>true</Active>
+            <DisplayName>DD fastlege UTV MUG</DisplayName>
+            <ElectronicAddresses xmlns:a="http://register.nhn.no/Common">
+                <a:ElectronicAddress>
+                    <a:Address>ldap://ldap.test4.buypass.no/dc=Buypass,dc=NO,CN=Buypass%20Class%203%20Test4%20CA%203?usercertificate;binary?sub?(&amp;(sn=983544622)(cn=TEST - DDFL))</a:Address>
+                    <a:Inherited>false</a:Inherited>
+                    <a:LastChanged>2015-05-18T10:44:12.4</a:LastChanged>
+                    <a:Type>
+                        <a:Active>true</a:Active>
+                        <a:CodeText>Digital sertifikat</a:CodeText>
+                        <a:CodeValue>E_DS</a:CodeValue>
+                        <a:OID>9044</a:OID>
+                        <a:SimpleType>type_adressekomponeneter</a:SimpleType>
+                    </a:Type>
+                    <a:TypeCodeValue>E_DS</a:TypeCodeValue>
+                </a:ElectronicAddress>
+            </ElectronicAddresses>
+            <HerId>93237</HerId>
+            <IsValidCommunicationParty>false</IsValidCommunicationParty>
+            <LastChanged>2015-10-07T21:45:16.1</LastChanged>
+            <Municipality xmlns:a="http://register.nhn.no/Common">
+                <a:Active>true</a:Active>
+                <a:CodeText>OSLO</a:CodeText>
+                <a:CodeValue>301</a:CodeValue>
+                <a:OID>3402</a:OID>
+                <a:SimpleType>kommunenummer</a:SimpleType>
+            </Municipality>
+            <Name>DD fastlege UTV MUG</Name>
+            <ParentBusinessType i:nil="true" xmlns:a="http://register.nhn.no/Common"/>
+            <ParentHerId>-1</ParentHerId>
+            <ParentName i:nil="true"/>
+            <ParentOrganizationNumber>-1</ParentOrganizationNumber>
+            <PhysicalAddresses xmlns:a="http://register.nhn.no/Common"/>
+            <ServerTime>2016-06-02T08:42:59.4602046+02:00</ServerTime>
+            <Type>Organization</Type>
+            <Valid xmlns:a="http://register.nhn.no/Common">
+                <a:From>1990-01-01T00:00:00</a:From>
+                <a:To>9999-12-31T23:59:59.997</a:To>
+            </Valid>
+            <BusinessType xmlns:a="http://register.nhn.no/Common">
+                <a:Active>true</a:Active>
+                <a:CodeText>Privatpraktiserende autorisert helsepersonell</a:CodeText>
+                <a:CodeValue>103</a:CodeValue>
+                <a:OID>9040</a:OID>
+                <a:SimpleType>helsevirksomhet_type</a:SimpleType>
+            </BusinessType>
+            <Departments/>
+            <IndustryCodes xmlns:a="http://register.nhn.no/Common"/>
+            <OrganizationNumber>999944999</OrganizationNumber>
+            <People/>
+            <Properties xmlns:a="http://register.nhn.no/Common"/>
+            <Services/>
+        </Organization>
+    </Organizations>
+    <Person xmlns:a="http://register.nhn.no/HPR">
+        <a:BirthDate>1939-06-06T00:00:00</a:BirthDate>
+        <a:CitizenId xmlns:b="http://register.nhn.no/Common">
+            <b:CitizenIdType>Invalid</b:CitizenIdType>
+            <b:Id/>
+            <b:Sex>
+                <b:Active>true</b:Active>
+                <b:CodeText>Ikke spesifisert</b:CodeText>
+                <b:CodeValue>9</b:CodeValue>
+                <b:OID>3101</b:OID>
+                <b:SimpleType>kjonn</b:SimpleType>
+            </b:Sex>
+        </a:CitizenId>
+        <a:FirstName>Alexander</a:FirstName>
+        <a:HPRInformation>
+            <a:Authorizations>
+                <a:Authorization>
+                    <a:LastChanged>2016-06-02T08:42:59.3977016</a:LastChanged>
+                    <a:Profession xmlns:b="http://register.nhn.no/Common">
+                        <b:Active>true</b:Active>
+                        <b:CodeText>Lege</b:CodeText>
+                        <b:CodeValue>LE</b:CodeValue>
+                        <b:OID>9060</b:OID>
+                        <b:SimpleType>kategori_helsepersonell</b:SimpleType>
+                    </a:Profession>
+                    <a:Requisition>
+                        <a:LastChanged>2016-06-02T08:42:59.3977016</a:LastChanged>
+                        <a:Type xmlns:b="http://register.nhn.no/Common">
+                            <b:Active>true</b:Active>
+                            <b:CodeText>Full rekvisisjonsrett</b:CodeText>
+                            <b:CodeValue>1</b:CodeValue>
+                            <b:OID>7701</b:OID>
+                            <b:SimpleType>helsepersonellregisterets_hpr_klassifikasjon_av_rekvisisjonsrett</b:SimpleType>
+                        </a:Type>
+                        <a:Valid xmlns:b="http://register.nhn.no/Common">
+                            <b:From>2004-04-20T00:00:00</b:From>
+                            <b:To>2040-04-20T00:00:00</b:To>
+                        </a:Valid>
+                    </a:Requisition>
+                    <a:Specialities/>
+                    <a:Type xmlns:b="http://register.nhn.no/Common">
+                        <b:Active>true</b:Active>
+                        <b:CodeText>Autorisasjon</b:CodeText>
+                        <b:CodeValue>1</b:CodeValue>
+                        <b:OID>7704</b:OID>
+                        <b:SimpleType>helsepersonellregisterets_hpr_klassifikasjon_av_autorisasjoner</b:SimpleType>
+                    </a:Type>
+                    <a:Valid xmlns:b="http://register.nhn.no/Common">
+                        <b:From>2004-04-20T00:00:00</b:From>
+                        <b:To>2040-04-20T00:00:00</b:To>
+                    </a:Valid>
+                </a:Authorization>
+            </a:Authorizations>
+            <a:HPRNo>1010037</a:HPRNo>
+            <a:HPRNumber>1010037</a:HPRNumber>
+            <a:LastChanged>2016-06-02T08:42:59.3977016</a:LastChanged>
+            <a:SpecialCompetences/>
+        </a:HPRInformation>
+        <a:LastChanged>2013-12-19T15:34:59.95</a:LastChanged>
+        <a:LastName>Dahl</a:LastName>
+        <a:MiddleName i:nil="true"/>
+        <a:Sex xmlns:b="http://register.nhn.no/Common">
+            <b:Active>true</b:Active>
+            <b:CodeText>Kvinne</b:CodeText>
+            <b:CodeValue>2</b:CodeValue>
+            <b:OID>3101</b:OID>
+            <b:SimpleType>kjonn</b:SimpleType>
+        </a:Sex>
+    </Person>
+    <Properties xmlns:a="http://register.nhn.no/Common"/>
+    <Title i:nil="true"/>
 </CommunicationParty>
