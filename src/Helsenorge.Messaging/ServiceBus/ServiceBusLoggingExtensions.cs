@@ -27,19 +27,15 @@ namespace Helsenorge.Messaging.ServiceBus
 		public static void LogStartSend(this ILogger logger, QueueType queueType, string function, int fromHerId, int toHerId, string messageId, string userId, XDocument xml)
 		{
 			StartSend(logger, queueType, function, fromHerId, toHerId, messageId, userId, null);
-            logger.LogDebug($"Start-ServiceBusLogExtensions::LogStartSend QueueType: {queueType} function: {function} fromHerId: {fromHerId} toHerId: {toHerId} messageId: {messageId} userId: {userId} xml: {xml?.ToString()}");
 			if (xml != null)
 			{
 				logger.LogDebug(xml.ToString());
 			}
-            logger.LogDebug($"End-ServiceBusLogExtensions::LogStartSend QueueType: {queueType} function: {function} fromHerId: {fromHerId} toHerId: {toHerId} messageId: {messageId} userId: {userId} xml: {xml?.ToString()}");
-        }
+		}
 		public static void LogEndSend(this ILogger logger, QueueType queueType, string function, int fromHerId, int toHerId, string messageId, string userId)
 		{
-            logger.LogDebug($"Start-ServiceBusLogExtensions::LogEndSend QueueType: {queueType} function: {function} fromHerId: {fromHerId} toHerId: {toHerId} messageId: {messageId} userId: {userId}");
-            EndSend(logger, queueType, function, fromHerId, toHerId, messageId, userId, null);
-            logger.LogDebug($"End-ServiceBusLogExtensions::LogEndSend QueueType: {queueType} function: {function} fromHerId: {fromHerId} toHerId: {toHerId} messageId: {messageId} userId: {userId}");
-        }
+			EndSend(logger, queueType, function, fromHerId, toHerId, messageId, userId, null);
+		}
 
 		public static void LogExternalReportedError(this ILogger logger, string message)
 		{
