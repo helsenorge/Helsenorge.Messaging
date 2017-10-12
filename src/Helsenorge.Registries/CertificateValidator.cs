@@ -88,6 +88,7 @@ namespace Helsenorge.Registries
 					}
 					sb.AppendLine(status.StatusInformation);
 				}
+                Debug.WriteLine(sb.ToString());
 				return result;
 			}
 		}
