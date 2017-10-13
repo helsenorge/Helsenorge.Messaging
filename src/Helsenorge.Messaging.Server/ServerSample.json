@@ -1,31 +1,31 @@
 {
-	"AddressRegistrySettings": {
-		"UserName": "???",
-		"Password": "???"
-	},
-	"CollaborationProtocolRegistrySettings": {
-		"UserName": "???",
-		"Password": "???",
-		"MyHerId": "6789"
-	},
-	"MessagingSettings": {
-		"MyHerId": "6789",
-		"ServiceBus": {
-			"ConnectionString": "???"
-		},
-		"DecryptionCertificate": {
-			"Thumbprint": "fddbcfbb3231f0c66ee2168358229d3cac95e88a",
-			"StoreName": "My",
-			"StoreLocation": "LocalMachine"
-		},
-		"SigningCertificate": {
-			"Thumbprint": "bd302b20fcdcf3766bf0bcba485dfb4b2bfe1379",
-			"StoreName": "My",
-			"StoreLocation": "LocalMachine"
-		}
-	},
-	"ServerSettings": {
-		"DestinationDirectory": "Results"
-	} 
+    "AddressRegistrySettings": {
+        "UserName": "???",
+        "Password": "???"
+    },
+    "CollaborationProtocolRegistrySettings": {
+        "UserName": "???",
+        "Password": "???",
+        "MyHerId": "6789"
+    },
+    "MessagingSettings": {
+        "MyHerId": "6789",
+        "ServiceBus": {
+            "ConnectionString": "???"
+        },
+        "DecryptionCertificate": {
+            "Thumbprint": "fddbcfbb3231f0c66ee2168358229d3cac95e88a",
+            "StoreName": "My",
+            "StoreLocation": "LocalMachine"
+        },
+        "SigningCertificate": {
+            "Thumbprint": "bd302b20fcdcf3766bf0bcba485dfb4b2bfe1379",
+            "StoreName": "My",
+            "StoreLocation": "LocalMachine"
+        }
+    },
+    "ServerSettings": {
+        "DestinationDirectory": "Results"
+    } 
 }
 

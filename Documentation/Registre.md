@@ -20,7 +20,7 @@ addressRegistrySettings.UserName = "user name";
 addressRegistrySettings.Password = "password";
 addressRegistrySettings.WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 addressRegistrySettings.CachingInterval = TimeSpan.FromHours(12);			
-			
+            
 var addressRegistry = new AddressRegistry(addressRegistrySettings, distributedCache);
 
 var collaborationProtocolRegistrySettings = new CollaborationProtocolRegistrySettings();
@@ -29,6 +29,6 @@ collaborationProtocolRegistrySettings.UserName = "user name";
 collaborationProtocolRegistrySettings.Password = "password";
 collaborationProtocolRegistrySettings.WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 collaborationProtocolRegistrySettings.CachingInterval = TimeSpan.FromHours(12);			
-			
+            
 var collaborationProtocolRegistry = new CollaborationProtocolRegistry(collaborationProtocolRegistrySettings, distributedCache);
 ```

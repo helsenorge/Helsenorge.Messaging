@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Sample>
-	<Secion>
-		<ThrowException>
-			This is just some dummy xml
-		</ThrowException>
-	</Secion>
+    <Secion>
+        <ThrowException>
+            This is just some dummy xml
+        </ThrowException>
+    </Secion>
 </Sample>

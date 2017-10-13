@@ -11,57 +11,57 @@ Max* bestemmer hvor mange aktive objekter vi har for Azure Servicebus.
 
 Dette er et eksempel på hvordan en slik fil kan se ut. 
 
-	"AddressRegistrySettings": {
-		"EndpointName": "BasicHttpBinding_ICommunicationPartyService",
-		"CachingInterval": "00:05:00"
-	},
-	"CollaborationProtocolRegistrySettings": {
-		"EndpointName": "BasicHttpBinding_ICPPAService",
-		"CachingInterval": "00:05:00",
-		"MyHerId": "1234"
-	},
-	"MessagingSettings": {
-		"MyHerId": "1234",
-		"IgnoreCertificateErrorOnSend": "false",
-		"ServiceBus": {
-			"ConnectionString": "",
-			"MaxReceivers": 5,
-			"MaxSenders": 200,
-			"MaxFactories": 5,
-			"Asynchronous": {
-				"ProcessingTasks": 5,
-				"TimeToLive": "4.00:00:0",
-				"ReadTimeout": "00:00:01"
-			},
-			"Synchronous": {
-				"ProcessingTasks": 2,
-				"TimeToLive": "00:00:15",
-				"ReadTimeout": "00:00:01",
-				"ReplyQueue": "",
-				"CallTimeout": "00:00:15",
-				"Synchronous": {
-					"ReplyQueueMapping": {
-						"MACHINE-NAME": "1111_syncreply"
-					}
-				}
-			},
-			"Error": {
-				"ProcessingTasks": 1,
-				"TimeToLive": "10675199.02:48:05",
-				"ReadTimeout": "00:00:01"
-			}
-		},
-		"DecryptionCertificate": {
-			"Thumbprint": "hex",
-			"StoreName": "My",
-			"StoreLocation": "LocalMachine"
-		},
-		"SigningCertificate": {
-			"Thumbprint": "hex",
-			"StoreName": "My",
-			"StoreLocation": "LocalMachine"
-		}
-	}
+    "AddressRegistrySettings": {
+        "EndpointName": "BasicHttpBinding_ICommunicationPartyService",
+        "CachingInterval": "00:05:00"
+    },
+    "CollaborationProtocolRegistrySettings": {
+        "EndpointName": "BasicHttpBinding_ICPPAService",
+        "CachingInterval": "00:05:00",
+        "MyHerId": "1234"
+    },
+    "MessagingSettings": {
+        "MyHerId": "1234",
+        "IgnoreCertificateErrorOnSend": "false",
+        "ServiceBus": {
+            "ConnectionString": "",
+            "MaxReceivers": 5,
+            "MaxSenders": 200,
+            "MaxFactories": 5,
+            "Asynchronous": {
+                "ProcessingTasks": 5,
+                "TimeToLive": "4.00:00:0",
+                "ReadTimeout": "00:00:01"
+            },
+            "Synchronous": {
+                "ProcessingTasks": 2,
+                "TimeToLive": "00:00:15",
+                "ReadTimeout": "00:00:01",
+                "ReplyQueue": "",
+                "CallTimeout": "00:00:15",
+                "Synchronous": {
+                    "ReplyQueueMapping": {
+                        "MACHINE-NAME": "1111_syncreply"
+                    }
+                }
+            },
+            "Error": {
+                "ProcessingTasks": 1,
+                "TimeToLive": "10675199.02:48:05",
+                "ReadTimeout": "00:00:01"
+            }
+        },
+        "DecryptionCertificate": {
+            "Thumbprint": "hex",
+            "StoreName": "My",
+            "StoreLocation": "LocalMachine"
+        },
+        "SigningCertificate": {
+            "Thumbprint": "hex",
+            "StoreName": "My",
+            "StoreLocation": "LocalMachine"
+        }
+    }
 
 ### NHN Miljøer
 NHN tilbyr to forsjellige miljøer for meldingsutveksling; test og produksjon. Man kan kontakte meldingsutveksleren via .NET protokoll, eller AMPQ. Sistnevnt vil bli benyttet for Java applikasjoner.

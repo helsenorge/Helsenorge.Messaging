@@ -1,39 +1,39 @@
 {
-	"AddressRegistrySettings": {
-		"UserName": "???",
-		"Password": "???"
-	},
-	"CollaborationProtocolRegistrySettings": {
-		"UserName": "???",
-		"Password": "???",
-		"MyHerId": "1234"
-	},
-	"MessagingSettings": {
-		"MyHerId": "1234",
-			"ServiceBus": {
-				"ConnectionString": "????",
-				"Synchronous": {
-					"ReplyQueueMapping": {
-						"WIN81-JMV4TUJ3": "93252_sync"
-					}
-				}
-			},
-		"DecryptionCertificate": {
-			"Thumbprint": "b1fae38326a6cefa72708f7633541262e8633b2c",
-			"StoreName": "My",
-			"StoreLocation": "LocalMachine"
-		},
-		"SigningCertificate": {
-			"Thumbprint": "76b0195ba41374d5f372f4b70f907e7f9725fc02",
-			"StoreName": "My",
-			"StoreLocation": "LocalMachine"
-		}
-	},
-	"ClientSettings": {
-		"ToHerId": "6789",
-		"MessageFunction": "DIALOG_INNBYGGER_EKONTAKT",
-		"SourceDirectory": "Samples",
-		"Threads": "1"
-	} 
+    "AddressRegistrySettings": {
+        "UserName": "???",
+        "Password": "???"
+    },
+    "CollaborationProtocolRegistrySettings": {
+        "UserName": "???",
+        "Password": "???",
+        "MyHerId": "1234"
+    },
+    "MessagingSettings": {
+        "MyHerId": "1234",
+            "ServiceBus": {
+                "ConnectionString": "????",
+                "Synchronous": {
+                    "ReplyQueueMapping": {
+                        "WIN81-JMV4TUJ3": "93252_sync"
+                    }
+                }
+            },
+        "DecryptionCertificate": {
+            "Thumbprint": "b1fae38326a6cefa72708f7633541262e8633b2c",
+            "StoreName": "My",
+            "StoreLocation": "LocalMachine"
+        },
+        "SigningCertificate": {
+            "Thumbprint": "76b0195ba41374d5f372f4b70f907e7f9725fc02",
+            "StoreName": "My",
+            "StoreLocation": "LocalMachine"
+        }
+    },
+    "ClientSettings": {
+        "ToHerId": "6789",
+        "MessageFunction": "DIALOG_INNBYGGER_EKONTAKT",
+        "SourceDirectory": "Samples",
+        "Threads": "1"
+    } 
 }
 
