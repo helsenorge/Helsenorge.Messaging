@@ -79,7 +79,6 @@ namespace Helsenorge.Messaging.Tests.Mocks
             };
         }
 
-
         public object OriginalObject { get; }
         public Stream GetBody()
         {
