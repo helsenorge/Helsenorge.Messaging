@@ -97,8 +97,10 @@ namespace Helsenorge.Messaging.ServiceBus
 		public Stream GetBody() => _implementation.GetBody<Stream>();
 		[DebuggerStepThrough]
 		public override string ToString() => _implementation.ToString();
-	
-		public void AddDetailsToException(Exception ex)
+        [DebuggerStepThrough]
+        public void RenewLock() => _implementation.RenewLock();
+
+        public void AddDetailsToException(Exception ex)
 		{
 			if (ex == null) throw new ArgumentNullException(nameof(ex));
 
