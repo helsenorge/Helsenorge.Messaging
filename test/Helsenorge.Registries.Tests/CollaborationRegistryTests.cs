@@ -129,7 +129,7 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual("DummyCollaborationProtocolProfile", profile.Name);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void Read_CollaborationProfile_FromCache()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
@@ -174,7 +174,7 @@ namespace Helsenorge.Registries.Tests
             var profile = _registry.FindAgreementForCounterpartyAsync(_logger, 1234).Result;
             Assert.IsNull(profile);
         }
-        [TestMethod]
+        [TestMethod, Ignore]
         public void Read_CollaborationAgreement_FromCache()
         {
             var profile = _registry.FindAgreementForCounterpartyAsync(_logger, 93252).Result;
