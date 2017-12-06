@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -102,5 +102,9 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="ex"></param>
         void AddDetailsToException(Exception ex);
+        /// <summary>
+        /// Renews the peerlock of the message
+        /// </summary>
+        void RenewLock();
     }
 }

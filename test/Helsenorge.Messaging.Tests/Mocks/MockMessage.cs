@@ -84,6 +84,12 @@ namespace Helsenorge.Messaging.Tests.Mocks
         {
             return _stream;
         }
+        
+        public void RenewLock()
+        {
+            throw new NotImplementedException();
+        }
+        
         public void Dispose()
         {
         }
