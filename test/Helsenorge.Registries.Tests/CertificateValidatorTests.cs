@@ -17,7 +17,7 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(CertificateErrors.Missing, error);
         }
         [TestMethod]
-        [TestCategory("X509Chain")]
+        [TestCategory("X509Chain"), Ignore]
         public void CertificateValidation_None()
         {
             var validator = new CertificateValidator();
@@ -42,7 +42,7 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(CertificateErrors.EndDate, error);
         }
         [TestMethod]
-        [TestCategory("X509Chain")]
+        [TestCategory("X509Chain"), Ignore]
         public void CertificateValidation_Usage()
         {
             var validator = new CertificateValidator();
