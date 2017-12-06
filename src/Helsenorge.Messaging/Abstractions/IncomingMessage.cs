@@ -54,5 +54,9 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         public CertificateErrors SignatureError { get; set; }
         public bool ContentWasSigned { get; set; }
+        /// <summary>
+        /// Renews the peerlock of the message
+        /// </summary>
+        public Action RenewLock { get; internal set; }
     }
 }

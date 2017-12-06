@@ -183,6 +183,11 @@ namespace Helsenorge.Messaging.Http
         {
             
         }
+
+        public void RenewLock()
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }
