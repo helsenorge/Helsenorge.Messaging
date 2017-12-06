@@ -102,5 +102,9 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="ex"></param>
         void AddDetailsToException(Exception ex);
+        /// <summary>
+        /// Renews the peerlock of the message
+        /// </summary>
+        void RenewLock();
     }
 }
