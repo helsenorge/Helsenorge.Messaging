@@ -197,7 +197,7 @@ namespace Helsenorge.Registries
         {
             var details = new CommunicationPartyDetails
             {
-                Name = communicationParty.DisplayName,
+                Name = !string.IsNullOrEmpty(communicationParty.DisplayName) ? communicationParty.DisplayName : communicationParty.Name,
                 HerId = communicationParty.HerId,
             };
 
