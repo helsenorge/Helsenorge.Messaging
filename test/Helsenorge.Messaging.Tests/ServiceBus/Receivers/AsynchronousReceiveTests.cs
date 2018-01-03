@@ -160,7 +160,10 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 CheckError(MockFactory.OtherParty.Error.Messages, "transport:not-well-formed-xml", "XML-Error", string.Empty);
                 var logEntry = MockLoggerProvider.FindEntry(EventIds.NotXml);
                 Assert.IsNotNull(logEntry);
-                Assert.IsTrue(logEntry.LogLevel == LogLevel.Debug);
+                Assert.IsTrue(logEntry.LogLevel == LogLevel.Warning);
+                var logEntries = MockLoggerProvider.FindEntries(new EventId(20, "MUG"), LogLevel.Debug);
+                Assert.IsTrue(logEntries.Count() == 1);
+                Assert.IsTrue(logEntries[0].Message.Contains("xml"));
             },
             wait: () => _handledExceptionCalled,
             received: (m) => {  throw new XmlSchemaValidationException("XML-Error");},
@@ -177,7 +180,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-field-value", "Mismatch", "Expected;Received;");
                 var logEntry = MockLoggerProvider.FindEntry(EventIds.DataMismatch);
                 Assert.IsNotNull(logEntry);
-                Assert.IsTrue(logEntry.LogLevel == LogLevel.Debug);
+                Assert.IsTrue(logEntry.LogLevel == LogLevel.Warning);
             },
             wait: () => _handledExceptionCalled,
             received: (m) => { throw new ReceivedDataMismatchException("Mismatch") { ExpectedValue = "Expected", ReceivedValue = "Received"}; },
@@ -194,7 +197,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 CheckError(MockFactory.OtherParty.Error.Messages, "transport:internal-error", "NotifySender", string.Empty);
                 var logEntry = MockLoggerProvider.FindEntry(EventIds.ApplicationReported);
                 Assert.IsNotNull(logEntry);
-                Assert.IsTrue(logEntry.LogLevel == LogLevel.Debug);
+                Assert.IsTrue(logEntry.LogLevel == LogLevel.Warning);
             },
             wait: () => _handledExceptionCalled,
             received: (m) => { throw new NotifySenderException("NotifySender"); },

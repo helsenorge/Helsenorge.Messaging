@@ -34,6 +34,12 @@ namespace Helsenorge.Messaging.Tests.Mocks
             return r;
         }
 
+        public List<Entry> FindEntries(EventId id, LogLevel logLevel)
+        {
+            var r = (from e in Entries where e.EventId.Id == id.Id && e.EventId.Name == id.Name && e.LogLevel == logLevel select e);
+            return r.ToList();
+        }
+
         internal class Entry
         {
             public LogLevel LogLevel { get; set; }
