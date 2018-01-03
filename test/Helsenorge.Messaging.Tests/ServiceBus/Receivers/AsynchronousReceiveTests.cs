@@ -161,9 +161,6 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 var logEntry = MockLoggerProvider.FindEntry(EventIds.NotXml);
                 Assert.IsNotNull(logEntry);
                 Assert.IsTrue(logEntry.LogLevel == LogLevel.Warning);
-                var logEntries = MockLoggerProvider.FindEntries(new EventId(20, "MUG"), LogLevel.Debug);
-                Assert.IsTrue(logEntries.Count() == 1);
-                Assert.IsTrue(logEntries[0].Message.Contains("xml"));
             },
             wait: () => _handledExceptionCalled,
             received: (m) => {  throw new XmlSchemaValidationException("XML-Error");},
@@ -538,7 +535,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 
             Server.Start();
 
-            Wait(15, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout
+            Wait(150, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout
             Server.Stop(TimeSpan.FromSeconds(10));
             
             // check the state of the system

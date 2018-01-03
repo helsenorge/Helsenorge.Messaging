@@ -354,12 +354,7 @@ namespace Helsenorge.Messaging.ServiceBus
             IEnumerable<string> additionalData,
             Exception ex = null)
         {
-            var data = originalMessage.GetBody();
-            data.Position = 0;
-            var reader = new StreamReader(data);
-            var content = reader.ReadToEnd();
             logger.LogWarning(id, ex, description);
-            logger.LogDebug(id, string.Format("Melding XML: {0}", content));
             Task.WaitAll(SendError(logger, originalMessage, errorCode, description, additionalData));
             RemoveMessageFromQueueAfterError(logger, originalMessage);
         }
