@@ -42,8 +42,6 @@ namespace Helsenorge.Messaging.Tests
 
         protected XDocument GenericMessage => new XDocument(new XElement("SomeDummyXmlUsedForTesting"));
 
-        protected XDocument ValidMessage => XDocument.Load(File.OpenRead(@"Files\EKontakt.xml"));
-
         protected XDocument GenericResponse => new XDocument(new XElement("SomeDummyXmlResponseUsedForTesting"));
 
         protected XDocument SoapFault => XDocument.Load(File.OpenRead(@"Files\SoapFault.xml"));

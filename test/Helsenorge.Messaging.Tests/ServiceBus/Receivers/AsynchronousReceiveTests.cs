@@ -563,7 +563,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         private MockMessage CreateAsynchronousMessage()
         {
             var messageId = Guid.NewGuid().ToString("D");
-            return new MockMessage(ValidMessage)
+            return new MockMessage(GenericResponse)
             {
                 MessageFunction = "DIALOG_INNBYGGER_EKONTAKT",
                 ApplicationTimestamp = DateTime.Now,
