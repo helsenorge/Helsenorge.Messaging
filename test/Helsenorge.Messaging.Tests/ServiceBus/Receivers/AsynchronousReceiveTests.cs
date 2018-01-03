@@ -538,7 +538,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 
             Server.Start();
 
-            Wait(150, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout
+            Wait(15, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout
             Server.Stop(TimeSpan.FromSeconds(10));
             
             // check the state of the system
