@@ -241,7 +241,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
             if (originalMessage.FromHerId <= 0)
             {
-                logger.LogError(EventIds.MissingField, "FromHerId is missing. No idea where to send the error");
+                logger.LogWarning(EventIds.MissingField, "FromHerId is missing. No idea where to send the error");
                 return;
             }
             
@@ -288,7 +288,7 @@ namespace Helsenorge.Messaging.ServiceBus
                     clonedMessage.Properties.Add(ErrorConditionDataHeaderKey, additionDataValue);
                 }
             }
-            logger.LogError("Reporting error to sender. ErrorCode: {0} ErrorDescription: {1} AdditionalData: {2}", errorCode, errorDescription, additionDataValue);
+            logger.LogWarning("Reporting error to sender. ErrorCode: {0} ErrorDescription: {1} AdditionalData: {2}", errorCode, errorDescription, additionDataValue);
             await Send(logger, clonedMessage, QueueType.Error).ConfigureAwait(false);
         }
         /// <summary>
@@ -353,7 +353,7 @@ namespace Helsenorge.Messaging.ServiceBus
             IEnumerable<string> additionalData,
             Exception ex = null)
         {
-            logger.LogError(id, ex, description);
+            logger.LogWarning(id, ex, description);
             Task.WaitAll(SendError(logger, originalMessage, errorCode, description, additionalData));
             RemoveMessageFromQueueAfterError(logger, originalMessage);
         }
