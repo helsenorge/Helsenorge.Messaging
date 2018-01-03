@@ -234,6 +234,9 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Files\Ekontakt.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Files\GetCertificateDetailsForEncryption_93238.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

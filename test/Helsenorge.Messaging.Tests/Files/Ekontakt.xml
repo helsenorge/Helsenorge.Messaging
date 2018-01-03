@@ -1,0 +1,75 @@
+﻿<MsgHead xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.kith.no/xmlstds/msghead/2006-05-24 MsgHead-v1_2.xsd" xmlns="http://www.kith.no/xmlstds/msghead/2006-05-24">
+  <MsgInfo>
+    <Type V="DIALOG_INNBYGGER_EKONTAKT" DN="Dialog med innbygger - eKontakt" />
+    <MIGversion>v1.2 2006-05-24</MIGversion>
+    <GenDate>2017-11-03T10:10:28.0082994Z</GenDate>
+    <MsgId>4804d09f-4bcf-4c0d-8b06-761af99c9ee1</MsgId>
+    <Ack V="J" DN="Ja" />
+    <Sender>
+      <Organisation>
+        <OrganisationName>Oslo kommune</OrganisationName>
+        <Ident>
+          <Id>93638</Id>
+          <TypeId V="HER" S="2.16.578.1.12.4.1.1.9051" DN="HER-id" />
+        </Ident>
+        <Organisation>
+          <OrganisationName>Sykepleietjeneste, pleie- og omsorg</OrganisationName>
+          <Ident>
+            <Id>93971</Id>
+            <TypeId V="HER" S="2.16.578.1.12.4.1.1.9051" DN="HER-id" />
+          </Ident>
+        </Organisation>
+      </Organisation>
+    </Sender>
+    <Receiver>
+      <Organisation>
+        <OrganisationName>Direktoratet for e-helse</OrganisationName>
+        <Ident>
+          <Id>93580</Id>
+          <TypeId V="HER" S="2.16.578.1.12.4.1.1.9051" DN="HER-id" />
+        </Ident>
+        <Organisation>
+          <OrganisationName>Digitale innbyggertjenester</OrganisationName>
+          <Ident>
+            <Id>93238</Id>
+            <TypeId V="HER" S="2.16.578.1.12.4.1.1.9051" DN="HER-id" />
+          </Ident>
+        </Organisation>
+      </Organisation>
+    </Receiver>
+    <Patient>
+      <FamilyName>Eieb</FamilyName>
+      <GivenName>Anna Fos</GivenName>
+      <Ident>
+        <Id>07118600295</Id>
+        <TypeId V="FNR" S="2.16.578.1.12.4.1.1.8116" DN="Fødselsnummer" />
+      </Ident>
+    </Patient>
+  </MsgInfo>
+  <Document>
+    <ContentDescription>DIALOG_INNBYGGER_EKONTAKT</ContentDescription>
+    <RefDoc>
+      <IssueDate V="2017-07-12T07:48:28Z" />
+      <MsgType V="XML" DN="XML-instans" />
+      <Content>
+        <Dialogmelding xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.kith.no/xmlstds/dialog/2013-01-23 dialogmelding-v1.1.xsd" xmlns="http://www.kith.no/xmlstds/dialog/2013-01-23">
+          <Sakstype>4</Sakstype>
+          <Foresporsel>
+            <TypeForesp V="DI" S="2.16.578.1.12.4.1.1.7601" DN="Dialog med innbygger" />
+            <EmneSporsmal>tester</EmneSporsmal>
+            <Sporsmal>
+              <div xmlns="http://www.w3.org/1999/xhtml">tester</div>
+            </Sporsmal>
+            <RollerRelatertNotat>
+              <RolleNotat V="1" S="2.16.578.1.12.4.1.1.9057" DN="Forfatter" />
+              <Person>
+                <GivenName>Gunn Haugen</GivenName>
+                <FamilyName>(Testulf)</FamilyName>
+              </Person>
+            </RollerRelatertNotat>
+          </Foresporsel>
+        </Dialogmelding>
+      </Content>
+    </RefDoc>
+  </Document>
+</MsgHead>

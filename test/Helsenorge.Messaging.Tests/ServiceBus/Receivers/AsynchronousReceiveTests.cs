@@ -12,6 +12,7 @@ using Helsenorge.Messaging.ServiceBus.Receivers;
 using Helsenorge.Messaging.Tests.Mocks;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 {
@@ -157,6 +158,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
                 Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
                 CheckError(MockFactory.OtherParty.Error.Messages, "transport:not-well-formed-xml", "XML-Error", string.Empty);
+                var logEntry = MockLoggerProvider.FindEntry(EventIds.NotXml);
+                Assert.IsNotNull(logEntry);
+                Assert.IsTrue(logEntry.LogLevel == LogLevel.Debug);
             },
             wait: () => _handledExceptionCalled,
             received: (m) => {  throw new XmlSchemaValidationException("XML-Error");},
@@ -171,6 +175,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
                 Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
                 CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-field-value", "Mismatch", "Expected;Received;");
+                var logEntry = MockLoggerProvider.FindEntry(EventIds.DataMismatch);
+                Assert.IsNotNull(logEntry);
+                Assert.IsTrue(logEntry.LogLevel == LogLevel.Debug);
             },
             wait: () => _handledExceptionCalled,
             received: (m) => { throw new ReceivedDataMismatchException("Mismatch") { ExpectedValue = "Expected", ReceivedValue = "Received"}; },
@@ -185,6 +192,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
                 Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
                 CheckError(MockFactory.OtherParty.Error.Messages, "transport:internal-error", "NotifySender", string.Empty);
+                var logEntry = MockLoggerProvider.FindEntry(EventIds.ApplicationReported);
+                Assert.IsNotNull(logEntry);
+                Assert.IsTrue(logEntry.LogLevel == LogLevel.Debug);
             },
             wait: () => _handledExceptionCalled,
             received: (m) => { throw new NotifySenderException("NotifySender"); },
@@ -525,7 +535,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 
             Server.Start();
 
-            Wait(15, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout
+            Wait(150, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout
             Server.Stop(TimeSpan.FromSeconds(10));
             
             // check the state of the system
@@ -553,7 +563,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         private MockMessage CreateAsynchronousMessage()
         {
             var messageId = Guid.NewGuid().ToString("D");
-            return new MockMessage(GenericResponse)
+            return new MockMessage(ValidMessage)
             {
                 MessageFunction = "DIALOG_INNBYGGER_EKONTAKT",
                 ApplicationTimestamp = DateTime.Now,
