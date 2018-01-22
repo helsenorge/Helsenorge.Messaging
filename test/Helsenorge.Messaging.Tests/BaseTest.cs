@@ -76,9 +76,6 @@ namespace Helsenorge.Messaging.Tests
 
             MockLoggerProvider = new MockLoggerProvider(null);
             LoggerFactory.AddProvider(MockLoggerProvider);
-
-            //LoggerFactory.AddDebug();
-            //Logger = new LoggerMock(LoggerFactory.CreateLogger<BaseTest>());
             Logger = LoggerFactory.CreateLogger<BaseTest>();
 
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
