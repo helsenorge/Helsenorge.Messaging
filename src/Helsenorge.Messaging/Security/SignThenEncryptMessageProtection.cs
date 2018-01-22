@@ -67,6 +67,7 @@ namespace Helsenorge.Messaging.Security
             if (encryptionCertificate == null) throw new ArgumentNullException(nameof(encryptionCertificate));
 
             var ms = new MemoryStream();
+            data.Seek(0, SeekOrigin.Begin);
             data.CopyTo(ms);
 
             var encryptionCertificates = new X509Certificate2Collection(encryptionCertificate);
@@ -91,7 +92,8 @@ namespace Helsenorge.Messaging.Security
                     "Message encrypted with certificate SerialNumber {0}, IssueName {1} could not be decrypted. Exception: {2}", 
                     cert.HasValue ? cert.Value.SerialNumber : "unknown", 
                     cert.HasValue ? cert.Value.IssuerName : "unknown", 
-                    ce.Message));
+                    ce.Message),
+                signingCertificate.GetType(), SecurityExceptionState.CertificateDecryptingError);
             }
 
             raw = envelopedCm.ContentInfo.Content;
@@ -114,7 +116,8 @@ namespace Helsenorge.Messaging.Security
                         string.Format(null,
                             "Expecting certificate {0} but signed with {1}",
                             signingCertificate.Thumbprint,
-                            (signed.Certificates.Count > 0 ? signed.Certificates[signed.Certificates.Count - 1].Thumbprint : "")));
+                            (signed.Certificates.Count > 0 ? signed.Certificates[signed.Certificates.Count - 1].Thumbprint : "")),
+                        signingCertificate.GetType(), SecurityExceptionState.CertificateSigningError);
                 }
 
                 signed.CheckSignature(new X509Certificate2Collection(signingCertificate), true);
