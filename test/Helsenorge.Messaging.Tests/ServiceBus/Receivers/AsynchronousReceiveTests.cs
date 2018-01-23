@@ -86,13 +86,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Assert.IsTrue(_startingCalled);
                     Assert.IsFalse(_receivedCalled);
                     Assert.IsTrue(_completedCalled);
-                    var error = MockLoggerProvider.Entries
-                        .Where(a =>
-                            a.LogLevel == LogLevel.Warning &&
-                            a.Message.Contains("ErrorCode: transport:invalid-certificate"))
-                        .ToList();
-                    Assert.AreEqual(1, error.Count);
-                    Assert.IsTrue(error.Single().Message.Contains($"Certificate signature provided from settings successfull: {TestCertificates.HelsenorgePrivateSigntature.Thumbprint}."));
+                    var error = MockLoggerProvider.FindEntry(EventIds.RemoteCertificate);
+                    Assert.IsTrue(error.Message
+                        .Contains($"Certificate signature provided from settings successfull: {TestCertificates.HelsenorgePrivateSigntature.Thumbprint}."));
                 },
                 wait: () => _completedCalled,
                 received: (m) => { },
