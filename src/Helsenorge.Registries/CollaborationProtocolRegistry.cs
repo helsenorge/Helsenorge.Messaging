@@ -117,7 +117,7 @@ namespace Helsenorge.Registries
                 result = doc.Root == null ? null : MapFrompartyInfo(doc.Root.Element(_ns + "PartyInfo"));
             }
 
-            await CacheExtensions.WriteValueToCache(logger, _cache, key, result, _settings.CachingInterval).ConfigureAwait(false);
+            CacheExtensions.WriteValueToCache(logger, _cache, key, result, _settings.CachingInterval);
             return result;
         }
 
@@ -194,7 +194,7 @@ namespace Helsenorge.Registries
             result = MapFrompartyInfo(node);
             result.CpaId = id;
 
-            await CacheExtensions.WriteValueToCache(logger, _cache, key, result, _settings.CachingInterval).ConfigureAwait(false);
+            CacheExtensions.WriteValueToCache(logger, _cache, key, result, _settings.CachingInterval);
             return result;
         }
 
@@ -268,7 +268,7 @@ namespace Helsenorge.Registries
             result = MapFrompartyInfo(node);
             result.CpaId = Guid.Parse(doc.Root.Attribute(_ns + "cpaid").Value);
             
-            await CacheExtensions.WriteValueToCache(logger, _cache, key, result, _settings.CachingInterval).ConfigureAwait(false);
+            CacheExtensions.WriteValueToCache(logger, _cache, key, result, _settings.CachingInterval);
             return result;
         }
         

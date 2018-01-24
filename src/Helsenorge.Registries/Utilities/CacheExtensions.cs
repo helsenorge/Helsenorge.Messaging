@@ -23,21 +23,23 @@ namespace Helsenorge.Registries.Utilities
             }
         }
 
-        public static async Task WriteValueToCache(ILogger logger, IDistributedCache cache, string key, object value, TimeSpan expires)
+        public static void WriteValueToCache(ILogger logger, IDistributedCache cache, string key, object value, TimeSpan expires)
         {
             if (expires == TimeSpan.Zero) return;
             if (value == null) return;
 
             var options = new DistributedCacheEntryOptions();
             options.SetAbsoluteExpiration(expires);
-            try
+
+            logger.LogDebug("WriteValueToCache key {0}", key);
+
+            var task = cache.SetAsync(key, ObjectToByteArray(value), options);
+            if (task.Exception != null)
             {
-                await cache.SetAsync(key, ObjectToByteArray(value), options).ConfigureAwait(false);
+                logger.LogWarning(1, task.Exception, $"Failed writing value {key} from cache");
             }
-            catch (Exception ex)
-            {	
-                logger.LogWarning(1, ex, $"Failed writing value {key} to cache");
-            }
+            
+            logger.LogDebug("WriteValueToCache key {0} complete", key);
         }
 
 

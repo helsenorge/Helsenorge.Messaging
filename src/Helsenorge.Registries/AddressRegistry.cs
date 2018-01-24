@@ -74,7 +74,7 @@ namespace Helsenorge.Registries
                         Data = { { "HerId", herId } }
                     };
                 }
-                await CacheExtensions.WriteValueToCache(logger, _cache, key, party, _settings.CachingInterval).ConfigureAwait(false);
+                CacheExtensions.WriteValueToCache(logger, _cache, key, party, _settings.CachingInterval);
             }
             return party == null ? default(CommunicationPartyDetails) : MapCommunicationPartyDetails(party);
         }
@@ -116,7 +116,7 @@ namespace Helsenorge.Registries
                         Data = { { "HerId", herId } }
                     };
                 }
-                await CacheExtensions.WriteValueToCache(logger, _cache, key, certificateDetails, _settings.CachingInterval).ConfigureAwait(false);
+                CacheExtensions.WriteValueToCache(logger, _cache, key, certificateDetails, _settings.CachingInterval);
             }
             return certificateDetails == null ? default(Abstractions.CertificateDetails) : MapCertificateDetails(herId, certificateDetails);
         }
@@ -158,7 +158,7 @@ namespace Helsenorge.Registries
                         Data = { { "HerId", herId } }
                     };
                 }
-                await CacheExtensions.WriteValueToCache(logger, _cache, key, certificateDetails, _settings.CachingInterval).ConfigureAwait(false);
+                CacheExtensions.WriteValueToCache(logger, _cache, key, certificateDetails, _settings.CachingInterval);
             }
             return certificateDetails == null ? default(Abstractions.CertificateDetails) : MapCertificateDetails(herId, certificateDetails);
         }
