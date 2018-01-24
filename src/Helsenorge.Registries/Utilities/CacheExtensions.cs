@@ -33,13 +33,14 @@ namespace Helsenorge.Registries.Utilities
 
             logger.LogDebug("WriteValueToCache key {0}", key);
 
-            var task = cache.SetAsync(key, ObjectToByteArray(value), options);
-            if (task.Exception != null)
-            {
-                logger.LogWarning(1, task.Exception, $"Failed writing value {key} from cache");
-            }
-            
-            logger.LogDebug("WriteValueToCache key {0} complete", key);
+            cache.SetAsync(key, ObjectToByteArray(value), options)
+                .ContinueWith(
+                    t => { logger.LogDebug("WriteValueToCache key {0} complete", key);
+                    if (t.Exception != null)
+                    {
+                        logger.LogWarning(1, t.Exception, $"Failed writing value {key} to cache.");
+                    }
+                });
         }
 
 
