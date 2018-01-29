@@ -345,7 +345,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             switch (error)
             {
                 case CertificateErrors.None:
-                // no error
+                    // no error
+                    return;
                 case CertificateErrors.Missing:
                     // if the certificate is missing, it's because we don't know where it came from
                     // and have no idea where to send an error message
