@@ -247,7 +247,7 @@ namespace Helsenorge.Messaging.ServiceBus
             
             var clonedMessage = originalMessage.Clone();
             // update some properties on the cloned message
-            clonedMessage.To = await ConstructQueueName(logger, originalMessage.FromHerId, QueueType.Error); // change target 
+            clonedMessage.To = await ConstructQueueName(logger, originalMessage.FromHerId, QueueType.Error).ConfigureAwait(false); // change target 
             clonedMessage.TimeToLive = Settings.Error.TimeToLive;
             clonedMessage.FromHerId = originalMessage.ToHerId;
             clonedMessage.ToHerId = originalMessage.FromHerId;

@@ -23,7 +23,7 @@ namespace Helsenorge.Registries.Utilities
             }
         }
 
-        public static void WriteValueToCache(ILogger logger, IDistributedCache cache, string key, object value, TimeSpan expires)
+        public static async Task WriteValueToCache(ILogger logger, IDistributedCache cache, string key, object value, TimeSpan expires)
         {
             if (expires == TimeSpan.Zero) return;
             if (value == null) return;
@@ -35,7 +35,7 @@ namespace Helsenorge.Registries.Utilities
 
             try
             {
-                cache.Set(key, ObjectToByteArray(value), options);
+                await cache.SetAsync(key, ObjectToByteArray(value), options).ConfigureAwait(false);
                 logger.LogDebug("WriteValueToCache key {0} complete", key);
             }
             catch (Exception ex)
