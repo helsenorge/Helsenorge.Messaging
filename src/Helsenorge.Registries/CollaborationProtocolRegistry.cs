@@ -108,8 +108,8 @@ namespace Helsenorge.Registries
             if (string.IsNullOrEmpty(xmlString))
             {
                 result = CreateDummyCollaborationProtocolProfile(counterpartyHerId,
-                    await _adressRegistry.GetCertificateDetailsForEncryptionAsync(logger, counterpartyHerId),
-                    await _adressRegistry.GetCertificateDetailsForValidatingSignatureAsync(logger, counterpartyHerId));
+                    await _adressRegistry.GetCertificateDetailsForEncryptionAsync(logger, counterpartyHerId).ConfigureAwait(false),
+                    await _adressRegistry.GetCertificateDetailsForValidatingSignatureAsync(logger, counterpartyHerId).ConfigureAwait(false));
             }
             else
             {
@@ -139,7 +139,7 @@ namespace Helsenorge.Registries
         /// <returns></returns>
         public async Task<CollaborationProtocolProfile> FindAgreementByIdAsync(ILogger logger, Guid id)
         {
-            return await FindAgreementByIdAsync(logger, id, false);
+            return await FindAgreementByIdAsync(logger, id, false).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace Helsenorge.Registries
         /// <returns></returns>
         public async Task<CollaborationProtocolProfile> FindAgreementForCounterpartyAsync(ILogger logger, int counterpartyHerId)
         {
-            return await FindAgreementForCounterpartyAsync(logger, counterpartyHerId, false);
+            return await FindAgreementForCounterpartyAsync(logger, counterpartyHerId, false).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace Helsenorge.Registries
             {
                 // if there are error getting a proper CPA, we fallback to getting CPP.
                 logger.LogWarning($"Failed to resolve CPA between {_settings.MyHerId} and {counterpartyHerId}. {ex.Message}");
-                return await FindProtocolForCounterpartyAsync(logger, counterpartyHerId);
+                return await FindProtocolForCounterpartyAsync(logger, counterpartyHerId).ConfigureAwait(false);
             }
 
             if (string.IsNullOrEmpty(details?.CollaborationProtocolAgreementXml)) return null;

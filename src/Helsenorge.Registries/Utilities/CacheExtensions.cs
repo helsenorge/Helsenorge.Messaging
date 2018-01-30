@@ -30,16 +30,19 @@ namespace Helsenorge.Registries.Utilities
 
             var options = new DistributedCacheEntryOptions();
             options.SetAbsoluteExpiration(expires);
+
+            logger.LogDebug("WriteValueToCache key {0}", key);
+
             try
             {
                 await cache.SetAsync(key, ObjectToByteArray(value), options).ConfigureAwait(false);
+                logger.LogDebug("WriteValueToCache key {0} complete", key);
             }
             catch (Exception ex)
-            {	
-                logger.LogWarning(1, ex, $"Failed writing value {key} to cache");
+            {
+                logger.LogWarning(1, ex, $"Failed writing value {key} to cache.");
             }
         }
-
 
         private static byte[] ObjectToByteArray(object value)
         {
