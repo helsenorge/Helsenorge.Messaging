@@ -45,7 +45,7 @@ namespace Helsenorge.Registries
         /// <returns>Communication details if found, otherwise null</returns>
         public async Task<CommunicationPartyDetails> FindCommunicationPartyDetailsAsync(ILogger logger, int herId)
         {
-            return await FindCommunicationPartyDetailsAsync(logger, herId, false);
+            return await FindCommunicationPartyDetailsAsync(logger, herId, false).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Helsenorge.Registries
         /// <returns></returns>
         public async Task<Abstractions.CertificateDetails> GetCertificateDetailsForEncryptionAsync(ILogger logger, int herId)
         {
-            return await GetCertificateDetailsForEncryptionAsync(logger, herId, false);
+            return await GetCertificateDetailsForEncryptionAsync(logger, herId, false).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace Helsenorge.Registries
         /// <returns></returns>
         public async Task<Abstractions.CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(ILogger logger, int herId)
         {
-            return await GetCertificateDetailsForValidatingSignatureAsync(logger, herId, false);
+            return await GetCertificateDetailsForValidatingSignatureAsync(logger, herId, false).ConfigureAwait(false);
         }
 
         /// <summary>
