@@ -13,6 +13,7 @@ using Helsenorge.Messaging.Tests.Mocks;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
+using Helsenorge.Messaging.Security;
 
 namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 {
@@ -33,6 +34,76 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             _startingCalled = false;
             _receivedCalled = false;
             _completedCalled = false;
+        }
+        
+        [TestMethod]
+        public void Asynchronous_Receive_RemoteCertificateMissing()
+        {
+            CertificateValidator.SetError((c, u) => CertificateErrors.Missing);
+
+            RunAsynchronousReceive(
+                postValidation: () =>
+                {
+                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+                    Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+                    var error = MockLoggerProvider.Entries
+                        .Where(a =>
+                            a.LogLevel == LogLevel.Warning &&
+                            a.Message.Contains("Certificate is missing for message. MessageFunction: DIALOG_INNBYGGER_EKONTAKT"))
+                        .ToList();
+                    Assert.AreEqual(1, error.Count);
+                    Assert.IsTrue(error.Single().Message.Contains("MessageFunction: DIALOG_INNBYGGER_EKONTAKT FromHerId: 93252 ToHerId: 93238"));
+                },
+                wait: () => _completedCalled,
+                received: (m) => { Assert.IsTrue(m.SignatureError == CertificateErrors.Missing); },
+                messageModification: (m) => { });
+        }
+        [TestMethod]
+        public void Asynchronous_Receive_CertificateSignError()
+        {
+            Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry)
+            {
+                DefaultMessageProtection = new SignThenEncryptMessageProtection(),   // disable protection for most tests
+                DefaultCertificateValidator = CertificateValidator
+            };
+            Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
+            
+            Server = new MessagingServer(Settings, Logger, LoggerFactory, CollaborationRegistry, AddressRegistry)
+            {
+                DefaultMessageProtection = new SignThenEncryptMessageProtection(),   // disable protection for most tests
+                DefaultCertificateValidator = CertificateValidator
+            };
+            Server.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
+
+            CollaborationRegistry.SetupFindAgreementForCounterparty(i =>
+            {
+                var file = Path.Combine("Files", $"CPA_{i}_ChangedSignedCertificate.xml");
+                return File.Exists(file) == false ? null : File.ReadAllText(file);
+            });
+
+            RunAsynchronousReceive(
+                postValidation: () => {
+                    Assert.IsTrue(_startingCalled);
+                    Assert.IsFalse(_receivedCalled);
+                    Assert.IsTrue(_completedCalled);
+                    var error = MockLoggerProvider.FindEntry(EventIds.RemoteCertificate);
+                    Assert.IsTrue(error.Message
+                        .Contains($"{TestCertificates.HelsenorgePrivateSigntature.Thumbprint}"));
+                    Assert.IsTrue(error.Message
+                        .Contains($"{TestCertificates.HelsenorgePrivateSigntature.NotBefore}"));
+                    Assert.IsTrue(error.Message.Contains("V=\"DIALOG_INNBYGGER_EKONTAKT\""));
+                    Assert.IsFalse(error.Message.Contains("<ContentDescription>Bestille attest</ContentDescription>"));
+                },
+                wait: () => _completedCalled,
+                received: (m) => { },
+                messageModification: (m) => { },
+                handledException: ((m, e) =>
+                {
+                    Server.Stop(TimeSpan.FromSeconds(10));
+                    _handledExceptionCalled = true;
+                    _completedCalled = true;
+                }),
+                helsenorgeSigning: true);
         }
 
         [TestMethod]
@@ -515,10 +586,12 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             Action<MockMessage> messageModification, 
             Action<IncomingMessage> received, 
             Func<bool> wait,
-            Action postValidation )
+            Action postValidation,
+            Action<IMessagingMessage, Exception> handledException = null,
+            bool helsenorgeSigning = false)
         {
             // create and post message
-            var message = CreateAsynchronousMessage();
+            var message = helsenorgeSigning == false ? CreateAsynchronousMessage() : CreateAsynchronousMessageHelsenorgeSigning();
             messageModification(message);
             MockFactory.Helsenorge.Asynchronous.Messages.Add(message);
 
@@ -531,8 +604,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             });
             Server.RegisterAsynchronousMessageReceivedCompletedCallback((m) => _completedCalled = true);
             Server.RegisterUnhandledExceptionCallback((m, e) => _unhandledExceptionCalled = true);
-            Server.RegisterHandledExceptionCallback((m, e) => _handledExceptionCalled = true);
-
+            if (handledException != null) Server.RegisterHandledExceptionCallback(handledException);
+            else Server.RegisterHandledExceptionCallback((m, e) => _handledExceptionCalled = true);
+            
             Server.Start();
 
             Wait(15, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout
@@ -564,6 +638,30 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         {
             var messageId = Guid.NewGuid().ToString("D");
             return new MockMessage(GenericResponse)
+            {
+                MessageFunction = "DIALOG_INNBYGGER_EKONTAKT",
+                ApplicationTimestamp = DateTime.Now,
+                ContentType = ContentType.SignedAndEnveloped,
+                MessageId = messageId,
+                CorrelationId = messageId,
+                FromHerId = MockFactory.OtherHerId,
+                ToHerId = MockFactory.HelsenorgeHerId,
+                ScheduledEnqueueTimeUtc = DateTime.UtcNow,
+                TimeToLive = TimeSpan.FromSeconds(15),
+                ReplyTo = MockFactory.OtherParty.Asynchronous.Name,
+                Queue = MockFactory.Helsenorge.Asynchronous.Messages,
+            };
+        }
+        
+        private MockMessage CreateAsynchronousMessageHelsenorgeSigning()
+        {
+            var signing = new SignThenEncryptMessageProtection();
+            var messageId = Guid.NewGuid().ToString("D");
+            var path = Path.Combine("Files", "Helsenorge_Message.xml");
+            var file = File.Exists(path) ? new XDocument(XElement.Load(path)) : null;
+            var protect = signing.Protect(file ?? GenericMessage, TestCertificates.HelsenorgePublicEncryption,
+                TestCertificates.HelsenorgePrivateSigntature); 
+            return new MockMessage(protect)
             {
                 MessageFunction = "DIALOG_INNBYGGER_EKONTAKT",
                 ApplicationTimestamp = DateTime.Now,
