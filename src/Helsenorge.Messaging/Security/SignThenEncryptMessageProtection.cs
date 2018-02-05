@@ -68,7 +68,6 @@ namespace Helsenorge.Messaging.Security
             if (encryptionCertificate == null) throw new ArgumentNullException(nameof(encryptionCertificate));
 
             var ms = new MemoryStream();
-            data.Seek(0, SeekOrigin.Begin);
             data.CopyTo(ms);
 
             var encryptionCertificates = new X509Certificate2Collection(encryptionCertificate);
@@ -95,6 +94,7 @@ namespace Helsenorge.Messaging.Security
             }
 
             raw = envelopedCm.ContentInfo.Content;
+
             // then we validate the signature
             var signed = new SignedCms();
             signed.Decode(raw);

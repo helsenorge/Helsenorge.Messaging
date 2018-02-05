@@ -627,7 +627,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 
             while (true)
             {
-                //if(DateTime.Now > max) throw new TimeoutException();
+                if(DateTime.Now > max) throw new TimeoutException();
 
                 if (check()) return;
                 System.Threading.Thread.Sleep(50);
@@ -655,7 +655,6 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         
         private MockMessage CreateAsynchronousMessageHelsenorgeSigning()
         {
-
             var signing = new SignThenEncryptMessageProtection();
             var messageId = Guid.NewGuid().ToString("D");
             var path = Path.Combine("Files", "Helsenorge_Message.xml");
