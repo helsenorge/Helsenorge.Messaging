@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -285,54 +284,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     ReportErrorOnLocalCertificate(originalMessage, legacyDecryption, incomingMessage.LegacyDecryptionError, false);
                 }
 
-                payload = AttemptUnprotect(bodyStream, decryption, signature, legacyDecryption);
+                payload = Core.DefaultMessageProtection.Unprotect(bodyStream, decryption, signature, legacyDecryption);
             }
             return payload;
-        }
-
-        /// <summary>
-        /// Attempt certificate signature provided from CPA. If it fails then we attempt using the certificate signature spesified in settings.
-        /// </summary>
-        /// <returns></returns>
-        private XDocument AttemptUnprotect(Stream bodyStream, X509Certificate2 decryption, X509Certificate2 signature, X509Certificate2 legacyDecryption)
-        {
-            try
-            {
-                return Core.DefaultMessageProtection.Unprotect(bodyStream, decryption, signature, legacyDecryption);
-            }
-            catch (SecurityException se)
-            {
-                if (se.PermissionState != SecurityExceptionState.CertificateSigningError) throw;
-                var failSettingSignature = false;
-                try
-                {
-                    var payloadToLog = Core.DefaultMessageProtection.Unprotect(bodyStream, decryption,
-                        Core.Settings.SigningCertificate.Certificate, legacyDecryption);
-                    failSettingSignature = true;
-                    throw new SecurityException(
-                        $"Error using the certificate signature provided from CPA: {se.Message}. Certificate signature provided from settings successfull: {Core.Settings.SigningCertificate.Certificate.Thumbprint}.{Environment.NewLine}" +
-                        $"Message head information: {Environment.NewLine}" +
-                        $"{GetHeaderDetailsFromMessage(payloadToLog)}");
-                }
-                catch
-                {
-                    // If it fails using the signing certificate then we want to throw this error.
-                    // If other errors then we want to throw the parents error.
-                    if (failSettingSignature) throw;
-                }
-
-                throw;
-            }
-        }
-
-        private string GetHeaderDetailsFromMessage(XDocument xDocument)
-        {
-            var sender = xDocument.Descendants().Where(x =>
-                x.Name.LocalName.Equals("Sender", StringComparison.InvariantCultureIgnoreCase)
-                || x.Name.LocalName.Equals("Receiver", StringComparison.InvariantCultureIgnoreCase))
-                .Select(x => x.ToString());
-
-            return string.Join(Environment.NewLine, sender);
         }
 
         private void ReportErrorOnRemoteCertificate(IMessagingMessage originalMessage, X509Certificate2 certificate,

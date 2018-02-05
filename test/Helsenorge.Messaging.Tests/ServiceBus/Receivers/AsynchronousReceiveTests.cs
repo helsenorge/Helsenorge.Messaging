@@ -88,7 +88,11 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Assert.IsTrue(_completedCalled);
                     var error = MockLoggerProvider.FindEntry(EventIds.RemoteCertificate);
                     Assert.IsTrue(error.Message
-                        .Contains($"Certificate signature provided from settings successfull: {TestCertificates.HelsenorgePrivateSigntature.Thumbprint}."));
+                        .Contains($"{TestCertificates.HelsenorgePrivateSigntature.Thumbprint}"));
+                    Assert.IsTrue(error.Message
+                        .Contains($"{TestCertificates.HelsenorgePrivateSigntature.NotBefore}"));
+                    Assert.IsTrue(error.Message.Contains("V=\"DIALOG_INNBYGGER_EKONTAKT\""));
+                    Assert.IsFalse(error.Message.Contains("<ContentDescription>Bestille attest</ContentDescription>"));
                 },
                 wait: () => _completedCalled,
                 received: (m) => { },
@@ -623,7 +627,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 
             while (true)
             {
-                if(DateTime.Now > max) throw new TimeoutException();
+                //if(DateTime.Now > max) throw new TimeoutException();
 
                 if (check()) return;
                 System.Threading.Thread.Sleep(50);
@@ -651,9 +655,12 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         
         private MockMessage CreateAsynchronousMessageHelsenorgeSigning()
         {
+
             var signing = new SignThenEncryptMessageProtection();
             var messageId = Guid.NewGuid().ToString("D");
-            var protect = signing.Protect(GenericMessage, TestCertificates.HelsenorgePublicEncryption,
+            var path = Path.Combine("Files", "Helsenorge_Message.xml");
+            var file = File.Exists(path) ? new XDocument(XElement.Load(path)) : null;
+            var protect = signing.Protect(file ?? GenericMessage, TestCertificates.HelsenorgePublicEncryption,
                 TestCertificates.HelsenorgePrivateSigntature); 
             return new MockMessage(protect)
             {

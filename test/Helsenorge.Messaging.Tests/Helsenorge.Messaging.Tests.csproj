@@ -263,6 +263,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Files\CPP_94867.xml" />
+    <Content Include="Files\Helsenorge_Message.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Files\SoapFault.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

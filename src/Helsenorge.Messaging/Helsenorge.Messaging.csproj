@@ -144,7 +144,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Abstractions\IMessageProtection.cs" />
     <Compile Include="Security\NoMessageProtection.cs" />
-    <Compile Include="Security\SecurityExceptionState.cs" />
     <Compile Include="Security\SignThenEncryptMessageProtection.cs" />
     <Compile Include="MessagingClient.cs" />
     <Compile Include="MessagingServer.cs" />
