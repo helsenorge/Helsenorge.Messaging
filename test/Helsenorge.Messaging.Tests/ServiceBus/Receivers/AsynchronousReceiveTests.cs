@@ -61,6 +61,8 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         [TestMethod]
         public void Asynchronous_Receive_CertificateSignError()
         {
+            Exception receiveException = null;
+
             Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry)
             {
                 DefaultMessageProtection = new SignThenEncryptMessageProtection(),   // disable protection for most tests
@@ -91,8 +93,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                         .Contains($"{TestCertificates.HelsenorgePrivateSigntature.Thumbprint}"));
                     Assert.IsTrue(error.Message
                         .Contains($"{TestCertificates.HelsenorgePrivateSigntature.NotBefore}"));
-                    Assert.IsTrue(error.Message.Contains("V=\"DIALOG_INNBYGGER_EKONTAKT\""));
-                    Assert.IsFalse(error.Message.Contains("<ContentDescription>Bestille attest</ContentDescription>"));
+                    var signingException = receiveException as SigningCertificateException;
+                    Assert.IsNotNull(signingException);
+                    Assert.IsTrue(signingException.Payload.Contains("V=\"DIALOG_INNBYGGER_EKONTAKT\""));
                 },
                 wait: () => _completedCalled,
                 received: (m) => { },
@@ -102,8 +105,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Server.Stop(TimeSpan.FromSeconds(10));
                     _handledExceptionCalled = true;
                     _completedCalled = true;
+                    receiveException = e;
                 }),
-                helsenorgeSigning: true);
+                messageProtected: true);
         }
 
         [TestMethod]
@@ -588,10 +592,10 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             Func<bool> wait,
             Action postValidation,
             Action<IMessagingMessage, Exception> handledException = null,
-            bool helsenorgeSigning = false)
+            bool messageProtected = false)
         {
             // create and post message
-            var message = helsenorgeSigning == false ? CreateAsynchronousMessage() : CreateAsynchronousMessageHelsenorgeSigning();
+            var message = messageProtected == false ? CreateAsynchronousMessage() : CreateAsynchronousMessageProtected();
             messageModification(message);
             MockFactory.Helsenorge.Asynchronous.Messages.Add(message);
 
@@ -609,7 +613,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             
             Server.Start();
 
-            Wait(15, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout
+            Wait(20, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout
             Server.Stop(TimeSpan.FromSeconds(10));
             
             // check the state of the system
@@ -653,7 +657,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             };
         }
         
-        private MockMessage CreateAsynchronousMessageHelsenorgeSigning()
+        private MockMessage CreateAsynchronousMessageProtected()
         {
             var signing = new SignThenEncryptMessageProtection();
             var messageId = Guid.NewGuid().ToString("D");

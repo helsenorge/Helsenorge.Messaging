@@ -133,6 +133,7 @@
     <Compile Include="Abstractions\IServiceBusFactoryPool.cs" />
     <Compile Include="Abstractions\MessagingEntityCache.cs" />
     <Compile Include="Abstractions\OutgoingMessage.cs" />
+    <Compile Include="Abstractions\SigningCertificateException.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Http\HttpServiceBusFactory.cs" />
     <Compile Include="Http\HttpServiceBusFactoryPool.cs" />
