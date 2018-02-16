@@ -137,7 +137,6 @@ namespace Helsenorge.Messaging.Client
                                 MessageFunction = _clientSettings.MessageFunction,
                                 ToHerId = _clientSettings.ToHerId,
                                 MessageId = Guid.NewGuid().ToString("D"),
-                                ScheduledSendTimeUtc = DateTime.UtcNow,
                                 PersonalId = "99999999999",
                                 Payload = XDocument.Load(File.OpenRead(s))
                             }));
@@ -185,7 +184,6 @@ namespace Helsenorge.Messaging.Client
                         MessageFunction = _clientSettings.MessageFunction,
                         ToHerId = _clientSettings.ToHerId,
                         MessageId = Guid.NewGuid().ToString("D"),
-                        ScheduledSendTimeUtc = DateTime.UtcNow,
                         PersonalId = "99999999999",
                         Payload = XDocument.Load(File.OpenRead(s))
 

@@ -42,7 +42,6 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         public OutgoingMessage()
         {
-            ScheduledSendTimeUtc = DateTime.UtcNow;
         }
     }
 }
