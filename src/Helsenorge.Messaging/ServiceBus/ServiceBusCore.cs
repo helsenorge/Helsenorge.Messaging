@@ -208,6 +208,8 @@ namespace Helsenorge.Messaging.ServiceBus
             }
             catch (Exception ex)
             {
+                logger.LogException("Cannot send message to service bus. Invalid endpoint.", ex);
+
                 throw new MessagingException(ex.Message)
                 {
                     EventId = EventIds.Send

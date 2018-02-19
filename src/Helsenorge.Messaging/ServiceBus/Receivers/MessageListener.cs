@@ -204,6 +204,12 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 Core.ReportErrorToExternalSender(Logger, EventIds.DataMismatch, message, "abuse:spoofing-attack", ex.Message, null, ex);
                 MessagingNotification.NotifyHandledException(message, ex);
             }
+            catch (AggregateException ex) when (ex.InnerException is MessagingException && ((MessagingException)ex.InnerException).EventId.Id == EventIds.Send.Id) 
+            {
+                //message should go to dlc right away, we get an error sending the reply
+                message.DeadLetter();
+                MessagingNotification.NotifyHandledException(message, ex);
+            }
             catch (Exception ex) // unknown error
             {
                 message.AddDetailsToException(ex);

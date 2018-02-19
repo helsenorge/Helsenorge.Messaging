@@ -147,6 +147,11 @@ namespace Helsenorge.Messaging.Http
             return Task.CompletedTask;
         }
 
+        public void DeadLetter()
+        {
+            throw new NotImplementedException();
+        }
+
         public IMessagingMessage Clone()
         {
             return new IncomingHttpMessage { AMQPMessage = AMQPMessage };
