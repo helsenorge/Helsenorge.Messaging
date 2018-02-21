@@ -98,5 +98,26 @@ namespace Helsenorge.Messaging.Tests.Mocks
         {
         
         }
+
+        public IMessagingMessage CloneForErrorQueue()
+        {
+            return new MockMessage(_stream)
+            {
+                MessageFunction = MessageFunction,
+                MessageId = MessageId,
+                ToHerId = ToHerId,
+                ContentType = ContentType,
+                ReplyTo = ReplyTo,
+                CorrelationId = CorrelationId,
+                Queue = Queue,
+                ApplicationTimestamp = ApplicationTimestamp,
+                CpaId = CpaId,
+                FromHerId = FromHerId,
+                Properties = Properties,
+                ScheduledEnqueueTimeUtc = ScheduledEnqueueTimeUtc,
+                TimeToLive = TimeToLive,
+                To = To
+            };
+        }
     }
 }

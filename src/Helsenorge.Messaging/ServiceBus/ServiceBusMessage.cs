@@ -132,5 +132,25 @@ namespace Helsenorge.Messaging.ServiceBus
         private string GetValue(string key, string value) => _implementation.Properties.ContainsKey(key) ? _implementation.Properties[key].ToString() : value;
         private int GetValue(string key, int value) => _implementation.Properties.ContainsKey(key) ? int.Parse(_implementation.Properties[key].ToString()) : value;
         private DateTime GetValue(string key, DateTime value) => _implementation.Properties.ContainsKey(key) ? DateTime.Parse(_implementation.Properties[key].ToString(), CultureInfo.InvariantCulture) : value;
+
+        public IMessagingMessage CloneForErrorQueue()
+        {
+            return new ServiceBusMessage(new BrokeredMessage()
+            {
+                ContentType = _implementation.ContentType,
+                CorrelationId = _implementation.CorrelationId,
+                ForcePersistence = _implementation.ForcePersistence,
+                Label = _implementation.Label,
+                MessageId = _implementation.MessageId,
+                PartitionKey = _implementation.PartitionKey,
+                ReplyTo = _implementation.ReplyTo,
+                ReplyToSessionId = _implementation.ReplyToSessionId,
+                ScheduledEnqueueTimeUtc = _implementation.ScheduledEnqueueTimeUtc,
+                SessionId = _implementation.SessionId,
+                TimeToLive = _implementation.TimeToLive,
+                To = _implementation.To,
+                ViaPartitionKey = _implementation.ViaPartitionKey
+            });
+        }
     }
 }

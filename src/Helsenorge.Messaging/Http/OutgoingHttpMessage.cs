@@ -143,6 +143,11 @@ namespace Helsenorge.Messaging.Http
         {
             throw new NotImplementedException();
         }
+        
+        public IMessagingMessage CloneForErrorQueue()
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

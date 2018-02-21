@@ -89,6 +89,11 @@ namespace Helsenorge.Messaging.Abstractions
         /// <returns></returns>
         IMessagingMessage Clone();
         /// <summary>
+        /// Creates a clone of the message without payload
+        /// </summary>
+        /// <returns></returns>
+        IMessagingMessage CloneForErrorQueue();
+        /// <summary>
         /// Gets a reference to the object that is implementation specific
         /// </summary>
         object OriginalObject { get; }
