@@ -112,7 +112,7 @@ namespace Helsenorge.Messaging.Security
                         ? signed.Certificates[signed.Certificates.Count - 1] : null;
                     
                     // it looks like that last certificate in the collection is the one at the end of the chain
-                    throw new SigningCertificateException(
+                    throw new CertificateException(
                         $"Expected signingcertificate: {Environment.NewLine} {signingCertificate} {Environment.NewLine}{Environment.NewLine}" +
                         $"Actual signingcertificate: {Environment.NewLine} {actualSignedCertificate} {Environment.NewLine}{Environment.NewLine}",
                         raw);
