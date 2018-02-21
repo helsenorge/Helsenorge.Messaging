@@ -93,9 +93,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                         .Contains($"{TestCertificates.HelsenorgePrivateSigntature.Thumbprint}"));
                     Assert.IsTrue(error.Message
                         .Contains($"{TestCertificates.HelsenorgePrivateSigntature.NotBefore}"));
-                    var signingException = receiveException as SigningCertificateException;
+                    var signingException = receiveException as CertificateException;
                     Assert.IsNotNull(signingException);
-                    Assert.IsTrue(signingException.Payload.Contains("V=\"DIALOG_INNBYGGER_EKONTAKT\""));
+                    Assert.IsNotNull(signingException.Payload);
                 },
                 wait: () => _completedCalled,
                 received: (m) => { },

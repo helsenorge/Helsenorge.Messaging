@@ -59,7 +59,7 @@ namespace Helsenorge.Messaging.Tests.Security
 
         [TestMethod]
         [TestCategory("X509Chain")]
-        [ExpectedException(typeof(SigningCertificateException))]
+        [ExpectedException(typeof(CertificateException))]
         public void Protect_And_Unprotect_WrongSigningCertificate()
         {
             var stream = _protection.Protect(

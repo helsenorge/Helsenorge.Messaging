@@ -110,13 +110,12 @@ namespace Helsenorge.Messaging.Security
                 {
                     var actualSignedCertificate = signed.Certificates.Count > 0
                         ? signed.Certificates[signed.Certificates.Count - 1] : null;
-
-                    var payload = ParsePayload(raw);
+                    
                     // it looks like that last certificate in the collection is the one at the end of the chain
-                    throw new SigningCertificateException(
+                    throw new CertificateException(
                         $"Expected signingcertificate: {Environment.NewLine} {signingCertificate} {Environment.NewLine}{Environment.NewLine}" +
                         $"Actual signingcertificate: {Environment.NewLine} {actualSignedCertificate} {Environment.NewLine}{Environment.NewLine}",
-                        payload);
+                        raw);
                 }
 
                 signed.CheckSignature(new X509Certificate2Collection(signingCertificate), true);
@@ -141,25 +140,6 @@ namespace Helsenorge.Messaging.Security
                 var xmlContent = serializer.ReadObject(dictionary);
 
                 return XDocument.Parse(xmlContent as string);
-            }
-        }
-
-        private string ParsePayload(byte[] raw)
-        {
-            try
-            {
-                const string escapeStart = "‚\f?";
-                const string escapeEnd = "‚\tñ0";
-                var ms = new MemoryStream(raw);
-                var value = Encoding.Default.GetString(ms.ToArray());
-                var start = value.IndexOf(escapeStart, StringComparison.CurrentCulture);
-                var end = value.IndexOf(escapeEnd, StringComparison.CurrentCulture);
-                if (start < -1 || end < -1) return null;
-                return value.Substring(start + escapeStart.Length, end - start - escapeStart.Length);
-            }
-            catch (Exception)
-            {
-                return null;
             }
         }
     }
