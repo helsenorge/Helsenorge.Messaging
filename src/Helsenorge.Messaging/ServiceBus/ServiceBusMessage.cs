@@ -90,6 +90,8 @@ namespace Helsenorge.Messaging.ServiceBus
         [DebuggerStepThrough]
         public void Complete() => _implementation.Complete();
         [DebuggerStepThrough]
+        public void DeadLetter() => _implementation.DeadLetter();
+        [DebuggerStepThrough]
         public Task CompleteAsync() => _implementation.CompleteAsync();
         [DebuggerStepThrough]
         public void Dispose() => _implementation.Dispose();
