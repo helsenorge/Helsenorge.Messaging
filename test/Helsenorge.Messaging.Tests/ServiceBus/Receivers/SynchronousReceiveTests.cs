@@ -4,6 +4,7 @@ using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.ServiceBus.Receivers;
 using Helsenorge.Messaging.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 {
@@ -45,6 +46,29 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 {
                 },
                 messageModification: (m) => { });
+        }
+
+        [TestMethod]
+        public void Synchronous_Receive_InvalidReplyToQueue_SendToDeadLetterQueue()
+        {
+            RunReceive(
+                postValidation: () =>
+                {
+                    Assert.IsTrue(_startingCalled);
+                    Assert.IsTrue(_receivedCalled);
+                    Assert.IsTrue(_handledExceptionCalled);
+                    Assert.AreEqual(0, MockFactory.Helsenorge.Synchronous.Messages.Count);
+                    Assert.AreEqual(1, MockFactory.DeadLetterQueue.Count);
+                    Assert.AreEqual(0, MockFactory.OtherParty.SynchronousReply.Messages.Count);
+                    var logEntry = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Critical);
+                    Assert.AreEqual(1, logEntry.Count());
+                    Assert.IsTrue(logEntry.First().Message == "Cannot send message to service bus. Invalid endpoint.");
+                },
+                wait: () => _handledExceptionCalled,
+                received: (m) =>
+                {
+                },
+                messageModification: (m) => { m.ReplyTo = "Dialog_" + m.ReplyTo; });
         }
 
         [TestMethod]
@@ -131,6 +155,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 ReplyTo = MockFactory.OtherParty.SynchronousReply.Name,
                 To = MockFactory.OtherParty.Synchronous.Name,
                 Queue = MockFactory.Helsenorge.Synchronous.Messages,
+                DeadLetterQueue = MockFactory.DeadLetterQueue
             };
         }
     }
