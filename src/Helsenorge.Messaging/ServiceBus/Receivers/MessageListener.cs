@@ -204,6 +204,11 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 Core.ReportErrorToExternalSender(Logger, EventIds.DataMismatch, message, "abuse:spoofing-attack", ex.Message, null, ex);
                 MessagingNotification.NotifyHandledException(message, ex);
             }
+            catch (PayloadDecryptionException ex) // from parsing to XML, reportable exception
+            {
+                Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:decryption-failed", ex.Message, null, ex);
+                MessagingNotification.NotifyHandledException(message, ex);
+            }
             catch (Exception ex) // unknown error
             {
                 message.AddDetailsToException(ex);
