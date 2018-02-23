@@ -11,7 +11,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
 {
     class MockMessage : IMessagingMessage
     {
-        private readonly Stream _stream;
+        private Stream _stream;
 
         public MockMessage(Stream stream)
         {
@@ -91,6 +91,11 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public Stream GetBody()
         {
             return _stream;
+        }
+
+        public void SetBody(Stream stream)
+        {  
+            _stream = stream;  
         }
 
         public void RenewLock()
