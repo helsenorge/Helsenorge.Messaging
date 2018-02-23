@@ -206,8 +206,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             }
             catch (AggregateException ex) when (ex.InnerException is MessagingException && ((MessagingException)ex.InnerException).EventId.Id == EventIds.Send.Id) 
             {
-                //message should go to dlc right away, we get an error sending the reply
-                message.DeadLetter();
+                Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:invalid-field-value", ex.Message, null, ex);
                 MessagingNotification.NotifyHandledException(message, ex);
             }
             catch (Exception ex) // unknown error
