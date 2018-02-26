@@ -18,7 +18,6 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
                 Payload = GenericMessage,
                 MessageFunction = "DIALOG_INNBYGGER_EKONTAKT",
                 MessageId = Guid.NewGuid().ToString("D"),
-                ScheduledSendTimeUtc = DateTime.Now,
                 PersonalId = "12345"
             };
         }
