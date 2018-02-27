@@ -78,7 +78,7 @@ namespace Helsenorge.Messaging.Http
             throw new NotImplementedException();
         }
 
-        public IMessagingMessage Clone()
+        public IMessagingMessage Clone(bool includePayload = true)
         {
             throw new NotImplementedException();
         }
@@ -140,11 +140,6 @@ namespace Helsenorge.Messaging.Http
         }
 
         public void RenewLock()
-        {
-            throw new NotImplementedException();
-        }
-        
-        public IMessagingMessage CloneForErrorQueue()
         {
             throw new NotImplementedException();
         }

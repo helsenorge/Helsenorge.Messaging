@@ -246,7 +246,7 @@ namespace Helsenorge.Messaging.ServiceBus
             }
             
             // Clones original message, but leaves out the payload
-            var clonedMessage = originalMessage.CloneForErrorQueue();
+            var clonedMessage = originalMessage.Clone(false);
             // update some properties on the cloned message
             clonedMessage.To = await ConstructQueueName(logger, originalMessage.FromHerId, QueueType.Error).ConfigureAwait(false); // change target 
             clonedMessage.TimeToLive = Settings.Error.TimeToLive;

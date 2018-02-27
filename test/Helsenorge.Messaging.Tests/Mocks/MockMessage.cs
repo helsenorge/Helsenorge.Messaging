@@ -58,8 +58,9 @@ namespace Helsenorge.Messaging.Tests.Mocks
 
         public List<IMessagingMessage> Queue { get; set; }
 
-        public IMessagingMessage Clone()
+        public IMessagingMessage Clone(bool includePayload = true)
         {
+
             return new MockMessage(_stream)
             {
                 MessageFunction = MessageFunction,
@@ -75,7 +76,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
                 Properties = Properties,
                 ScheduledEnqueueTimeUtc = ScheduledEnqueueTimeUtc,
                 TimeToLive = TimeToLive,
-                To = To
+                To = To,
             };
         }
 
@@ -97,11 +98,6 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public void AddDetailsToException(Exception ex)
         {
         
-        }
-
-        public IMessagingMessage CloneForErrorQueue()
-        {
-            return Clone();
         }
     }
 }

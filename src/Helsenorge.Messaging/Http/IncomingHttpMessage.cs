@@ -147,7 +147,7 @@ namespace Helsenorge.Messaging.Http
             return Task.CompletedTask;
         }
 
-        public IMessagingMessage Clone()
+        public IMessagingMessage Clone(bool includePayload = true)
         {
             return new IncomingHttpMessage { AMQPMessage = AMQPMessage };
             //throw new NotImplementedException();
@@ -185,11 +185,6 @@ namespace Helsenorge.Messaging.Http
         }
 
         public void RenewLock()
-        {
-            throw new NotImplementedException();
-        }
-        
-        public IMessagingMessage CloneForErrorQueue()
         {
             throw new NotImplementedException();
         }

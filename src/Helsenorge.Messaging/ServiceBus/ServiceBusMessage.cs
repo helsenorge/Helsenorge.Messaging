@@ -86,9 +86,43 @@ namespace Helsenorge.Messaging.ServiceBus
             [DebuggerStepThrough] set { _implementation.To = value; }
         }
         [DebuggerStepThrough]
-        public IMessagingMessage Clone() => new ServiceBusMessage(_implementation.Clone());
+        public IMessagingMessage Clone(bool includePayload = true)
+        {
+            if (includePayload){
+                return new ServiceBusMessage(_implementation.Clone());
+            }
+            else
+            {
+                var message = new ServiceBusMessage(new BrokeredMessage()
+                {
+                    ContentType = _implementation.ContentType,
+                    CorrelationId = _implementation.CorrelationId,
+                    ForcePersistence = _implementation.ForcePersistence,
+                    Label = _implementation.Label,
+                    MessageId = _implementation.MessageId,
+                    PartitionKey = _implementation.PartitionKey,
+                    ReplyTo = _implementation.ReplyTo,
+                    ReplyToSessionId = _implementation.ReplyToSessionId,
+                    ScheduledEnqueueTimeUtc = _implementation.ScheduledEnqueueTimeUtc,
+                    SessionId = _implementation.SessionId,
+                    TimeToLive = _implementation.TimeToLive,
+                    To = _implementation.To,
+                    ViaPartitionKey = _implementation.ViaPartitionKey
+                });
+
+                foreach(var p in _implementation.Properties)
+                {
+                    message.Properties.Add(p);
+                }
+
+                return message;
+            }
+        }
+
         [DebuggerStepThrough]
         public void Complete() => _implementation.Complete();
+        [DebuggerStepThrough]
+        public void DeadLetter() => _implementation.DeadLetter();
         [DebuggerStepThrough]
         public Task CompleteAsync() => _implementation.CompleteAsync();
         [DebuggerStepThrough]
@@ -132,25 +166,5 @@ namespace Helsenorge.Messaging.ServiceBus
         private string GetValue(string key, string value) => _implementation.Properties.ContainsKey(key) ? _implementation.Properties[key].ToString() : value;
         private int GetValue(string key, int value) => _implementation.Properties.ContainsKey(key) ? int.Parse(_implementation.Properties[key].ToString()) : value;
         private DateTime GetValue(string key, DateTime value) => _implementation.Properties.ContainsKey(key) ? DateTime.Parse(_implementation.Properties[key].ToString(), CultureInfo.InvariantCulture) : value;
-
-        public IMessagingMessage CloneForErrorQueue()
-        {
-            return new ServiceBusMessage(new BrokeredMessage()
-            {
-                ContentType = _implementation.ContentType,
-                CorrelationId = _implementation.CorrelationId,
-                ForcePersistence = _implementation.ForcePersistence,
-                Label = _implementation.Label,
-                MessageId = _implementation.MessageId,
-                PartitionKey = _implementation.PartitionKey,
-                ReplyTo = _implementation.ReplyTo,
-                ReplyToSessionId = _implementation.ReplyToSessionId,
-                ScheduledEnqueueTimeUtc = _implementation.ScheduledEnqueueTimeUtc,
-                SessionId = _implementation.SessionId,
-                TimeToLive = _implementation.TimeToLive,
-                To = _implementation.To,
-                ViaPartitionKey = _implementation.ViaPartitionKey
-            });
-        }
     }
 }
