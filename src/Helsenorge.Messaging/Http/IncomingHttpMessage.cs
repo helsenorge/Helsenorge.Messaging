@@ -152,7 +152,7 @@ namespace Helsenorge.Messaging.Http
             throw new NotImplementedException();
         }
 
-        public IMessagingMessage Clone()
+        public IMessagingMessage Clone(bool includePayload = true)
         {
             return new IncomingHttpMessage { AMQPMessage = AMQPMessage };
             //throw new NotImplementedException();

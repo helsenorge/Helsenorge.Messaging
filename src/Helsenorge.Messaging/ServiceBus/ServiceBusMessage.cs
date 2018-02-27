@@ -86,7 +86,39 @@ namespace Helsenorge.Messaging.ServiceBus
             [DebuggerStepThrough] set { _implementation.To = value; }
         }
         [DebuggerStepThrough]
-        public IMessagingMessage Clone() => new ServiceBusMessage(_implementation.Clone());
+        public IMessagingMessage Clone(bool includePayload = true)
+        {
+            if (includePayload){
+                return new ServiceBusMessage(_implementation.Clone());
+            }
+            else
+            {
+                var message = new ServiceBusMessage(new BrokeredMessage()
+                {
+                    ContentType = _implementation.ContentType,
+                    CorrelationId = _implementation.CorrelationId,
+                    ForcePersistence = _implementation.ForcePersistence,
+                    Label = _implementation.Label,
+                    MessageId = _implementation.MessageId,
+                    PartitionKey = _implementation.PartitionKey,
+                    ReplyTo = _implementation.ReplyTo,
+                    ReplyToSessionId = _implementation.ReplyToSessionId,
+                    ScheduledEnqueueTimeUtc = _implementation.ScheduledEnqueueTimeUtc,
+                    SessionId = _implementation.SessionId,
+                    TimeToLive = _implementation.TimeToLive,
+                    To = _implementation.To,
+                    ViaPartitionKey = _implementation.ViaPartitionKey
+                });
+
+                foreach(var p in _implementation.Properties)
+                {
+                    message.Properties.Add(p);
+                }
+
+                return message;
+            }
+        }
+
         [DebuggerStepThrough]
         public void Complete() => _implementation.Complete();
         [DebuggerStepThrough]
