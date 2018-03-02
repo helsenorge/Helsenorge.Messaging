@@ -87,17 +87,23 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
                         {
                             // enqueue time should be later than when we added it
                             logger.LogWarning(EventIds.SynchronousCallDelayed,
-                                "MessageId: {1} was received after {2} seconds from HerId: {3}. Added at {4} Enqueued at: {5}",
-                                incomingMessage.CorrelationId,
-                                (incomingMessage.EnqueuedTimeUtc - messageEntry.AddedUtc).TotalSeconds,
-                                messageEntry.ToHerId,
-                                messageEntry.AddedUtc,
-                                incomingMessage.EnqueuedTimeUtc);
+                                $"MessageId: {incomingMessage.CorrelationId} " +
+                                $"was received after {(incomingMessage.EnqueuedTimeUtc - messageEntry.AddedUtc).TotalSeconds} seconds " +
+                                $"from HerId: {messageEntry.ToHerId}. " +
+                                $"Added at {messageEntry.AddedUtc} Enqueued at: {incomingMessage.EnqueuedTimeUtc}. " +
+                                $"Sent message Scheduled Send Time at {message.ScheduledSendTimeUtc}");
 
                             _pendingSynchronousRequests.TryRemove(incomingMessage.CorrelationId, out messageEntry);
                         }
                         else
                         {
+                            if (message.ToHerId != incomingMessage.FromHerId)
+                            {
+                                logger.LogCritical($"HerId of the sender of the reply message differ from the HerId the message was sent to.{Environment.NewLine}" +
+                                    $"Message sent to HerId {message.ToHerId}, reply was from {incomingMessage.FromHerId}.{Environment.NewLine}" +
+                                    $"MessageId, sent: {message.MessageId} reply: {incomingMessage.MessageId} " +
+                                    $"CorrelationId, generated: {correlationId}, reply: {incomingMessage.CorrelationId}");
+                            }
                             // update information for existing entry
                             messageEntry.Payload = incomingMessage.Payload;
                             messageEntry.ReplyEnqueuedTimeUtc = incomingMessage.EnqueuedTimeUtc;
