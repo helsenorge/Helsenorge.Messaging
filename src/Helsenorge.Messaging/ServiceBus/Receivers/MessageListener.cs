@@ -210,6 +210,11 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 message.DeadLetter();
                 MessagingNotification.NotifyHandledException(message, ex);
             }
+            catch (PayloadDecryptionException ex) // from parsing to XML, reportable exception
+            {
+                Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:decryption-failed", ex.Message, null, ex);
+                MessagingNotification.NotifyHandledException(message, ex);
+            }
             catch (Exception ex) // unknown error
             {
                 message.AddDetailsToException(ex);
