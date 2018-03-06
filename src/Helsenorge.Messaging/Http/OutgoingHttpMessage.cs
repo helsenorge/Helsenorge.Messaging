@@ -78,6 +78,11 @@ namespace Helsenorge.Messaging.Http
             throw new NotImplementedException();
         }
 
+        public void DeadLetter()
+        {
+            throw new NotImplementedException();
+        }
+
         public IMessagingMessage Clone()
         {
             throw new NotImplementedException();

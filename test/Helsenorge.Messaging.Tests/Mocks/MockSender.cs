@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
+using System;
 
 namespace Helsenorge.Messaging.Tests.Mocks
 {
@@ -8,7 +9,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
     {
         private readonly MockFactory _factory;
         private readonly string _id;
-
+        
         public MockSender(MockFactory factory, string id)
         {
             _factory = factory;
@@ -33,6 +34,12 @@ namespace Helsenorge.Messaging.Tests.Mocks
             
             var m = message as MockMessage;
             m.Queue = queue;
+            
+            //validate To queue so we can test errors connecting to queues. Different implementations throw different exceptions
+            if (!string.IsNullOrEmpty(message.To) && message.To.StartsWith("Dialog_"))
+            {
+                throw new MessagingException();
+            }
 
             queue.Add(message);
             return Task.CompletedTask;

@@ -11,7 +11,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
 {
     class MockMessage : IMessagingMessage
     {
-        private readonly Stream _stream;
+        private Stream _stream;
 
         public MockMessage(Stream stream)
         {
@@ -55,8 +55,15 @@ namespace Helsenorge.Messaging.Tests.Mocks
             Queue.Remove(this);
             return Task.CompletedTask;
         }
+        public void DeadLetter()
+        {
+            Queue.Remove(this);
+            DeadLetterQueue.Add(this);
+        }
 
         public List<IMessagingMessage> Queue { get; set; }
+
+        public List<IMessagingMessage> DeadLetterQueue { get; set; }
 
         public IMessagingMessage Clone()
         {
@@ -69,6 +76,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
                 ReplyTo = ReplyTo,
                 CorrelationId = CorrelationId,
                 Queue = Queue,
+                DeadLetterQueue = DeadLetterQueue,
                 ApplicationTimestamp = ApplicationTimestamp,
                 CpaId = CpaId,
                 FromHerId = FromHerId,
@@ -83,6 +91,11 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public Stream GetBody()
         {
             return _stream;
+        }
+
+        public void SetBody(Stream stream)
+        {  
+            _stream = stream;  
         }
 
         public void RenewLock()

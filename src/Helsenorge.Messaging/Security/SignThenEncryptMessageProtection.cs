@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -8,6 +9,7 @@ using System.Security.Cryptography.Pkcs;
 using System.Text;
 using System.Xml;
 using Helsenorge.Messaging.Abstractions;
+using Helsenorge.Messaging.ServiceBus.Receivers;
 
 namespace Helsenorge.Messaging.Security
 {
@@ -86,12 +88,10 @@ namespace Helsenorge.Messaging.Security
             catch (System.Security.Cryptography.CryptographicException ce)
             {
                 var cert = envelopedCm?.RecipientInfos[0]?.RecipientIdentifier?.Value as System.Security.Cryptography.Xml.X509IssuerSerial?;
-                throw new SecurityException(
-                    string.Format(null, 
-                    "Message encrypted with certificate SerialNumber {0}, IssueName {1} could not be decrypted. Exception: {2}", 
-                    cert.HasValue ? cert.Value.SerialNumber : "unknown", 
-                    cert.HasValue ? cert.Value.IssuerName : "unknown", 
-                    ce.Message));
+                if (cert.HasValue)
+                    throw new SecurityException($"Message encrypted with certificate SerialNumber {cert.Value.SerialNumber}, IssueName {cert.Value.IssuerName } " +
+                                            $"could not be decrypted. Certification details: {cert} Exception: {ce.Message}");
+                throw new SecurityException($"Encryption certificate not found. Exception: {ce.Message}");
             }
 
             raw = envelopedCm.ContentInfo.Content;
@@ -109,12 +109,14 @@ namespace Helsenorge.Messaging.Security
                 // there may be more than one; have seen the root certificate being included some times
                 if (signed.Certificates.Find(X509FindType.FindBySerialNumber, signingCertificate.SerialNumber, false).Count == 0)
                 {
+                    var actualSignedCertificate = signed.Certificates.Count > 0
+                        ? signed.Certificates[signed.Certificates.Count - 1] : null;
+                    
                     // it looks like that last certificate in the collection is the one at the end of the chain
-                    throw new SecurityException(
-                        string.Format(null,
-                            "Expecting certificate {0} but signed with {1}",
-                            signingCertificate.Thumbprint,
-                            (signed.Certificates.Count > 0 ? signed.Certificates[signed.Certificates.Count - 1].Thumbprint : "")));
+                    throw new CertificateException(
+                        $"Expected signingcertificate: {Environment.NewLine} {signingCertificate} {Environment.NewLine}{Environment.NewLine}" +
+                        $"Actual signingcertificate: {Environment.NewLine} {actualSignedCertificate} {Environment.NewLine}{Environment.NewLine}",
+                        raw);
                 }
 
                 signed.CheckSignature(new X509Certificate2Collection(signingCertificate), true);
@@ -125,7 +127,7 @@ namespace Helsenorge.Messaging.Security
             
             try
             {
-                return XDocument.Load(ms);
+               return XDocument.Load(ms);
             }
             catch (XmlException)
             {
@@ -139,6 +141,10 @@ namespace Helsenorge.Messaging.Security
                 var xmlContent = serializer.ReadObject(dictionary);
 
                 return XDocument.Parse(xmlContent as string);
+            }
+            catch (Exception ex)
+            {
+                throw new PayloadDecryptionException("Could not deserialize payload", ex);
             }
         }
     }

@@ -133,6 +133,7 @@
     <Compile Include="Abstractions\IServiceBusFactoryPool.cs" />
     <Compile Include="Abstractions\MessagingEntityCache.cs" />
     <Compile Include="Abstractions\OutgoingMessage.cs" />
+    <Compile Include="Abstractions\CertificateException.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Http\HttpServiceBusFactory.cs" />
     <Compile Include="Http\HttpServiceBusFactoryPool.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="MessagingClient.cs" />
     <Compile Include="MessagingServer.cs" />
     <Compile Include="ServiceBus\Receivers\HeaderValidationException.cs" />
+    <Compile Include="ServiceBus\Receivers\PayloadDecryptionException.cs" />
     <Compile Include="ServiceBus\Receivers\SenderHerIdMismatchException.cs" />
     <Compile Include="ServiceBus\ServiceBusFactoryPool.cs" />
     <Compile Include="ServiceBus\ServiceBusMessage.cs" />

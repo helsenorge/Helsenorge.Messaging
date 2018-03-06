@@ -204,6 +204,17 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 Core.ReportErrorToExternalSender(Logger, EventIds.DataMismatch, message, "abuse:spoofing-attack", ex.Message, null, ex);
                 MessagingNotification.NotifyHandledException(message, ex);
             }
+            catch (AggregateException ex) when (ex.InnerException is MessagingException && ((MessagingException)ex.InnerException).EventId.Id == EventIds.Send.Id) 
+            {
+                //message should go to dlc right away, we get an error sending the reply
+                message.DeadLetter();
+                MessagingNotification.NotifyHandledException(message, ex);
+            }
+            catch (PayloadDecryptionException ex) // from parsing to XML, reportable exception
+            {
+                Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:decryption-failed", ex.Message, null, ex);
+                MessagingNotification.NotifyHandledException(message, ex);
+            }
             catch (Exception ex) // unknown error
             {
                 message.AddDetailsToException(ex);
@@ -299,10 +310,14 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             switch (error)
             {
                 case CertificateErrors.None:
-                // no error
+                    // no error
+                    return;
                 case CertificateErrors.Missing:
                     // if the certificate is missing, it's because we don't know where it came from
                     // and have no idea where to send an error message
+                    Logger.LogWarning($"Certificate is missing for message. MessageFunction: {originalMessage.MessageFunction} " +
+                        $"FromHerId: {originalMessage.FromHerId} ToHerId: {originalMessage.ToHerId} CpaId: {originalMessage.CpaId} " +
+                        $"CorrelationId: {originalMessage.CorrelationId} Certificate thumbprint: {certificate?.Thumbprint}");
                     return;
                 case CertificateErrors.StartDate:
                     errorCode = "transport:expired-certificate";
