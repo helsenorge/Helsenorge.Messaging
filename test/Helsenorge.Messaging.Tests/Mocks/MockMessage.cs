@@ -76,7 +76,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
                 Properties = Properties,
                 ScheduledEnqueueTimeUtc = ScheduledEnqueueTimeUtc,
                 TimeToLive = TimeToLive,
-                To = To,
+                To = To
             };
         }
 
