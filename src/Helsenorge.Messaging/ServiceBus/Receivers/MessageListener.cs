@@ -299,10 +299,14 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             switch (error)
             {
                 case CertificateErrors.None:
-                // no error
+                    // no error
+                    return;
                 case CertificateErrors.Missing:
                     // if the certificate is missing, it's because we don't know where it came from
                     // and have no idea where to send an error message
+                    Logger.LogWarning($"Certificate is missing for message. MessageFunction: {originalMessage.MessageFunction} " +
+                        $"FromHerId: {originalMessage.FromHerId} ToHerId: {originalMessage.ToHerId} CpaId: {originalMessage.CpaId} " +
+                        $"CorrelationId: {originalMessage.CorrelationId} Certificate thumbprint: {certificate?.Thumbprint}");
                     return;
                 case CertificateErrors.StartDate:
                     errorCode = "transport:expired-certificate";

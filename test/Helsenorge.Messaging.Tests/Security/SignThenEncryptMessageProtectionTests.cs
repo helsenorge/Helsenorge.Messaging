@@ -2,6 +2,7 @@
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml.Linq;
+using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Security;
 using Helsenorge.Messaging.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -58,7 +59,7 @@ namespace Helsenorge.Messaging.Tests.Security
 
         [TestMethod]
         [TestCategory("X509Chain")]
-        [ExpectedException(typeof(SecurityException))]
+        [ExpectedException(typeof(CertificateException))]
         public void Protect_And_Unprotect_WrongSigningCertificate()
         {
             var stream = _protection.Protect(
