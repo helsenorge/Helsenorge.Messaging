@@ -58,8 +58,9 @@ namespace Helsenorge.Messaging.Tests.Mocks
 
         public List<IMessagingMessage> Queue { get; set; }
 
-        public IMessagingMessage Clone()
+        public IMessagingMessage Clone(bool includePayload = true)
         {
+
             return new MockMessage(_stream)
             {
                 MessageFunction = MessageFunction,
