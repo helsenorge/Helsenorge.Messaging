@@ -17,7 +17,8 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public MockCommunicationParty OtherPartyWithOnlyCpp { get; }
 
         public Dictionary<string, List<IMessagingMessage>> Qeueues { get; } = new Dictionary<string, List<IMessagingMessage>>();
-        
+        public List<IMessagingMessage> DeadLetterQueue { get; } = new List<IMessagingMessage>();
+
         public bool IsClosed => false;
 
         public MockFactory(int otherHerID)
@@ -56,7 +57,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
             Synchronous = new MockQueue($"{herId}_sync");
             Error = new MockQueue($"{herId}_error");
             SynchronousReply = new MockQueue($"{herId}_syncreply");
-
+            
             factory.Qeueues.Add(Asynchronous.Name, Asynchronous.Messages);
             factory.Qeueues.Add(Synchronous.Name, Synchronous.Messages);
             factory.Qeueues.Add(Error.Name, Error.Messages);
