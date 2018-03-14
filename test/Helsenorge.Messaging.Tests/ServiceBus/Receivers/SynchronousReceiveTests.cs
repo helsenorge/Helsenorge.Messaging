@@ -49,17 +49,16 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         }
 
         [TestMethod]
-        public void Synchronous_Receive_InvalidReplyToQueue_SendToDeadLetterQueue()
+        public void Synchronous_Receive_InvalidReplyToQueue_SendToErrorQueue()
         {
             RunReceive(
                 postValidation: () =>
                 {
                     Assert.IsTrue(_startingCalled);
-                    Assert.IsTrue(_receivedCalled);
                     Assert.IsTrue(_handledExceptionCalled);
                     Assert.AreEqual(0, MockFactory.Helsenorge.Synchronous.Messages.Count);
-                    Assert.AreEqual(1, MockFactory.DeadLetterQueue.Count);
-                    Assert.AreEqual(0, MockFactory.OtherParty.SynchronousReply.Messages.Count);
+                    Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                    Assert.AreEqual("transport:invalid-field-value", MockFactory.OtherParty.Error.Messages.First().Properties["errorCondition"]);
                     var logEntry = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Critical);
                     Assert.AreEqual(1, logEntry.Count());
                     Assert.IsTrue(logEntry.First().Message == "Cannot send message to service bus. Invalid endpoint.");
@@ -70,6 +69,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 },
                 messageModification: (m) => { m.ReplyTo = "Dialog_" + m.ReplyTo; });
         }
+
 
         [TestMethod]
         public void Synchronous_ReceiveHerIdMismatch_ErrorQueueWithSpoofingErrorCode()
