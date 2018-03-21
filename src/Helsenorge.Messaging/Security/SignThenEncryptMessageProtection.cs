@@ -144,7 +144,7 @@ namespace Helsenorge.Messaging.Security
             }
             catch (Exception ex)
             {
-                throw new PayloadDecryptionException("Could not deserialize payload", ex);
+                throw new PayloadDeserializationException("Could not deserialize payload", ex);
             }
         }
     }

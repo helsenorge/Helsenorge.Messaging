@@ -569,7 +569,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Assert.IsTrue(_startingCalled);
                     Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
                     Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
-                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:decryption-failed", "Could not deserialize payload", string.Empty);
+                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:not-well-formed-xml", "Could not deserialize payload", string.Empty);
                 },  
             wait: () => _handledExceptionCalled,  
             received: (m) => { },  
