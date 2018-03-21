@@ -206,7 +206,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             }
             catch (AggregateException ex) when (ex.InnerException is MessagingException && ((MessagingException)ex.InnerException).EventId.Id == EventIds.Send.Id) 
             {
-                Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:invalid-field-value", ex.Message, null, ex);
+                Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:invalid-field-value", "Invalid value in field: 'ReplyTo'", null, ex);
                 MessagingNotification.NotifyHandledException(message, ex);
             }
             catch (Exception ex) // unknown error
