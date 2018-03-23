@@ -106,5 +106,9 @@ namespace Helsenorge.Messaging.Abstractions
         /// Renews the peerlock of the message
         /// </summary>
         void RenewLock();
+        /// <summary>
+        /// Sends this message to the deadletter queue
+        /// </summary>
+        void DeadLetter();
     }
 }

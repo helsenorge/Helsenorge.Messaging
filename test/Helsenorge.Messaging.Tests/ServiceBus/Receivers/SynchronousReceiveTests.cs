@@ -4,6 +4,7 @@ using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.ServiceBus.Receivers;
 using Helsenorge.Messaging.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 {
@@ -46,6 +47,30 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 },
                 messageModification: (m) => { });
         }
+
+        [TestMethod]
+        public void Synchronous_Receive_InvalidReplyToQueue_SendToErrorQueue()
+        {
+            RunReceive(
+                postValidation: () =>
+                {
+                    Assert.IsTrue(_startingCalled);
+                    Assert.IsTrue(_handledExceptionCalled);
+                    Assert.AreEqual(0, MockFactory.Helsenorge.Synchronous.Messages.Count);
+                    Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                    Assert.AreEqual("transport:invalid-field-value", MockFactory.OtherParty.Error.Messages.First().Properties["errorCondition"]);
+                    Assert.AreEqual("Invalid value in field: 'ReplyTo'", MockFactory.OtherParty.Error.Messages.First().Properties["errorDescription"]);
+                    var logEntry = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Critical);
+                    Assert.AreEqual(1, logEntry.Count());
+                    Assert.IsTrue(logEntry.First().Message == "Cannot send message to service bus. Invalid endpoint.");
+                },
+                wait: () => _handledExceptionCalled,
+                received: (m) =>
+                {
+                },
+                messageModification: (m) => { m.ReplyTo = "Dialog_" + m.ReplyTo; });
+        }
+
 
         [TestMethod]
         public void Synchronous_ReceiveHerIdMismatch_ErrorQueueWithSpoofingErrorCode()
@@ -131,6 +156,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 ReplyTo = MockFactory.OtherParty.SynchronousReply.Name,
                 To = MockFactory.OtherParty.Synchronous.Name,
                 Queue = MockFactory.Helsenorge.Synchronous.Messages,
+                DeadLetterQueue = MockFactory.DeadLetterQueue
             };
         }
     }
