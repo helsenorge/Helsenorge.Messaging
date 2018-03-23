@@ -14,6 +14,7 @@ using Helsenorge.Registries.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Helsenorge.Messaging.Security;
+using System.Text;
 
 namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 {
@@ -555,7 +556,27 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 messageModification: (m) => { });
         }
 
-        class SecurityExceptionMessageProtection : IMessageProtection
+        [TestMethod]  
+        public void Asynchronous_Receive_InvalidXML()
+        {  
+            var messageAsStream = new MemoryStream();  
+            var messageAsString = "Invalid XMLMessage";  
+            messageAsStream.Write(new UnicodeEncoding().GetBytes(messageAsString), 0, messageAsString.Length);
+
+            RunAsynchronousReceive(  
+                postValidation: () =>  
+                {
+                    Assert.IsTrue(_startingCalled);
+                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+                    Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:not-well-formed-xml", "Could not deserialize payload", string.Empty);
+                },  
+            wait: () => _handledExceptionCalled,  
+            received: (m) => { },  
+            messageModification: (m) => { m.SetBody(messageAsStream); });  
+        }
+
+class SecurityExceptionMessageProtection : IMessageProtection
         {
             public string ContentType => Messaging.Abstractions.ContentType.SignedAndEnveloped;
             

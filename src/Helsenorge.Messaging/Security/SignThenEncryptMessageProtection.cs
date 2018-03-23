@@ -9,6 +9,7 @@ using System.Security.Cryptography.Pkcs;
 using System.Text;
 using System.Xml;
 using Helsenorge.Messaging.Abstractions;
+using Helsenorge.Messaging.ServiceBus.Receivers;
 
 namespace Helsenorge.Messaging.Security
 {
@@ -126,7 +127,7 @@ namespace Helsenorge.Messaging.Security
             
             try
             {
-                return XDocument.Load(ms);
+               return XDocument.Load(ms);
             }
             catch (XmlException)
             {
@@ -140,6 +141,10 @@ namespace Helsenorge.Messaging.Security
                 var xmlContent = serializer.ReadObject(dictionary);
 
                 return XDocument.Parse(xmlContent as string);
+            }
+            catch (Exception ex)
+            {
+                throw new PayloadDeserializationException("Could not deserialize payload", ex);
             }
         }
     }

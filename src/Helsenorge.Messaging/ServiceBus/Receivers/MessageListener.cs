@@ -204,6 +204,11 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 Core.ReportErrorToExternalSender(Logger, EventIds.DataMismatch, message, "abuse:spoofing-attack", ex.Message, null, ex);
                 MessagingNotification.NotifyHandledException(message, ex);
             }
+            catch (PayloadDeserializationException ex) // from parsing to XML, reportable exception
+            {
+                Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:not-well-formed-xml", ex.Message, null, ex);
+                MessagingNotification.NotifyHandledException(message, ex);
+            }
             catch (AggregateException ex) when (ex.InnerException is MessagingException && ((MessagingException)ex.InnerException).EventId.Id == EventIds.Send.Id) 
             {
                 Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:invalid-field-value", "Invalid value in field: 'ReplyTo'", null, ex);

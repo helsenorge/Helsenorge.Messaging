@@ -5,6 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Xml;
 using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
+using Helsenorge.Messaging.ServiceBus.Receivers;
 
 namespace Helsenorge.Messaging.Security
 {
@@ -58,12 +59,19 @@ namespace Helsenorge.Messaging.Security
                 // since the GetBody<Stream>() always returns a valid stream, it causes a problem if the original data was string
 
                 // the general XDocument.Load() fails, then we try a fallback to a manually deserialize the content
-                data.Position = 0;
-                var serializer = new DataContractSerializer(typeof(string));
-                var dictionary = XmlDictionaryReader.CreateBinaryReader(data, XmlDictionaryReaderQuotas.Max);
-                var xmlContent = serializer.ReadObject(dictionary);
+                try
+                { 
+                    data.Position = 0;
+                    var serializer = new DataContractSerializer(typeof(string));
+                    var dictionary = XmlDictionaryReader.CreateBinaryReader(data, XmlDictionaryReaderQuotas.Max);
+                    var xmlContent = serializer.ReadObject(dictionary);
 
-                return XDocument.Parse(xmlContent as string);
+                    return XDocument.Parse(xmlContent as string);
+                }
+                catch (Exception ex)
+                {
+                    throw new PayloadDeserializationException("Could not deserialize payload", ex);
+                }
             }
         }
     }
