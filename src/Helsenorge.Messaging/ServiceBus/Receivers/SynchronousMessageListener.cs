@@ -58,8 +58,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 ToHerId = message.FromHerId,
                 Payload =  reply,
                 MessageFunction = message.MessageFunction,
-                MessageId = Guid.NewGuid().ToString(),
-                ScheduledSendTimeUtc = DateTime.UtcNow,
+                MessageId = Guid.NewGuid().ToString()
             };
             Task.WaitAll(Core.Send(Logger, outgoingMessage, QueueType.SynchronousReply, rawMessage.ReplyTo, rawMessage.CorrelationId));
         }
