@@ -39,10 +39,8 @@ Dette er et eksempel på hvordan en slik fil kan se ut.
                 "ReadTimeout": "00:00:01",
                 "ReplyQueue": "",
                 "CallTimeout": "00:00:15",
-                "Synchronous": {
-                    "ReplyQueueMapping": {
-                        "MACHINE-NAME": "1111_syncreply"
-                    }
+                "ReplyQueueMapping": {
+                    "MACHINE-NAME": "1111_syncreply"
                 }
             },
             "Error": {
