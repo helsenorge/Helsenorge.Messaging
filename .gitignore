@@ -256,6 +256,8 @@ paket-files/
 
 
 # Custom
-/MAIN/src/Helsenorge.Messaging.Client/Client.json
-/MAIN/src/Helsenorge.Messaging.Client/Client2.json
-/MAIN/src/Helsenorge.Messaging.Server/Server.json
+src/Helsenorge.Messaging.Client/Client.json
+src/Helsenorge.Messaging.Client/Client2.json
+src/Helsenorge.Messaging.Server/Server.json
+src/Helsenorge.Messaging.Client/ClientSample.json
+src/Helsenorge.Messaging.Server/ServerSample.json
