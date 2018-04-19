@@ -124,28 +124,10 @@ namespace Helsenorge.Messaging.Security
             raw = signed.ContentInfo.Content;
             // convert from byte array to XDocument
             ms = new MemoryStream(raw);
-            
-            try
-            {
-               return XDocument.Load(ms);
-            }
-            catch (XmlException)
-            {
-                // some parties have chose to use string instead of stream when sending unecrypted XML (soap faults)
-                // since the GetBody<Stream>() always returns a valid stream, it causes a problem if the original data was string
 
-                // the general XDocument.Load() fails, then we try a fallback to a manually deserialize the content
-                ms.Position = 0;
-                var serializer = new DataContractSerializer(typeof(string));
-                var dictionary = XmlDictionaryReader.CreateBinaryReader(ms, XmlDictionaryReaderQuotas.Max);
-                var xmlContent = serializer.ReadObject(dictionary);
-
-                return XDocument.Parse(xmlContent as string);
-            }
-            catch (Exception ex)
-            {
-                throw new PayloadDeserializationException("Could not deserialize payload", ex);
-            }
+            //now we have an unprotected stream reuse the NoMessageProtection code
+            var noMessageProtection = new NoMessageProtection();
+            return noMessageProtection.Unprotect(ms, null, null, null);
         }
     }
 }
