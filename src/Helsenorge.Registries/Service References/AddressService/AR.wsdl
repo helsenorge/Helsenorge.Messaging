@@ -213,18 +213,6 @@
         <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
       </wsdl:fault>
     </wsdl:operation>
-    <wsdl:operation name="GetGPCommunicationParty">
-      <soap12:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetGPCommunicationParty" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-      <wsdl:fault name="GenericFaultFault">
-        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
-      </wsdl:fault>
-    </wsdl:operation>
     <wsdl:operation name="GetOrganizationDetails">
       <soap12:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetOrganizationDetails" style="document" />
       <wsdl:input>
@@ -684,6 +672,36 @@
         <soap12:fault use="literal" name="ValidationFaultFault" namespace="" />
       </wsdl:fault>
     </wsdl:operation>
+    <wsdl:operation name="SearchCertificatesByLdapUrl">
+      <soap12:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/SearchCertificatesByLdapUrl" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="ValidationFaultFault">
+        <soap12:fault use="literal" name="ValidationFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetLdapSearchProviders">
+      <soap12:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetLdapSearchProviders" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="ValidationFaultFault">
+        <soap12:fault use="literal" name="ValidationFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
     <wsdl:operation name="GetAllHFCommpartiesCsv">
       <soap12:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetAllHFCommpartiesCsv" style="document" />
       <wsdl:input>
@@ -719,6 +737,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetCustomAttributes">
       <soap12:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetCustomAttributes" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateCoverageAreas">
+      <soap12:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/UpdateCoverageAreas" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -775,18 +802,6 @@
         <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
       </wsdl:fault>
     </wsdl:operation>
-    <wsdl:operation name="GetGPCommunicationParty">
-      <soap12:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetGPCommunicationParty" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-      <wsdl:fault name="GenericFaultFault">
-        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
-      </wsdl:fault>
-    </wsdl:operation>
     <wsdl:operation name="GetOrganizationDetails">
       <soap12:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetOrganizationDetails" style="document" />
       <wsdl:input>
@@ -1246,6 +1261,36 @@
         <soap12:fault use="literal" name="ValidationFaultFault" namespace="" />
       </wsdl:fault>
     </wsdl:operation>
+    <wsdl:operation name="SearchCertificatesByLdapUrl">
+      <soap12:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/SearchCertificatesByLdapUrl" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="ValidationFaultFault">
+        <soap12:fault use="literal" name="ValidationFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetLdapSearchProviders">
+      <soap12:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetLdapSearchProviders" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="ValidationFaultFault">
+        <soap12:fault use="literal" name="ValidationFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
     <wsdl:operation name="GetAllHFCommpartiesCsv">
       <soap12:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetAllHFCommpartiesCsv" style="document" />
       <wsdl:input>
@@ -1281,6 +1326,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetCustomAttributes">
       <soap12:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetCustomAttributes" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateCoverageAreas">
+      <soap12:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/UpdateCoverageAreas" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1327,18 +1381,6 @@
     </wsdl:operation>
     <wsdl:operation name="GetCommunicationPartyDetails">
       <soap:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetCommunicationPartyDetails" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-      <wsdl:fault name="GenericFaultFault">
-        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
-      </wsdl:fault>
-    </wsdl:operation>
-    <wsdl:operation name="GetGPCommunicationParty">
-      <soap:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetGPCommunicationParty" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1808,6 +1850,36 @@
         <soap:fault use="literal" name="ValidationFaultFault" namespace="" />
       </wsdl:fault>
     </wsdl:operation>
+    <wsdl:operation name="SearchCertificatesByLdapUrl">
+      <soap:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/SearchCertificatesByLdapUrl" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="ValidationFaultFault">
+        <soap:fault use="literal" name="ValidationFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetLdapSearchProviders">
+      <soap:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetLdapSearchProviders" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+      <wsdl:fault name="ValidationFaultFault">
+        <soap:fault use="literal" name="ValidationFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
     <wsdl:operation name="GetAllHFCommpartiesCsv">
       <soap:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetAllHFCommpartiesCsv" style="document" />
       <wsdl:input>
@@ -1843,6 +1915,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetCustomAttributes">
       <soap:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetCustomAttributes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateCoverageAreas">
+      <soap:operation soapAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/UpdateCoverageAreas" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

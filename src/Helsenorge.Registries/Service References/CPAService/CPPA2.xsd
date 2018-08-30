@@ -327,6 +327,7 @@
     <xs:sequence>
       <xs:element minOccurs="0" name="ApprovedByPartyA" type="xs:boolean" />
       <xs:element minOccurs="0" name="ApprovedByPartyB" type="xs:boolean" />
+      <xs:element minOccurs="0" name="CreatedOn" type="xs:dateTime" />
       <xs:element minOccurs="0" name="Id" type="ser:guid" />
       <xs:element xmlns:q52="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="PartyA" nillable="true" type="q52:PartyInfo" />
       <xs:element xmlns:q53="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="PartyB" nillable="true" type="q53:PartyInfo" />
@@ -408,6 +409,21 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element xmlns:q62="http://schemas.nhn.no/reg/CollaborationProtocolProfile" name="ArrayOfCpaDetails" nillable="true" type="q62:ArrayOfCpaDetails" />
+  <xs:element name="GetCpasForCommunicationPartyCreatedAfter">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="herId" type="xs:int" />
+        <xs:element minOccurs="0" name="createdOnOrAfter" type="xs:dateTime" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCpasForCommunicationPartyCreatedAfterResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q63="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="GetCpasForCommunicationPartyCreatedAfterResult" nillable="true" type="q63:ArrayOfCpaDetails" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="GetCpasForCommunicationPartyForApproval">
     <xs:complexType>
       <xs:sequence>
@@ -418,7 +434,7 @@
   <xs:element name="GetCpasForCommunicationPartyForApprovalResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q63="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="GetCpasForCommunicationPartyForApprovalResult" nillable="true" type="q63:ArrayOfCpaDetails" />
+        <xs:element xmlns:q64="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="GetCpasForCommunicationPartyForApprovalResult" nillable="true" type="q64:ArrayOfCpaDetails" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -432,7 +448,7 @@
   <xs:element name="GetCpasForCommunicationPartyForApprovalUnfilteredResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q64="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="GetCpasForCommunicationPartyForApprovalUnfilteredResult" nillable="true" type="q64:ArrayOfCpaDetails" />
+        <xs:element xmlns:q65="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="GetCpasForCommunicationPartyForApprovalUnfilteredResult" nillable="true" type="q65:ArrayOfCpaDetails" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -446,16 +462,16 @@
   <xs:element name="GetCpasForCommunicationPartyXmlResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q65="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="GetCpasForCommunicationPartyXmlResult" nillable="true" type="q65:ArrayOfCpaXmlDetails" />
+        <xs:element xmlns:q66="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="GetCpasForCommunicationPartyXmlResult" nillable="true" type="q66:ArrayOfCpaXmlDetails" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:complexType name="ArrayOfCpaXmlDetails">
     <xs:sequence>
-      <xs:element xmlns:q66="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" maxOccurs="unbounded" name="CpaXmlDetails" nillable="true" type="q66:CpaXmlDetails" />
+      <xs:element xmlns:q67="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" maxOccurs="unbounded" name="CpaXmlDetails" nillable="true" type="q67:CpaXmlDetails" />
     </xs:sequence>
   </xs:complexType>
-  <xs:element xmlns:q67="http://schemas.nhn.no/reg/CollaborationProtocolProfile" name="ArrayOfCpaXmlDetails" nillable="true" type="q67:ArrayOfCpaXmlDetails" />
+  <xs:element xmlns:q68="http://schemas.nhn.no/reg/CollaborationProtocolProfile" name="ArrayOfCpaXmlDetails" nillable="true" type="q68:ArrayOfCpaXmlDetails" />
   <xs:element name="GetRevocatedCpas">
     <xs:complexType>
       <xs:sequence>
@@ -468,7 +484,7 @@
   <xs:element name="GetRevocatedCpasResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q68="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="GetRevocatedCpasResult" nillable="true" type="q68:ArrayOfguid" />
+        <xs:element xmlns:q69="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="GetRevocatedCpasResult" nillable="true" type="q69:ArrayOfguid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -483,7 +499,7 @@
   <xs:element name="RevokeCpaResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q69="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="RevokeCpaResult" nillable="true" type="q69:CpaDetails" />
+        <xs:element xmlns:q70="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="RevokeCpaResult" nillable="true" type="q70:CpaDetails" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -498,7 +514,7 @@
   <xs:element name="ApproveCpaResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q70="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="ApproveCpaResult" nillable="true" type="q70:CpaDetails" />
+        <xs:element xmlns:q71="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="ApproveCpaResult" nillable="true" type="q71:CpaDetails" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -507,16 +523,16 @@
       <xs:sequence>
         <xs:element minOccurs="0" name="cpaId" type="ser:guid" />
         <xs:element minOccurs="0" name="herId" type="xs:int" />
-        <xs:element xmlns:q71="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="approvedRoles" nillable="true" type="q71:ArrayOfCollaborationRoleIdentifier" />
+        <xs:element xmlns:q72="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="approvedRoles" nillable="true" type="q72:ArrayOfCollaborationRoleIdentifier" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:complexType name="ArrayOfCollaborationRoleIdentifier">
     <xs:sequence>
-      <xs:element xmlns:q72="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" maxOccurs="unbounded" name="CollaborationRoleIdentifier" nillable="true" type="q72:CollaborationRoleIdentifier" />
+      <xs:element xmlns:q73="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" maxOccurs="unbounded" name="CollaborationRoleIdentifier" nillable="true" type="q73:CollaborationRoleIdentifier" />
     </xs:sequence>
   </xs:complexType>
-  <xs:element xmlns:q73="http://schemas.nhn.no/reg/CollaborationProtocolProfile" name="ArrayOfCollaborationRoleIdentifier" nillable="true" type="q73:ArrayOfCollaborationRoleIdentifier" />
+  <xs:element xmlns:q74="http://schemas.nhn.no/reg/CollaborationProtocolProfile" name="ArrayOfCollaborationRoleIdentifier" nillable="true" type="q74:ArrayOfCollaborationRoleIdentifier" />
   <xs:complexType name="CollaborationRoleIdentifier">
     <xs:sequence>
       <xs:element minOccurs="0" name="ProcessSpecificationUuid" nillable="true" type="xs:string" />
@@ -524,18 +540,18 @@
       <xs:element minOccurs="0" name="Role" nillable="true" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
-  <xs:element xmlns:q74="http://schemas.nhn.no/reg/CollaborationProtocolProfile" name="CollaborationRoleIdentifier" nillable="true" type="q74:CollaborationRoleIdentifier" />
+  <xs:element xmlns:q75="http://schemas.nhn.no/reg/CollaborationProtocolProfile" name="CollaborationRoleIdentifier" nillable="true" type="q75:CollaborationRoleIdentifier" />
   <xs:element name="ApproveAndUpdateCpaResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q75="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="ApproveAndUpdateCpaResult" nillable="true" type="q75:CpaDetails" />
+        <xs:element xmlns:q76="http://schemas.nhn.no/reg/CollaborationProtocolProfile" minOccurs="0" name="ApproveAndUpdateCpaResult" nillable="true" type="q76:CpaDetails" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="AddProcessToCpp">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q76="http://schemas.datacontract.org/2004/07/NHN.Palantir.WebServices.Contracts.CPPA.Data" minOccurs="0" name="processParameter" nillable="true" type="q76:ProcessParameter" />
+        <xs:element xmlns:q77="http://schemas.datacontract.org/2004/07/NHN.Palantir.WebServices.Contracts.CPPA.Data" minOccurs="0" name="processParameter" nillable="true" type="q77:ProcessParameter" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -547,7 +563,7 @@
   <xs:element name="RemoveProcessFromCpp">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q77="http://schemas.datacontract.org/2004/07/NHN.Palantir.WebServices.Contracts.CPPA.Data" minOccurs="0" name="processParameter" nillable="true" type="q77:ProcessParameter" />
+        <xs:element xmlns:q78="http://schemas.datacontract.org/2004/07/NHN.Palantir.WebServices.Contracts.CPPA.Data" minOccurs="0" name="processParameter" nillable="true" type="q78:ProcessParameter" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -566,7 +582,7 @@
   <xs:element name="GetProcessesInCppResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q78="http://schemas.datacontract.org/2004/07/NHN.Palantir.WebServices.Contracts.CPPA.Data" minOccurs="0" name="GetProcessesInCppResult" nillable="true" type="q78:ArrayOfProcessParameter" />
+        <xs:element xmlns:q79="http://schemas.datacontract.org/2004/07/NHN.Palantir.WebServices.Contracts.CPPA.Data" minOccurs="0" name="GetProcessesInCppResult" nillable="true" type="q79:ArrayOfProcessParameter" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

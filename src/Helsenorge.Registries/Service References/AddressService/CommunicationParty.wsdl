@@ -10,6 +10,8 @@
       <xsd:import schemaLocation="https://ws-web.test.nhn.no/v1/AR?xsd=xsd4" namespace="http://register.nhn.no/HPR" />
       <xsd:import schemaLocation="https://ws-web.test.nhn.no/v1/AR?xsd=xsd5" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
       <xsd:import schemaLocation="https://ws-web.test.nhn.no/v1/AR?xsd=xsd6" namespace="http://register.nhn.no/CertificateDetails" />
+      <xsd:import schemaLocation="https://ws-web.test.nhn.no/v1/AR?xsd=xsd7" namespace="http://register.nhn.no/CertificateSearchResult" />
+      <xsd:import schemaLocation="https://ws-web.test.nhn.no/v1/AR?xsd=xsd8" namespace="http://schemas.datacontract.org/2004/07/System" />
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="ICommunicationPartyService_Ping_InputMessage">
@@ -45,15 +47,6 @@
   <wsdl:message name="ICommunicationPartyService_GetCommunicationPartyDetails_GenericFaultFault_FaultMessage">
     <wsdl:part xmlns:q3="http://register.nhn.no/Common" name="detail" element="q3:GenericFault" />
   </wsdl:message>
-  <wsdl:message name="ICommunicationPartyService_GetGPCommunicationParty_InputMessage">
-    <wsdl:part name="parameters" element="tns:GetGPCommunicationParty" />
-  </wsdl:message>
-  <wsdl:message name="ICommunicationPartyService_GetGPCommunicationParty_OutputMessage">
-    <wsdl:part name="parameters" element="tns:GetGPCommunicationPartyResponse" />
-  </wsdl:message>
-  <wsdl:message name="ICommunicationPartyService_GetGPCommunicationParty_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q4="http://register.nhn.no/Common" name="detail" element="q4:GenericFault" />
-  </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetOrganizationDetails_InputMessage">
     <wsdl:part name="parameters" element="tns:GetOrganizationDetails" />
   </wsdl:message>
@@ -61,7 +54,7 @@
     <wsdl:part name="parameters" element="tns:GetOrganizationDetailsResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetOrganizationDetails_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q5="http://register.nhn.no/Common" name="detail" element="q5:GenericFault" />
+    <wsdl:part xmlns:q4="http://register.nhn.no/Common" name="detail" element="q4:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetDepartmentDetails_InputMessage">
     <wsdl:part name="parameters" element="tns:GetDepartmentDetails" />
@@ -70,7 +63,7 @@
     <wsdl:part name="parameters" element="tns:GetDepartmentDetailsResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetDepartmentDetails_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q6="http://register.nhn.no/Common" name="detail" element="q6:GenericFault" />
+    <wsdl:part xmlns:q5="http://register.nhn.no/Common" name="detail" element="q5:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetServiceDetails_InputMessage">
     <wsdl:part name="parameters" element="tns:GetServiceDetails" />
@@ -79,7 +72,7 @@
     <wsdl:part name="parameters" element="tns:GetServiceDetailsResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetServiceDetails_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q7="http://register.nhn.no/Common" name="detail" element="q7:GenericFault" />
+    <wsdl:part xmlns:q6="http://register.nhn.no/Common" name="detail" element="q6:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetOrganizationPersonDetails_InputMessage">
     <wsdl:part name="parameters" element="tns:GetOrganizationPersonDetails" />
@@ -88,7 +81,7 @@
     <wsdl:part name="parameters" element="tns:GetOrganizationPersonDetailsResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetOrganizationPersonDetails_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q8="http://register.nhn.no/Common" name="detail" element="q8:GenericFault" />
+    <wsdl:part xmlns:q7="http://register.nhn.no/Common" name="detail" element="q7:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetOrganizationsHavingCode_InputMessage">
     <wsdl:part name="parameters" element="tns:GetOrganizationsHavingCode" />
@@ -97,7 +90,7 @@
     <wsdl:part name="parameters" element="tns:GetOrganizationsHavingCodeResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetOrganizationsHavingCode_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q9="http://register.nhn.no/Common" name="detail" element="q9:GenericFault" />
+    <wsdl:part xmlns:q8="http://register.nhn.no/Common" name="detail" element="q8:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetAssosiatedIKSChildOrganizations_InputMessage">
     <wsdl:part name="parameters" element="tns:GetAssosiatedIKSChildOrganizations" />
@@ -106,7 +99,7 @@
     <wsdl:part name="parameters" element="tns:GetAssosiatedIKSChildOrganizationsResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetAssosiatedIKSChildOrganizations_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q10="http://register.nhn.no/Common" name="detail" element="q10:GenericFault" />
+    <wsdl:part xmlns:q9="http://register.nhn.no/Common" name="detail" element="q9:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetAssosiatedIKSParentOrganizations_InputMessage">
     <wsdl:part name="parameters" element="tns:GetAssosiatedIKSParentOrganizations" />
@@ -115,7 +108,7 @@
     <wsdl:part name="parameters" element="tns:GetAssosiatedIKSParentOrganizationsResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetAssosiatedIKSParentOrganizations_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q11="http://register.nhn.no/Common" name="detail" element="q11:GenericFault" />
+    <wsdl:part xmlns:q10="http://register.nhn.no/Common" name="detail" element="q10:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_UpdateOrganizationPersonDetails_InputMessage">
     <wsdl:part name="parameters" element="tns:UpdateOrganizationPersonDetails" />
@@ -124,10 +117,10 @@
     <wsdl:part name="parameters" element="tns:UpdateOrganizationPersonDetailsResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_UpdateOrganizationPersonDetails_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q12="http://register.nhn.no/Common" name="detail" element="q12:GenericFault" />
+    <wsdl:part xmlns:q11="http://register.nhn.no/Common" name="detail" element="q11:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_UpdateOrganizationPersonDetails_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q13="http://register.nhn.no/Common" name="detail" element="q13:ValidationFault" />
+    <wsdl:part xmlns:q12="http://register.nhn.no/Common" name="detail" element="q12:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_UpdateServiceDetails_InputMessage">
     <wsdl:part name="parameters" element="tns:UpdateServiceDetails" />
@@ -136,10 +129,10 @@
     <wsdl:part name="parameters" element="tns:UpdateServiceDetailsResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_UpdateServiceDetails_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q14="http://register.nhn.no/Common" name="detail" element="q14:GenericFault" />
+    <wsdl:part xmlns:q13="http://register.nhn.no/Common" name="detail" element="q13:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_UpdateServiceDetails_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q15="http://register.nhn.no/Common" name="detail" element="q15:ValidationFault" />
+    <wsdl:part xmlns:q14="http://register.nhn.no/Common" name="detail" element="q14:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_UpdateOrganizationDetails_InputMessage">
     <wsdl:part name="parameters" element="tns:UpdateOrganizationDetails" />
@@ -148,10 +141,10 @@
     <wsdl:part name="parameters" element="tns:UpdateOrganizationDetailsResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_UpdateOrganizationDetails_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q16="http://register.nhn.no/Common" name="detail" element="q16:GenericFault" />
+    <wsdl:part xmlns:q15="http://register.nhn.no/Common" name="detail" element="q15:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_UpdateOrganizationDetails_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q17="http://register.nhn.no/Common" name="detail" element="q17:ValidationFault" />
+    <wsdl:part xmlns:q16="http://register.nhn.no/Common" name="detail" element="q16:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_UpdateDepartmentDetails_InputMessage">
     <wsdl:part name="parameters" element="tns:UpdateDepartmentDetails" />
@@ -160,10 +153,10 @@
     <wsdl:part name="parameters" element="tns:UpdateDepartmentDetailsResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_UpdateDepartmentDetails_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q18="http://register.nhn.no/Common" name="detail" element="q18:GenericFault" />
+    <wsdl:part xmlns:q17="http://register.nhn.no/Common" name="detail" element="q17:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_UpdateDepartmentDetails_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q19="http://register.nhn.no/Common" name="detail" element="q19:ValidationFault" />
+    <wsdl:part xmlns:q18="http://register.nhn.no/Common" name="detail" element="q18:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_UpdateOrganizationIKSAssociations_InputMessage">
     <wsdl:part name="parameters" element="tns:UpdateOrganizationIKSAssociations" />
@@ -172,10 +165,10 @@
     <wsdl:part name="parameters" element="tns:UpdateOrganizationIKSAssociationsResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_UpdateOrganizationIKSAssociations_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q20="http://register.nhn.no/Common" name="detail" element="q20:GenericFault" />
+    <wsdl:part xmlns:q19="http://register.nhn.no/Common" name="detail" element="q19:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_UpdateOrganizationIKSAssociations_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q21="http://register.nhn.no/Common" name="detail" element="q21:ValidationFault" />
+    <wsdl:part xmlns:q20="http://register.nhn.no/Common" name="detail" element="q20:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_CreateOrganizationPerson_InputMessage">
     <wsdl:part name="parameters" element="tns:CreateOrganizationPerson" />
@@ -184,10 +177,10 @@
     <wsdl:part name="parameters" element="tns:CreateOrganizationPersonResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_CreateOrganizationPerson_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q22="http://register.nhn.no/Common" name="detail" element="q22:GenericFault" />
+    <wsdl:part xmlns:q21="http://register.nhn.no/Common" name="detail" element="q21:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_CreateOrganizationPerson_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q23="http://register.nhn.no/Common" name="detail" element="q23:ValidationFault" />
+    <wsdl:part xmlns:q22="http://register.nhn.no/Common" name="detail" element="q22:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_CreateService_InputMessage">
     <wsdl:part name="parameters" element="tns:CreateService" />
@@ -196,10 +189,10 @@
     <wsdl:part name="parameters" element="tns:CreateServiceResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_CreateService_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q24="http://register.nhn.no/Common" name="detail" element="q24:GenericFault" />
+    <wsdl:part xmlns:q23="http://register.nhn.no/Common" name="detail" element="q23:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_CreateService_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q25="http://register.nhn.no/Common" name="detail" element="q25:ValidationFault" />
+    <wsdl:part xmlns:q24="http://register.nhn.no/Common" name="detail" element="q24:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_CreateOrganization_InputMessage">
     <wsdl:part name="parameters" element="tns:CreateOrganization" />
@@ -208,10 +201,10 @@
     <wsdl:part name="parameters" element="tns:CreateOrganizationResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_CreateOrganization_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q26="http://register.nhn.no/Common" name="detail" element="q26:GenericFault" />
+    <wsdl:part xmlns:q25="http://register.nhn.no/Common" name="detail" element="q25:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_CreateOrganization_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q27="http://register.nhn.no/Common" name="detail" element="q27:ValidationFault" />
+    <wsdl:part xmlns:q26="http://register.nhn.no/Common" name="detail" element="q26:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_CreateDepartment_InputMessage">
     <wsdl:part name="parameters" element="tns:CreateDepartment" />
@@ -220,10 +213,10 @@
     <wsdl:part name="parameters" element="tns:CreateDepartmentResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_CreateDepartment_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q28="http://register.nhn.no/Common" name="detail" element="q28:GenericFault" />
+    <wsdl:part xmlns:q27="http://register.nhn.no/Common" name="detail" element="q27:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_CreateDepartment_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q29="http://register.nhn.no/Common" name="detail" element="q29:ValidationFault" />
+    <wsdl:part xmlns:q28="http://register.nhn.no/Common" name="detail" element="q28:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetChangeLog_InputMessage">
     <wsdl:part name="parameters" element="tns:GetChangeLog" />
@@ -232,7 +225,7 @@
     <wsdl:part name="parameters" element="tns:GetChangeLogResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetChangeLog_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q30="http://register.nhn.no/Common" name="detail" element="q30:GenericFault" />
+    <wsdl:part xmlns:q29="http://register.nhn.no/Common" name="detail" element="q29:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCommunicationPartyStatistics_InputMessage">
     <wsdl:part name="parameters" element="tns:GetCommunicationPartyStatistics" />
@@ -241,7 +234,7 @@
     <wsdl:part name="parameters" element="tns:GetCommunicationPartyStatisticsResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCommunicationPartyStatistics_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q31="http://register.nhn.no/Common" name="detail" element="q31:GenericFault" />
+    <wsdl:part xmlns:q30="http://register.nhn.no/Common" name="detail" element="q30:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetOrganizationUpdateStatistics_InputMessage">
     <wsdl:part name="parameters" element="tns:GetOrganizationUpdateStatistics" />
@@ -250,7 +243,7 @@
     <wsdl:part name="parameters" element="tns:GetOrganizationUpdateStatisticsResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetOrganizationUpdateStatistics_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q32="http://register.nhn.no/Common" name="detail" element="q32:GenericFault" />
+    <wsdl:part xmlns:q31="http://register.nhn.no/Common" name="detail" element="q31:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetOrganizationsOwnedBy_InputMessage">
     <wsdl:part name="parameters" element="tns:GetOrganizationsOwnedBy" />
@@ -259,7 +252,7 @@
     <wsdl:part name="parameters" element="tns:GetOrganizationsOwnedByResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetOrganizationsOwnedBy_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q33="http://register.nhn.no/Common" name="detail" element="q33:GenericFault" />
+    <wsdl:part xmlns:q32="http://register.nhn.no/Common" name="detail" element="q32:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_EnableTransportOnOrganization_InputMessage">
     <wsdl:part name="parameters" element="tns:EnableTransportOnOrganization" />
@@ -268,7 +261,7 @@
     <wsdl:part name="parameters" element="tns:EnableTransportOnOrganizationResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_EnableTransportOnOrganization_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q34="http://register.nhn.no/Common" name="detail" element="q34:GenericFault" />
+    <wsdl:part xmlns:q33="http://register.nhn.no/Common" name="detail" element="q33:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_SetCommunicationPartyValid_InputMessage">
     <wsdl:part name="parameters" element="tns:SetCommunicationPartyValid" />
@@ -277,10 +270,10 @@
     <wsdl:part name="parameters" element="tns:SetCommunicationPartyValidResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_SetCommunicationPartyValid_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q35="http://register.nhn.no/Common" name="detail" element="q35:GenericFault" />
+    <wsdl:part xmlns:q34="http://register.nhn.no/Common" name="detail" element="q34:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_SetCommunicationPartyValid_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q36="http://register.nhn.no/Common" name="detail" element="q36:ValidationFault" />
+    <wsdl:part xmlns:q35="http://register.nhn.no/Common" name="detail" element="q35:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForEncryption_InputMessage">
     <wsdl:part name="parameters" element="tns:GetCertificateForEncryption" />
@@ -289,10 +282,10 @@
     <wsdl:part name="parameters" element="tns:GetCertificateForEncryptionResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForEncryption_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q37="http://register.nhn.no/Common" name="detail" element="q37:GenericFault" />
+    <wsdl:part xmlns:q36="http://register.nhn.no/Common" name="detail" element="q36:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForEncryption_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q38="http://register.nhn.no/Common" name="detail" element="q38:ValidationFault" />
+    <wsdl:part xmlns:q37="http://register.nhn.no/Common" name="detail" element="q37:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForValidatingSignature_InputMessage">
     <wsdl:part name="parameters" element="tns:GetCertificateForValidatingSignature" />
@@ -301,10 +294,10 @@
     <wsdl:part name="parameters" element="tns:GetCertificateForValidatingSignatureResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForValidatingSignature_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q39="http://register.nhn.no/Common" name="detail" element="q39:GenericFault" />
+    <wsdl:part xmlns:q38="http://register.nhn.no/Common" name="detail" element="q38:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForValidatingSignature_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q40="http://register.nhn.no/Common" name="detail" element="q40:ValidationFault" />
+    <wsdl:part xmlns:q39="http://register.nhn.no/Common" name="detail" element="q39:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForEncryptionByOrganizationNumber_InputMessage">
     <wsdl:part name="parameters" element="tns:GetCertificateForEncryptionByOrganizationNumber" />
@@ -313,10 +306,10 @@
     <wsdl:part name="parameters" element="tns:GetCertificateForEncryptionByOrganizationNumberResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForEncryptionByOrganizationNumber_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q41="http://register.nhn.no/Common" name="detail" element="q41:GenericFault" />
+    <wsdl:part xmlns:q40="http://register.nhn.no/Common" name="detail" element="q40:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForEncryptionByOrganizationNumber_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q42="http://register.nhn.no/Common" name="detail" element="q42:ValidationFault" />
+    <wsdl:part xmlns:q41="http://register.nhn.no/Common" name="detail" element="q41:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForValidatingSignatureByOrganizationNumber_InputMessage">
     <wsdl:part name="parameters" element="tns:GetCertificateForValidatingSignatureByOrganizationNumber" />
@@ -325,10 +318,10 @@
     <wsdl:part name="parameters" element="tns:GetCertificateForValidatingSignatureByOrganizationNumberResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForValidatingSignatureByOrganizationNumber_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q43="http://register.nhn.no/Common" name="detail" element="q43:GenericFault" />
+    <wsdl:part xmlns:q42="http://register.nhn.no/Common" name="detail" element="q42:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForValidatingSignatureByOrganizationNumber_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q44="http://register.nhn.no/Common" name="detail" element="q44:ValidationFault" />
+    <wsdl:part xmlns:q43="http://register.nhn.no/Common" name="detail" element="q43:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificate_InputMessage">
     <wsdl:part name="parameters" element="tns:GetCertificate" />
@@ -337,10 +330,10 @@
     <wsdl:part name="parameters" element="tns:GetCertificateResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificate_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q45="http://register.nhn.no/Common" name="detail" element="q45:GenericFault" />
+    <wsdl:part xmlns:q44="http://register.nhn.no/Common" name="detail" element="q44:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificate_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q46="http://register.nhn.no/Common" name="detail" element="q46:ValidationFault" />
+    <wsdl:part xmlns:q45="http://register.nhn.no/Common" name="detail" element="q45:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForEncryptionLdap_InputMessage">
     <wsdl:part name="parameters" element="tns:GetCertificateForEncryptionLdap" />
@@ -349,10 +342,10 @@
     <wsdl:part name="parameters" element="tns:GetCertificateForEncryptionLdapResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForEncryptionLdap_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q47="http://register.nhn.no/Common" name="detail" element="q47:GenericFault" />
+    <wsdl:part xmlns:q46="http://register.nhn.no/Common" name="detail" element="q46:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForEncryptionLdap_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q48="http://register.nhn.no/Common" name="detail" element="q48:ValidationFault" />
+    <wsdl:part xmlns:q47="http://register.nhn.no/Common" name="detail" element="q47:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForValidatingSignatureLdap_InputMessage">
     <wsdl:part name="parameters" element="tns:GetCertificateForValidatingSignatureLdap" />
@@ -361,10 +354,10 @@
     <wsdl:part name="parameters" element="tns:GetCertificateForValidatingSignatureLdapResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForValidatingSignatureLdap_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q49="http://register.nhn.no/Common" name="detail" element="q49:GenericFault" />
+    <wsdl:part xmlns:q48="http://register.nhn.no/Common" name="detail" element="q48:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateForValidatingSignatureLdap_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q50="http://register.nhn.no/Common" name="detail" element="q50:ValidationFault" />
+    <wsdl:part xmlns:q49="http://register.nhn.no/Common" name="detail" element="q49:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateDetailsForEncryption_InputMessage">
     <wsdl:part name="parameters" element="tns:GetCertificateDetailsForEncryption" />
@@ -373,10 +366,10 @@
     <wsdl:part name="parameters" element="tns:GetCertificateDetailsForEncryptionResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateDetailsForEncryption_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q51="http://register.nhn.no/Common" name="detail" element="q51:GenericFault" />
+    <wsdl:part xmlns:q50="http://register.nhn.no/Common" name="detail" element="q50:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateDetailsForEncryption_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q52="http://register.nhn.no/Common" name="detail" element="q52:ValidationFault" />
+    <wsdl:part xmlns:q51="http://register.nhn.no/Common" name="detail" element="q51:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateDetailsForValidatingSignature_InputMessage">
     <wsdl:part name="parameters" element="tns:GetCertificateDetailsForValidatingSignature" />
@@ -385,10 +378,10 @@
     <wsdl:part name="parameters" element="tns:GetCertificateDetailsForValidatingSignatureResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateDetailsForValidatingSignature_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q53="http://register.nhn.no/Common" name="detail" element="q53:GenericFault" />
+    <wsdl:part xmlns:q52="http://register.nhn.no/Common" name="detail" element="q52:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCertificateDetailsForValidatingSignature_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q54="http://register.nhn.no/Common" name="detail" element="q54:ValidationFault" />
+    <wsdl:part xmlns:q53="http://register.nhn.no/Common" name="detail" element="q53:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_SearchCertificatesForEncryption_InputMessage">
     <wsdl:part name="parameters" element="tns:SearchCertificatesForEncryption" />
@@ -397,10 +390,10 @@
     <wsdl:part name="parameters" element="tns:SearchCertificatesForEncryptionResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_SearchCertificatesForEncryption_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q55="http://register.nhn.no/Common" name="detail" element="q55:GenericFault" />
+    <wsdl:part xmlns:q54="http://register.nhn.no/Common" name="detail" element="q54:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_SearchCertificatesForEncryption_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q56="http://register.nhn.no/Common" name="detail" element="q56:ValidationFault" />
+    <wsdl:part xmlns:q55="http://register.nhn.no/Common" name="detail" element="q55:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_SearchCertificatesForValidatingSignature_InputMessage">
     <wsdl:part name="parameters" element="tns:SearchCertificatesForValidatingSignature" />
@@ -409,10 +402,34 @@
     <wsdl:part name="parameters" element="tns:SearchCertificatesForValidatingSignatureResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_SearchCertificatesForValidatingSignature_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q57="http://register.nhn.no/Common" name="detail" element="q57:GenericFault" />
+    <wsdl:part xmlns:q56="http://register.nhn.no/Common" name="detail" element="q56:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_SearchCertificatesForValidatingSignature_ValidationFaultFault_FaultMessage">
-    <wsdl:part xmlns:q58="http://register.nhn.no/Common" name="detail" element="q58:ValidationFault" />
+    <wsdl:part xmlns:q57="http://register.nhn.no/Common" name="detail" element="q57:ValidationFault" />
+  </wsdl:message>
+  <wsdl:message name="ICommunicationPartyService_SearchCertificatesByLdapUrl_InputMessage">
+    <wsdl:part name="parameters" element="tns:SearchCertificatesByLdapUrl" />
+  </wsdl:message>
+  <wsdl:message name="ICommunicationPartyService_SearchCertificatesByLdapUrl_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SearchCertificatesByLdapUrlResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICommunicationPartyService_SearchCertificatesByLdapUrl_GenericFaultFault_FaultMessage">
+    <wsdl:part xmlns:q58="http://register.nhn.no/Common" name="detail" element="q58:GenericFault" />
+  </wsdl:message>
+  <wsdl:message name="ICommunicationPartyService_SearchCertificatesByLdapUrl_ValidationFaultFault_FaultMessage">
+    <wsdl:part xmlns:q59="http://register.nhn.no/Common" name="detail" element="q59:ValidationFault" />
+  </wsdl:message>
+  <wsdl:message name="ICommunicationPartyService_GetLdapSearchProviders_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetLdapSearchProviders" />
+  </wsdl:message>
+  <wsdl:message name="ICommunicationPartyService_GetLdapSearchProviders_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetLdapSearchProvidersResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICommunicationPartyService_GetLdapSearchProviders_GenericFaultFault_FaultMessage">
+    <wsdl:part xmlns:q60="http://register.nhn.no/Common" name="detail" element="q60:GenericFault" />
+  </wsdl:message>
+  <wsdl:message name="ICommunicationPartyService_GetLdapSearchProviders_ValidationFaultFault_FaultMessage">
+    <wsdl:part xmlns:q61="http://register.nhn.no/Common" name="detail" element="q61:ValidationFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetAllHFCommpartiesCsv_InputMessage">
     <wsdl:part name="parameters" element="tns:GetAllHFCommpartiesCsv" />
@@ -427,7 +444,7 @@
     <wsdl:part name="parameters" element="tns:AddCustomAttributeResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_AddCustomAttribute_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q59="http://register.nhn.no/Common" name="detail" element="q59:GenericFault" />
+    <wsdl:part xmlns:q62="http://register.nhn.no/Common" name="detail" element="q62:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_RemoveCustomAttribute_InputMessage">
     <wsdl:part name="parameters" element="tns:RemoveCustomAttribute" />
@@ -436,13 +453,19 @@
     <wsdl:part name="parameters" element="tns:RemoveCustomAttributeResponse" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_RemoveCustomAttribute_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q60="http://register.nhn.no/Common" name="detail" element="q60:GenericFault" />
+    <wsdl:part xmlns:q63="http://register.nhn.no/Common" name="detail" element="q63:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCustomAttributes_InputMessage">
     <wsdl:part name="parameters" element="tns:GetCustomAttributes" />
   </wsdl:message>
   <wsdl:message name="ICommunicationPartyService_GetCustomAttributes_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetCustomAttributesResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICommunicationPartyService_UpdateCoverageAreas_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateCoverageAreas" />
+  </wsdl:message>
+  <wsdl:message name="ICommunicationPartyService_UpdateCoverageAreas_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateCoverageAreasResponse" />
   </wsdl:message>
   <wsdl:portType name="ICommunicationPartyService">
     <wsdl:operation name="Ping">
@@ -463,11 +486,6 @@
       <wsdl:input wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetCommunicationPartyDetails" message="tns:ICommunicationPartyService_GetCommunicationPartyDetails_InputMessage" />
       <wsdl:output wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetCommunicationPartyDetailsResponse" message="tns:ICommunicationPartyService_GetCommunicationPartyDetails_OutputMessage" />
       <wsdl:fault wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetCommunicationPartyDetailsGenericFaultFault" name="GenericFaultFault" message="tns:ICommunicationPartyService_GetCommunicationPartyDetails_GenericFaultFault_FaultMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="GetGPCommunicationParty">
-      <wsdl:input wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetGPCommunicationParty" message="tns:ICommunicationPartyService_GetGPCommunicationParty_InputMessage" />
-      <wsdl:output wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetGPCommunicationPartyResponse" message="tns:ICommunicationPartyService_GetGPCommunicationParty_OutputMessage" />
-      <wsdl:fault wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetGPCommunicationPartyGenericFaultFault" name="GenericFaultFault" message="tns:ICommunicationPartyService_GetGPCommunicationParty_GenericFaultFault_FaultMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetOrganizationDetails">
       <wsdl:input wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetOrganizationDetails" message="tns:ICommunicationPartyService_GetOrganizationDetails_InputMessage" />
@@ -655,6 +673,18 @@
       <wsdl:fault wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/SearchCertificatesForValidatingSignatureGenericFaultFault" name="GenericFaultFault" message="tns:ICommunicationPartyService_SearchCertificatesForValidatingSignature_GenericFaultFault_FaultMessage" />
       <wsdl:fault wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/SearchCertificatesForValidatingSignatureValidationFaultFault" name="ValidationFaultFault" message="tns:ICommunicationPartyService_SearchCertificatesForValidatingSignature_ValidationFaultFault_FaultMessage" />
     </wsdl:operation>
+    <wsdl:operation name="SearchCertificatesByLdapUrl">
+      <wsdl:input wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/SearchCertificatesByLdapUrl" message="tns:ICommunicationPartyService_SearchCertificatesByLdapUrl_InputMessage" />
+      <wsdl:output wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/SearchCertificatesByLdapUrlResponse" message="tns:ICommunicationPartyService_SearchCertificatesByLdapUrl_OutputMessage" />
+      <wsdl:fault wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/SearchCertificatesByLdapUrlGenericFaultFault" name="GenericFaultFault" message="tns:ICommunicationPartyService_SearchCertificatesByLdapUrl_GenericFaultFault_FaultMessage" />
+      <wsdl:fault wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/SearchCertificatesByLdapUrlValidationFaultFault" name="ValidationFaultFault" message="tns:ICommunicationPartyService_SearchCertificatesByLdapUrl_ValidationFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetLdapSearchProviders">
+      <wsdl:input wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetLdapSearchProviders" message="tns:ICommunicationPartyService_GetLdapSearchProviders_InputMessage" />
+      <wsdl:output wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetLdapSearchProvidersResponse" message="tns:ICommunicationPartyService_GetLdapSearchProviders_OutputMessage" />
+      <wsdl:fault wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetLdapSearchProvidersGenericFaultFault" name="GenericFaultFault" message="tns:ICommunicationPartyService_GetLdapSearchProviders_GenericFaultFault_FaultMessage" />
+      <wsdl:fault wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetLdapSearchProvidersValidationFaultFault" name="ValidationFaultFault" message="tns:ICommunicationPartyService_GetLdapSearchProviders_ValidationFaultFault_FaultMessage" />
+    </wsdl:operation>
     <wsdl:operation name="GetAllHFCommpartiesCsv">
       <wsdl:input wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetAllHFCommpartiesCsv" message="tns:ICommunicationPartyService_GetAllHFCommpartiesCsv_InputMessage" />
       <wsdl:output wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetAllHFCommpartiesCsvResponse" message="tns:ICommunicationPartyService_GetAllHFCommpartiesCsv_OutputMessage" />
@@ -672,6 +702,10 @@
     <wsdl:operation name="GetCustomAttributes">
       <wsdl:input wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetCustomAttributes" message="tns:ICommunicationPartyService_GetCustomAttributes_InputMessage" />
       <wsdl:output wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetCustomAttributesResponse" message="tns:ICommunicationPartyService_GetCustomAttributes_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateCoverageAreas">
+      <wsdl:input wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/UpdateCoverageAreas" message="tns:ICommunicationPartyService_UpdateCoverageAreas_InputMessage" />
+      <wsdl:output wsam:Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/UpdateCoverageAreasResponse" message="tns:ICommunicationPartyService_UpdateCoverageAreas_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:service name="CommunicationParty">

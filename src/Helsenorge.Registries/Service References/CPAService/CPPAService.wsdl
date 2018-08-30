@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://schemas.nhn.no/reg/CollaborationProtocolProfile" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:i0="http://register.nhn.no/CPPA" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="CPPAService" targetNamespace="http://schemas.nhn.no/reg/CollaborationProtocolProfile" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://schemas.nhn.no/reg/CollaborationProtocolProfile" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:i0="http://register.nhn.no/CPPA" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="CppaService" targetNamespace="http://schemas.nhn.no/reg/CollaborationProtocolProfile" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:import namespace="http://register.nhn.no/CPPA" location="https://ws-web.test.nhn.no/v1/CPPA?wsdl=wsdl0" />
   <wsdl:types>
     <xsd:schema targetNamespace="http://schemas.nhn.no/reg/CollaborationProtocolProfile/Imports">
@@ -173,6 +173,15 @@
   <wsdl:message name="ICPPAService_GetCpasForCommunicationParty_GenericFaultFault_FaultMessage">
     <wsdl:part xmlns:q18="http://register.nhn.no/Common" name="detail" element="q18:GenericFault" />
   </wsdl:message>
+  <wsdl:message name="ICPPAService_GetCpasForCommunicationPartyCreatedAfter_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCpasForCommunicationPartyCreatedAfter" />
+  </wsdl:message>
+  <wsdl:message name="ICPPAService_GetCpasForCommunicationPartyCreatedAfter_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCpasForCommunicationPartyCreatedAfterResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICPPAService_GetCpasForCommunicationPartyCreatedAfter_GenericFaultFault_FaultMessage">
+    <wsdl:part xmlns:q19="http://register.nhn.no/Common" name="detail" element="q19:GenericFault" />
+  </wsdl:message>
   <wsdl:message name="ICPPAService_GetCpasForCommunicationPartyForApproval_InputMessage">
     <wsdl:part name="parameters" element="tns:GetCpasForCommunicationPartyForApproval" />
   </wsdl:message>
@@ -180,7 +189,7 @@
     <wsdl:part name="parameters" element="tns:GetCpasForCommunicationPartyForApprovalResponse" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_GetCpasForCommunicationPartyForApproval_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q19="http://register.nhn.no/Common" name="detail" element="q19:GenericFault" />
+    <wsdl:part xmlns:q20="http://register.nhn.no/Common" name="detail" element="q20:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_GetCpasForCommunicationPartyForApprovalUnfiltered_InputMessage">
     <wsdl:part name="parameters" element="tns:GetCpasForCommunicationPartyForApprovalUnfiltered" />
@@ -189,7 +198,7 @@
     <wsdl:part name="parameters" element="tns:GetCpasForCommunicationPartyForApprovalUnfilteredResponse" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_GetCpasForCommunicationPartyForApprovalUnfiltered_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q20="http://register.nhn.no/Common" name="detail" element="q20:GenericFault" />
+    <wsdl:part xmlns:q21="http://register.nhn.no/Common" name="detail" element="q21:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_GetCpasForCommunicationPartyXml_InputMessage">
     <wsdl:part name="parameters" element="tns:GetCpasForCommunicationPartyXml" />
@@ -198,7 +207,7 @@
     <wsdl:part name="parameters" element="tns:GetCpasForCommunicationPartyXmlResponse" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_GetCpasForCommunicationPartyXml_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q21="http://register.nhn.no/Common" name="detail" element="q21:GenericFault" />
+    <wsdl:part xmlns:q22="http://register.nhn.no/Common" name="detail" element="q22:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_GetRevocatedCpas_InputMessage">
     <wsdl:part name="parameters" element="tns:GetRevocatedCpas" />
@@ -207,7 +216,7 @@
     <wsdl:part name="parameters" element="tns:GetRevocatedCpasResponse" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_GetRevocatedCpas_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q22="http://register.nhn.no/Common" name="detail" element="q22:GenericFault" />
+    <wsdl:part xmlns:q23="http://register.nhn.no/Common" name="detail" element="q23:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_RevokeCpa_InputMessage">
     <wsdl:part name="parameters" element="tns:RevokeCpa" />
@@ -216,7 +225,7 @@
     <wsdl:part name="parameters" element="tns:RevokeCpaResponse" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_RevokeCpa_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q23="http://register.nhn.no/Common" name="detail" element="q23:GenericFault" />
+    <wsdl:part xmlns:q24="http://register.nhn.no/Common" name="detail" element="q24:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_ApproveCpa_InputMessage">
     <wsdl:part name="parameters" element="tns:ApproveCpa" />
@@ -225,7 +234,7 @@
     <wsdl:part name="parameters" element="tns:ApproveCpaResponse" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_ApproveCpa_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q24="http://register.nhn.no/Common" name="detail" element="q24:GenericFault" />
+    <wsdl:part xmlns:q25="http://register.nhn.no/Common" name="detail" element="q25:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_ApproveAndUpdateCpa_InputMessage">
     <wsdl:part name="parameters" element="tns:ApproveAndUpdateCpa" />
@@ -234,7 +243,7 @@
     <wsdl:part name="parameters" element="tns:ApproveAndUpdateCpaResponse" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_ApproveAndUpdateCpa_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q25="http://register.nhn.no/Common" name="detail" element="q25:GenericFault" />
+    <wsdl:part xmlns:q26="http://register.nhn.no/Common" name="detail" element="q26:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_AddProcessToCpp_InputMessage">
     <wsdl:part name="parameters" element="tns:AddProcessToCpp" />
@@ -243,7 +252,7 @@
     <wsdl:part name="parameters" element="tns:AddProcessToCppResponse" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_AddProcessToCpp_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q26="http://register.nhn.no/Common" name="detail" element="q26:GenericFault" />
+    <wsdl:part xmlns:q27="http://register.nhn.no/Common" name="detail" element="q27:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_RemoveProcessFromCpp_InputMessage">
     <wsdl:part name="parameters" element="tns:RemoveProcessFromCpp" />
@@ -252,7 +261,7 @@
     <wsdl:part name="parameters" element="tns:RemoveProcessFromCppResponse" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_RemoveProcessFromCpp_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q27="http://register.nhn.no/Common" name="detail" element="q27:GenericFault" />
+    <wsdl:part xmlns:q28="http://register.nhn.no/Common" name="detail" element="q28:GenericFault" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_GetProcessesInCpp_InputMessage">
     <wsdl:part name="parameters" element="tns:GetProcessesInCpp" />
@@ -261,7 +270,7 @@
     <wsdl:part name="parameters" element="tns:GetProcessesInCppResponse" />
   </wsdl:message>
   <wsdl:message name="ICPPAService_GetProcessesInCpp_GenericFaultFault_FaultMessage">
-    <wsdl:part xmlns:q28="http://register.nhn.no/Common" name="detail" element="q28:GenericFault" />
+    <wsdl:part xmlns:q29="http://register.nhn.no/Common" name="detail" element="q29:GenericFault" />
   </wsdl:message>
   <wsdl:portType name="ICPPAService">
     <wsdl:operation name="GetCpp">
@@ -354,6 +363,11 @@
       <wsdl:output wsam:Action="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyResponse" message="tns:ICPPAService_GetCpasForCommunicationParty_OutputMessage" />
       <wsdl:fault wsam:Action="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyGenericFaultFault" name="GenericFaultFault" message="tns:ICPPAService_GetCpasForCommunicationParty_GenericFaultFault_FaultMessage" />
     </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationPartyCreatedAfter">
+      <wsdl:input wsam:Action="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyCreatedAfter" message="tns:ICPPAService_GetCpasForCommunicationPartyCreatedAfter_InputMessage" />
+      <wsdl:output wsam:Action="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyCreatedAfterResponse" message="tns:ICPPAService_GetCpasForCommunicationPartyCreatedAfter_OutputMessage" />
+      <wsdl:fault wsam:Action="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyCreatedAfterGenericFaultFault" name="GenericFaultFault" message="tns:ICPPAService_GetCpasForCommunicationPartyCreatedAfter_GenericFaultFault_FaultMessage" />
+    </wsdl:operation>
     <wsdl:operation name="GetCpasForCommunicationPartyForApproval">
       <wsdl:input wsam:Action="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyForApproval" message="tns:ICPPAService_GetCpasForCommunicationPartyForApproval_InputMessage" />
       <wsdl:output wsam:Action="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyForApprovalResponse" message="tns:ICPPAService_GetCpasForCommunicationPartyForApproval_OutputMessage" />
@@ -405,7 +419,7 @@
       <wsdl:fault wsam:Action="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetProcessesInCppGenericFaultFault" name="GenericFaultFault" message="tns:ICPPAService_GetProcessesInCpp_GenericFaultFault_FaultMessage" />
     </wsdl:operation>
   </wsdl:portType>
-  <wsdl:service name="CPPAService">
+  <wsdl:service name="CppaService">
     <wsdl:port name="WSHttpBinding_ICPPAService" binding="i0:WSHttpBinding_ICPPAService">
       <soap12:address location="https://ws-web.test.nhn.no/v1/CPPA" />
       <wsa10:EndpointReference>

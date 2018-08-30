@@ -384,6 +384,18 @@
         <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
       </wsdl:fault>
     </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationPartyCreatedAfter">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyCreatedAfter" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
     <wsdl:operation name="GetCpasForCommunicationPartyForApproval">
       <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyForApproval" style="document" />
       <wsdl:input>
@@ -724,6 +736,18 @@
         <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
       </wsdl:fault>
     </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationPartyCreatedAfter">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyCreatedAfter" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
     <wsdl:operation name="GetCpasForCommunicationPartyForApproval">
       <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyForApproval" style="document" />
       <wsdl:input>
@@ -1054,6 +1078,18 @@
     </wsdl:operation>
     <wsdl:operation name="GetCpasForCommunicationParty">
       <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationParty" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationPartyCreatedAfter">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyCreatedAfter" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

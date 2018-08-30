@@ -277,6 +277,9 @@ namespace Helsenorge.Registries.AddressService {
         private bool ActiveField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private Helsenorge.Registries.AddressService.Code CoverageAreaTypeField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string DisplayNameField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
@@ -340,6 +343,19 @@ namespace Helsenorge.Registries.AddressService {
                 if ((this.ActiveField.Equals(value) != true)) {
                     this.ActiveField = value;
                     this.RaisePropertyChanged("Active");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal Helsenorge.Registries.AddressService.Code CoverageAreaType {
+            get {
+                return this.CoverageAreaTypeField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.CoverageAreaTypeField, value) != true)) {
+                    this.CoverageAreaTypeField = value;
+                    this.RaisePropertyChanged("CoverageAreaType");
                 }
             }
         }
@@ -1083,6 +1099,9 @@ namespace Helsenorge.Registries.AddressService {
         private Helsenorge.Registries.AddressService.Code CodeField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private Helsenorge.Registries.AddressService.CoverageInfo[] CoverageAreasField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string DescriptionField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
@@ -1100,6 +1119,19 @@ namespace Helsenorge.Registries.AddressService {
                 if ((object.ReferenceEquals(this.CodeField, value) != true)) {
                     this.CodeField = value;
                     this.RaisePropertyChanged("Code");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal Helsenorge.Registries.AddressService.CoverageInfo[] CoverageAreas {
+            get {
+                return this.CoverageAreasField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.CoverageAreasField, value) != true)) {
+                    this.CoverageAreasField = value;
+                    this.RaisePropertyChanged("CoverageAreas");
                 }
             }
         }
@@ -2155,6 +2187,99 @@ namespace Helsenorge.Registries.AddressService {
                 if ((object.ReferenceEquals(this.ValidField, value) != true)) {
                     this.ValidField = value;
                     this.RaisePropertyChanged("Valid");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="CoverageInfo", Namespace="http://register.nhn.no/CommunicationParty")]
+    [System.SerializableAttribute()]
+    internal partial class CoverageInfo : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string DisplayNameField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int HerIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string NameField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int OrganizationNumberField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal string DisplayName {
+            get {
+                return this.DisplayNameField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.DisplayNameField, value) != true)) {
+                    this.DisplayNameField = value;
+                    this.RaisePropertyChanged("DisplayName");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal int HerId {
+            get {
+                return this.HerIdField;
+            }
+            set {
+                if ((this.HerIdField.Equals(value) != true)) {
+                    this.HerIdField = value;
+                    this.RaisePropertyChanged("HerId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal string Name {
+            get {
+                return this.NameField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.NameField, value) != true)) {
+                    this.NameField = value;
+                    this.RaisePropertyChanged("Name");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal int OrganizationNumber {
+            get {
+                return this.OrganizationNumberField;
+            }
+            set {
+                if ((this.OrganizationNumberField.Equals(value) != true)) {
+                    this.OrganizationNumberField = value;
+                    this.RaisePropertyChanged("OrganizationNumber");
                 }
             }
         }
@@ -4051,6 +4176,269 @@ namespace Helsenorge.Registries.AddressService {
         }
     }
     
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="CertificateSearchResult", Namespace="http://register.nhn.no/CertificateSearchResult")]
+    [System.SerializableAttribute()]
+    internal partial class CertificateSearchResult : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string ActualLdapUrlField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private Helsenorge.Registries.AddressService.CertificateCandidate[] MatchingCertificatesField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal string ActualLdapUrl {
+            get {
+                return this.ActualLdapUrlField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ActualLdapUrlField, value) != true)) {
+                    this.ActualLdapUrlField = value;
+                    this.RaisePropertyChanged("ActualLdapUrl");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal Helsenorge.Registries.AddressService.CertificateCandidate[] MatchingCertificates {
+            get {
+                return this.MatchingCertificatesField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.MatchingCertificatesField, value) != true)) {
+                    this.MatchingCertificatesField = value;
+                    this.RaisePropertyChanged("MatchingCertificates");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="CertificateCandidate", Namespace="http://register.nhn.no/CertificateSearchResult")]
+    [System.SerializableAttribute()]
+    internal partial class CertificateCandidate : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string CertificateSerialNumberField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string CnNameField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.DateTimeOffset NotAfterField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.DateTimeOffset NotBeforeField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool ValidForEncryptionField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool ValidForSigningField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal string CertificateSerialNumber {
+            get {
+                return this.CertificateSerialNumberField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.CertificateSerialNumberField, value) != true)) {
+                    this.CertificateSerialNumberField = value;
+                    this.RaisePropertyChanged("CertificateSerialNumber");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal string CnName {
+            get {
+                return this.CnNameField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.CnNameField, value) != true)) {
+                    this.CnNameField = value;
+                    this.RaisePropertyChanged("CnName");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal System.DateTimeOffset NotAfter {
+            get {
+                return this.NotAfterField;
+            }
+            set {
+                if ((this.NotAfterField.Equals(value) != true)) {
+                    this.NotAfterField = value;
+                    this.RaisePropertyChanged("NotAfter");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal System.DateTimeOffset NotBefore {
+            get {
+                return this.NotBeforeField;
+            }
+            set {
+                if ((this.NotBeforeField.Equals(value) != true)) {
+                    this.NotBeforeField = value;
+                    this.RaisePropertyChanged("NotBefore");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal bool ValidForEncryption {
+            get {
+                return this.ValidForEncryptionField;
+            }
+            set {
+                if ((this.ValidForEncryptionField.Equals(value) != true)) {
+                    this.ValidForEncryptionField = value;
+                    this.RaisePropertyChanged("ValidForEncryption");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal bool ValidForSigning {
+            get {
+                return this.ValidForSigningField;
+            }
+            set {
+                if ((this.ValidForSigningField.Equals(value) != true)) {
+                    this.ValidForSigningField = value;
+                    this.RaisePropertyChanged("ValidForSigning");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="LdapSearchProvider", Namespace="http://register.nhn.no/CertificateSearchResult")]
+    [System.SerializableAttribute()]
+    internal partial class LdapSearchProvider : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string BaseUrlField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string DisplayNameField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string DistinguishedNameField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal string BaseUrl {
+            get {
+                return this.BaseUrlField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.BaseUrlField, value) != true)) {
+                    this.BaseUrlField = value;
+                    this.RaisePropertyChanged("BaseUrl");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal string DisplayName {
+            get {
+                return this.DisplayNameField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.DisplayNameField, value) != true)) {
+                    this.DisplayNameField = value;
+                    this.RaisePropertyChanged("DisplayName");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal string DistinguishedName {
+            get {
+                return this.DistinguishedNameField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.DistinguishedNameField, value) != true)) {
+                    this.DistinguishedNameField = value;
+                    this.RaisePropertyChanged("DistinguishedName");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ServiceModel.ServiceContractAttribute(Namespace="http://register.nhn.no/CommunicationParty", ConfigurationName="AddressService.ICommunicationPartyService")]
     internal interface ICommunicationPartyService {
@@ -4094,18 +4482,6 @@ namespace Helsenorge.Registries.AddressService {
             "tionPartyDetails", ReplyAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetCommunica" +
             "tionPartyDetailsResponse")]
         System.Threading.Tasks.Task<Helsenorge.Registries.AddressService.CommunicationParty> GetCommunicationPartyDetailsAsync(int herId);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetGPCommuni" +
-            "cationParty", ReplyAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetGPCommuni" +
-            "cationPartyResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Helsenorge.Registries.AddressService.GenericFault), Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetGPCommuni" +
-            "cationPartyGenericFaultFault", Name="GenericFault", Namespace="http://register.nhn.no/Common")]
-        Helsenorge.Registries.AddressService.CommunicationParty GetGPCommunicationParty(string ssn);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetGPCommuni" +
-            "cationParty", ReplyAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetGPCommuni" +
-            "cationPartyResponse")]
-        System.Threading.Tasks.Task<Helsenorge.Registries.AddressService.CommunicationParty> GetGPCommunicationPartyAsync(string ssn);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetOrganizat" +
             "ionDetails", ReplyAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetOrganizat" +
@@ -4545,6 +4921,34 @@ namespace Helsenorge.Registries.AddressService {
             "icatesForValidatingSignatureResponse")]
         System.Threading.Tasks.Task<Helsenorge.Registries.AddressService.CertificateDetails[]> SearchCertificatesForValidatingSignatureAsync(string sn, string cn, string ou);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/SearchCertif" +
+            "icatesByLdapUrl", ReplyAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/SearchCertif" +
+            "icatesByLdapUrlResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Helsenorge.Registries.AddressService.GenericFault), Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/SearchCertif" +
+            "icatesByLdapUrlGenericFaultFault", Name="GenericFault", Namespace="http://register.nhn.no/Common")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Helsenorge.Registries.AddressService.ValidationFault), Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/SearchCertif" +
+            "icatesByLdapUrlValidationFaultFault", Name="ValidationFault", Namespace="http://register.nhn.no/Common")]
+        Helsenorge.Registries.AddressService.CertificateSearchResult SearchCertificatesByLdapUrl(string ldapUrl);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/SearchCertif" +
+            "icatesByLdapUrl", ReplyAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/SearchCertif" +
+            "icatesByLdapUrlResponse")]
+        System.Threading.Tasks.Task<Helsenorge.Registries.AddressService.CertificateSearchResult> SearchCertificatesByLdapUrlAsync(string ldapUrl);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetLdapSearc" +
+            "hProviders", ReplyAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetLdapSearc" +
+            "hProvidersResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Helsenorge.Registries.AddressService.GenericFault), Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetLdapSearc" +
+            "hProvidersGenericFaultFault", Name="GenericFault", Namespace="http://register.nhn.no/Common")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Helsenorge.Registries.AddressService.ValidationFault), Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetLdapSearc" +
+            "hProvidersValidationFaultFault", Name="ValidationFault", Namespace="http://register.nhn.no/Common")]
+        Helsenorge.Registries.AddressService.LdapSearchProvider[] GetLdapSearchProviders();
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetLdapSearc" +
+            "hProviders", ReplyAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetLdapSearc" +
+            "hProvidersResponse")]
+        System.Threading.Tasks.Task<Helsenorge.Registries.AddressService.LdapSearchProvider[]> GetLdapSearchProvidersAsync();
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetAllHFComm" +
             "partiesCsv", ReplyAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetAllHFComm" +
             "partiesCsvResponse")]
@@ -4588,6 +4992,16 @@ namespace Helsenorge.Registries.AddressService {
             "ributes", ReplyAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/GetCustomAtt" +
             "ributesResponse")]
         System.Threading.Tasks.Task<System.Collections.Generic.KeyValuePair<int, Helsenorge.Registries.AddressService.Code[]>[]> GetCustomAttributesAsync(int[] herIds);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/UpdateCovera" +
+            "geAreas", ReplyAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/UpdateCovera" +
+            "geAreasResponse")]
+        void UpdateCoverageAreas(int herId, Helsenorge.Registries.AddressService.CoverageInfo[] coverageAreas);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/UpdateCovera" +
+            "geAreas", ReplyAction="http://register.nhn.no/CommunicationParty/ICommunicationPartyService/UpdateCovera" +
+            "geAreasResponse")]
+        System.Threading.Tasks.Task UpdateCoverageAreasAsync(int herId, Helsenorge.Registries.AddressService.CoverageInfo[] coverageAreas);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -4647,14 +5061,6 @@ namespace Helsenorge.Registries.AddressService {
         
         public System.Threading.Tasks.Task<Helsenorge.Registries.AddressService.CommunicationParty> GetCommunicationPartyDetailsAsync(int herId) {
             return base.Channel.GetCommunicationPartyDetailsAsync(herId);
-        }
-        
-        public Helsenorge.Registries.AddressService.CommunicationParty GetGPCommunicationParty(string ssn) {
-            return base.Channel.GetGPCommunicationParty(ssn);
-        }
-        
-        public System.Threading.Tasks.Task<Helsenorge.Registries.AddressService.CommunicationParty> GetGPCommunicationPartyAsync(string ssn) {
-            return base.Channel.GetGPCommunicationPartyAsync(ssn);
         }
         
         public Helsenorge.Registries.AddressService.Organization GetOrganizationDetails(int herId) {
@@ -4921,6 +5327,22 @@ namespace Helsenorge.Registries.AddressService {
             return base.Channel.SearchCertificatesForValidatingSignatureAsync(sn, cn, ou);
         }
         
+        public Helsenorge.Registries.AddressService.CertificateSearchResult SearchCertificatesByLdapUrl(string ldapUrl) {
+            return base.Channel.SearchCertificatesByLdapUrl(ldapUrl);
+        }
+        
+        public System.Threading.Tasks.Task<Helsenorge.Registries.AddressService.CertificateSearchResult> SearchCertificatesByLdapUrlAsync(string ldapUrl) {
+            return base.Channel.SearchCertificatesByLdapUrlAsync(ldapUrl);
+        }
+        
+        public Helsenorge.Registries.AddressService.LdapSearchProvider[] GetLdapSearchProviders() {
+            return base.Channel.GetLdapSearchProviders();
+        }
+        
+        public System.Threading.Tasks.Task<Helsenorge.Registries.AddressService.LdapSearchProvider[]> GetLdapSearchProvidersAsync() {
+            return base.Channel.GetLdapSearchProvidersAsync();
+        }
+        
         public string GetAllHFCommpartiesCsv() {
             return base.Channel.GetAllHFCommpartiesCsv();
         }
@@ -4951,6 +5373,14 @@ namespace Helsenorge.Registries.AddressService {
         
         public System.Threading.Tasks.Task<System.Collections.Generic.KeyValuePair<int, Helsenorge.Registries.AddressService.Code[]>[]> GetCustomAttributesAsync(int[] herIds) {
             return base.Channel.GetCustomAttributesAsync(herIds);
+        }
+        
+        public void UpdateCoverageAreas(int herId, Helsenorge.Registries.AddressService.CoverageInfo[] coverageAreas) {
+            base.Channel.UpdateCoverageAreas(herId, coverageAreas);
+        }
+        
+        public System.Threading.Tasks.Task UpdateCoverageAreasAsync(int herId, Helsenorge.Registries.AddressService.CoverageInfo[] coverageAreas) {
+            return base.Channel.UpdateCoverageAreasAsync(herId, coverageAreas);
         }
     }
 }

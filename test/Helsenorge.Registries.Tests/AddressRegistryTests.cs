@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.ServiceModel;
 using System.Xml.Linq;
+using Microsoft.Extensions.Options;
 
 namespace Helsenorge.Registries.Tests
 {
@@ -35,7 +36,7 @@ namespace Helsenorge.Registries.Tests
             };
 
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var distributedCache = new MemoryDistributedCache(memoryCache);
+            var distributedCache = new MemoryDistributedCache(new HNMemoryDistributedCacheOptions());
 
             var registry = new AddressRegistryMock(settings, distributedCache);
 
@@ -119,7 +120,7 @@ namespace Helsenorge.Registries.Tests
         public void Constructor_Settings_Null()
         {
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var distributedCache = new MemoryDistributedCache(memoryCache);
+            var distributedCache = new MemoryDistributedCache(new HNMemoryDistributedCacheOptions());
 
             new AddressRegistry(null, distributedCache);
         }
@@ -191,5 +192,5 @@ namespace Helsenorge.Registries.Tests
                 Assert.IsInstanceOfType(ex.InnerException, typeof(RegistriesException));
             }
         }
-    }
+    } 
 }

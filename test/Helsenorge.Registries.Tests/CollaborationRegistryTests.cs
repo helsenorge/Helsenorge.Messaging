@@ -37,8 +37,7 @@ namespace Helsenorge.Registries.Tests
             _loggerFactory.AddDebug();
             _logger = _loggerFactory.CreateLogger<CollaborationRegistryTests>();
 
-            var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var distributedCache = new MemoryDistributedCache(memoryCache);
+            var distributedCache = new MemoryDistributedCache(new HNMemoryDistributedCacheOptions());
 
             IAddressRegistry addressRegistry = AddressRegistryTests.GetDefaultAddressRegistryMock();
             _registry = new CollaborationProtocolRegistryMock(settings, distributedCache, addressRegistry);
@@ -67,8 +66,7 @@ namespace Helsenorge.Registries.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_Settings_Null()
         {
-            var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var distributedCache = new MemoryDistributedCache(memoryCache);
+            var distributedCache = new MemoryDistributedCache(new HNMemoryDistributedCacheOptions());
             IAddressRegistry addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache);
 
             new CollaborationProtocolRegistry(null, distributedCache, addressRegistry);
@@ -77,8 +75,8 @@ namespace Helsenorge.Registries.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_Cache_Null()
         {
-            var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var distributedCache = new MemoryDistributedCache(memoryCache);
+            
+            var distributedCache = new MemoryDistributedCache(new HNMemoryDistributedCacheOptions());
             IAddressRegistry addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache);
 
             new CollaborationProtocolRegistry(new CollaborationProtocolRegistrySettings(), null, addressRegistry);
@@ -87,8 +85,7 @@ namespace Helsenorge.Registries.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_AddressRegistry_Null()
         {
-            var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var distributedCache = new MemoryDistributedCache(memoryCache);
+            var distributedCache = new MemoryDistributedCache(new HNMemoryDistributedCacheOptions());
 
             new CollaborationProtocolRegistry(new CollaborationProtocolRegistrySettings(), distributedCache, null);
         }

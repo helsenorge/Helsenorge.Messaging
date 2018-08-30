@@ -23,6 +23,7 @@
   </MetadataSources>
   <Metadata>
     <MetadataFile FileName="CommunicationParty.wsdl" MetadataType="Wsdl" ID="78b18807-75a3-4ef8-8c84-6e27832a79c9" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/AR?wsdl" />
+    <MetadataFile FileName="AR7.xsd" MetadataType="Schema" ID="8ac0cf35-c23e-432d-a308-48553fbde1d6" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/AR?xsd=xsd8" />
     <MetadataFile FileName="AR.wsdl" MetadataType="Wsdl" ID="6670ae91-d973-4d99-98e8-96f4629dc9af" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/AR?wsdl=wsdl0" />
     <MetadataFile FileName="AR.xsd" MetadataType="Schema" ID="e987e6ef-03ce-4398-81d8-f2bf0c98c1c3" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/AR?xsd=xsd1" />
     <MetadataFile FileName="AR1.xsd" MetadataType="Schema" ID="7107e3d4-dcee-4515-9931-1eef0955220b" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/AR?xsd=xsd0" />
@@ -30,6 +31,7 @@
     <MetadataFile FileName="AR3.xsd" MetadataType="Schema" ID="091b7d8d-9c89-4a70-9890-a2b41e5b1d6f" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/AR?xsd=xsd2" />
     <MetadataFile FileName="AR4.xsd" MetadataType="Schema" ID="4f13f678-9b49-4764-97f9-d14ece68869a" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/AR?xsd=xsd5" />
     <MetadataFile FileName="AR5.xsd" MetadataType="Schema" ID="cc0f3de3-a89e-48b0-ad51-b0f26c8c4497" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/AR?xsd=xsd4" />
+    <MetadataFile FileName="AR71.xsd" MetadataType="Schema" ID="d447ee9a-9c01-464f-8ae1-fea1c0ec1d16" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/AR?xsd=xsd7" />
     <MetadataFile FileName="AR6.xsd" MetadataType="Schema" ID="fed14a3e-66a9-4f3f-92df-e9e5886d11ac" SourceId="1" SourceUrl="https://ws-web.test.nhn.no/v1/AR?xsd=xsd6" />
   </Metadata>
   <Extensions>

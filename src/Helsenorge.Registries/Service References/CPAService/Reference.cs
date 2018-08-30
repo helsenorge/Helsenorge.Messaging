@@ -1425,6 +1425,9 @@ namespace Helsenorge.Registries.CPAService {
         private bool ApprovedByPartyBField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.DateTime CreatedOnField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private System.Guid IdField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
@@ -1477,6 +1480,19 @@ namespace Helsenorge.Registries.CPAService {
                 if ((this.ApprovedByPartyBField.Equals(value) != true)) {
                     this.ApprovedByPartyBField = value;
                     this.RaisePropertyChanged("ApprovedByPartyB");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal System.DateTime CreatedOn {
+            get {
+                return this.CreatedOnField;
+            }
+            set {
+                if ((this.CreatedOnField.Equals(value) != true)) {
+                    this.CreatedOnField = value;
+                    this.RaisePropertyChanged("CreatedOn");
                 }
             }
         }
@@ -1731,19 +1747,13 @@ namespace Helsenorge.Registries.CPAService {
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Guid GuidField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private int HerIdField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string NameField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private Helsenorge.Registries.CPAService.Role[] RolesField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string VersionNumberField;
+        private Helsenorge.Registries.CPAService.ProcessWithGuid ProcessField;
         
         [global::System.ComponentModel.BrowsableAttribute(false)]
         public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
@@ -1752,19 +1762,6 @@ namespace Helsenorge.Registries.CPAService {
             }
             set {
                 this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        internal System.Guid Guid {
-            get {
-                return this.GuidField;
-            }
-            set {
-                if ((this.GuidField.Equals(value) != true)) {
-                    this.GuidField = value;
-                    this.RaisePropertyChanged("Guid");
-                }
             }
         }
         
@@ -1790,6 +1787,87 @@ namespace Helsenorge.Registries.CPAService {
                 if ((object.ReferenceEquals(this.NameField, value) != true)) {
                     this.NameField = value;
                     this.RaisePropertyChanged("Name");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal Helsenorge.Registries.CPAService.ProcessWithGuid Process {
+            get {
+                return this.ProcessField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ProcessField, value) != true)) {
+                    this.ProcessField = value;
+                    this.RaisePropertyChanged("Process");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="ProcessWithGuid", Namespace="http://schemas.datacontract.org/2004/07/NHN.Palantir.WebServices.Contracts.CPPA.D" +
+        "ata")]
+    [System.SerializableAttribute()]
+    internal partial class ProcessWithGuid : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private Helsenorge.Registries.CPAService.Channel[] ChannelsField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Guid GuidField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private Helsenorge.Registries.CPAService.Role[] RolesField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string VersionNumberField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal Helsenorge.Registries.CPAService.Channel[] Channels {
+            get {
+                return this.ChannelsField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ChannelsField, value) != true)) {
+                    this.ChannelsField = value;
+                    this.RaisePropertyChanged("Channels");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        internal System.Guid Guid {
+            get {
+                return this.GuidField;
+            }
+            set {
+                if ((this.GuidField.Equals(value) != true)) {
+                    this.GuidField = value;
+                    this.RaisePropertyChanged("Guid");
                 }
             }
         }
@@ -2037,6 +2115,18 @@ namespace Helsenorge.Registries.CPAService {
             "municationParty", ReplyAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCom" +
             "municationPartyResponse")]
         System.Threading.Tasks.Task<Helsenorge.Registries.CPAService.CpaDetails[]> GetCpasForCommunicationPartyAsync(int herId);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCom" +
+            "municationPartyCreatedAfter", ReplyAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCom" +
+            "municationPartyCreatedAfterResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Helsenorge.Registries.CPAService.GenericFault), Action="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCom" +
+            "municationPartyCreatedAfterGenericFaultFault", Name="GenericFault", Namespace="http://register.nhn.no/Common")]
+        Helsenorge.Registries.CPAService.CpaDetails[] GetCpasForCommunicationPartyCreatedAfter(int herId, System.DateTime createdOnOrAfter);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCom" +
+            "municationPartyCreatedAfter", ReplyAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCom" +
+            "municationPartyCreatedAfterResponse")]
+        System.Threading.Tasks.Task<Helsenorge.Registries.CPAService.CpaDetails[]> GetCpasForCommunicationPartyCreatedAfterAsync(int herId, System.DateTime createdOnOrAfter);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCom" +
             "municationPartyForApproval", ReplyAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCom" +
@@ -2324,6 +2414,14 @@ namespace Helsenorge.Registries.CPAService {
         
         public System.Threading.Tasks.Task<Helsenorge.Registries.CPAService.CpaDetails[]> GetCpasForCommunicationPartyAsync(int herId) {
             return base.Channel.GetCpasForCommunicationPartyAsync(herId);
+        }
+        
+        public Helsenorge.Registries.CPAService.CpaDetails[] GetCpasForCommunicationPartyCreatedAfter(int herId, System.DateTime createdOnOrAfter) {
+            return base.Channel.GetCpasForCommunicationPartyCreatedAfter(herId, createdOnOrAfter);
+        }
+        
+        public System.Threading.Tasks.Task<Helsenorge.Registries.CPAService.CpaDetails[]> GetCpasForCommunicationPartyCreatedAfterAsync(int herId, System.DateTime createdOnOrAfter) {
+            return base.Channel.GetCpasForCommunicationPartyCreatedAfterAsync(herId, createdOnOrAfter);
         }
         
         public Helsenorge.Registries.CPAService.CpaDetails[] GetCpasForCommunicationPartyForApproval(int herId) {
