@@ -66,7 +66,7 @@ namespace Helsenorge.Messaging.Client
             _logger = _loggerFactory.CreateLogger("TestClient");
 
             // configure caching
-            var distributedCache = new MemoryDistributedCache(new HNMemoryDistributedCacheOptions());
+            var distributedCache = DistributedCacheFactory.Create();
 
             // set up address registry
             var addressRegistrySettings = new AddressRegistrySettings();
