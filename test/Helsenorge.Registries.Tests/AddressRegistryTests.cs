@@ -36,7 +36,7 @@ namespace Helsenorge.Registries.Tests
             };
 
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var distributedCache = new MemoryDistributedCache(new HNMemoryDistributedCacheOptions());
+            var distributedCache = DistributedCacheFactory.Create();
 
             var registry = new AddressRegistryMock(settings, distributedCache);
 
@@ -119,8 +119,7 @@ namespace Helsenorge.Registries.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_Settings_Null()
         {
-            var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var distributedCache = new MemoryDistributedCache(new HNMemoryDistributedCacheOptions());
+            var distributedCache = DistributedCacheFactory.Create();
 
             new AddressRegistry(null, distributedCache);
         }

@@ -37,7 +37,7 @@ namespace Helsenorge.Registries.Tests
             _loggerFactory.AddDebug();
             _logger = _loggerFactory.CreateLogger<CollaborationRegistryTests>();
 
-            var distributedCache = new MemoryDistributedCache(new HNMemoryDistributedCacheOptions());
+            var distributedCache = DistributedCacheFactory.Create();
 
             IAddressRegistry addressRegistry = AddressRegistryTests.GetDefaultAddressRegistryMock();
             _registry = new CollaborationProtocolRegistryMock(settings, distributedCache, addressRegistry);
@@ -66,7 +66,7 @@ namespace Helsenorge.Registries.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_Settings_Null()
         {
-            var distributedCache = new MemoryDistributedCache(new HNMemoryDistributedCacheOptions());
+            var distributedCache = DistributedCacheFactory.Create();
             IAddressRegistry addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache);
 
             new CollaborationProtocolRegistry(null, distributedCache, addressRegistry);
@@ -76,7 +76,7 @@ namespace Helsenorge.Registries.Tests
         public void Constructor_Cache_Null()
         {
             
-            var distributedCache = new MemoryDistributedCache(new HNMemoryDistributedCacheOptions());
+            var distributedCache = DistributedCacheFactory.Create();
             IAddressRegistry addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache);
 
             new CollaborationProtocolRegistry(new CollaborationProtocolRegistrySettings(), null, addressRegistry);
@@ -85,7 +85,7 @@ namespace Helsenorge.Registries.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_AddressRegistry_Null()
         {
-            var distributedCache = new MemoryDistributedCache(new HNMemoryDistributedCacheOptions());
+            var distributedCache = DistributedCacheFactory.Create();
 
             new CollaborationProtocolRegistry(new CollaborationProtocolRegistrySettings(), distributedCache, null);
         }
