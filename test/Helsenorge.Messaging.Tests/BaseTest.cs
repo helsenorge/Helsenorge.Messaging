@@ -78,7 +78,7 @@ namespace Helsenorge.Messaging.Tests
             LoggerFactory.AddProvider(MockLoggerProvider);
             Logger = LoggerFactory.CreateLogger<BaseTest>();
 
-            var distributedCache = new MemoryDistributedCache(new HNMemoryDistributedCacheOptions());
+            var distributedCache = DistributedCacheFactory.Create();
 
             AddressRegistry = new AddressRegistryMock(addressRegistrySettings, distributedCache);
             AddressRegistry.SetupFindCommunicationPartyDetails(i =>
