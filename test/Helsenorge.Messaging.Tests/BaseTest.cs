@@ -189,8 +189,7 @@ namespace Helsenorge.Messaging.Tests
             }
             catch (AggregateException ex)
             {
-                var messagingException = ex.InnerException as MessagingException;
-                if ((messagingException != null) && (messagingException.EventId.Id == id.Id))
+                if ((ex.InnerException is MessagingException messagingException) && (messagingException.EventId.Id == id.Id))
                 {
                     throw ex.InnerException;
                 }
