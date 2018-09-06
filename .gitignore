@@ -261,3 +261,4 @@ src/Helsenorge.Messaging.Client/Client2.json
 src/Helsenorge.Messaging.Server/Server.json
 src/Helsenorge.Messaging.Client/ClientSample.json
 src/Helsenorge.Messaging.Server/ServerSample.json
+*.ncrunchsolution

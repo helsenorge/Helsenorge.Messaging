@@ -11,7 +11,8 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\tools\key.snk</AssemblyOriginatorKeyFile>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Helsenorge.Messaging.xml</DocumentationFile>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Product>Helsenorge Messaging</Product>
+    <Version>3.0.0-alpha01</Version>    
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Abstractions\IMessageReceiverFactory.cs" />
@@ -39,10 +40,6 @@
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="4.5.0" />
     <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
     <PackageReference Include="WindowsAzure.ServiceBus" Version="3.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="..\..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
 
   <ItemGroup>
