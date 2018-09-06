@@ -1,12 +1,6 @@
 # Helsenorge Messaging
 
-Ett av integrasjonalternativene mot Helsenorge er å sende XML meldinger via et sett med køer. Misjonen til denne pakken er å lette dette arbeidet ved å dra nytte av eksisterende kode og erfaringer.
-
-I dag så støtter pakken bare AMQP protokollen, men på sikt så kan andre protokoller som SOAP og SMTP bli støttet.   
-
-Meldingene som sendes sikres gjennom krypering signering. System støtter både funksjonell asynkron og synkron meldingsutveksling.
-
-
+Dette biblioteket støtter oppunder basisbehovet for en kommunikasjonsløsning ved at den kan pakke, adressere, sende og motta meldinger over AMQP-protokollen, i tillegg til å støtte operasjoner som kryptering og signering av meldinger.
 
 1. [Forutsetninger](Documentation/Forutsetninger.md "Forutsetninger")
 2. [Registre](Documentation/Registre.md "Registere")
