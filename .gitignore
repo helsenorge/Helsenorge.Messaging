@@ -6,6 +6,11 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.ncrunchsolution
+src/Helsenorge.Messaging.Client/ClientSample.json
+src/Helsenorge.Messaging.Server/ServerSample.json
+src/Helsenorge.Messaging.Client/[Pp]roperties/launchSettings.json
+src/Helsenorge.Messaging.Server/[Pp]roperties/launchSettings.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -253,11 +258,3 @@ paket-files/
 
 # CodeRush
 .cr/
-
-
-# Custom
-src/Helsenorge.Messaging.Client/Client.json
-src/Helsenorge.Messaging.Client/Client2.json
-src/Helsenorge.Messaging.Server/Server.json
-src/Helsenorge.Messaging.Client/ClientSample.json
-src/Helsenorge.Messaging.Server/ServerSample.json

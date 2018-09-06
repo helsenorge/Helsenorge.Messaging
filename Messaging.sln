@@ -1,25 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2016
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging", "src\Helsenorge.Messaging\Helsenorge.Messaging.csproj", "{A0BA02E7-C2EA-496B-85ED-10ACD42B4DE8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Messaging", "src\Helsenorge.Messaging\Helsenorge.Messaging.csproj", "{A0BA02E7-C2EA-496B-85ED-10ACD42B4DE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging.Client", "src\Helsenorge.Messaging.Client\Helsenorge.Messaging.Client.csproj", "{FE928A0E-5B57-4893-8010-DDC54DC1B752}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Messaging.Client", "src\Helsenorge.Messaging.Client\Helsenorge.Messaging.Client.csproj", "{FE928A0E-5B57-4893-8010-DDC54DC1B752}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging.Server", "src\Helsenorge.Messaging.Server\Helsenorge.Messaging.Server.csproj", "{F8228F1E-51B0-4643-B4B2-CE59491853E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Messaging.Server", "src\Helsenorge.Messaging.Server\Helsenorge.Messaging.Server.csproj", "{F8228F1E-51B0-4643-B4B2-CE59491853E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging.Tests", "test\Helsenorge.Messaging.Tests\Helsenorge.Messaging.Tests.csproj", "{EE03ABE5-4B8D-48BB-AA52-0DC9D442634D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Messaging.Tests", "test\Helsenorge.Messaging.Tests\Helsenorge.Messaging.Tests.csproj", "{EE03ABE5-4B8D-48BB-AA52-0DC9D442634D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Registries", "src\Helsenorge.Registries\Helsenorge.Registries.csproj", "{BD2883C9-4806-4216-A577-893B3C4CC174}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Registries", "src\Helsenorge.Registries\Helsenorge.Registries.csproj", "{BD2883C9-4806-4216-A577-893B3C4CC174}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Registries.Tests", "test\Helsenorge.Registries.Tests\Helsenorge.Registries.Tests.csproj", "{0DD35E31-7384-4F3D-BBE0-366993DC2307}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Registries.Tests", "test\Helsenorge.Registries.Tests\Helsenorge.Registries.Tests.csproj", "{0DD35E31-7384-4F3D-BBE0-366993DC2307}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{5D87F89A-6AF1-438B-B483-F5B5D8778C85}"
 	ProjectSection(SolutionItems) = preProject
 		CustomDictionary.xml = CustomDictionary.xml
-		GlobalAssemblyInfo.cs = GlobalAssemblyInfo.cs
-		src\Helsenorge.Messaging\Helsenorge.Messaging.nuspec = src\Helsenorge.Messaging\Helsenorge.Messaging.nuspec
 		tools\key.snk = tools\key.snk
 	EndProjectSection
 EndProject
@@ -56,5 +54,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {925B24E8-92AC-4D8D-959E-64DE4928A23B}
 	EndGlobalSection
 EndGlobal

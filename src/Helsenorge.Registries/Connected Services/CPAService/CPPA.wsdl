@@ -1,0 +1,1224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://register.nhn.no/CPPA" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:i0="http://schemas.nhn.no/reg/CollaborationProtocolProfile" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://register.nhn.no/CPPA" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy wsu:Id="WSHttpBinding_ICPPAService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <http:BasicAuthentication xmlns:http="http://schemas.microsoft.com/ws/06/2004/policy/http" />
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken RequireClientCertificate="false" />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Strict />
+              </wsp:Policy>
+            </sp:Layout>
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <wsam:Addressing>
+          <wsp:Policy>
+            <wsam:AnonymousResponses />
+          </wsp:Policy>
+        </wsam:Addressing>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsp:Policy wsu:Id="NetTcpBinding_ICPPAService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <msb:BinaryEncoding xmlns:msb="http://schemas.microsoft.com/ws/06/2004/mspolicy/netbinary1" />
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <msf:SslTransportSecurity xmlns:msf="http://schemas.microsoft.com/ws/2006/05/framing/policy" />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Strict />
+              </wsp:Policy>
+            </sp:Layout>
+            <sp:IncludeTimestamp />
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <sp:EndorsingSupportingTokens xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:SecureConversationToken sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+              <wsp:Policy>
+                <sp:BootstrapPolicy>
+                  <wsp:Policy>
+                    <sp:SignedParts>
+                      <sp:Body />
+                      <sp:Header Name="To" Namespace="http://www.w3.org/2005/08/addressing" />
+                      <sp:Header Name="From" Namespace="http://www.w3.org/2005/08/addressing" />
+                      <sp:Header Name="FaultTo" Namespace="http://www.w3.org/2005/08/addressing" />
+                      <sp:Header Name="ReplyTo" Namespace="http://www.w3.org/2005/08/addressing" />
+                      <sp:Header Name="MessageID" Namespace="http://www.w3.org/2005/08/addressing" />
+                      <sp:Header Name="RelatesTo" Namespace="http://www.w3.org/2005/08/addressing" />
+                      <sp:Header Name="Action" Namespace="http://www.w3.org/2005/08/addressing" />
+                    </sp:SignedParts>
+                    <sp:EncryptedParts>
+                      <sp:Body />
+                    </sp:EncryptedParts>
+                    <sp:TransportBinding>
+                      <wsp:Policy>
+                        <sp:TransportToken>
+                          <wsp:Policy>
+                            <msf:SslTransportSecurity xmlns:msf="http://schemas.microsoft.com/ws/2006/05/framing/policy" />
+                          </wsp:Policy>
+                        </sp:TransportToken>
+                        <sp:AlgorithmSuite>
+                          <wsp:Policy>
+                            <sp:Basic256 />
+                          </wsp:Policy>
+                        </sp:AlgorithmSuite>
+                        <sp:Layout>
+                          <wsp:Policy>
+                            <sp:Strict />
+                          </wsp:Policy>
+                        </sp:Layout>
+                        <sp:IncludeTimestamp />
+                      </wsp:Policy>
+                    </sp:TransportBinding>
+                    <sp:SignedSupportingTokens>
+                      <wsp:Policy>
+                        <sp:UsernameToken sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+                          <wsp:Policy>
+                            <sp:WssUsernameToken10 />
+                          </wsp:Policy>
+                        </sp:UsernameToken>
+                      </wsp:Policy>
+                    </sp:SignedSupportingTokens>
+                    <sp:Wss11>
+                      <wsp:Policy />
+                    </sp:Wss11>
+                    <sp:Trust10>
+                      <wsp:Policy>
+                        <sp:MustSupportIssuedTokens />
+                        <sp:RequireClientEntropy />
+                        <sp:RequireServerEntropy />
+                      </wsp:Policy>
+                    </sp:Trust10>
+                  </wsp:Policy>
+                </sp:BootstrapPolicy>
+              </wsp:Policy>
+            </sp:SecureConversationToken>
+          </wsp:Policy>
+        </sp:EndorsingSupportingTokens>
+        <sp:Wss11 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy />
+        </sp:Wss11>
+        <sp:Trust10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:MustSupportIssuedTokens />
+            <sp:RequireClientEntropy />
+            <sp:RequireServerEntropy />
+          </wsp:Policy>
+        </sp:Trust10>
+        <wsam:Addressing>
+          <wsp:Policy>
+            <wsam:AnonymousResponses />
+          </wsp:Policy>
+        </wsam:Addressing>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsp:Policy wsu:Id="BasicHttpBinding_ICPPAService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <http:BasicAuthentication xmlns:http="http://schemas.microsoft.com/ws/06/2004/policy/http" />
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken RequireClientCertificate="false" />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Strict />
+              </wsp:Policy>
+            </sp:Layout>
+          </wsp:Policy>
+        </sp:TransportBinding>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:import namespace="http://schemas.nhn.no/reg/CollaborationProtocolProfile" location="https://ws-web.test.nhn.no/v1/CPPA?wsdl" />
+  <wsdl:types />
+  <wsdl:binding name="WSHttpBinding_ICPPAService" type="i0:ICPPAService">
+    <wsp:PolicyReference URI="#WSHttpBinding_ICPPAService_policy" />
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetCpp">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpp" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppForCommunicationParty">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppForCommunicationParty" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CreateCpp">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/CreateCpp" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CreateCppForProcesses">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/CreateCppForProcesses" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CreateCppXml">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/CreateCppXml" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppXmlForCommunicationParty">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppXmlForCommunicationParty" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppXml">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppXml" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllCollaborationRoles">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetAllCollaborationRoles" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppTemplate">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppTemplate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppTemplateXml">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppTemplateXml" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteCppTemplate">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/DeleteCppTemplate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppTemplates">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppTemplates" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CreateCppTemplate">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/CreateCppTemplate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpa">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpa" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpaXml">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpaXml" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpaForCommunicationParties">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpaForCommunicationParties" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpaForCommunicationPartiesXml">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpaForCommunicationPartiesXml" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationParty">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationParty" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationPartyCreatedAfter">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyCreatedAfter" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationPartyForApproval">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyForApproval" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationPartyForApprovalUnfiltered">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyForApprovalUnfiltered" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationPartyXml">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyXml" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetRevocatedCpas">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetRevocatedCpas" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="RevokeCpa">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/RevokeCpa" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ApproveCpa">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/ApproveCpa" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ApproveAndUpdateCpa">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/ApproveAndUpdateCpa" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="AddProcessToCpp">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/AddProcessToCpp" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveProcessFromCpp">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/RemoveProcessFromCpp" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetProcessesInCpp">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetProcessesInCpp" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="NetTcpBinding_ICPPAService" type="i0:ICPPAService">
+    <wsp:PolicyReference URI="#NetTcpBinding_ICPPAService_policy" />
+    <soap12:binding transport="http://schemas.microsoft.com/soap/tcp" />
+    <wsdl:operation name="GetCpp">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpp" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppForCommunicationParty">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppForCommunicationParty" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CreateCpp">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/CreateCpp" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CreateCppForProcesses">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/CreateCppForProcesses" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CreateCppXml">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/CreateCppXml" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppXmlForCommunicationParty">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppXmlForCommunicationParty" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppXml">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppXml" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllCollaborationRoles">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetAllCollaborationRoles" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppTemplate">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppTemplate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppTemplateXml">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppTemplateXml" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteCppTemplate">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/DeleteCppTemplate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppTemplates">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppTemplates" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CreateCppTemplate">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/CreateCppTemplate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpa">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpa" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpaXml">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpaXml" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpaForCommunicationParties">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpaForCommunicationParties" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpaForCommunicationPartiesXml">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpaForCommunicationPartiesXml" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationParty">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationParty" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationPartyCreatedAfter">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyCreatedAfter" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationPartyForApproval">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyForApproval" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationPartyForApprovalUnfiltered">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyForApprovalUnfiltered" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationPartyXml">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyXml" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetRevocatedCpas">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetRevocatedCpas" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="RevokeCpa">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/RevokeCpa" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ApproveCpa">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/ApproveCpa" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ApproveAndUpdateCpa">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/ApproveAndUpdateCpa" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="AddProcessToCpp">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/AddProcessToCpp" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveProcessFromCpp">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/RemoveProcessFromCpp" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetProcessesInCpp">
+      <soap12:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetProcessesInCpp" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap12:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="BasicHttpBinding_ICPPAService" type="i0:ICPPAService">
+    <wsp:PolicyReference URI="#BasicHttpBinding_ICPPAService_policy" />
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetCpp">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpp" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppForCommunicationParty">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppForCommunicationParty" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CreateCpp">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/CreateCpp" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CreateCppForProcesses">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/CreateCppForProcesses" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CreateCppXml">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/CreateCppXml" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppXmlForCommunicationParty">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppXmlForCommunicationParty" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppXml">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppXml" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllCollaborationRoles">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetAllCollaborationRoles" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppTemplate">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppTemplate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppTemplateXml">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppTemplateXml" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteCppTemplate">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/DeleteCppTemplate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCppTemplates">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCppTemplates" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="CreateCppTemplate">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/CreateCppTemplate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpa">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpa" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpaXml">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpaXml" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpaForCommunicationParties">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpaForCommunicationParties" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpaForCommunicationPartiesXml">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpaForCommunicationPartiesXml" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationParty">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationParty" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationPartyCreatedAfter">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyCreatedAfter" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationPartyForApproval">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyForApproval" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationPartyForApprovalUnfiltered">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyForApprovalUnfiltered" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCpasForCommunicationPartyXml">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetCpasForCommunicationPartyXml" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetRevocatedCpas">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetRevocatedCpas" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="RevokeCpa">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/RevokeCpa" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ApproveCpa">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/ApproveCpa" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ApproveAndUpdateCpa">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/ApproveAndUpdateCpa" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="AddProcessToCpp">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/AddProcessToCpp" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveProcessFromCpp">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/RemoveProcessFromCpp" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetProcessesInCpp">
+      <soap:operation soapAction="http://schemas.nhn.no/reg/CollaborationProtocolProfile/ICPPAService/GetProcessesInCpp" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="GenericFaultFault">
+        <soap:fault use="literal" name="GenericFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+</wsdl:definitions>
