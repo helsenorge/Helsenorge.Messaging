@@ -14,7 +14,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\tools\key.snk</AssemblyOriginatorKeyFile>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Helsenorge.Registries.xml</DocumentationFile>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Version>3.0.0-alpha01</Version>    
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
@@ -38,20 +38,12 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Compile Include="..\..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <None Include="..\..\tools\key.snk" Link="key.snk" />
   </ItemGroup>
   
   <ItemGroup>
     <Reference Include="System.Configuration" />
     <Reference Include="System.ServiceModel" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
 
   <ItemGroup>
