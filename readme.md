@@ -19,3 +19,12 @@ Meldingene som sendes sikres gjennom krypering signering. System støtter både 
 9. [Nuget](Documentation/Nuget.md "Nuget")
 10. [Referanseeksempler](Documentation/ReferanseEksempler.md "Referanseeksempler")
 11. [Meldingsutveksling over HTTP](Documentation/HTTP.md "Meldingsutveksling over HTTP")
+
+## Contributing
+We are welcoming contributors!
+
+If you want to contribute to this project we are using [Git Flow][nvie] for our branch management, please submit pull requests to the develop branch.
+
+### GIT branching strategy 
+- [NVIE](http://nvie.com/posts/a-successful-git-branching-model/)
+- Or see: [Git workflow](https://www.atlassian.com/git/workflows#!workflow-gitflow)
