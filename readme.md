@@ -1,12 +1,6 @@
 # Helsenorge Messaging
 
-Ett av integrasjonalternativene mot Helsenorge er å sende XML meldinger via et sett med køer. Misjonen til denne pakken er å lette dette arbeidet ved å dra nytte av eksisterende kode og erfaringer.
-
-I dag så støtter pakken bare AMQP protokollen, men på sikt så kan andre protokoller som SOAP og SMTP bli støttet.   
-
-Meldingene som sendes sikres gjennom krypering signering. System støtter både funksjonell asynkron og synkron meldingsutveksling.
-
-
+Dette biblioteket støtter oppunder basisbehovet for en kommunikasjonsløsning ved at den kan pakke, adressere, sende og motta meldinger over AMQP-protokollen, i tillegg til å støtte operasjoner som kryptering og signering av meldinger.
 
 1. [Forutsetninger](Documentation/Forutsetninger.md "Forutsetninger")
 2. [Registre](Documentation/Registre.md "Registere")
@@ -19,3 +13,12 @@ Meldingene som sendes sikres gjennom krypering signering. System støtter både 
 9. [Nuget](Documentation/Nuget.md "Nuget")
 10. [Referanseeksempler](Documentation/ReferanseEksempler.md "Referanseeksempler")
 11. [Meldingsutveksling over HTTP](Documentation/HTTP.md "Meldingsutveksling over HTTP")
+
+## Contributing
+We are welcoming contributors!
+
+If you want to contribute to this project we are using [Git Flow][nvie] for our branch management, please submit pull requests to the develop branch.
+
+### GIT branching strategy 
+- [NVIE](http://nvie.com/posts/a-successful-git-branching-model/)
+- Or see: [Git workflow](https://www.atlassian.com/git/workflows#!workflow-gitflow)

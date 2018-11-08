@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://register.nhn.no/CertificateSearchResult" elementFormDefault="qualified" targetNamespace="http://register.nhn.no/CertificateSearchResult" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="https://ws-web.test.nhn.no/v1/AR?xsd=xsd8" namespace="http://schemas.datacontract.org/2004/07/System" />
+  <xs:complexType name="CertificateSearchResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ActualLdapUrl" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MatchingCertificates" nillable="true" type="tns:ArrayOfCertificateCandidate" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CertificateSearchResult" nillable="true" type="tns:CertificateSearchResult" />
+  <xs:complexType name="ArrayOfCertificateCandidate">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CertificateCandidate" nillable="true" type="tns:CertificateCandidate" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCertificateCandidate" nillable="true" type="tns:ArrayOfCertificateCandidate" />
+  <xs:complexType name="CertificateCandidate">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CertificateSerialNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CnName" nillable="true" type="xs:string" />
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/System" minOccurs="0" name="NotAfter" type="q1:DateTimeOffset" />
+      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/System" minOccurs="0" name="NotBefore" type="q2:DateTimeOffset" />
+      <xs:element minOccurs="0" name="ValidForEncryption" type="xs:boolean" />
+      <xs:element minOccurs="0" name="ValidForSigning" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CertificateCandidate" nillable="true" type="tns:CertificateCandidate" />
+  <xs:complexType name="ArrayOfLdapSearchProvider">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="LdapSearchProvider" nillable="true" type="tns:LdapSearchProvider" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfLdapSearchProvider" nillable="true" type="tns:ArrayOfLdapSearchProvider" />
+  <xs:complexType name="LdapSearchProvider">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="BaseUrl" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DisplayName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DistinguishedName" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="LdapSearchProvider" nillable="true" type="tns:LdapSearchProvider" />
+</xs:schema>

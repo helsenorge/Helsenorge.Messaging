@@ -78,8 +78,7 @@ namespace Helsenorge.Messaging.Tests
             LoggerFactory.AddProvider(MockLoggerProvider);
             Logger = LoggerFactory.CreateLogger<BaseTest>();
 
-            var memoryCache = new MemoryCache(new MemoryCacheOptions());
-            var distributedCache = new MemoryDistributedCache(memoryCache);
+            var distributedCache = DistributedCacheFactory.Create();
 
             AddressRegistry = new AddressRegistryMock(addressRegistrySettings, distributedCache);
             AddressRegistry.SetupFindCommunicationPartyDetails(i =>
@@ -190,8 +189,7 @@ namespace Helsenorge.Messaging.Tests
             }
             catch (AggregateException ex)
             {
-                var messagingException = ex.InnerException as MessagingException;
-                if ((messagingException != null) && (messagingException.EventId.Id == id.Id))
+                if ((ex.InnerException is MessagingException messagingException) && (messagingException.EventId.Id == id.Id))
                 {
                     throw ex.InnerException;
                 }

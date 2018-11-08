@@ -29,6 +29,14 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
             /// Time the reply was added to the queue
             /// </summary>
             public DateTime ReplyEnqueuedTimeUtc { get; set; }
+            /// <summary>
+            /// Time when the message should be sent
+            /// </summary>
+            public DateTime ScheduledSendTimeUtc { get; internal set; }
+            /// <summary>
+            /// The logical id of the message we are sending
+            /// </summary>
+            public string MessageId { get; internal set; }
         }
         private readonly ServiceBusCore _core;
     
@@ -61,7 +69,9 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
                 Payload = null,
                 AddedUtc = DateTime.UtcNow,
                 ToHerId = message.ToHerId,
-                TimedOut = false
+                TimedOut = false,
+                ScheduledSendTimeUtc = message.ScheduledSendTimeUtc,
+                MessageId = message.MessageId
             });
 
             RemoveExpiredSynchronousEntries(logger);
@@ -91,18 +101,18 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
                                 $"was received after {(incomingMessage.EnqueuedTimeUtc - messageEntry.AddedUtc).TotalSeconds} seconds " +
                                 $"from HerId: {messageEntry.ToHerId}. " +
                                 $"Added at {messageEntry.AddedUtc} Enqueued at: {incomingMessage.EnqueuedTimeUtc}. " +
-                                $"Sent message Scheduled Send Time at {message.ScheduledSendTimeUtc}");
+                                $"Sent message Scheduled Send Time at {messageEntry.ScheduledSendTimeUtc}");
 
                             _pendingSynchronousRequests.TryRemove(incomingMessage.CorrelationId, out messageEntry);
                         }
                         else
                         {
-                            if (message.ToHerId != incomingMessage.FromHerId)
+                            if (messageEntry.ToHerId != incomingMessage.FromHerId)
                             {
                                 logger.LogCritical($"HerId of the sender of the reply message differ from the HerId the message was sent to.{Environment.NewLine}" +
-                                    $"Message sent to HerId {message.ToHerId}, reply was from {incomingMessage.FromHerId}.{Environment.NewLine}" +
-                                    $"MessageId, sent: {message.MessageId} reply: {incomingMessage.MessageId} " +
-                                    $"CorrelationId, generated: {correlationId}, reply: {incomingMessage.CorrelationId}");
+                                    $"Message sent to HerId {messageEntry.ToHerId}, reply was from {incomingMessage.FromHerId}.{Environment.NewLine}" +
+                                    $"MessageId, sent: {messageEntry.MessageId} reply: {incomingMessage.MessageId} " +
+                                    $"CorrelationId: {incomingMessage.CorrelationId}");
                             }
                             // update information for existing entry
                             messageEntry.Payload = incomingMessage.Payload;

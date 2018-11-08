@@ -66,7 +66,7 @@ namespace Helsenorge.Messaging.Server
         private static void Configure(string profile)
         {
             // read configuration values
-            var builder = new ConfigurationBuilder()
+            var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appsettings.json", false)
                 .AddJsonFile($"{profile}.json", false);
@@ -82,7 +82,7 @@ namespace Helsenorge.Messaging.Server
             _logger = _loggerFactory.CreateLogger("TestServer");
 
             // configure caching
-            var distributedCache = new MemoryDistributedCache(new MemoryCache(new MemoryCacheOptions()));
+            var distributedCache = DistributedCacheFactory.Create();
 
             // set up address registry
             var addressRegistrySettings = new AddressRegistrySettings();
