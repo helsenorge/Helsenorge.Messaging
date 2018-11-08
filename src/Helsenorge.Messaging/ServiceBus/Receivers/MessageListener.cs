@@ -209,9 +209,14 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:not-well-formed-xml", ex.Message, null, ex);
                 MessagingNotification.NotifyHandledException(message, ex);
             }
-            catch (AggregateException ex) when (ex.InnerException is MessagingException && ((MessagingException)ex.InnerException).EventId.Id == EventIds.Send.Id) 
+            catch (AggregateException ex) when (ex.InnerException is MessagingException && ((MessagingException)ex.InnerException).EventId.Id == EventIds.Send.Id)
             {
                 Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:invalid-field-value", "Invalid value in field: 'ReplyTo'", null, ex);
+                MessagingNotification.NotifyHandledException(message, ex);
+            }
+            catch (UnsupportedMessageException ex)  // reportable error from message handler (application)
+            {
+                Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:unsupported-message", ex.Message, null, ex);
                 MessagingNotification.NotifyHandledException(message, ex);
             }
             catch (Exception ex) // unknown error

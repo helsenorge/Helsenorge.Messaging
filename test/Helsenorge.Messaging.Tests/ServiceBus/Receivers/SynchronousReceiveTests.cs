@@ -90,6 +90,24 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 messageModification: m => { });
         }
 
+        [TestMethod]
+        public void Synchronous_Receive_ApplicationThrowsUnsupportedMessageException()
+        {
+            RunReceive(
+
+                postValidation: () =>
+                {
+                    Assert.IsTrue(_startingCalled);
+                    Assert.IsTrue(_handledExceptionCalled);
+                    Assert.AreEqual(0, MockFactory.Helsenorge.Synchronous.Messages.Count);
+                    Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                    Assert.AreEqual("transport:unsupported-message", MockFactory.OtherParty.Error.Messages.First().Properties["errorCondition"]);
+                },
+                wait: () => _handledExceptionCalled,
+                received: m => { throw new UnsupportedMessageException(); },
+                messageModification: m => { });
+        }
+
         private void RunReceive(
             Action<MockMessage> messageModification,
             Action<IncomingMessage> received,
