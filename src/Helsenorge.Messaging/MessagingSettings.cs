@@ -140,7 +140,7 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Number of processing tasks
         /// </summary>
-        public int ProcessingTasks { get; set; } = 2;
+        public int ProcessingTasks { get; set; }
         /// <summary>
         /// Time to live for messages sent
         /// </summary>
@@ -162,7 +162,7 @@ namespace Helsenorge.Messaging
 
         internal void Validate()
         {
-            if (ProcessingTasks <= 0) throw new ArgumentOutOfRangeException(nameof(ProcessingTasks));
+            if (ProcessingTasks < 0) throw new ArgumentOutOfRangeException(nameof(ProcessingTasks));
             if (TimeToLive == TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(TimeToLive));
             if (ReadTimeout == TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(ReadTimeout));
             if (CallTimeout == TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(CallTimeout));
