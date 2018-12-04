@@ -199,6 +199,11 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
 
         }
 
+        public void NotifyErrorMessageReceivedStarting(IncomingMessage message)
+        {
+
+        }
+
         public XDocument NotifySynchronousMessageReceived(IncomingMessage message)
         {
             OnSynchronousReplyMessageReceived?.Invoke(message);

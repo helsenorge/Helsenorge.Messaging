@@ -32,6 +32,8 @@ namespace Helsenorge.Messaging
         private Action<IncomingMessage> _onSynchronousMessageReceivedStarting;
 
         private Action<IMessagingMessage> _onErrorMessageReceived;
+        private Action<IncomingMessage> _onErrorMessageReceivedStarting;
+
         private Action<IMessagingMessage, Exception> _onUnhandledException;
         private Action<IMessagingMessage, Exception> _onHandledException;
 
@@ -136,6 +138,18 @@ namespace Helsenorge.Messaging
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         public void RegisterErrorMessageReceivedCallback(Action<IMessagingMessage> action) => _onErrorMessageReceived = action;
+
+        /// <summary>
+        /// Registers a delegate that should be called as we start processing a message
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        public void RegisterErrorMessageReceivedStartingCallback(Action<IncomingMessage> action) => _onErrorMessageReceivedStarting = action;
+
+        void IMessagingNotification.NotifyErrorMessageReceivedStarting(IncomingMessage message)
+        {
+            _logger.LogDebug("NotifyErrorMessageReceivedStarting");
+            _onErrorMessageReceivedStarting?.Invoke(message);
+        }
 
         void IMessagingNotification.NotifyErrorMessageReceived(IMessagingMessage message)
         {

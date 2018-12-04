@@ -14,13 +14,13 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\tools\key.snk</AssemblyOriginatorKeyFile>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Helsenorge.Registries.xml</DocumentationFile>
-    <Version>3.0.2</Version>    
+    <Version>3.0.2</Version>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <CodeAnalysisRuleSet>..\..\HNCodeAnalysisRules.ruleset</CodeAnalysisRuleSet> 
+    <CodeAnalysisRuleSet>..\..\HNCodeAnalysisRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\CustomDictionary.xml">
       <Link>Properties\CustomDictionary.xml</Link>
@@ -31,16 +31,16 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="1.1.2" />
   </ItemGroup>
-  
+
   <ItemGroup Condition="'$(TargetFramework)' == 'net471'">
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.1.2" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Include="..\..\tools\key.snk" Link="key.snk" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Reference Include="System.Configuration" />
     <Reference Include="System.ServiceModel" />
@@ -49,7 +49,7 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Update="Connected Services\AddressService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
@@ -58,4 +58,4 @@
       <Generator>WCF Proxy Generator</Generator>
     </None>
   </ItemGroup>
-</Project>  
+</Project>
