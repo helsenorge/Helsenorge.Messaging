@@ -10,12 +10,14 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
     public class ErrorReceiveTests : BaseTest
     {
         private bool _errorReceiveCalled;
+        private bool _errorStartingCalled;
 
         [TestInitialize]
         public override void Setup()
         {
             base.Setup();
             _errorReceiveCalled = false;
+            _errorStartingCalled = false;
         }
 
         [TestMethod]
@@ -29,6 +31,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 {
                     Assert.IsTrue(_errorReceiveCalled);
                     Assert.AreEqual(0, MockFactory.Helsenorge.Error.Messages.Count);
+                    Assert.IsTrue(_errorStartingCalled, "Error message received starting callback not called");
                     //Assert.IsNotNull(Logger.FindEntry(EventIds.ExternalReportedError)); //TODO: find out why this crashes. Works when running with debugger. Timing issue?
                 },
                 wait: () => _errorReceiveCalled,
@@ -49,6 +52,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 {
                     Assert.IsTrue(_errorReceiveCalled);
                     Assert.AreEqual(0, MockFactory.Helsenorge.Error.Messages.Count);
+                    Assert.IsTrue(_errorStartingCalled, "Error message received starting callback not called");
                     //Assert.IsNotNull(Logger.FindEntry(EventIds.ExternalReportedError)); //TODO: find out why this crashes. Works when running with debugger. Timing issue?
                 },
                 wait: () => _errorReceiveCalled,
@@ -71,6 +75,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             MockFactory.Helsenorge.Error.Messages.Add(message);
 
             Server.RegisterErrorMessageReceivedCallback((m) => { _errorReceiveCalled = true; });
+            Server.RegisterErrorMessageReceivedStartingCallback((m) => _errorStartingCalled = true);
             Server.Start();
 
             Wait(15, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout

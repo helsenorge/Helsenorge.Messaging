@@ -33,6 +33,11 @@ namespace Helsenorge.Messaging.Abstractions
         /// <param name="message"></param>
         void NotifyErrorMessageReceived(IMessagingMessage message);
         /// <summary>
+        /// Called to notify that we are starting to process an error message
+        /// </summary>
+        /// <param name="message">Information about the message</param>
+        void NotifyErrorMessageReceivedStarting(IncomingMessage message);
+        /// <summary>
         /// Called to notify that a synchronous message is ready for processing
         /// </summary>
         /// <param name="message">Information about the message</param>

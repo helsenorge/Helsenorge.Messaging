@@ -41,7 +41,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
         protected override void NotifyMessageProcessingStarted(IncomingMessage message)
         {
-            // not relevant for error messages
+            MessagingNotification.NotifyErrorMessageReceivedStarting(message);
         }
         /// <summary>
         /// Called to process message
