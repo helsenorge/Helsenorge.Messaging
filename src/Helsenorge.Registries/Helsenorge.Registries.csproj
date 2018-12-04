@@ -14,7 +14,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\tools\key.snk</AssemblyOriginatorKeyFile>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Helsenorge.Registries.xml</DocumentationFile>
-    <Version>3.0.2</Version>    
+    <Version>3.0.2-beta01</Version>    
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
