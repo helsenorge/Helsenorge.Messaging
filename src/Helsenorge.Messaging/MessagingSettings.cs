@@ -140,7 +140,7 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Number of processing tasks
         /// </summary>
-        public int ProcessingTasks { get; set; }
+        public int ProcessingTasks { get; set; } = 2;
         /// <summary>
         /// Time to live for messages sent
         /// </summary>
