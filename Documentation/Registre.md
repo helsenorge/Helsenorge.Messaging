@@ -1,11 +1,11 @@
 ## Registre
-For å kunne kommunisere riktig med en mottpart, så er vi avhengig av å vite en del om protokoller, sertifikater, og kønavn. All denne informasjonen ligger i adresseregisteret og CPA registeret.  
+For å kunne kommunisere riktig med en mottpart, så er vi avhengig av å vite en del om protokoller, sertifikater, og kønavn. All denne informasjonen ligger i adresseregisteret og CPA-registeret.  
 
-Meldingsutvekslingen er ekstremt avhengig av adresseregisteret og CPA registeret. 
+Meldingsutvekslingen er ekstremt avhengig av adresseregisteret og CPA-registeret. 
 
-### Register integrasjon
+### Registerintegrasjon
 
-Før man kan sette opp infrastrukturen for meldinger, så må man ha register integrasjonen på plass. 
+Før man kan sette opp infrastrukturen for meldinger, så må man ha registerintegrasjonen på plass. 
 Denne koden bruker klasser fra andre Microsoft.Extensions.* pakkker.
 
 ```cs
