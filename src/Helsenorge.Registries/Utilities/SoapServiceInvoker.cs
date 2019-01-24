@@ -14,7 +14,7 @@ namespace Helsenorge.Registries.Utilities
         private readonly Configuration _wcfConfiguration;
         private string _userName;
         private string _password;
-        private static readonly ConcurrentDictionary<Type, object> FactoryCache = new ConcurrentDictionary<Type, object>();
+        private readonly ConcurrentDictionary<Type, object> FactoryCache = new ConcurrentDictionary<Type, object>();
         private readonly object _lockerObject = new object();
     
         public SoapServiceInvoker(Configuration wcfConfiguration)
