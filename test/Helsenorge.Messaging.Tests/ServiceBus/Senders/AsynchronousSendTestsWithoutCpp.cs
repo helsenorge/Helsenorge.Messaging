@@ -27,7 +27,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             };
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void Send_Asynchronous_CommunicationPartyWithoutCpp_OK()
         {
             var message = CreateMessageForCommunicationPartyWithoutCpp();

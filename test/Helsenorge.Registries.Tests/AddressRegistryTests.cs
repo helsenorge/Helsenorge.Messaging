@@ -130,7 +130,7 @@ namespace Helsenorge.Registries.Tests
             new AddressRegistry(new AddressRegistrySettings(), null);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void Read_GetCertificateDetailsForEncryption_Found()
         {
             var certificateDetails = _registry.GetCertificateDetailsForEncryptionAsync(_logger, 93252).Result;
@@ -161,7 +161,7 @@ namespace Helsenorge.Registries.Tests
             }
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void Read_GetCertificateDetailsForValidatingSignature_Found()
         {
             var certificateDetails = _registry.GetCertificateDetailsForValidatingSignatureAsync(_logger, 93252).Result;
