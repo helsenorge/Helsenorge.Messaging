@@ -55,8 +55,7 @@ namespace Helsenorge.Messaging.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void Syncrhonous_ProcessingTasks_NotSet()
+        public void Synchronous_ProcessingTasksEqualsZero_IsAllowed()
         {
             Settings.ServiceBus.Synchronous.ProcessingTasks = 0;
             Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry);
@@ -94,7 +93,7 @@ namespace Helsenorge.Messaging.Tests
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Asynchronous_ProcessingTasks_NotSet()
         {
-            Settings.ServiceBus.Synchronous.ProcessingTasks = 0;
+            Settings.ServiceBus.Asynchronous.ProcessingTasks = 0;
             Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry);
         }
         [TestMethod]
