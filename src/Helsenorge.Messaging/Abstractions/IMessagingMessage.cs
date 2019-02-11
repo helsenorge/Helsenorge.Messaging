@@ -110,5 +110,9 @@ namespace Helsenorge.Messaging.Abstractions
         /// Sends this message to the deadletter queue
         /// </summary>
         void DeadLetter();
+        /// <summary>
+        /// Gets the number of deliveries.
+        /// </summary>
+        int DeliveryCount { get; }
     }
 }
