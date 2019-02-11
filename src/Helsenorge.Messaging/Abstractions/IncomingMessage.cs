@@ -58,5 +58,9 @@ namespace Helsenorge.Messaging.Abstractions
         /// Renews the peerlock of the message
         /// </summary>
         public Action RenewLock { get; internal set; }
+        /// <summary>
+        /// Gets the number of deliveries.
+        /// </summary>
+        public int DeliveryCount { get ; internal set; }
     }
 }

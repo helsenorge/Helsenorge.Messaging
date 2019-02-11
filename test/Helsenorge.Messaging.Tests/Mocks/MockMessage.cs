@@ -89,6 +89,9 @@ namespace Helsenorge.Messaging.Tests.Mocks
         }
 
         public object OriginalObject { get; }
+
+        public int DeliveryCount => 0;
+
         public Stream GetBody()
         {
             return _stream;
