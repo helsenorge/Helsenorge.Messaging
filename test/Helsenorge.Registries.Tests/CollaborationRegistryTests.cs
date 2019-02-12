@@ -96,7 +96,7 @@ namespace Helsenorge.Registries.Tests
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.AreEqual(profile.CpaId, Guid.Empty);
             Assert.AreEqual("Digitale innbyggertjenester", profile.Name);
-            Assert.AreEqual(14, profile.Roles.Count);
+            Assert.AreEqual(15, profile.Roles.Count);
             Assert.IsNotNull(profile.SignatureCertificate);
             Assert.IsNotNull(profile.EncryptionCertificate);
 
@@ -206,6 +206,14 @@ namespace Helsenorge.Registries.Tests
             Assert.IsNotNull(profile.FindMessageForSender("DIALOG_INNBYGGER_EKONTAKT"));
         }
         [TestMethod]
+        public void FindMessageForSender_Found_Ny_CPP()
+        {
+            var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
+            var collaborationProtocolMessage = profile.FindMessageForReceiver("DIALOG_INNBYGGER_BEHANDLEROVERSIKT");
+            Assert.IsNotNull(collaborationProtocolMessage);
+            Assert.AreEqual("Svar", collaborationProtocolMessage.Name);
+        }
+        [TestMethod]
         public void FindMessageForSender_NotFound()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
@@ -223,6 +231,14 @@ namespace Helsenorge.Registries.Tests
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNotNull(profile.FindMessageForReceiver("DIALOG_INNBYGGER_EKONTAKT"));
+        }
+        [TestMethod]
+        public void FindMessageForReceiver_Found_Ny_CPP()
+        {
+            var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
+            var collaborationProtocolMessage = profile.FindMessageForSender("DIALOG_INNBYGGER_BEHANDLEROVERSIKT");
+            Assert.IsNotNull(collaborationProtocolMessage);
+            Assert.AreEqual("Hent", collaborationProtocolMessage.Name);
         }
         [TestMethod]
         public void FindMessageForReceiver_NotFound()

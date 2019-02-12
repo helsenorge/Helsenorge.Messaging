@@ -97,6 +97,7 @@ namespace Helsenorge.Registries.Abstractions
         }
         /// <summary>
         /// Finds the collaboration information for a specific message
+        /// Find using the ProcessSpecification name as this matches the message name in both new and old Cpp formats
         /// </summary>
         /// <param name="messageName">i.e. DIALOG_INNBYGER_EKONTAKT, DIALOG_INNBYGGER_KOORDINATOR, etc.</param>
         /// <returns></returns>
@@ -104,10 +105,11 @@ namespace Helsenorge.Registries.Abstractions
         {
             if (string.IsNullOrEmpty(messageName)) throw new ArgumentNullException(nameof(messageName));
 
-            return Roles.SelectMany(role => role.SendMessages).FirstOrDefault((m) => m.Name.Equals(messageName, StringComparison.Ordinal));
+            return Roles.FirstOrDefault(role => role.ProcessSpecification.Name.Equals(messageName, StringComparison.OrdinalIgnoreCase)).SendMessages.FirstOrDefault();
         }
         /// <summary>
         /// Finds the collaboration information for a specific message
+        /// Find using the ProcessSpecification name as this matches the message name in both new and old Cpp formats
         /// </summary>
         /// <param name="messageName">i.e. DIALOG_INNBYGER_EKONTAKT, DIALOG_INNBYGGER_KOORDINATOR, etc.</param>
         /// <returns></returns>
@@ -115,7 +117,7 @@ namespace Helsenorge.Registries.Abstractions
         {
             if (string.IsNullOrEmpty(messageName)) throw new ArgumentNullException(nameof(messageName));
 
-            return Roles.SelectMany(role => role.ReceiveMessages).FirstOrDefault(message => message.Name.Equals(messageName, StringComparison.Ordinal));
+            return Roles.FirstOrDefault(role => role.ProcessSpecification.Name.Equals(messageName, StringComparison.OrdinalIgnoreCase)).ReceiveMessages.FirstOrDefault();
         }
 
     
