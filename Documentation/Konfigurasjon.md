@@ -70,9 +70,9 @@ For mer informasjon, kontakt NHN Kundeservice.
 #### Test
 Dette miljøet er tilgjengelig på Internett. Det er Her-Iden som bestemer hvilken kø som skal benyttes. Man kan ha fint ha 10 forskjellige testmiljøer og gå mot samme meldingsutveksler så lenge man har unike Her-Ider. 
 
-    Endpoint=sb://sb.test.nhn.no/DigitalDialog;StsEndpoint=https://sb.test.nhn.no:9355/DigitalDialog;RuntimePort=9354;ManagementPort=9355;OAuthUsername=[username];OAuthPassword=[password]
+Endpoint=sb://sb.test.nhn.no/NHNTESTServiceBus;StsEndpoint=https://sb.test.nhn.no:9355/NHNTESTServiceBus;RuntimePort=9354;ManagementPort=9355;OAuthUsername=[username];OAuthPassword=[password]
     
 #### Produksjon
 Dette miljøet er bare tilgjengelig på helsenettet. NHN må involveres for å komme inn på dette. 
 
-    Endpoint=sb://sb.nhn.no/NHNPRODServiceBus;StsEndpoint=https://sb.nhn.no:9355/NHNPRODServiceBus;RuntimePort=9354;ManagementPort=9355;OAuthUsername=[username];OAuthPassword=[password]
+Endpoint=sb://sb.nhn.no/NHNPRODServiceBus;StsEndpoint=https://sb.nhn.no:9355/NHNPRODServiceBus;RuntimePort=9354;ManagementPort=9355;OAuthUsername=[username];OAuthPassword=[password]
