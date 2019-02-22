@@ -98,6 +98,7 @@ namespace Helsenorge.Registries.Abstractions
         /// <summary>
         /// Finds the collaboration information for a specific message
         /// Find using the ProcessSpecification name as this matches the message name in both new and old Cpp formats
+        /// For response messages such as AppRec the ProcessSpecification name is not setup and the receivemessages need to be checked
         /// </summary>
         /// <param name="messageName">i.e. DIALOG_INNBYGER_EKONTAKT, DIALOG_INNBYGGER_KOORDINATOR, etc.</param>
         /// <returns></returns>
@@ -105,11 +106,21 @@ namespace Helsenorge.Registries.Abstractions
         {
             if (string.IsNullOrEmpty(messageName)) throw new ArgumentNullException(nameof(messageName));
 
-            return Roles.FirstOrDefault(role => role.ProcessSpecification.Name.Equals(messageName, StringComparison.OrdinalIgnoreCase)).SendMessages.FirstOrDefault();
+            var messages = Roles.FirstOrDefault(role => role.ProcessSpecification.Name.Equals(messageName, StringComparison.OrdinalIgnoreCase));
+
+            if (messages == null)
+            {
+                return Roles.SelectMany(role => role.SendMessages).FirstOrDefault((m) => m.Name.Equals(messageName, StringComparison.Ordinal));
+            }
+            else
+            {
+                return messages.SendMessages.FirstOrDefault();
+            }
         }
         /// <summary>
         /// Finds the collaboration information for a specific message
         /// Find using the ProcessSpecification name as this matches the message name in both new and old Cpp formats
+        /// For response messages such as AppRec the ProcessSpecification name is not setup and the receivemessages need to be checked
         /// </summary>
         /// <param name="messageName">i.e. DIALOG_INNBYGER_EKONTAKT, DIALOG_INNBYGGER_KOORDINATOR, etc.</param>
         /// <returns></returns>
@@ -117,10 +128,18 @@ namespace Helsenorge.Registries.Abstractions
         {
             if (string.IsNullOrEmpty(messageName)) throw new ArgumentNullException(nameof(messageName));
 
-            return Roles.FirstOrDefault(role => role.ProcessSpecification.Name.Equals(messageName, StringComparison.OrdinalIgnoreCase)).ReceiveMessages.FirstOrDefault();
+            var messages = Roles.FirstOrDefault(role => role.ProcessSpecification.Name.Equals(messageName, StringComparison.OrdinalIgnoreCase));
+
+            if (messages == null)
+            {
+                return Roles.SelectMany(role => role.ReceiveMessages).FirstOrDefault((m) => m.Name.Equals(messageName, StringComparison.Ordinal));
+            }
+            else
+            {
+                return messages.ReceiveMessages.FirstOrDefault();
+            }
         }
 
-    
         private IEnumerable<CollaborationProtocolMessagePart> FindMessagePartsForSenderOrReceiverAppRec(string messageName, Func<CollaborationProtocolRole, IList<CollaborationProtocolMessage>> sendOrReceive)
         {
             foreach (var role in Roles)
