@@ -206,6 +206,12 @@ namespace Helsenorge.Registries.Tests
             Assert.IsNotNull(profile.FindMessageForSender("DIALOG_INNBYGGER_EKONTAKT"));
         }
         [TestMethod]
+        public void FindMessageForSender_Found_AppRec()
+        {
+            var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
+            Assert.IsNotNull(profile.FindMessageForSender("APPREC"));
+        }
+        [TestMethod]
         public void FindMessageForSender_Found_Ny_CPP()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
@@ -231,6 +237,12 @@ namespace Helsenorge.Registries.Tests
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNotNull(profile.FindMessageForReceiver("DIALOG_INNBYGGER_EKONTAKT"));
+        }
+        [TestMethod]
+        public void FindMessageForReceiver_Found_AppRec()
+        {
+            var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
+            Assert.IsNotNull(profile.FindMessageForReceiver("APPREC"));
         }
         [TestMethod]
         public void FindMessageForReceiver_Found_Ny_CPP()
