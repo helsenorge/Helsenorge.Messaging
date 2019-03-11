@@ -353,13 +353,21 @@ namespace Helsenorge.Registries
              //	</tns:ServiceBinding>
              //</tns:CollaborationRole>
 
-             var role = new CollaborationProtocolRole
+            var role = new CollaborationProtocolRole
             {
                 ReceiveMessages = new List<CollaborationProtocolMessage>(),
                 SendMessages = new List<CollaborationProtocolMessage>(),
                 Name = element.Element(_ns + "Role")?.Attribute(_ns + "name").Value,
+                VersionString = element.Element(_ns + "ProcessSpecification")?.Attribute(_ns + "version").Value,
+                RoleName = element.Element(_ns + "Role")?.Attribute(_ns + "name").Value
+             };
+
+            var processSpecification = new ProcessSpecification
+            {
+                Name = element.Element(_ns + "ProcessSpecification")?.Attribute(_ns + "name").Value,
                 VersionString = element.Element(_ns + "ProcessSpecification")?.Attribute(_ns + "version").Value
             };
+            role.ProcessSpecification = processSpecification;
 
             var serviceBinding = element.Element(_ns + "ServiceBinding");
             if (serviceBinding == null) return role;

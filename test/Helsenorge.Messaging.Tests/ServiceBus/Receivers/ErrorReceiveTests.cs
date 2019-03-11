@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml.Linq;
+using System.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -32,7 +33,8 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Assert.IsTrue(_errorReceiveCalled);
                     Assert.AreEqual(0, MockFactory.Helsenorge.Error.Messages.Count);
                     Assert.IsTrue(_errorStartingCalled, "Error message received starting callback not called");
-                    //Assert.IsNotNull(Logger.FindEntry(EventIds.ExternalReportedError)); //TODO: find out why this crashes. Works when running with debugger. Timing issue?
+                    Assert.IsNull(MockLoggerProvider.Entries.FirstOrDefault(e => e.Message.Contains("CPA_FindAgreementForCounterpartyAsync_0_93252")));
+                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.ExternalReportedError));
                 },
                 wait: () => _errorReceiveCalled,
                 messageModification: (m) =>
@@ -53,7 +55,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Assert.IsTrue(_errorReceiveCalled);
                     Assert.AreEqual(0, MockFactory.Helsenorge.Error.Messages.Count);
                     Assert.IsTrue(_errorStartingCalled, "Error message received starting callback not called");
-                    //Assert.IsNotNull(Logger.FindEntry(EventIds.ExternalReportedError)); //TODO: find out why this crashes. Works when running with debugger. Timing issue?
+                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.ExternalReportedError));
                 },
                 wait: () => _errorReceiveCalled,
                 messageModification: (m) =>

@@ -144,7 +144,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     MessageId = message.MessageId,
                     CorrelationId = message.CorrelationId,
                     EnqueuedTimeUtc = message.EnqueuedTimeUtc,
-                    RenewLock = message.RenewLock
+                    RenewLock = message.RenewLock,
+                    DeliveryCount = message.DeliveryCount
                 };
                 NotifyMessageProcessingStarted(incomingMessage);
                 Logger.LogStartReceive(QueueType, incomingMessage);
@@ -249,6 +250,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         {
             Guid id;
 
+            // if we receive an error message then CPA isn't needed because we're not decrypting the message and then the CPA info isn't needed
+            if (QueueType == QueueType.Error) return null;
             if (Guid.TryParse(message.CpaId, out id) && (id != Guid.Empty))
             {
                 return await Core.CollaborationProtocolRegistry.FindAgreementByIdAsync(Logger, id).ConfigureAwait(false);

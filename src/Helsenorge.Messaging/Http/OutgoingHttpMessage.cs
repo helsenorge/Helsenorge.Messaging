@@ -68,6 +68,8 @@ namespace Helsenorge.Messaging.Http
             }
         }
 
+        public int DeliveryCount => throw new NotImplementedException();
+
         public void Complete()
         {
             throw new NotImplementedException();

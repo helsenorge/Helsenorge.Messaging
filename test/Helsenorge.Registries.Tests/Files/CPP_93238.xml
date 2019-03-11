@@ -36,6 +36,26 @@
             </tns:ServiceBinding>
         </tns:CollaborationRole>
         <tns:CollaborationRole>
+          <tns:ProcessSpecification tns:name="Dialog_Innbygger_BehandlerOversikt" tns:version="1.0" xlink:type="simple" xlink:href="http://www.helsedirektoratet.no/processes/Dialog_Innbygger_behandlerOversikt.xml" tns:uuid="b86b0d41-21fd-4ab7-86f3-af633ea7b27a" />
+          <tns:Role tns:name="Innbygger" xlink:type="simple" xlink:href="http://www.helsedirektoratet.no/processes#Innbygger" />
+          <tns:ApplicationCertificateRef tns:certId="enc" />
+          <tns:ServiceBinding>
+            <tns:Service tns:type="string">BehandlerOversikt</tns:Service>
+            <tns:CanSend>
+              <tns:ThisPartyActionBinding tns:id="Dialog_Innbygger_Behandler_Hent" tns:action="Hent" tns:packageId="package_dialogmld_v1p1" xlink:type="simple">
+                <tns:BusinessTransactionCharacteristics tns:isNonRepudiationRequired="true" tns:isNonRepudiationReceiptRequired="true" tns:isConfidential="none" tns:isAuthenticated="none" tns:isTamperProof="none" tns:isAuthorizationRequired="false" tns:isIntelligibleCheckRequired="false" tns:timeToPerform="P180M" />
+                <tns:ChannelId>AMQPSync_4d060363-b2ce-4427-8c10-3443dfc115c0</tns:ChannelId>
+              </tns:ThisPartyActionBinding>
+            </tns:CanSend>
+            <tns:CanReceive>
+              <tns:ThisPartyActionBinding tns:id="Dialog_Innbygger_Svar" tns:action="Svar" tns:packageId="package_dialogmld_v1p1" xlink:type="simple">
+                <tns:BusinessTransactionCharacteristics tns:isNonRepudiationRequired="true" tns:isNonRepudiationReceiptRequired="true" tns:isConfidential="none" tns:isAuthenticated="none" tns:isTamperProof="none" tns:isAuthorizationRequired="false" tns:isIntelligibleCheckRequired="false" tns:timeToPerform="P180M" />
+                <tns:ChannelId>AMQPSync_4d060363-b2ce-4427-8c10-3443dfc115c0</tns:ChannelId>
+              </tns:ThisPartyActionBinding>
+            </tns:CanReceive>
+          </tns:ServiceBinding>
+        </tns:CollaborationRole>
+          <tns:CollaborationRole>
             <tns:ProcessSpecification tns:name="Dialog_Innbygger_Digitalbruker" tns:version="1.1" xlink:type="simple" xlink:href="http://www.helsedirektoratet.no/processes/Dialog_Innbygger_Digitalbruker.xml" tns:uuid="2075C7E3-A2E1-40F7-9CC1-52E2AADF4E93" />
             <tns:Role tns:name="DIALOG_INNBYGGER_DIGITALBRUKERsender" xlink:type="simple" xlink:href="http://www.helsedirektoratet.no/processes#DIALOG_INNBYGGER_DIGITALBRUKERsender" />
             <tns:ApplicationCertificateRef tns:certId="enc" />

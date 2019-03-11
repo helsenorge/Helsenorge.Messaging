@@ -137,6 +137,8 @@ namespace Helsenorge.Messaging.Http
             get { throw new NotImplementedException(); }
         }
 
+        public int DeliveryCount => throw new NotImplementedException();
+
         public void Complete()
         {
             

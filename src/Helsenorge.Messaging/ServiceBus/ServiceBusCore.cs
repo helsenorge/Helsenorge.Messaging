@@ -125,11 +125,11 @@ namespace Helsenorge.Messaging.ServiceBus
             {
                 if (Core.Settings.IgnoreCertificateErrorOnSend)
                 {
-                    logger.LogError(EventIds.RemoteCertificate, "Remote encryption certificate is not valid");
+                    logger.LogError(EventIds.RemoteCertificate, $"Remote encryption certificate {encryption?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid");
                 }
                 else
                 {
-                    throw new MessagingException("Remote encryption certificate is not valid")
+                    throw new MessagingException($"Remote encryption certificate {encryption?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid")
                     {
                         EventId = EventIds.RemoteCertificate
                     };

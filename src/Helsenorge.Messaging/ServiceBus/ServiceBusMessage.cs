@@ -85,6 +85,12 @@ namespace Helsenorge.Messaging.ServiceBus
             [DebuggerStepThrough] get { return _implementation.To; }
             [DebuggerStepThrough] set { _implementation.To = value; }
         }
+
+        public int DeliveryCount
+        {
+            [DebuggerStepThrough] get { return _implementation.DeliveryCount; }
+        }
+
         [DebuggerStepThrough]
         public IMessagingMessage Clone(bool includePayload = true)
         {
