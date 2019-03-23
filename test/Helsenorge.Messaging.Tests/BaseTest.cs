@@ -5,15 +5,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Helsenorge.Registries.Mocks;
 using Microsoft.Extensions.Logging;
 using System.Configuration;
-using System.Diagnostics.CodeAnalysis;
 using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Security;
 using Helsenorge.Messaging.Tests.Mocks;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
-using Helsenorge.Registries.Abstractions;
 using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Helsenorge.Messaging.Tests
 {
@@ -119,11 +116,15 @@ namespace Helsenorge.Messaging.Tests
                 MyHerId = MockFactory.HelsenorgeHerId,
                 SigningCertificate = new CertificateSettings()
                 {
-                    Certificate = TestCertificates.HelsenorgePrivateSigntature
+                    StoreName = StoreName.My,
+                    StoreLocation = StoreLocation.LocalMachine,
+                    Thumbprint = "bd302b20fcdcf3766bf0bcba485dfb4b2bfe1379"
                 },
                 DecryptionCertificate = new CertificateSettings()
                 {
-                    Certificate = TestCertificates.HelsenorgePrivateEncryption
+                    StoreName = StoreName.My,
+                    StoreLocation = StoreLocation.LocalMachine,
+                    Thumbprint = "fddbcfbb3231f0c66ee2168358229d3cac95e88a"
                 }
             };
             
@@ -136,15 +137,16 @@ namespace Helsenorge.Messaging.Tests
 
             MockFactory = new MockFactory(otherHerId);
             CertificateValidator = new MockCertificateValidator();
+            ICertificateStore certificateStore = new MockCertificateStore();
 
-            Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry)
+            Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry, certificateStore)
             {
                 DefaultMessageProtection = new NoMessageProtection(),   // disable protection for most tests
                 DefaultCertificateValidator = CertificateValidator
             };
             Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
-            Server = new MessagingServer(Settings, Logger, LoggerFactory, CollaborationRegistry, AddressRegistry)
+            Server = new MessagingServer(Settings, Logger, LoggerFactory, CollaborationRegistry, AddressRegistry, certificateStore)
             {
                 DefaultMessageProtection = new NoMessageProtection(),   // disable protection for most tests
                 DefaultCertificateValidator = CertificateValidator

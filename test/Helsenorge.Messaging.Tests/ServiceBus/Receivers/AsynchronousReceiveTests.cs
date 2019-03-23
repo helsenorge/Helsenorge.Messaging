@@ -64,14 +64,14 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         {
             Exception receiveException = null;
 
-            Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry)
+            Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry, new MockCertificateStore())
             {
                 DefaultMessageProtection = new SignThenEncryptMessageProtection(),   // disable protection for most tests
                 DefaultCertificateValidator = CertificateValidator
             };
             Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
             
-            Server = new MessagingServer(Settings, Logger, LoggerFactory, CollaborationRegistry, AddressRegistry)
+            Server = new MessagingServer(Settings, Logger, LoggerFactory, CollaborationRegistry, AddressRegistry, new MockCertificateStore())
             {
                 DefaultMessageProtection = new SignThenEncryptMessageProtection(),   // disable protection for most tests
                 DefaultCertificateValidator = CertificateValidator
@@ -512,11 +512,11 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         {
             Settings.DecryptionCertificate = new CertificateSettings()
             {
-                Certificate = TestCertificates.CounterpartyPrivateEncryption
+                Thumbprint = "b1fae38326a6cefa72708f7633541262e8633b2c"
             };
             Settings.LegacyDecryptionCertificate = new CertificateSettings()
             {
-                Certificate =  TestCertificates.HelsenorgePrivateEncryption
+                Thumbprint = "fddbcfbb3231f0c66ee2168358229d3cac95e88a"
             };
 
             // postition of arguments have been reversed so that we instert the name of the argument without getting a resharper indication

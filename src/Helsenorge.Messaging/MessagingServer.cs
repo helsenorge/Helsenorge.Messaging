@@ -45,12 +45,14 @@ namespace Helsenorge.Messaging
         /// <param name="loggerFactory">Logger Factory</param>
         /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
         /// <param name="addressRegistry">Reference to the address registry</param>
+        /// <param name="certificateStore">Reference to a certificate store</param>
         public MessagingServer(
             MessagingSettings settings,
             ILogger logger,
             ILoggerFactory loggerFactory,
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
-            IAddressRegistry addressRegistry) : base(settings, collaborationProtocolRegistry, addressRegistry)
+            IAddressRegistry addressRegistry,
+            ICertificateStore certificateStore = null) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
