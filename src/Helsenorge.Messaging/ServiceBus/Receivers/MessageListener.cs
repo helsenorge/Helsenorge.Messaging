@@ -272,7 +272,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             {
                 contentWasSigned = false;
                 // no certificates to validate
-                payload = new NoMessageProtection().Unprotect(bodyStream, null, null, null);
+                payload = new NoMessageProtection().Unprotect(bodyStream, null)?.ToXDocument();
             }
             else
             {
@@ -284,25 +284,12 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 // in receive mode, we try to decrypt and validate content even if the certificates are invalid
                 // invalid certificates are flagged to the application layer processing the decrypted message.
                 // with the decrypted content, they may have a chance to figure out who sent it
-                var decryption = Core.CertificateStore.GetCertificate(Core.Settings.DecryptionCertificate.Thumbprint);
+
                 var signature = incomingMessage.CollaborationAgreement?.SignatureCertificate;
-                var legacyDecryption = Core.Settings.LegacyDecryptionCertificate == null ? null : Core.CertificateStore.GetCertificate(Core.Settings.LegacyDecryptionCertificate.Thumbprint);
-
-                incomingMessage.DecryptionError = Core.DefaultCertificateValidator.Validate(decryption, X509KeyUsageFlags.DataEncipherment);
-                ReportErrorOnLocalCertificate(originalMessage, decryption, incomingMessage.DecryptionError, true);
-
-                incomingMessage.SignatureError = Core.DefaultCertificateValidator.Validate(signature, X509KeyUsageFlags.NonRepudiation);
+                incomingMessage.SignatureError = Core.CertificateValidator.Validate(signature, X509KeyUsageFlags.NonRepudiation);
                 ReportErrorOnRemoteCertificate(originalMessage, signature, incomingMessage.SignatureError);
 
-                if (legacyDecryption != null)
-                {
-                    // this is optional information that should only be in effect durin a short transition period
-                    incomingMessage.LegacyDecryptionError = Core.DefaultCertificateValidator.Validate(legacyDecryption, X509KeyUsageFlags.DataEncipherment);
-                    // if someone forgets to remove the legacy configuration, we log an error message but don't remove it
-                    ReportErrorOnLocalCertificate(originalMessage, legacyDecryption, incomingMessage.LegacyDecryptionError, false);
-                }
-
-                payload = Core.DefaultMessageProtection.Unprotect(bodyStream, decryption, signature, legacyDecryption);
+                payload = Core.MessageProtection.Unprotect(bodyStream, signature)?.ToXDocument();
             }
             return payload;
         }

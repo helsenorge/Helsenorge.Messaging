@@ -37,6 +37,8 @@ namespace Helsenorge.Messaging.Tests
 
         internal MockCertificateValidator CertificateValidator { get; set; }
 
+        internal MockCertificateStore CertificateStore { get; set; }
+
         protected XDocument GenericMessage => new XDocument(new XElement("SomeDummyXmlUsedForTesting"));
 
         protected XDocument GenericResponse => new XDocument(new XElement("SomeDummyXmlResponseUsedForTesting"));
@@ -118,13 +120,13 @@ namespace Helsenorge.Messaging.Tests
                 {
                     StoreName = StoreName.My,
                     StoreLocation = StoreLocation.LocalMachine,
-                    Thumbprint = "bd302b20fcdcf3766bf0bcba485dfb4b2bfe1379"
+                    Thumbprint = TestCertificates.HelsenorgeSigntatureThumbprint
                 },
                 DecryptionCertificate = new CertificateSettings()
                 {
                     StoreName = StoreName.My,
                     StoreLocation = StoreLocation.LocalMachine,
-                    Thumbprint = "fddbcfbb3231f0c66ee2168358229d3cac95e88a"
+                    Thumbprint = TestCertificates.HelsenorgeEncryptionThumbprint
                 }
             };
             
@@ -137,20 +139,28 @@ namespace Helsenorge.Messaging.Tests
 
             MockFactory = new MockFactory(otherHerId);
             CertificateValidator = new MockCertificateValidator();
-            ICertificateStore certificateStore = new MockCertificateStore();
+            CertificateStore = new MockCertificateStore();
 
-            Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry, certificateStore)
-            {
-                DefaultMessageProtection = new NoMessageProtection(),   // disable protection for most tests
-                DefaultCertificateValidator = CertificateValidator
-            };
+            Client = new MessagingClient(
+                Settings, 
+                CollaborationRegistry, 
+                AddressRegistry, 
+                CertificateStore, 
+                CertificateValidator, 
+                new NoMessageProtection()   // Using NoMessageProtection for most tests
+            );
             Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
-            Server = new MessagingServer(Settings, Logger, LoggerFactory, CollaborationRegistry, AddressRegistry, certificateStore)
-            {
-                DefaultMessageProtection = new NoMessageProtection(),   // disable protection for most tests
-                DefaultCertificateValidator = CertificateValidator
-            };
+            Server = new MessagingServer(
+                Settings, 
+                Logger, 
+                LoggerFactory, 
+                CollaborationRegistry, 
+                AddressRegistry, 
+                CertificateStore, 
+                CertificateValidator, 
+                new NoMessageProtection()   // Using NoMessageProtection for most tests
+            );
             Server.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
         }
 

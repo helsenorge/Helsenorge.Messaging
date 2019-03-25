@@ -11,19 +11,19 @@ namespace Helsenorge.Messaging.Tests.Mocks
             X509Certificate2 certificate = null;
             switch (thumbprint)
             {
-                case "be26ea7a3eb54e7b00c55782304765777f854192":
+                case TestCertificates.HelsenorgeEncryptionInvalidStartThumbPrint:
                     certificate = TestCertificates.HelsenorgePrivateEncryptionInvalidStart;
                     break;
-                case "be26ea7a3eb54e7b00c55782304765777f854191":
+                case TestCertificates.HelsenorgeEncryptionInvalidEndThumbprint:
                     certificate = TestCertificates.HelsenorgePrivateEncryptionInvalidEnd;
                     break;
-                case "fddbcfbb3231f0c66ee2168358229d3cac95e88a":
+                case TestCertificates.HelsenorgeEncryptionThumbprint:
                     certificate = TestCertificates.HelsenorgePrivateEncryption;
                     break;
-                case "bd302b20fcdcf3766bf0bcba485dfb4b2bfe1379":
+                case TestCertificates.HelsenorgeSigntatureThumbprint:
                     certificate = TestCertificates.HelsenorgePrivateSigntature;
                     break;
-                case "b1fae38326a6cefa72708f7633541262e8633b2c":
+                case TestCertificates.CounterpartyEncryptionThumbprint:
                     certificate = TestCertificates.CounterpartyPrivateEncryption;
                     break;
             }

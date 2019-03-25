@@ -32,12 +32,48 @@ namespace Helsenorge.Messaging
         /// <param name="settings">Set of options to use</param>
         /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
         /// <param name="addressRegistry">Reference to the address registry</param>
-        /// <param name="certificateStore">Reference to a certificate store</param>
+        public MessagingClient(
+            MessagingSettings settings,
+            ICollaborationProtocolRegistry collaborationProtocolRegistry,
+            IAddressRegistry addressRegistry) : base(settings, collaborationProtocolRegistry, addressRegistry)
+        {
+            _asynchronousServiceBusSender = new AsynchronousSender(ServiceBus);
+            _synchronousServiceBusSender = new SynchronousSender(ServiceBus);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="settings">Set of options to use</param>
+        /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
+        /// <param name="addressRegistry">Reference to the address registry</param>
+        /// <param name="certificateStore">Reference to an implementation of <see cref="ICertificateStore"/>.</param>
         public MessagingClient(
             MessagingSettings settings,
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
             IAddressRegistry addressRegistry,
-            ICertificateStore certificateStore = null) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore)
+            ICertificateStore certificateStore) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore)
+        {
+            _asynchronousServiceBusSender = new AsynchronousSender(ServiceBus);
+            _synchronousServiceBusSender = new SynchronousSender(ServiceBus);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="settings">Set of options to use</param>
+        /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
+        /// <param name="addressRegistry">Reference to the address registry</param>
+        /// <param name="certificateStore">Reference to an implementation of <see cref="ICertificateStore"/>.</param>
+        /// <param name="certificateValidator">Reference to an implementation of <see cref="ICertificateValidator"/>.</param>
+        /// <param name="messageProtection">Reference to an implementation of <see cref="IMessageProtection"/>.</param>
+        public MessagingClient(
+            MessagingSettings settings,
+            ICollaborationProtocolRegistry collaborationProtocolRegistry,
+            IAddressRegistry addressRegistry,
+            ICertificateStore certificateStore,
+            ICertificateValidator certificateValidator,
+            IMessageProtection messageProtection) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore, certificateValidator, messageProtection)
         {
             _asynchronousServiceBusSender = new AsynchronousSender(ServiceBus);
             _synchronousServiceBusSender = new SynchronousSender(ServiceBus);

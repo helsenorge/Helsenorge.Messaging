@@ -51,7 +51,7 @@ namespace Helsenorge.Messaging.Client
             return exitCode;
         }
 
-        private static void Configure(string profile, bool ignoreCertificateErrors)
+        private static void Configure(string profile, bool ignoreCertificateErrors, bool noProtection)
         {
             // read configuration values
             var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
@@ -93,7 +93,10 @@ namespace Helsenorge.Messaging.Client
             messagingSettings.IgnoreCertificateErrorOnSend = ignoreCertificateErrors;
             messagingSettings.LogPayload = true;
 
-            _messagingClient = new MessagingClient(messagingSettings, collaborationProtocolRegistry, addressRegistry);
+            if(noProtection)
+                _messagingClient = new MessagingClient(messagingSettings, collaborationProtocolRegistry, addressRegistry, null, null, new NoMessageProtection());
+            else
+                _messagingClient = new MessagingClient(messagingSettings, collaborationProtocolRegistry, addressRegistry);
         }
 
         private static void HandleAsyncMessage(CommandLineApplication command)
@@ -110,7 +113,7 @@ namespace Helsenorge.Messaging.Client
                     return 2;
                 }
 
-                Configure(profileArgument.Value, noProtection.HasValue());
+                Configure(profileArgument.Value, noProtection.HasValue(), noProtection.HasValue());
 
                 if (Directory.Exists(_clientSettings.SourceDirectory) == false)
                 {
@@ -119,11 +122,7 @@ namespace Helsenorge.Messaging.Client
                     return 2;
                 }
                 _files = new Stack<string>(Directory.GetFiles(_clientSettings.SourceDirectory));
-
-                if (noProtection.HasValue())
-                {
-                    _messagingClient.DefaultMessageProtection = new NoMessageProtection();
-                }
+                
                 var tasks = new List<Task>();
                 for (var i = 0; i < _clientSettings.Threads; i++)
                 {
@@ -161,7 +160,7 @@ namespace Helsenorge.Messaging.Client
                     command.ShowHelp();
                     return 2;
                 }
-                Configure(profileArgument.Value, noProtection.HasValue());
+                Configure(profileArgument.Value, noProtection.HasValue(), noProtection.HasValue());
 
                 if (Directory.Exists(_clientSettings.SourceDirectory) == false)
                 {
@@ -171,10 +170,6 @@ namespace Helsenorge.Messaging.Client
                 }
                 _files = new Stack<string>(Directory.GetFiles(_clientSettings.SourceDirectory));
 
-                if (noProtection.HasValue())
-                {
-                    _messagingClient.DefaultMessageProtection = new NoMessageProtection();
-                }
                 // since we are synchronous, we don't fire off multiple tasks, we do them sequentially
                 for (var s = GetNextPath(); !string.IsNullOrEmpty(s); s = GetNextPath())
                 {

@@ -123,7 +123,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
         }
 
-        [TestMethod]
+        [TestMethod, Ignore("The library do no longer validate local private key certificates.")]
         [ExpectedException(typeof(MessagingException))]
         public void Send_Asynchronous_InvalidSignature()
         {

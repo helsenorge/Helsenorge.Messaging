@@ -53,6 +53,9 @@ namespace Helsenorge.Messaging.Abstractions
         /// Indication of how signature validation succeeded. Allows application layer to take appropriate action.
         /// </summary>
         public CertificateErrors SignatureError { get; set; }
+        /// <summary>
+        /// Indication of whether the content was signed or not.
+        /// </summary>
         public bool ContentWasSigned { get; set; }
         /// <summary>
         /// Renews the peerlock of the message

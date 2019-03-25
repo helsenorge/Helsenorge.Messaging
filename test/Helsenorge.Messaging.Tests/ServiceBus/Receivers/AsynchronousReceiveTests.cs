@@ -64,18 +64,12 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         {
             Exception receiveException = null;
 
-            Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry, new MockCertificateStore())
-            {
-                DefaultMessageProtection = new SignThenEncryptMessageProtection(),   // disable protection for most tests
-                DefaultCertificateValidator = CertificateValidator
-            };
+            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.CounterpartyPrivateSigntature, TestCertificates.CounterpartyPrivateEncryption);
+            Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyAProtection);
             Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
-            
-            Server = new MessagingServer(Settings, Logger, LoggerFactory, CollaborationRegistry, AddressRegistry, new MockCertificateStore())
-            {
-                DefaultMessageProtection = new SignThenEncryptMessageProtection(),   // disable protection for most tests
-                DefaultCertificateValidator = CertificateValidator
-            };
+
+            var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.HelsenorgePrivateSigntature, TestCertificates.HelsenorgePrivateEncryption);
+            Server = new MessagingServer(Settings, Logger, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyBProtection);
             Server.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
             CollaborationRegistry.SetupFindAgreementForCounterparty(i =>
@@ -289,7 +283,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             received: (m) => { throw new ArgumentOutOfRangeException(); },
             messageModification: (m) => { });
         }
-        [TestMethod]
+        [TestMethod, Ignore("The library do no longer validate local private key certificates.")]
         public void Asynchronous_Receive_LocalCertificateStartDate()
         {
             CertificateValidator.SetError(
@@ -306,7 +300,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
                messageModification: (m) => { });
         }
-        [TestMethod]
+        [TestMethod, Ignore("The library do no longer validate local private key certificates.")]
         public void Asynchronous_Receive_LocalCertificateEndDate()
         {
             CertificateValidator.SetError(
@@ -323,7 +317,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
                messageModification: (m) => { });
         }
-        [TestMethod]
+        [TestMethod, Ignore("The library do no longer validate local private key certificates.")]
         public void Asynchronous_Receive_LocalCertificateUsage()
         {
             CertificateValidator.SetError(
@@ -340,7 +334,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
                messageModification: (m) => { });
         }
-        [TestMethod]
+        [TestMethod, Ignore("The library do no longer validate local private key certificates.")]
         public void Asynchronous_Receive_LocalCertificateRevoked()
         {
             CertificateValidator.SetError(
@@ -357,7 +351,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
                messageModification: (m) => { });
         }
-        [TestMethod]
+        [TestMethod, Ignore("The library do no longer validate local private key certificates.")]
         public void Asynchronous_Receive_LocalCertificateRevokedUnknown()
         {
             CertificateValidator.SetError(
@@ -374,7 +368,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
                messageModification: (m) => { });
         }
-        [TestMethod]
+        [TestMethod, Ignore("The library do no longer validate local private key certificates.")]
         public void Asynchronous_Receive_LocalCertificateMultiple()
         {
             CertificateValidator.SetError(
@@ -542,7 +536,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         [TestMethod]
         public void Asynchronous_Receive_SecurityException()
         {
-            Server.DefaultMessageProtection = new SecurityExceptionMessageProtection();
+            Server.MessageProtection = new SecurityExceptionMessageProtection();
 
             RunAsynchronousReceive(
                 postValidation: () =>
@@ -576,10 +570,11 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             messageModification: (m) => { m.SetBody(messageAsStream); });  
         }
 
-class SecurityExceptionMessageProtection : IMessageProtection
+    class SecurityExceptionMessageProtection : IMessageProtection
         {
             public string ContentType => Messaging.Abstractions.ContentType.SignedAndEnveloped;
-            
+
+            [Obsolete("This method is deprecated and is superseded by SecurityExceptionMessageProtection.Protect(Stream).")]
             public MemoryStream Protect(XDocument data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate)
             {
                 if (data == null) throw new ArgumentNullException(nameof(data));
@@ -589,7 +584,20 @@ class SecurityExceptionMessageProtection : IMessageProtection
                 return ms;
             }
 
+            public Stream Protect(Stream data, X509Certificate2 encryptionCertificate)
+            {
+                if (data == null) throw new ArgumentNullException(nameof(data));
+
+                return data;
+            }
+
+            [Obsolete("This method is deprecated and is superseded by SecurityExceptionMessageProtection.Unprotect(Stream).")]
             public XDocument Unprotect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate, X509Certificate2 legacyEncryptionCertificate)
+            {
+                throw new SecurityException("Invalid certificate");
+            }
+
+            public Stream Unprotect(Stream data, X509Certificate2 signingCertificate)
             {
                 throw new SecurityException("Invalid certificate");
             }
@@ -680,12 +688,12 @@ class SecurityExceptionMessageProtection : IMessageProtection
         
         private MockMessage CreateAsynchronousMessageProtected()
         {
-            var signing = new SignThenEncryptMessageProtection();
+            var certificateStore = new MockCertificateStore();
+            var messageProtection = new SignThenEncryptMessageProtection(TestCertificates.HelsenorgePrivateSigntature, TestCertificates.HelsenorgePrivateEncryption);
             var messageId = Guid.NewGuid().ToString("D");
             var path = Path.Combine("Files", "Helsenorge_Message.xml");
             var file = File.Exists(path) ? new XDocument(XElement.Load(path)) : null;
-            var protect = signing.Protect(file ?? GenericMessage, TestCertificates.HelsenorgePublicEncryption,
-                TestCertificates.HelsenorgePrivateSigntature); 
+            var protect = messageProtection.Protect(file == null ? GenericMessage.ToStream() : file.ToStream(), TestCertificates.HelsenorgePublicEncryption); 
             return new MockMessage(protect)
             {
                 MessageFunction = "DIALOG_INNBYGGER_EKONTAKT",
