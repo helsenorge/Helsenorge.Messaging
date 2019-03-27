@@ -96,6 +96,8 @@ namespace Helsenorge.Messaging.Security
         /// <returns>A <see cref="Stream"/> containing the data in decrypted form.</returns>
         public override Stream Unprotect(Stream data, X509Certificate2 signingCertificate)
         {
+            if (data == null) throw new ArgumentNullException(nameof(data));
+
             return data;
         }
     }

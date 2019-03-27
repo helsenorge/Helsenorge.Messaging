@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using System.Xml.Linq;
 
@@ -24,6 +25,9 @@ namespace Helsenorge.Messaging
         /// <returns>The contents of <see cref="XDocument"/> as an <see cref="Stream"/>.</returns>
         internal static Stream ToStream(this XDocument document, Encoding encoding)
         {
+            if (document == null) throw new ArgumentNullException(nameof(document));
+            if (encoding == null) throw new ArgumentNullException(nameof(encoding));
+
             return new MemoryStream(encoding.GetBytes(document.ToString()));
         }
     }
