@@ -71,14 +71,11 @@ namespace Helsenorge.Messaging.Client
             // set up address registry
             var addressRegistrySettings = new AddressRegistrySettings();
             configurationRoot.GetSection("AddressRegistrySettings").Bind(addressRegistrySettings);
-            addressRegistrySettings.WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             var addressRegistry = new AddressRegistry(addressRegistrySettings, distributedCache);
 
             // set up collaboration registry
             var collaborationProtocolRegistrySettings = new CollaborationProtocolRegistrySettings();
             configurationRoot.GetSection("CollaborationProtocolRegistrySettings").Bind(collaborationProtocolRegistrySettings);
-            collaborationProtocolRegistrySettings.WcfConfiguration =
-                ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
             var collaborationProtocolRegistry = new CollaborationProtocolRegistry(collaborationProtocolRegistrySettings, 
                 distributedCache, addressRegistry);

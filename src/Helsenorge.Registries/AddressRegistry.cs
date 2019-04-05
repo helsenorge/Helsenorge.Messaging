@@ -34,8 +34,7 @@ namespace Helsenorge.Registries
 
             _settings = settings;
             _cache = cache;
-            _invoker = new SoapServiceInvoker(settings.WcfConfiguration);
-            _invoker.SetClientCredentials(_settings.UserName, _settings.Password);
+            _invoker = new SoapServiceInvoker(_settings.SoapConfiguration);
         }
         /// <summary>
         /// Returns communication details for a specific counterparty
@@ -231,6 +230,6 @@ namespace Helsenorge.Registries
 
         [ExcludeFromCodeCoverage] // requires wire communication
         private Task<T> Invoke<T>(ILogger logger, Func<ICommunicationPartyService, Task<T>> action, string methodName)
-            => _invoker.Execute(logger, action, methodName, _settings.EndpointName);
+            => _invoker.Execute(logger, action, methodName, _settings.SoapConfiguration?.EndpointAddress);
     }
 }

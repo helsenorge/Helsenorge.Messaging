@@ -1,38 +1,43 @@
 {
-  "AddressRegistrySettings": {
-    "UserName": "???",
-    "Password": "???"
-  },
-  "CollaborationProtocolRegistrySettings": {
-    "UserName": "???",
-    "Password": "???",
-    "MyHerId": "1234"
-  },
-  "MessagingSettings": {
-    "MyHerId": "1234",
-    "ServiceBus": {
-      "ConnectionString": "???",
-      "Synchronous": {
-        "ReplyQueueMapping": {
-          "kemyh01": "1234_sync"
+    "AddressRegistrySettings": {
+        "SoapConfiguration": {
+            "UserName": "username",
+            "Password": "password"
         }
-      }
     },
-    "DecryptionCertificate": {
-      "Thumbprint": "c38fa377f0dc296ca2a9752c79f107ac96b58602",
-      "StoreName": "My",
-      "StoreLocation": "LocalMachine"
+    "CollaborationProtocolRegistrySettings": {
+        "SoapConfiguration": {
+            "UserName": "username",
+            "Password": "password"
+        },
+        "MyHerId": "1234"
     },
-    "SigningCertificate": {
-      "Thumbprint": "97c826f99dac40d4aa9d8533387e3a6922930286",
-      "StoreName": "My",
-      "StoreLocation": "LocalMachine"
+    "MessagingSettings": {
+        "MyHerId": "1234",
+        "UseOnlineRevocationCheck": "false",
+        "ServiceBus": {
+            "ConnectionString": "???",
+            "Synchronous": {
+                "ReplyQueueMapping": {
+                    "kemyh01": "1234_sync"
+                }
+            }
+        },
+        "DecryptionCertificate": {
+            "Thumbprint": "???",
+            "StoreName": "My",
+            "StoreLocation": "LocalMachine"
+        },
+        "SigningCertificate": {
+            "Thumbprint": "???",
+            "StoreName": "My",
+            "StoreLocation": "LocalMachine"
+        }
+    },
+    "ClientSettings": {
+        "ToHerId": "5678",
+        "MessageFunction": "DIALOG_INNBYGGER_EKONTAKT",
+        "SourceDirectory": "Samples",
+        "Threads": "1"
     }
-  },
-  "ClientSettings": {
-    "ToHerId": "5678",
-    "MessageFunction": "DIALOG_INNBYGGER_OPPGAVE",
-    "SourceDirectory": "Samples4",
-    "Threads": "1"
-  }
 }

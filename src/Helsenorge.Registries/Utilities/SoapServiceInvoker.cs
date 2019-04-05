@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.ServiceModel.Configuration;
 using System.Threading.Tasks;
 
@@ -11,30 +12,23 @@ namespace Helsenorge.Registries.Utilities
 {
     internal class SoapServiceInvoker
     {
-        private readonly Configuration _wcfConfiguration;
-        private string _userName;
-        private string _password;
+        private readonly SoapConfiguration _configuration;
         private readonly ConcurrentDictionary<Type, object> FactoryCache = new ConcurrentDictionary<Type, object>();
         private readonly object _lockerObject = new object();
-    
-        public SoapServiceInvoker(Configuration wcfConfiguration)
+
+        public SoapServiceInvoker(SoapConfiguration configuration)
         {
-            if (wcfConfiguration == null) throw new ArgumentNullException(nameof(wcfConfiguration));
-            _wcfConfiguration = wcfConfiguration;
+            _configuration = configuration;
         }
-        public void SetClientCredentials(string userName, string password)
-        {
-            _userName = userName;
-            _password = password;
-        }
+
         [ExcludeFromCodeCoverage] // requires wire communication
         public async Task<TResponse> Execute<TContract, TResponse>(ILogger logger, Func<TContract, Task<TResponse>> action, string operationName,
-            string endpointConfigurationName)
+            string endpoint)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (string.IsNullOrEmpty(operationName)) throw new ArgumentNullException(nameof(operationName));
-            if (string.IsNullOrEmpty(endpointConfigurationName)) throw new ArgumentNullException(nameof(endpointConfigurationName));
+            if (string.IsNullOrEmpty(endpoint)) throw new ArgumentNullException(nameof(endpoint));
 
             ChannelFactory<TContract> factory = null;
             var channel = default(TContract);
@@ -42,7 +36,7 @@ namespace Helsenorge.Registries.Utilities
 
             try
             {
-                factory = GetChannelFactory<TContract>(endpointConfigurationName);
+                factory = GetChannelFactory<TContract>(endpoint);
                 channel = factory.CreateChannel();
 
                 logger.LogInformation("Start-ServiceCall: {OperationName} {Address}", 
@@ -80,7 +74,7 @@ namespace Helsenorge.Registries.Utilities
         }
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [ExcludeFromCodeCoverage] // requires wire communication
-        private ChannelFactory<TContract> GetChannelFactory<TContract>(string endpointConfigurationName)
+        private ChannelFactory<TContract> GetChannelFactory<TContract>(string endpoint)
         {
             object factoryObject;
 
@@ -90,10 +84,11 @@ namespace Helsenorge.Registries.Utilities
                 {
                     if (FactoryCache.TryGetValue(typeof(TContract), out factoryObject) == false)
                     {
-                        var factory = new ConfigurationChannelFactory<TContract>(endpointConfigurationName, _wcfConfiguration, null);
-
-                        factory.Credentials.UserName.UserName = _userName;
-                        factory.Credentials.UserName.Password = _password;
+                        Uri endpointUri = new Uri(endpoint);
+                        var binding = GetBinding(endpointUri);
+                        var factory = new ChannelFactory<TContract>(binding, new EndpointAddress(endpointUri));
+                        factory.Credentials.UserName.UserName = _configuration.UserName;
+                        factory.Credentials.UserName.Password = _configuration.Password;
 
                         FactoryCache.TryAdd(typeof(TContract), factory);
                         factoryObject = factory;
@@ -101,6 +96,32 @@ namespace Helsenorge.Registries.Utilities
                 }
             }
             return (ChannelFactory<TContract>)factoryObject;
+        }
+
+        private Binding GetBinding(Uri endpoint)
+        {
+            switch (endpoint.Scheme)
+            {
+                case "https":
+                    BasicHttpsBinding httpsBinding = new BasicHttpsBinding();
+                    httpsBinding.Security.Mode = BasicHttpsSecurityMode.Transport;
+                    httpsBinding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
+                    httpsBinding.MaxBufferSize = _configuration.MaxBufferSize;
+                    httpsBinding.MaxBufferPoolSize = _configuration.MaxBufferPoolSize;
+                    httpsBinding.MaxReceivedMessageSize = _configuration.MaxRecievedMessageSize;
+                    return httpsBinding;
+                case "net.tcp":
+                    NetTcpBinding netTcpBinding = new NetTcpBinding();
+                    netTcpBinding.Security.Mode = SecurityMode.TransportWithMessageCredential;
+                    netTcpBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
+                    netTcpBinding.Security.Message.ClientCredentialType = MessageCredentialType.UserName;
+                    netTcpBinding.MaxBufferSize = _configuration.MaxBufferSize;
+                    netTcpBinding.MaxBufferPoolSize = _configuration.MaxBufferPoolSize;
+                    netTcpBinding.MaxReceivedMessageSize = _configuration.MaxRecievedMessageSize;
+                    return netTcpBinding;
+                default:
+                    throw new InvalidChannelBindingException($"The URI scheme '{endpoint.Scheme}' is not supported. Accepted schemes are 'https' and 'net.tcp'.");
+            }
         }
     }
 }

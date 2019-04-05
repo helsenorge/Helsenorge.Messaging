@@ -56,18 +56,12 @@ namespace Helsenorge.Messaging.Tests
         {
             var addressRegistrySettings = new AddressRegistrySettings()
             {
-                UserName = "username",
-                Password = "password",
-                EndpointName = "SomeEndpointName",
-                WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
+                SoapConfiguration = new SoapConfiguration { EndpointAddress = "http://example.org/some-endpoint", UserName = "username", Password = "password" },
                 CachingInterval = TimeSpan.FromSeconds(5)
             };
             var collaborationRegistrySettings = new CollaborationProtocolRegistrySettings()
             {
-                UserName = "username",
-                Password = "password",
-                EndpointName = "SomeEndpointName",
-                WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
+                SoapConfiguration = new SoapConfiguration { EndpointAddress = "http://example.org/some-endpoint", UserName = "username", Password = "password" },
                 CachingInterval = TimeSpan.FromSeconds(5)
             };
 

@@ -25,10 +25,7 @@ namespace Helsenorge.Registries.Tests
         {
             var settings = new CollaborationProtocolRegistrySettings()
             {
-                UserName = "username",
-                Password = "password",
-                EndpointName = "BasicHttpBinding_ICommunicationPartyService",
-                WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
+                SoapConfiguration = new SoapConfiguration { EndpointAddress = "http://example.org/some-endpoint", UserName = "username", Password = "password" },
                 CachingInterval = TimeSpan.FromSeconds(5),
                 MyHerId = 93238 // matches a value in a CPA test file
             };

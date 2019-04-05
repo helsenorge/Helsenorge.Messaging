@@ -1,25 +1,29 @@
 {
     "AddressRegistrySettings": {
-        "UserName": "???",
-        "Password": "???"
+        "SoapConfiguration": {
+            "UserName": "username",
+            "Password": "password"
+        }
     },
     "CollaborationProtocolRegistrySettings": {
-        "UserName": "???",
-        "Password": "???",
-        "MyHerId": "6789"
+        "SoapConfiguration": {
+            "UserName": "username",
+            "Password": "password"
+        },
+        "MyHerId": "5678"
     },
     "MessagingSettings": {
-        "MyHerId": "6789",
+        "MyHerId": "5678",
         "ServiceBus": {
             "ConnectionString": "???"
         },
         "DecryptionCertificate": {
-            "Thumbprint": "fddbcfbb3231f0c66ee2168358229d3cac95e88a",
+            "Thumbprint": "???",
             "StoreName": "My",
             "StoreLocation": "LocalMachine"
         },
         "SigningCertificate": {
-            "Thumbprint": "bd302b20fcdcf3766bf0bcba485dfb4b2bfe1379",
+            "Thumbprint": "???",
             "StoreName": "My",
             "StoreLocation": "LocalMachine"
         }

@@ -9,21 +9,21 @@ namespace Helsenorge.Registries
     public class CollaborationProtocolRegistrySettings
     {
         /// <summary>
-        /// Username used for connecting
+        /// The default constructor for CollaborationProtocolRegistrySettings class.
         /// </summary>
-        public string UserName { get; set; }
+        public CollaborationProtocolRegistrySettings()
+        {
+            SoapConfiguration = new SoapConfiguration
+            {
+                MaxBufferSize = 262144,
+                MaxBufferPoolSize = 524288,
+                MaxRecievedMessageSize = 262144
+            };
+        }
         /// <summary>
-        /// Password used for connecting
+        /// SOAP configuration
         /// </summary>
-        public string Password { get; set; }
-        /// <summary>
-        /// The endpoint name found in the WCF configuration
-        /// </summary>
-        public string EndpointName { get; set; }
-        /// <summary>
-        /// The configuration containing WCF settings
-        /// </summary>
-        public Configuration WcfConfiguration { get; set; }
+        public SoapConfiguration SoapConfiguration { get; set; }
         /// <summary>
         /// The amount of time values should be cached
         /// </summary>

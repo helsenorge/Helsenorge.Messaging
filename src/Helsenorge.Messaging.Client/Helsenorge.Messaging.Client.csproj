@@ -38,6 +38,25 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="Elisabeth\**" />
+    <Compile Remove="Samples3\**" />
+    <Compile Remove="Samples4\**" />
+    <Compile Remove="Samples5\**" />
+    <EmbeddedResource Remove="Elisabeth\**" />
+    <EmbeddedResource Remove="Samples3\**" />
+    <EmbeddedResource Remove="Samples4\**" />
+    <EmbeddedResource Remove="Samples5\**" />
+    <None Remove="Elisabeth\**" />
+    <None Remove="Samples3\**" />
+    <None Remove="Samples4\**" />
+    <None Remove="Samples5\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Samples\Dialogtjeneste07_eKontakt_Request.xml" />
+    <None Remove="Samples\Dialogtjeneste_Timereservasjon_Request.xml" />
+    <None Remove="Samples\Tjenesteoversikt1Tjeneste.xml" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.1" />
   </ItemGroup>
   <ItemGroup>
@@ -47,9 +66,6 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="App.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

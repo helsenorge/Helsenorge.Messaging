@@ -9,21 +9,21 @@ namespace Helsenorge.Registries
     public class AddressRegistrySettings
     {
         /// <summary>
-        /// Username used for connecting
+        /// Default constructor for AddressRegistrySettings class
         /// </summary>
-        public string UserName { get; set; }
+        public AddressRegistrySettings()
+        {
+            SoapConfiguration = new SoapConfiguration
+            {
+                MaxBufferSize = 2147483647,
+                MaxBufferPoolSize = 2147483647,
+                MaxRecievedMessageSize = 2147483647
+            };
+        }
         /// <summary>
-        /// Password used for connecting
+        /// SOAP configuration
         /// </summary>
-        public string Password { get; set; }
-        /// <summary>
-        /// The endpoint name found in the WCF configuration
-        /// </summary>
-        public string EndpointName { get; set; }
-        /// <summary>
-        /// The configuration containing WCF settings
-        /// </summary>
-        public Configuration WcfConfiguration { get; set; }
+        public SoapConfiguration SoapConfiguration  { get; set; }
         /// <summary>
         /// The amount of time values should be cached
         /// </summary>
