@@ -12,7 +12,7 @@
     <AssemblyOriginatorKeyFile>..\..\tools\key.snk</AssemblyOriginatorKeyFile>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Helsenorge.Messaging.xml</DocumentationFile>
     <Product>Helsenorge Messaging</Product>
-    <Version>3.1.0-alpha02</Version>
+    <Version>4.0.0-alpha01</Version>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Abstractions\IMessageReceiverFactory.cs" />
