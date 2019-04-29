@@ -52,6 +52,7 @@ namespace Helsenorge.Messaging.ServiceBus
         internal ICertificateValidator DefaultCertificateValidator => Core.DefaultCertificateValidator;
         internal IMessageProtection DefaultMessageProtection => Core.DefaultMessageProtection;
         internal bool LogPayload => Core.Settings.LogPayload;
+        internal ICertificateStore CertificateStore => Core.CertificateStore;
         /// <summary>
         /// Reference to the core messaging system
         /// </summary>
@@ -113,7 +114,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 hasAgreement = false; // if we don't have an agreement, we try to find the specific profile
                 profile = await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, outgoingMessage.ToHerId).ConfigureAwait(false);
             }
-            var signature = Settings.SigningCertificate.Certificate;
+            var signature = Core.CertificateStore.GetCertificate(Core.Settings.SigningCertificate.Thumbprint);
             var encryption = profile.EncryptionCertificate;
 
             var validator = Core.DefaultCertificateValidator;

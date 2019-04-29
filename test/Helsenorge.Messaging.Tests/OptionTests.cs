@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Helsenorge.Messaging.Security;
+using Helsenorge.Messaging.Tests.Mocks;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Helsenorge.Messaging.Tests
@@ -7,6 +10,36 @@ namespace Helsenorge.Messaging.Tests
     [TestClass]
     public class OptionTests : BaseTest
     {
+        [TestMethod]
+        public void MessagingClient_DefaultCerificateStoreIsWindowsCerificateStore()
+        {
+            MessagingClient messagingClient = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry);
+            Assert.IsInstanceOfType(messagingClient.CertificateStore, typeof(WindowsCertificateStore));
+        }
+
+        [TestMethod]
+        public void MessagingServer_DefaultCerificateStoreIsWindowsCerificateStore()
+        {
+            LoggerFactory loggerFactory = new LoggerFactory();
+            MessagingServer messagingServer = new MessagingServer(Settings, loggerFactory.CreateLogger("Mock"), loggerFactory, CollaborationRegistry, AddressRegistry);
+            Assert.IsInstanceOfType(messagingServer.CertificateStore, typeof(WindowsCertificateStore));
+        }
+
+        [TestMethod]
+        public void MessagingClient_CerificateStoreIsMockCerificateStore()
+        {
+            MessagingClient messagingClient = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry, new MockCertificateStore());
+            Assert.IsInstanceOfType(messagingClient.CertificateStore, typeof(MockCertificateStore));
+        }
+
+        [TestMethod]
+        public void MessagingServer_CerificateStoreIsMockCerificateStore()
+        {
+            LoggerFactory loggerFactory = new LoggerFactory();
+            MessagingServer messagingServer = new MessagingServer(Settings, loggerFactory.CreateLogger("Mock"), loggerFactory, CollaborationRegistry, AddressRegistry, new MockCertificateStore());
+            Assert.IsInstanceOfType(messagingServer.CertificateStore, typeof(MockCertificateStore));
+        }
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Options_NotSet()

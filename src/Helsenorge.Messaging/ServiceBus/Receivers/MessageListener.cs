@@ -284,9 +284,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 // in receive mode, we try to decrypt and validate content even if the certificates are invalid
                 // invalid certificates are flagged to the application layer processing the decrypted message.
                 // with the decrypted content, they may have a chance to figure out who sent it
-                var decryption = Core.Settings.DecryptionCertificate.Certificate;
+                var decryption = Core.CertificateStore.GetCertificate(Core.Settings.DecryptionCertificate.Thumbprint);
                 var signature = incomingMessage.CollaborationAgreement?.SignatureCertificate;
-                var legacyDecryption = Core.Settings.LegacyDecryptionCertificate?.Certificate;
+                var legacyDecryption = Core.Settings.LegacyDecryptionCertificate == null ? null : Core.CertificateStore.GetCertificate(Core.Settings.LegacyDecryptionCertificate.Thumbprint);
 
                 incomingMessage.DecryptionError = Core.DefaultCertificateValidator.Validate(decryption, X509KeyUsageFlags.DataEncipherment);
                 ReportErrorOnLocalCertificate(originalMessage, decryption, incomingMessage.DecryptionError, true);

@@ -8,6 +8,8 @@
     <Authors>Direktoratet for e-helse</Authors>
     <Company>Direktoratet for e-helse</Company>
     <Copyright>Direktoratet for e-helse</Copyright>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\tools\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net46'">
     <DefineConstants>NET46</DefineConstants>

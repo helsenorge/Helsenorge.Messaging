@@ -7,7 +7,9 @@
     <ProjectGuid>{0DD35E31-7384-4F3D-BBE0-366993DC2307}</ProjectGuid>
     <Authors>Direktoratet for e-helse</Authors>
     <Company>Direktoratet for e-helse</Company>
-    <Copyright>Direktoratet for e-helse</Copyright>                
+    <Copyright>Direktoratet for e-helse</Copyright>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\tools\key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net46'">

@@ -4,7 +4,6 @@ using Helsenorge.Messaging.Security;
 using Helsenorge.Messaging.ServiceBus;
 using Helsenorge.Registries;
 using Helsenorge.Registries.Abstractions;
-using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging
 {
@@ -25,6 +24,12 @@ namespace Helsenorge.Messaging
         /// Provides access to the address registry
         /// </summary>
         internal IAddressRegistry AddressRegistry { get; }
+
+        /// <summary>
+        /// Returns the current CertificateStore
+        /// </summary>
+        internal ICertificateStore CertificateStore { get;  }
+
         /// <summary>
         /// Gets or sets the default <see cref="ICertificateValidator"/>.The default implementation is <see cref="CertificateValidator"/>
         /// </summary>
@@ -38,18 +43,25 @@ namespace Helsenorge.Messaging
         /// </summary>
         public ServiceBusCore ServiceBus { get; }
 
+        internal ICertificateStore GetDefaultCertificateStore()
+        {
+            return new WindowsCertificateStore(Settings.SigningCertificate?.StoreName, Settings.SigningCertificate?.StoreLocation);
+        }
+
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="settings">Set of options to use</param>
         /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
         /// <param name="addressRegistry">Reference to the address registry</param>
+        /// <param name="certificateStore"></param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         protected MessagingCore(
             MessagingSettings settings,
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
-            IAddressRegistry addressRegistry)
+            IAddressRegistry addressRegistry,
+            ICertificateStore certificateStore = null)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (collaborationProtocolRegistry == null) throw new ArgumentNullException(nameof(collaborationProtocolRegistry));
@@ -58,6 +70,8 @@ namespace Helsenorge.Messaging
             Settings = settings;
             CollaborationProtocolRegistry = collaborationProtocolRegistry;
             AddressRegistry = addressRegistry;
+
+            CertificateStore = certificateStore ?? GetDefaultCertificateStore();
 
             DefaultCertificateValidator = new CertificateValidator(settings.UseOnlineRevocationCheck);
             DefaultMessageProtection = new SignThenEncryptMessageProtection();
