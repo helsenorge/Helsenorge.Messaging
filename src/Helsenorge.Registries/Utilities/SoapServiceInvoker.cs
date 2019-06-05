@@ -120,7 +120,7 @@ namespace Helsenorge.Registries.Utilities
                     netTcpBinding.MaxReceivedMessageSize = _configuration.MaxRecievedMessageSize;
                     return netTcpBinding;
                 default:
-                    throw new InvalidChannelBindingException($"The URI scheme '{endpoint.Scheme}' is not supported. Accepted schemes are 'https' and 'net.tcp'.");
+                    throw new Abstractions.InvalidChannelBindingException($"The URI scheme '{endpoint.Scheme}' is not supported. Accepted schemes are 'https' and 'net.tcp'.");
             }
         }
     }

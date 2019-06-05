@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net46;net471</TargetFrameworks>
+    <TargetFrameworks>net461;net471</TargetFrameworks>
     <AssemblyName>Helsenorge.Messaging.Tests</AssemblyName>
     <RootNamespace>Helsenorge.Messaging.Tests</RootNamespace>
     <ProjectGuid>{EE03ABE5-4B8D-48BB-AA52-0DC9D442634D}</ProjectGuid>
@@ -17,12 +17,7 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'net471'">
     <DefineConstants>NET471</DefineConstants>
   </PropertyGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.2" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net471'">
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
   </ItemGroup>

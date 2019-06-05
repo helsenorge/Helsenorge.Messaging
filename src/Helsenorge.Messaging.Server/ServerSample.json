@@ -1,29 +1,29 @@
 {
     "AddressRegistrySettings": {
         "SoapConfiguration": {
-            "UserName": "username",
-            "Password": "password"
+            "UserName": "Kenneth.Myhra@helsedir.no",
+            "Password": "d8JIq7Sa"
         }
     },
     "CollaborationProtocolRegistrySettings": {
         "SoapConfiguration": {
-            "UserName": "username",
-            "Password": "password"
+            "UserName": "Kenneth.Myhra@helsedir.no",
+            "Password": "d8JIq7Sa"
         },
-        "MyHerId": "5678"
+        "MyHerId": "8095172"
     },
     "MessagingSettings": {
-        "MyHerId": "5678",
+        "MyHerId": "8095172",
         "ServiceBus": {
-            "ConnectionString": "???"
+            "ConnectionString": "Endpoint=sb://sb.test.nhn.no/NHNTESTServiceBus;StsEndpoint=https://sb.test.nhn.no:9355/NHNTESTServiceBus;RuntimePort=9354;ManagementPort=9355;OAuthUsername=orgusr915933149;OAuthPassword=chwbAkt70ffMRdt"
         },
         "DecryptionCertificate": {
-            "Thumbprint": "???",
+            "Thumbprint": "c38fa377f0dc296ca2a9752c79f107ac96b58602",
             "StoreName": "My",
             "StoreLocation": "LocalMachine"
         },
         "SigningCertificate": {
-            "Thumbprint": "???",
+            "Thumbprint": "97c826f99dac40d4aa9d8533387e3a6922930286",
             "StoreName": "My",
             "StoreLocation": "LocalMachine"
         }
@@ -32,4 +32,3 @@
         "DestinationDirectory": "Results"
     } 
 }
-

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NLog;
 using NLog.Config;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -82,7 +83,7 @@ namespace Helsenorge.Messaging.Server
             _logger = _loggerFactory.CreateLogger("TestServer");
 
             // configure caching
-            var distributedCache = DistributedCacheFactory.Create();
+            var distributedCache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
 
             // set up address registry
             var addressRegistrySettings = new AddressRegistrySettings();
