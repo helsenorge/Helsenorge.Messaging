@@ -6,14 +6,15 @@ using System.Xml.Linq;
 namespace Helsenorge.Messaging.Abstractions
 {
     /// <summary>
-    /// Protectes a message using certificate encryption and signing
+    /// Provides message protection that first signs the message, then encrypts it
     /// </summary>
-    public interface IMessageProtection
+    public abstract class MessageProtection : IMessageProtection
     {
         /// <summary>
         /// Gets the content type this protection represents
         /// </summary>
-        string ContentType { get; }
+        public virtual string ContentType => Abstractions.ContentType.SignedAndEnveloped;
+
         /// <summary>
         /// Protect the message data
         /// </summary>
@@ -21,8 +22,11 @@ namespace Helsenorge.Messaging.Abstractions
         /// <param name="encryptionCertificate">Certificate use for encryption</param>
         /// <param name="signingCertificate">Certificate used for signature</param>
         /// <returns>Data that has been encrypted and signed</returns>
-        [Obsolete("This method is deprecated and is superseded by IMessageProtection.Protect(Stream).")]
-        MemoryStream Protect(XDocument data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate);
+        [Obsolete("This method is deprecated and is superseded by MessageProtection.Protect(Stream).")]
+        public virtual MemoryStream Protect(XDocument data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Signs and then encrypts the contents of <paramref name="data"/>.
@@ -30,7 +34,10 @@ namespace Helsenorge.Messaging.Abstractions
         /// <param name="data">A <see cref="Stream"/> containing the data that will be signed and then encrypted.</param>
         /// <param name="encryptionCertificate">The public key <see cref="X509Certificate2"/> which will be used to encrypt the data.</param>
         /// <returns>A <see cref="Stream"/> containing the signed and encrypted data.</returns>
-        Stream Protect(Stream data, X509Certificate2 encryptionCertificate);
+        public virtual Stream Protect(Stream data, X509Certificate2 encryptionCertificate)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Removes protection from the message data
@@ -38,10 +45,13 @@ namespace Helsenorge.Messaging.Abstractions
         /// <param name="data">Protected data</param>
         /// <param name="encryptionCertificate">Certificate use for encryption</param>
         /// <param name="signingCertificate">Certificate used for signature</param>
-        /// <param name="legacyEncryptionCertificate">Old encryption certificate that is no longer i use</param>
+        /// <param name="legacyEncryptionCertificate">Old encryption certificate</param>
         /// <returns>Data that has been decrypted and verified</returns>
-        [Obsolete("This method is deprecated and is superseded by IMessageProtection.Unprotect(Stream).")]
-        XDocument Unprotect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate, X509Certificate2 legacyEncryptionCertificate);
+        [Obsolete("This method is deprecated and is superseded by MessageProtection.Unprotect(Stream).")]
+        public virtual XDocument Unprotect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate, X509Certificate2 legacyEncryptionCertificate)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Decrypts and then verifies the signature of the content in <paramref name="data"/>.
@@ -49,6 +59,9 @@ namespace Helsenorge.Messaging.Abstractions
         /// <param name="data">A <see cref="Stream"/> containing the data which be decrypted and then the signature will be verified.</param>
         /// <param name="signingCertificate">The public key <see cref="X509Certificate2"/> which will be used to validate the signature of the message data.</param>
         /// <returns>A <see cref="Stream"/> containing the data in decrypted form.</returns>
-        Stream Unprotect(Stream data, X509Certificate2 signingCertificate);
+        public virtual Stream Unprotect(Stream data, X509Certificate2 signingCertificate)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

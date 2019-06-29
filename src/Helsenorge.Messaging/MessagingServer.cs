@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -45,20 +44,61 @@ namespace Helsenorge.Messaging
         /// <param name="loggerFactory">Logger Factory</param>
         /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
         /// <param name="addressRegistry">Reference to the address registry</param>
-        /// <param name="certificateStore">Reference to a certificate store</param>
+        public MessagingServer(
+            MessagingSettings settings,
+            ILogger logger,
+            ILoggerFactory loggerFactory,
+            ICollaborationProtocolRegistry collaborationProtocolRegistry,
+            IAddressRegistry addressRegistry) : base(settings, collaborationProtocolRegistry, addressRegistry)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="settings">Set of options to use</param>
+        /// <param name="logger">Logger used for generic messages</param>
+        /// <param name="loggerFactory">Logger Factory</param>
+        /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
+        /// <param name="addressRegistry">Reference to the address registry</param>
+        /// <param name="certificateStore">Reference to an implementation of <see cref="ICertificateStore"/>.</param>
         public MessagingServer(
             MessagingSettings settings,
             ILogger logger,
             ILoggerFactory loggerFactory,
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
             IAddressRegistry addressRegistry,
-            ICertificateStore certificateStore = null) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore)
+            ICertificateStore certificateStore) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore)
         {
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
-            if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+        }
 
-            _logger = logger;
-            _loggerFactory = loggerFactory;
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="settings">Set of options to use</param>
+        /// <param name="logger">Logger used for generic messages</param>
+        /// <param name="loggerFactory">Logger Factory</param>
+        /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
+        /// <param name="addressRegistry">Reference to the address registry</param>
+        /// <param name="certificateStore">Reference to an implementation of <see cref="ICertificateStore"/>.</param>
+        /// <param name="certificateValidator">Reference to an implementation of <see cref="ICertificateValidator"/>.</param>
+        /// <param name="messageProtection">Reference to an implementation of <see cref="IMessageProtection"/>.</param>
+        public MessagingServer(
+            MessagingSettings settings,
+            ILogger logger,
+            ILoggerFactory loggerFactory,
+            ICollaborationProtocolRegistry collaborationProtocolRegistry,
+            IAddressRegistry addressRegistry,
+            ICertificateStore certificateStore,
+            ICertificateValidator certificateValidator,
+            IMessageProtection messageProtection) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore, certificateValidator, messageProtection)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
         /// <summary>

@@ -58,7 +58,9 @@ namespace Helsenorge.Messaging
         {
             if (MyHerId <= 0) throw new ArgumentOutOfRangeException(nameof(MyHerId));
             if (DecryptionCertificate == null) throw new ArgumentNullException(nameof(DecryptionCertificate));
+            DecryptionCertificate.Validate();
             if (SigningCertificate == null) throw new ArgumentNullException(nameof(SigningCertificate));
+            SigningCertificate.Validate();
             ServiceBus.Validate();
         }
     
@@ -260,5 +262,10 @@ namespace Helsenorge.Messaging
         /// The location of the certificate store to use
         /// </summary>
         public StoreLocation StoreLocation { get; set; }
+
+        public void Validate()
+        {
+            if (string.IsNullOrEmpty(Thumbprint)) throw new ArgumentNullException(nameof(Thumbprint));
+        }
     }
 }
