@@ -283,7 +283,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             received: (m) => { throw new ArgumentOutOfRangeException(); },
             messageModification: (m) => { });
         }
-        [TestMethod, Ignore("The library do no longer validate local private key certificates.")]
+        [TestMethod]
         public void Asynchronous_Receive_LocalCertificateStartDate()
         {
             CertificateValidator.SetError(
@@ -300,7 +300,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
                messageModification: (m) => { });
         }
-        [TestMethod, Ignore("The library do no longer validate local private key certificates.")]
+        [TestMethod]
         public void Asynchronous_Receive_LocalCertificateEndDate()
         {
             CertificateValidator.SetError(
@@ -317,7 +317,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
                messageModification: (m) => { });
         }
-        [TestMethod, Ignore("The library do no longer validate local private key certificates.")]
+        [TestMethod]
         public void Asynchronous_Receive_LocalCertificateUsage()
         {
             CertificateValidator.SetError(
@@ -334,7 +334,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
                messageModification: (m) => { });
         }
-        [TestMethod, Ignore("The library do no longer validate local private key certificates.")]
+        [TestMethod]
         public void Asynchronous_Receive_LocalCertificateRevoked()
         {
             CertificateValidator.SetError(
@@ -351,7 +351,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
                messageModification: (m) => { });
         }
-        [TestMethod, Ignore("The library do no longer validate local private key certificates.")]
+        [TestMethod]
         public void Asynchronous_Receive_LocalCertificateRevokedUnknown()
         {
             CertificateValidator.SetError(
@@ -368,7 +368,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
                messageModification: (m) => { });
         }
-        [TestMethod, Ignore("The library do no longer validate local private key certificates.")]
+        [TestMethod]
         public void Asynchronous_Receive_LocalCertificateMultiple()
         {
             CertificateValidator.SetError(
@@ -536,7 +536,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         [TestMethod]
         public void Asynchronous_Receive_SecurityException()
         {
-            Server.MessageProtection = new SecurityExceptionMessageProtection();
+            var signatureCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeSigntatureThumbprint);
+            var encryptionCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint);
+            Server.MessageProtection = new SecurityExceptionMessageProtection(signatureCertificate, encryptionCertificate);
 
             RunAsynchronousReceive(
                 postValidation: () =>
@@ -570,9 +572,29 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             messageModification: (m) => { m.SetBody(messageAsStream); });  
         }
 
-    class SecurityExceptionMessageProtection : IMessageProtection
+        class SecurityExceptionMessageProtection : IMessageProtection
         {
+            public SecurityExceptionMessageProtection(X509Certificate2 signingCertificate, X509Certificate2 encryptionCertificate)
+            {
+                SigningCertificate = signingCertificate;
+                EncryptionCertificate = encryptionCertificate;
+            }
+            /// <summary>
+            /// Gets the content type applied to protected data
+            /// </summary>
             public string ContentType => Messaging.Abstractions.ContentType.SignedAndEnveloped;
+            /// <summary>
+            /// Gets the signing certificate, but it's not used in this implementation.
+            /// </summary>
+            public X509Certificate2 SigningCertificate { get; private set; }
+            /// <summary>
+            /// Gets the encryption certificate, but it's not used in this implementation.
+            /// </summary>
+            public X509Certificate2 EncryptionCertificate { get; private set; }
+            /// <summary>
+            /// Gets the legacy encryption certificate, but it's not used in this implementation.
+            /// </summary>
+            public X509Certificate2 LegacyEncryptionCertificate => null;
 
             [Obsolete("This method is deprecated and is superseded by SecurityExceptionMessageProtection.Protect(Stream).")]
             public MemoryStream Protect(XDocument data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate)

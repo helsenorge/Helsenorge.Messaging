@@ -39,6 +39,8 @@ namespace Helsenorge.Messaging.Tests
 
         internal MockCertificateStore CertificateStore { get; set; }
 
+        internal MockMessageProtection MessageProtection { get; set; }
+
         protected XDocument GenericMessage => new XDocument(new XElement("SomeDummyXmlUsedForTesting"));
 
         protected XDocument GenericResponse => new XDocument(new XElement("SomeDummyXmlResponseUsedForTesting"));
@@ -140,14 +142,17 @@ namespace Helsenorge.Messaging.Tests
             MockFactory = new MockFactory(otherHerId);
             CertificateValidator = new MockCertificateValidator();
             CertificateStore = new MockCertificateStore();
+            var signingCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeSigntatureThumbprint);
+            var encryptionCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint);
+            MessageProtection = new MockMessageProtection(signingCertificate, encryptionCertificate);
 
             Client = new MessagingClient(
                 Settings, 
                 CollaborationRegistry, 
                 AddressRegistry, 
                 CertificateStore, 
-                CertificateValidator, 
-                new NoMessageProtection()   // Using NoMessageProtection for most tests
+                CertificateValidator,
+                MessageProtection
             );
             Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
@@ -159,7 +164,7 @@ namespace Helsenorge.Messaging.Tests
                 AddressRegistry, 
                 CertificateStore, 
                 CertificateValidator, 
-                new NoMessageProtection()   // Using NoMessageProtection for most tests
+                MessageProtection
             );
             Server.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Security.Cryptography.X509Certificates;
 using Helsenorge.Messaging.Abstractions;
+using Helsenorge.Messaging.Security;
 using Helsenorge.Messaging.Tests.Mocks;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -123,7 +124,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
         }
 
-        [TestMethod, Ignore("The library do no longer validate local private key certificates.")]
+        [TestMethod]
         [ExpectedException(typeof(MessagingException))]
         public void Send_Asynchronous_InvalidSignature()
         {

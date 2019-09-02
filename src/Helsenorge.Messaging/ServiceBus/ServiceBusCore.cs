@@ -114,26 +114,48 @@ namespace Helsenorge.Messaging.ServiceBus
                 hasAgreement = false; // if we don't have an agreement, we try to find the specific profile
                 profile = await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, outgoingMessage.ToHerId).ConfigureAwait(false);
             }
-            var encryptionStatus = Core.CertificateValidator == null 
-                ? CertificateErrors.None 
-                : Core.CertificateValidator.Validate(profile.EncryptionCertificate, X509KeyUsageFlags.DataEncipherment);
 
-            // this is the other parties certificate that may be out of date, not something we can fix
-            if (encryptionStatus != CertificateErrors.None)
+            var contentType = Core.MessageProtection.ContentType;
+            if (contentType.Equals(ContentType.SignedAndEnveloped, StringComparison.OrdinalIgnoreCase))
             {
-                if (Core.Settings.IgnoreCertificateErrorOnSend)
+                var validator = Core.CertificateValidator;
+                var encryptionStatus = validator == null
+                    ? CertificateErrors.None
+                    : validator.Validate(profile.EncryptionCertificate, X509KeyUsageFlags.DataEncipherment);
+                var signatureStatus = validator == null
+                    ? CertificateErrors.None
+                    : validator.Validate(Core.MessageProtection.SigningCertificate, X509KeyUsageFlags.NonRepudiation);
+                // this is the other parties certificate that may be out of date, not something we can fix
+                if (encryptionStatus != CertificateErrors.None)
                 {
-                    logger.LogError(EventIds.RemoteCertificate, $"Remote encryption certificate {profile.EncryptionCertificate?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid");
-                }
-                else
-                {
-                    throw new MessagingException($"Remote encryption certificate {profile.EncryptionCertificate?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid")
+                    if (Core.Settings.IgnoreCertificateErrorOnSend)
                     {
-                        EventId = EventIds.RemoteCertificate
-                    };
+                        logger.LogError(EventIds.RemoteCertificate, $"Remote encryption certificate {profile.EncryptionCertificate?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid");
+                    }
+                    else
+                    {
+                        throw new MessagingException($"Remote encryption certificate {profile.EncryptionCertificate?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid")
+                        {
+                            EventId = EventIds.RemoteCertificate
+                        };
+                    }
+                }
+                // this is our certificate, something we can fix 
+                if (signatureStatus != CertificateErrors.None)
+                {
+                    if (Core.Settings.IgnoreCertificateErrorOnSend)
+                    {
+                        logger.LogError(EventIds.LocalCertificate, $"Locally installed signing certificate {Core.MessageProtection.SigningCertificate?.SerialNumber} is not valid.\nSerial Number: {Core.MessageProtection.SigningCertificate?.SerialNumber}\nThumbprint: {Core.MessageProtection.SigningCertificate?.Thumbprint}");
+                    }
+                    else
+                    {
+                        throw new MessagingException($"Locally installed signing certificate {Core.MessageProtection.SigningCertificate?.SerialNumber} is not valid.\nSerial Number: {Core.MessageProtection.SigningCertificate?.SerialNumber}\nThumbprint: {Core.MessageProtection.SigningCertificate?.Thumbprint}")
+                        {
+                            EventId = EventIds.LocalCertificate
+                        };
+                    }
                 }
             }
-
             var stream = Core.MessageProtection.Protect(outgoingMessage.Payload?.ToStream(), profile.EncryptionCertificate);
 
             var messagingMessage = FactoryPool.CreateMessage(logger, stream, outgoingMessage);

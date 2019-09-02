@@ -14,6 +14,22 @@ namespace Helsenorge.Messaging.Abstractions
         /// Gets the content type this protection represents
         /// </summary>
         string ContentType { get; }
+
+        /// <summary>
+        /// Gets the encryption certificate
+        /// </summary>
+        X509Certificate2 EncryptionCertificate { get; }
+
+        /// <summary>
+        /// Gets the signing certificate
+        /// </summary>
+        X509Certificate2 SigningCertificate { get; }
+
+        /// <summary>
+        /// Gets the legacy encryption certificate
+        /// </summary>
+        X509Certificate2 LegacyEncryptionCertificate { get; }
+
         /// <summary>
         /// Protect the message data
         /// </summary>
