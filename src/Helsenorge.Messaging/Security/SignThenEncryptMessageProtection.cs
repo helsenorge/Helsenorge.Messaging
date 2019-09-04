@@ -14,21 +14,15 @@ namespace Helsenorge.Messaging.Security
     /// </summary>
     public class SignThenEncryptMessageProtection : MessageProtection
     {
-        private readonly X509Certificate2 _signingCertificate;
-        private readonly X509Certificate2 _encryptionCertificate;
-        private readonly X509Certificate2 _legacyEncryptionCertificate;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="SignThenEncryptMessageProtection"/> class with the required certificates for signing and encrypt data.
+        /// Initializes a new instance of the <see cref="SignThenEncryptMessageProtection"/> class with the required certificates for signing and encrypting data.
         /// </summary>
         /// <param name="signingCertificate">Certificcate that will be used to sign data</param>
         /// <param name="encryptionCertificate">Certificate that will be used to encrypt data</param>
         /// <param name="legacyEncryptionCertificate">A legacy certificate that can be used when swapping certificates.</param>
         public SignThenEncryptMessageProtection(X509Certificate2 signingCertificate, X509Certificate2 encryptionCertificate, X509Certificate2 legacyEncryptionCertificate = null)
-        { 
-            _signingCertificate = signingCertificate ?? throw new ArgumentNullException(nameof(signingCertificate));
-            _encryptionCertificate = encryptionCertificate ?? throw new ArgumentNullException(nameof(encryptionCertificate));
-            _legacyEncryptionCertificate = legacyEncryptionCertificate;
+            : base (signingCertificate, encryptionCertificate, legacyEncryptionCertificate)
+        {
         }
 
         /// <summary>
@@ -90,7 +84,7 @@ namespace Helsenorge.Messaging.Security
         {
             // first we sign the message
             SignedCms signedCms = new SignedCms(new ContentInfo(data));
-            signedCms.ComputeSignature(new CmsSigner(_signingCertificate));
+            signedCms.ComputeSignature(new CmsSigner(SigningCertificate));
             byte[] signedData = signedCms.Encode();
 
             // then we encrypt it
@@ -192,9 +186,9 @@ namespace Helsenorge.Messaging.Security
 
         private byte[] Unprotect(byte[] data, X509Certificate2 signingCertificate)
         {
-            X509Certificate2Collection encryptionCertificates = new X509Certificate2Collection(_encryptionCertificate);
-            if (_legacyEncryptionCertificate != null)
-                encryptionCertificates.Add(_legacyEncryptionCertificate);
+            X509Certificate2Collection encryptionCertificates = new X509Certificate2Collection(EncryptionCertificate);
+            if (LegacyEncryptionCertificate != null)
+                encryptionCertificates.Add(LegacyEncryptionCertificate);
 
             // first we decrypt the data
             EnvelopedCms envelopedCms = new EnvelopedCms();

@@ -12,12 +12,24 @@ namespace Helsenorge.Messaging.Security
     /// <summary>
     /// Provices no message protection at all
     /// </summary>
-    public class NoMessageProtection : MessageProtection
+    public class NoMessageProtection : IMessageProtection
     {
         /// <summary>
         /// Gets the content type applied to protected data
         /// </summary>
-        public override string ContentType => Messaging.Abstractions.ContentType.Text;
+        public string ContentType => Abstractions.ContentType.Text;
+        /// <summary>
+        /// Gets the signing certificate, but it's not used in this implementation.
+        /// </summary>
+        public X509Certificate2 SigningCertificate => null;
+        /// <summary>
+        /// Gets the encryption certificate, but it's not used in this implementation.
+        /// </summary>
+        public X509Certificate2 EncryptionCertificate => null;
+        /// <summary>
+        /// Gets the legacy encryption certificate, but it's not used in this implementation.
+        /// </summary>
+        public X509Certificate2 LegacyEncryptionCertificate => null;
 
         /// <summary>
         /// Protects the information based on the certificates
@@ -28,7 +40,7 @@ namespace Helsenorge.Messaging.Security
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [Obsolete("This method is deprecated and is superseded by NoMessageProtection.Protect(Stream).")]
-        public override MemoryStream Protect(XDocument data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate)
+        public MemoryStream Protect(XDocument data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
 
@@ -44,7 +56,7 @@ namespace Helsenorge.Messaging.Security
         /// <param name="data">A <see cref="Stream"/> containing the data that will be signed and then encrypted.</param>
         /// <param name="encryptionCertificate">Not relevant for this implementation.</param>
         /// <returns>A <see cref="Stream"/> containing the signed and encrypted data.</returns>
-        public override Stream Protect(Stream data, X509Certificate2 encryptionCertificate)
+        public Stream Protect(Stream data, X509Certificate2 encryptionCertificate)
         {
             return data;
         }
@@ -58,7 +70,7 @@ namespace Helsenorge.Messaging.Security
         /// <param name="legacyEncryptionCertificate">Not relevant for this implementation</param>
         /// <returns></returns>
         [Obsolete("This method is deprecated and is superseded by NoMessageProtection.Unprotect(Stream).")]
-        public override XDocument Unprotect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate, X509Certificate2 legacyEncryptionCertificate)
+        public XDocument Unprotect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate, X509Certificate2 legacyEncryptionCertificate)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
 
@@ -94,7 +106,7 @@ namespace Helsenorge.Messaging.Security
         /// <param name="data">A <see cref="Stream"/> containing the data which be decrypted and then the signature will be verified.</param>
         /// <param name="signingCertificate">Not relevant for this implemenation</param>
         /// <returns>A <see cref="Stream"/> containing the data in decrypted form.</returns>
-        public override Stream Unprotect(Stream data, X509Certificate2 signingCertificate)
+        public Stream Unprotect(Stream data, X509Certificate2 signingCertificate)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
 

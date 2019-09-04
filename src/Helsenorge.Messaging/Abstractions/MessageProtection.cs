@@ -11,9 +11,34 @@ namespace Helsenorge.Messaging.Abstractions
     public abstract class MessageProtection : IMessageProtection
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="MessageProtection"/> class with the required certificates for signing and encrypting data.
+        /// </summary>
+        /// <param name="signingCertificate">Certificcate that will be used to sign data</param>
+        /// <param name="encryptionCertificate">Certificate that will be used to encrypt data</param>
+        /// <param name="legacyEncryptionCertificate">A legacy certificate that can be used when swapping certificates.</param>
+        protected MessageProtection(X509Certificate2 signingCertificate, X509Certificate2 encryptionCertificate, X509Certificate2 legacyEncryptionCertificate = null)
+        {
+            SigningCertificate = signingCertificate ?? throw new ArgumentNullException(nameof(signingCertificate));
+            EncryptionCertificate = encryptionCertificate ?? throw new ArgumentNullException(nameof(encryptionCertificate));
+            LegacyEncryptionCertificate = legacyEncryptionCertificate;
+        }
+
+        /// <summary>
         /// Gets the content type this protection represents
         /// </summary>
         public virtual string ContentType => Abstractions.ContentType.SignedAndEnveloped;
+        /// <summary>
+        /// Gets the signing certificate
+        /// </summary>
+        public X509Certificate2 SigningCertificate { get; private set; }
+        /// <summary>
+        /// Gets the encryption certificate
+        /// </summary>
+        public X509Certificate2 EncryptionCertificate { get; private set; }
+        /// <summary>
+        /// Gets the legacy encryption certificate
+        /// </summary>
+        public X509Certificate2 LegacyEncryptionCertificate { get; private set; }
 
         /// <summary>
         /// Protect the message data
