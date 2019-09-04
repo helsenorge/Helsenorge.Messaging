@@ -2,82 +2,91 @@
 
 ## Helsenorge.Registries
 
-### REG-1
+### REG-000001
 Problemer med å hente kommunikasjons detaljer.
  
-### REG-2
+### REG-000002
 Problemer med å finne CPP for en motpart
 
-### REG-3
+### REG-000003
 Problemer med å finne CPA for en motpart.
 
 ## Helsenorge.Messaging
 
-### MUG-1
+### MUG-000001
 Generell feil med å motta meldinger.
 
-### MUG-2
+### MUG-000002
 Generell feil med å sende meldinger.
 
-### MUG-3
+### MUG-000003
 Kønavnet er tomt.
 
-### MUG-4
+### MUG-000004
 Avsender mangler i adresseregisteret.
 
-### MUG-10
+### MUG-000010
 Mer enn en feil med avsenders sertifikat.
 
-### MUG-11
+### MUG-000011
 Avsenders sertifikat har ugyldig start dato.
 
-### MUG-12
+### MUG-000012
 Avsenders sertifikat har ugyldig slutt dato.
 
-### MUG-13
+### MUG-000013
 Avsenders sertifikat har blitt revokert.
 
-### MUG-14
+### MUG-000014
 Avsenders sertifikat har ugyldig type. f.eks. signeringssertifikat som brukes for kryptering.
 
-### MUG-15
+### MUG-000015
 Mer enn en feil med lokalt sertifikat.
 
-### MUG-16
+### MUG-000016
 Lokalt sertifikat har ugyldig start dato.
 
-### MUG-17
+### MUG-000017
 Lokalt sertifikat har ugyldig slutt dato.
 
-### MUG-18
+### MUG-000018
 Lokalt sertifikat har blitt revokert.
 
-### MUG-19
+### MUG-000019
 Lokalt sertifikat har ugyldig type. f.eks. signeringssertifikat som brukes for kryptering.
 
-### MUG-20
+### MUG-000020
 Mottatt melding er ikke XML.
 
-### MUG-21
+### MUG-000021
 Mottatt melding mangler data i AMQP header.
 
-### MUG-22
+### MUG-000022
 Mottatt melding har feil data i header kontra det som ligger i meldingen. Denne brukes av hodemelding for å sjekke at avsender id i fagmeldingen stemmer med det som står i AMQP header. 
 
-### MUG-23
+### MUG-000023
 Meldingsmottaket har rapportert en feil som skal sendes til avsender. 
 
-### MUG-30
+### MUG-000030
 Avsender svarte ikke på en synkron melding innen en gitt tid (timeout).
 
-### MUG-31
+### MUG-000031
 Avsender svarte på en synkron melding etter at tiden gikk ut. Meldingen har ikke blitt prosessert.
 
-### MUG-33
+### MUG-000033
 Ugyldig meldingsfunksjon.
 
-### MUG-34
+### MUG-000034
 Feil som avsender har rapportert. Ting som kommer inn på error køen.
 
-### MUG-35
+### MUG-000035
 Ukjent feil har oppstått.
+
+### MUG-001001
+Informasjonsformål når mottaksprosessen starter/avslutter
+
+### MUG-001002
+Informasjonsformål når sendeprosessen starter / avslutter 
+
+### MUG-001003
+Informasjonsformål når meldingen fjernes fra køen
