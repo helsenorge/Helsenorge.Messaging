@@ -105,6 +105,8 @@ namespace Helsenorge.Messaging.ServiceBus
             if (string.IsNullOrEmpty(outgoingMessage.MessageId)) throw new ArgumentNullException(nameof(outgoingMessage.MessageId));
             if (outgoingMessage.Payload == null) throw new ArgumentNullException(nameof(outgoingMessage.Payload));
 
+            logger.LogStartSend(queueType, outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, outgoingMessage.PersonalId, outgoingMessage.Payload);
+
             var hasAgreement = true;
             // first we try and find an agreement
             var profile = await CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(logger, outgoingMessage.ToHerId).ConfigureAwait(false);
@@ -117,8 +119,14 @@ namespace Helsenorge.Messaging.ServiceBus
             var encryption = profile.EncryptionCertificate;
 
             var validator = Core.DefaultCertificateValidator;
+            // Validate encryption certificate
+            logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, encryption.Thumbprint, encryption.Subject, "DataEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId);
             var encryptionStatus = validator.Validate(encryption, X509KeyUsageFlags.DataEncipherment);
+            logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, encryption.Thumbprint, encryption.Subject, "DataEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            // Validate "our" own signature certificate
+            logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, signature.Thumbprint, signature.Subject, "NonRepudiation", Core.Settings.MyHerId, outgoingMessage.MessageId);
             var signatureStatus = validator.Validate(signature, X509KeyUsageFlags.NonRepudiation);
+            logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, signature.Thumbprint, signature.Subject, "NonRepudiation", Core.Settings.MyHerId, outgoingMessage.MessageId);
 
             // this is the other parties certificate that may be out of date, not something we can fix
             if (encryptionStatus != CertificateErrors.None)
@@ -152,10 +160,16 @@ namespace Helsenorge.Messaging.ServiceBus
             }
 
             var protection = Core.DefaultMessageProtection;
+            logger.LogBeforeEncryptingPayload(outgoingMessage.MessageFunction, encryption.Thumbprint, encryption.Subject, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            // Encrypt the payload
             var stream = protection.Protect(outgoingMessage.Payload, encryption, signature);
+            logger.LogAfterEncryptingPayload(outgoingMessage.MessageFunction, encryption.Thumbprint, encryption.Subject, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
 
+            logger.LogBeforeFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            // Create an empty message
             var messagingMessage = FactoryPool.CreateMessage(logger, stream, outgoingMessage);
-            
+            logger.LogAfterFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+
             if (queueType != QueueType.SynchronousReply)
             {
                 messagingMessage.ReplyTo = 
@@ -183,6 +197,8 @@ namespace Helsenorge.Messaging.ServiceBus
                 messagingMessage.CpaId = profile.CpaId.ToString("D");
             }
             await Send(logger, messagingMessage, queueType, outgoingMessage.PersonalId, (LogPayload) ? outgoingMessage.Payload : null).ConfigureAwait(false);
+
+            logger.LogEndSend(queueType, messagingMessage.MessageFunction, messagingMessage.FromHerId, messagingMessage.ToHerId, messagingMessage.MessageId, outgoingMessage.PersonalId);
         }
 
         /// <summary>
@@ -198,7 +214,6 @@ namespace Helsenorge.Messaging.ServiceBus
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
-            logger.LogStartSend(queueType, message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId, userId, xml);
             IMessagingSender messageSender = null;
 
             try
@@ -222,8 +237,6 @@ namespace Helsenorge.Messaging.ServiceBus
                     SenderPool.ReleaseCachedMessageSender(logger, message.To);
                 }
             }
-
-            logger.LogEndSend(queueType, message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId, userId);
         }
 
         /// <summary>
