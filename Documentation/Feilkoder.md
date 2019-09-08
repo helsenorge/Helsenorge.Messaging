@@ -90,3 +90,18 @@ Informasjonsformål når sendeprosessen starter / avslutter
 
 ### MUG-001003
 Informasjonsformål når meldingen fjernes fra køen
+
+### MUG-001004
+Informasjonsformål ved opprettelse, endring og fjerning av cache entiter i Message Entity Cache
+
+### MUG-001005
+Informasjonsformål ved notifikasjonskall til ekstern kode (brukere av biblioteket / tredjeparter), gir muligheter til å måle responstiden til tredjepartene.
+
+### MUG-001006
+Informasjonsformål ved validering av sertifiakter
+
+### MUG-001007
+Informasjonsformål ved kryptering av payload
+
+### MUG-001008
+Informasjonsformål ved interkasjon mot Factory Pool cache og opprettelse av tom melding, skjer rett før sending av melding til ServiceBus
