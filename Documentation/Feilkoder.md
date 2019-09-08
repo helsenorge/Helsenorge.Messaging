@@ -104,4 +104,4 @@ Informasjonsformål ved validering av sertifiakter
 Informasjonsformål ved kryptering av payload
 
 ### MUG-001008
-Informasjonsformål ved interkasjon mot Factory Pool cache og opprettelse av tom melding, skjer rett før sending av melding til ServiceBus
+Informasjonsformål ved interaksjon mot Factory Pool cache og opprettelse av tom melding, skjer rett før sending av melding til ServiceBus
