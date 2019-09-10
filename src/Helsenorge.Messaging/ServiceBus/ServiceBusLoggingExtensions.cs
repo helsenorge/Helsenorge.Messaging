@@ -168,11 +168,11 @@ namespace Helsenorge.Messaging.ServiceBus
 
             BeforeFactoryPoolCreateMessage = LoggerMessage.Define<string, int, int, string>(
                 LogLevel.Information,
-                EventIds.EncryptPayload,
+                EventIds.FactoryPoolCreateEmptyMessage,
                 "Before-FactoryPoolCreateMessage: {MessageFunction} From: {FromHerId} To: {ToHerId}  Id: {MessageId}");
             AfterFactoryPoolCreateMessage = LoggerMessage.Define<string, int, int, string>(
                 LogLevel.Information,
-                EventIds.EncryptPayload,
+                EventIds.FactoryPoolCreateEmptyMessage,
                 "After-FactoryPoolCreateMessage: {MessageFunction} From: {FromHerId} To: {ToHerId} Id: {MessageId}");
         }
 
