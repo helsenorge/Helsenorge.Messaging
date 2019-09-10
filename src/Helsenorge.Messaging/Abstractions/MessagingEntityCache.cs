@@ -75,6 +75,8 @@ namespace Helsenorge.Messaging.Abstractions
         /// <returns></returns>
         public T Create(ILogger logger, string path)
         {
+            logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "Start-MessagingEntityCache::Create: Create entry for {Path}", path);
+
             if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path));
             if (_shutdownPending) return null;
 
@@ -88,7 +90,7 @@ namespace Helsenorge.Messaging.Abstractions
                 if (_entries.ContainsKey(path) == false)
                 {
                     // create a new record for this entity
-                    logger.LogDebug("MessagingEntityCache: Creating entry for {Path}", path);
+                    logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCacheCreate: Creating entry for {Path}", path);
                     entry = new CacheEntry<T>()
                     {
                         ActiveCount = 1,
@@ -97,6 +99,8 @@ namespace Helsenorge.Messaging.Abstractions
                         ClosePending = false
                     };
                     _entries.Add(path, entry);
+
+                    logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCacheCreate: Create entry for {Path}", path);
                     return entry.Entity;
                 }
                 entry = _entries[path];
@@ -106,15 +110,17 @@ namespace Helsenorge.Messaging.Abstractions
             {
                 entry.ActiveCount++;
                 entry.LastUsed = DateTime.Now;
-                logger.LogDebug("MessagingEntityCache: Updating entry for {Path}", path);
+                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCacheCreate: Updating entry for {Path}", path);
 
                 // if this entity previously was closed, we need to create a new instance
                 if (entry.Entity != null) return entry.Entity;
 
-                logger.LogDebug("MessagingEntityCache: Creating new entity for {Path}", path);
+                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCacheCreate: Creating new entity for {Path}", path);
                 entry.Entity = CreateEntity(logger, path);
                 entry.ClosePending = false;
             }
+
+            logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCacheCreate: Create entry for {Path}", path);
             return entry.Entity;
         }
 
@@ -141,7 +147,7 @@ namespace Helsenorge.Messaging.Abstractions
             {
                 // under normal conditions, we just decrease the active count
                 entry.ActiveCount--;
-                logger.LogDebug("MessagingEntityCache: Releasing entry for {Path}", path);
+                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Releasing entry for {Path}", path);
 
                 // under a high volume scenario, this may be the last used entry even if it was just used
                 // in those cases we need to close the connection and set respective properties
@@ -154,7 +160,7 @@ namespace Helsenorge.Messaging.Abstractions
 
         private static void CloseEntity(ILogger logger, CacheEntry<T> entry, string path)
         {
-            logger.LogDebug("MessagingEntityCache: Closing entity for {Path}", path);
+            logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Closing entity for {Path}", path);
 
             if (entry.Entity == null) return;
             if (entry.Entity.IsClosed == false)
@@ -165,7 +171,7 @@ namespace Helsenorge.Messaging.Abstractions
                 }
                 catch (Exception)
                 {
-                    logger.LogCritical("Failed to close message entity: {Path}", path);
+                    logger.LogCritical(EventIds.MessagingEntityCacheFailedToCloseEntity, "Failed to close message entity: {Path}", path);
                 }
             }
             entry.Entity = null;
@@ -179,7 +185,7 @@ namespace Helsenorge.Messaging.Abstractions
             _shutdownPending = true;
             lock (_entries)
             {
-                logger.LogInformation("Shutting down: {CacheName}", _name);
+                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "Shutting down: {CacheName}", _name);
 
                 foreach (var key in _entries.Keys)
                 {
@@ -196,7 +202,7 @@ namespace Helsenorge.Messaging.Abstractions
                 // we haven't reached our max capacity yet
                 if (_entries.Keys.Count < Capacity) return;
 
-                logger.LogDebug("MessagingEntityCache: Trimming entries");
+                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Trimming entries");
                 const int count = 10;
                 // get the oldest n entries
                 var removal = (from v in _entries.Values

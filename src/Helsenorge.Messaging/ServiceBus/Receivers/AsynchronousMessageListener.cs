@@ -1,7 +1,5 @@
-﻿using System;
-using Helsenorge.Messaging.Abstractions;
+﻿using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
-using Microsoft.ServiceBus.Messaging;
 
 namespace Helsenorge.Messaging.ServiceBus.Receivers
 {
@@ -39,7 +37,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
         protected override void NotifyMessageProcessingStarted(IncomingMessage message)
         {
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
             MessagingNotification.NotifyAsynchronousMessageReceivedStarting(message);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
         /// <summary>
         /// Called to process message
@@ -48,7 +48,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <param name="message">The refined message data. All information should now be present</param>
         protected override void NotifyMessageProcessingReady(IMessagingMessage rawMessage, IncomingMessage message)
         {
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
             MessagingNotification.NotifyAsynchronousMessageReceived(message);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
         /// <summary>
         /// Called when message processing is complete
@@ -56,7 +58,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <param name="message">Reference to the incoming message</param>
         protected override void NotifyMessageProcessingCompleted(IncomingMessage message)
         {
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceivedCompleted), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
             MessagingNotification.NotifyAsynchronousMessageReceivedCompleted(message);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceivedCompleted), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
     }
 }

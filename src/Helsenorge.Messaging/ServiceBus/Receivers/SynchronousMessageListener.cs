@@ -38,7 +38,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
         protected override void NotifyMessageProcessingStarted(IncomingMessage message)
         {
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
             MessagingNotification.NotifySynchronousMessageReceivedStarting(message);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
         /// <summary>
         /// Called to process message
@@ -47,7 +49,10 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <param name="message">The refined message data. All information should now be present</param>
         protected override void NotifyMessageProcessingReady(IMessagingMessage rawMessage, IncomingMessage message)
         {
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
             var reply = MessagingNotification.NotifySynchronousMessageReceived(message);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+
             if (reply == null)
             {
                 throw new InvalidOperationException($"Message handler for function {message.MessageFunction} returned null");
@@ -68,7 +73,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <param name="message">Reference to the incoming message</param>
         protected override void NotifyMessageProcessingCompleted(IncomingMessage message)
         {
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedCompleted), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
             MessagingNotification.NotifySynchronousMessageReceivedCompleted(message);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedCompleted), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
     }
 }
