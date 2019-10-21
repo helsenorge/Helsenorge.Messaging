@@ -242,6 +242,8 @@ namespace Helsenorge.Messaging
     /// </summary>
     public class CertificateSettings
     {
+        X509Certificate2 _certificate;
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -262,6 +264,35 @@ namespace Helsenorge.Messaging
         /// The location of the certificate store to use
         /// </summary>
         public StoreLocation StoreLocation { get; set; }
+
+        /// <summary>
+        /// Gets the actual certificate specified by the configuration
+        /// </summary>
+        [Obsolete("This property is deprecated and is kept for backwards compatibility. Use ICertificateStore to get the Certificate")]
+        public X509Certificate2 Certificate
+        {
+            get
+            {
+                if (_certificate != null) return _certificate;
+
+                var store = new X509Store(StoreName, StoreLocation);
+                store.Open(OpenFlags.ReadOnly);
+                var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, Thumbprint, false);
+                var enumerator = certCollection.GetEnumerator();
+                X509Certificate2 cert = null;
+                while (enumerator.MoveNext())
+                {
+                    cert = enumerator.Current;
+                }
+                store.Close();
+                _certificate = cert;
+                return _certificate;
+            }
+            set
+            {
+                _certificate = value;
+            }
+        }
 
         public void Validate()
         {
