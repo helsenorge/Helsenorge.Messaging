@@ -1,5 +1,4 @@
-﻿using System;
-using Helsenorge.Messaging.Abstractions;
+﻿using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.ServiceBus.Receivers
@@ -54,8 +53,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <param name="message">The refined message data. All information should now be present</param>
         protected override void NotifyMessageProcessingReady(IMessagingMessage rawMessage, IncomingMessage message)
         {
-            Logger.LogDebug("NotifyMessageProcessingReady");
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
             MessagingNotification.NotifySynchronousMessageReceived(message);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
     }
 }

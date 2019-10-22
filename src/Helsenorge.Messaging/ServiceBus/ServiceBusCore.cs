@@ -106,6 +106,8 @@ namespace Helsenorge.Messaging.ServiceBus
             if (string.IsNullOrEmpty(outgoingMessage.MessageId)) throw new ArgumentNullException(nameof(outgoingMessage.MessageId));
             if (outgoingMessage.Payload == null) throw new ArgumentNullException(nameof(outgoingMessage.Payload));
 
+            logger.LogStartSend(queueType, outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, outgoingMessage.PersonalId, outgoingMessage.Payload);
+
             var hasAgreement = true;
             // first we try and find an agreement
             var profile = await CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(logger, outgoingMessage.ToHerId).ConfigureAwait(false);
@@ -114,6 +116,12 @@ namespace Helsenorge.Messaging.ServiceBus
                 hasAgreement = false; // if we don't have an agreement, we try to find the specific profile
                 profile = await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, outgoingMessage.ToHerId).ConfigureAwait(false);
             }
+            // Validate encryption certificate
+            logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, encryption.Thumbprint, encryption.Subject, "DataEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, encryption.Thumbprint, encryption.Subject, "DataEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            // Validate "our" own signature certificate
+            logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, signature.Thumbprint, signature.Subject, "NonRepudiation", Core.Settings.MyHerId, outgoingMessage.MessageId);
+            logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, signature.Thumbprint, signature.Subject, "NonRepudiation", Core.Settings.MyHerId, outgoingMessage.MessageId);
 
             var contentType = Core.MessageProtection.ContentType;
             if (contentType.Equals(ContentType.SignedAndEnveloped, StringComparison.OrdinalIgnoreCase))
@@ -157,9 +165,15 @@ namespace Helsenorge.Messaging.ServiceBus
                 }
             }
             var stream = Core.MessageProtection.Protect(outgoingMessage.Payload?.ToStream(), profile.EncryptionCertificate);
+            logger.LogBeforeEncryptingPayload(outgoingMessage.MessageFunction, encryption.Thumbprint, encryption.Subject, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            // Encrypt the payload
+            logger.LogAfterEncryptingPayload(outgoingMessage.MessageFunction, encryption.Thumbprint, encryption.Subject, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
 
+            logger.LogBeforeFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            // Create an empty message
             var messagingMessage = FactoryPool.CreateMessage(logger, stream, outgoingMessage);
-            
+            logger.LogAfterFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+
             if (queueType != QueueType.SynchronousReply)
             {
                 messagingMessage.ReplyTo = 
@@ -187,6 +201,8 @@ namespace Helsenorge.Messaging.ServiceBus
                 messagingMessage.CpaId = profile.CpaId.ToString("D");
             }
             await Send(logger, messagingMessage, queueType, outgoingMessage.PersonalId, (LogPayload) ? outgoingMessage.Payload : null).ConfigureAwait(false);
+
+            logger.LogEndSend(queueType, messagingMessage.MessageFunction, messagingMessage.FromHerId, messagingMessage.ToHerId, messagingMessage.MessageId, outgoingMessage.PersonalId);
         }
 
         /// <summary>
@@ -202,7 +218,6 @@ namespace Helsenorge.Messaging.ServiceBus
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
-            logger.LogStartSend(queueType, message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId, userId, xml);
             IMessagingSender messageSender = null;
 
             try
@@ -226,8 +241,6 @@ namespace Helsenorge.Messaging.ServiceBus
                     SenderPool.ReleaseCachedMessageSender(logger, message.To);
                 }
             }
-
-            logger.LogEndSend(queueType, message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId, userId);
         }
 
         /// <summary>
