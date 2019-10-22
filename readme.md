@@ -18,8 +18,10 @@ Dette biblioteket støtter oppunder basisbehovet for en kommunikasjonsløsning v
 ## Contributing
 We are welcoming contributors!
 
-If you want to contribute to this project we are using [Git Flow][nvie] for our branch management, please submit pull requests to the develop branch.
+If you want to contribute to this project we are using [Git workflow][nvie] for our branch management, please submit pull requests to the develop branch.
 
 ### GIT branching strategy 
 - [NVIE](http://nvie.com/posts/a-successful-git-branching-model/)
 - Or see: [Git workflow](https://www.atlassian.com/git/workflows#!workflow-gitflow)
+
+[nvie]: http://nvie.com/posts/a-successful-git-branching-model/

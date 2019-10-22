@@ -41,7 +41,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
         protected override void NotifyMessageProcessingStarted(IncomingMessage message)
         {
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
             MessagingNotification.NotifyErrorMessageReceivedStarting(message);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
         /// <summary>
         /// Called to process message
@@ -99,8 +101,12 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     stringBuilder.Append($"{property.Key}: {property.Value} ");
                 }
             }
+
             Logger.LogExternalReportedError(stringBuilder.ToString());
+
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
             MessagingNotification.NotifyErrorMessageReceived(rawMessage);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
 
         /// <summary>
