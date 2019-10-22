@@ -116,23 +116,25 @@ namespace Helsenorge.Messaging.ServiceBus
                 hasAgreement = false; // if we don't have an agreement, we try to find the specific profile
                 profile = await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, outgoingMessage.ToHerId).ConfigureAwait(false);
             }
-            // Validate encryption certificate
-            logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, encryption.Thumbprint, encryption.Subject, "DataEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId);
-            logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, encryption.Thumbprint, encryption.Subject, "DataEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId);
-            // Validate "our" own signature certificate
-            logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, signature.Thumbprint, signature.Subject, "NonRepudiation", Core.Settings.MyHerId, outgoingMessage.MessageId);
-            logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, signature.Thumbprint, signature.Subject, "NonRepudiation", Core.Settings.MyHerId, outgoingMessage.MessageId);
-
+            
             var contentType = Core.MessageProtection.ContentType;
             if (contentType.Equals(ContentType.SignedAndEnveloped, StringComparison.OrdinalIgnoreCase))
             {
                 var validator = Core.CertificateValidator;
+                // Validate external part's encryption certificate
+                logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, profile.EncryptionCertificate.Subject, "DataEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId);
                 var encryptionStatus = validator == null
                     ? CertificateErrors.None
                     : validator.Validate(profile.EncryptionCertificate, X509KeyUsageFlags.DataEncipherment);
+                logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, profile.EncryptionCertificate.Subject, "DataEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId);
+
+                logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate.Thumbprint, Core.MessageProtection.SigningCertificate.Subject, "NonRepudiation", Core.Settings.MyHerId, outgoingMessage.MessageId);
+                // Validate "our" own signature certificate
                 var signatureStatus = validator == null
                     ? CertificateErrors.None
                     : validator.Validate(Core.MessageProtection.SigningCertificate, X509KeyUsageFlags.NonRepudiation);
+                logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate.Thumbprint, Core.MessageProtection.SigningCertificate.Subject, "NonRepudiation", Core.Settings.MyHerId, outgoingMessage.MessageId);
+
                 // this is the other parties certificate that may be out of date, not something we can fix
                 if (encryptionStatus != CertificateErrors.None)
                 {
@@ -164,10 +166,10 @@ namespace Helsenorge.Messaging.ServiceBus
                     }
                 }
             }
-            var stream = Core.MessageProtection.Protect(outgoingMessage.Payload?.ToStream(), profile.EncryptionCertificate);
-            logger.LogBeforeEncryptingPayload(outgoingMessage.MessageFunction, encryption.Thumbprint, encryption.Subject, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            logger.LogBeforeEncryptingPayload(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, profile.EncryptionCertificate.Subject, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
             // Encrypt the payload
-            logger.LogAfterEncryptingPayload(outgoingMessage.MessageFunction, encryption.Thumbprint, encryption.Subject, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            var stream = Core.MessageProtection.Protect(outgoingMessage.Payload?.ToStream(), profile.EncryptionCertificate);
+            logger.LogAfterEncryptingPayload(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, profile.EncryptionCertificate.Subject, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
 
             logger.LogBeforeFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
             // Create an empty message
