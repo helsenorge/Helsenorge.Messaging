@@ -106,22 +106,22 @@ namespace Helsenorge.Messaging.ServiceBus
             StartReceive = LoggerMessage.Define<QueueType, string, int, int, string>(
                 LogLevel.Information, 
                 EventIds.ServiceBusReceive,
-				"Start-ServiceBusReceive{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId}");
+                "Start-ServiceBusReceive{QueueType}: {MessageFunction} From: {FromHerId} To: {ToHerId} Id: {MessageId}");
 
             EndReceive = LoggerMessage.Define<QueueType, string, int, int, string>(
                 LogLevel.Information,
                 EventIds.ServiceBusReceive,
-				"End-ServiceBusReceive{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId}");
+                "End-ServiceBusReceive{QueueType}: {MessageFunction} From: {FromHerId} To: {ToHerId} Id: {MessageId}");
 
             StartSend = LoggerMessage.Define<QueueType, string, int, int, string, string>(
                 LogLevel.Information,
                 EventIds.ServiceBusSend,
-				"Start-ServiceBusSend{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} PersonalId: {UserId}");
+                "Start-ServiceBusSend{QueueType}: {MessageFunction} From: {FromHerId} To: {ToHerId} Id: {MessageId} UserId: {UserId}");
 
             EndSend = LoggerMessage.Define<QueueType, string, int, int, string, string>(
                 LogLevel.Information,
                 EventIds.ServiceBusSend,
-				"End-ServiceBusSend{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} PersonalId: {UserId}");
+                "End-ServiceBusSend{QueueType}: {MessageFunction} From: {FromHerId} To: {ToHerId} Id: {MessageId} UserId: {UserId}");
 
             ExternalReportedError = LoggerMessage.Define<string>(
                 LogLevel.Error,
@@ -141,39 +141,39 @@ namespace Helsenorge.Messaging.ServiceBus
             BeforeNotificationHandler = LoggerMessage.Define<string, string, int, int, string>(
                 LogLevel.Information, 
                 EventIds.NotificationHandler,
-				"Begin-{NotificationHandler}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId}");
+                "Begin-{NotificationHandler}: {MessageFunction} From: {FromHerId} To: {ToHerId} Id: {MessageId}");
 
             AfterNotificationHandler = LoggerMessage.Define<string, string, int, int, string>(
                 LogLevel.Information,
                 EventIds.NotificationHandler,
-				"After-{NotificationHandler}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId}");
+                "After-{NotificationHandler}: {MessageFunction} From: {FromHerId} To: {ToHerId} Id: {MessageId}");
 
             BeforeValidatingCertificate = LoggerMessage.Define<string, string, string, string, int, string>(
                 LogLevel.Information,
                 EventIds.CertificateValidation,
-				"Before-CertificateValidation: {MessageFunction} Thumbprint: {Thumbprint} Subject: {Subject} Key Usage: {KeyUsage} Owner HerId: {OwnerHerId} MessageId: {MessageId}");
+                "Before-CertificateValidation: {MessageFunction} Thumbprint: {Thumbprint} Subject: {Subject} Key Usage: {KeyUsage} Owner HerId: {OwnerHerId} Id: {MessageId}");
             AfterValidatingCertificate = LoggerMessage.Define<string, string, string, string, int, string>(
                 LogLevel.Information,
                 EventIds.CertificateValidation,
-				"After-CertificateValidation: {MessageFunction} Thumbprint: {Thumbprint} Subject: {Subject} Key Usage: {KeyUsage} Owner HerId: {OwnerHerId} MessageId: {MessageId}");
+                "After-CertificateValidation: {MessageFunction} Thumbprint: {Thumbprint} Subject: {Subject} Key Usage: {KeyUsage} Owner HerId: {OwnerHerId} Id: {MessageId}");
 
             BeforeEncryptingPayload = LoggerMessage.Define<string, string, string, int, int, string>(
                 LogLevel.Information,
                 EventIds.EncryptPayload,
-				"Before-EncryptingPayload: {MessageFunction} Thumbprint: {Thumbprint} Subject: {Subject} FromHerId: {FromHerId} ToHerId: {ToHerId}  MessageId: {MessageId}");
+                "Before-EncryptingPayload: {MessageFunction} Thumbprint: {Thumbprint} Subject: {Subject} From: {FromHerId} To: {ToHerId}  Id: {MessageId}");
             AfterEncryptingPayload = LoggerMessage.Define<string, string, string, int, int, string>(
                 LogLevel.Information,
                 EventIds.EncryptPayload,
-				"After-EncryptingPayload: {MessageFunction} Thumbprint: {Thumbprint} Subject: {Subject} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId}");
+                "After-EncryptingPayload: {MessageFunction} Thumbprint: {Thumbprint} Subject: {Subject} From: {FromHerId} To: {ToHerId} Id: {MessageId}");
 
             BeforeFactoryPoolCreateMessage = LoggerMessage.Define<string, int, int, string>(
                 LogLevel.Information,
                 EventIds.FactoryPoolCreateEmptyMessage,
-				"Before-FactoryPoolCreateMessage: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId}  MessageId: {MessageId}");
+                "Before-FactoryPoolCreateMessage: {MessageFunction} From: {FromHerId} To: {ToHerId}  Id: {MessageId}");
             AfterFactoryPoolCreateMessage = LoggerMessage.Define<string, int, int, string>(
                 LogLevel.Information,
                 EventIds.FactoryPoolCreateEmptyMessage,
-				"After-FactoryPoolCreateMessage: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId}");
+                "After-FactoryPoolCreateMessage: {MessageFunction} From: {FromHerId} To: {ToHerId} Id: {MessageId}");
         }
 
         public static void LogException(this ILogger logger, string message,  Exception ex)
