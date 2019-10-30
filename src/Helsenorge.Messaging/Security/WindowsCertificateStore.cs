@@ -24,18 +24,22 @@ namespace Helsenorge.Messaging.Security
         }
 
         /// <summary>
-        /// 
+        /// Retrieves the Certificate from Windows Cerificate Store using the thumbprint as identifier
         /// </summary>
-        /// <param name="thumbprint"></param>
-        /// <returns></returns>
-        public X509Certificate2 GetCertificate(string thumbprint)
+        /// <param name="thumbprint">The certificate's thumbprint</param>
+        /// <returns>Returns the <seealso cref="System.Security.Cryptography.X509Certificates"/> matching the thumbprint.</returns>
+        public X509Certificate2 GetCertificate(object thumbprint)
         {
-            if (string.IsNullOrEmpty(thumbprint)) throw new ArgumentException($"Argument '{nameof(thumbprint)}' must contain a value.", nameof(thumbprint));
+            if (thumbprint == null) throw new ArgumentNullException(nameof(thumbprint));
+            if (!(thumbprint is string)) throw new ArgumentException("Argument is expected to be of type string.", nameof(thumbprint));
+
+            string tp = thumbprint.ToString();
+            if (string.IsNullOrWhiteSpace(tp)) throw new ArgumentException($"Argument '{nameof(thumbprint)}' must contain a value.", nameof(thumbprint));
 
             var store = new X509Store(_storeName.Value, _storeLocation.Value);
             store.Open(OpenFlags.ReadOnly);
 
-            var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
+            var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, tp, false);
             var enumerator = certCollection.GetEnumerator();
             X509Certificate2 certificate = null;
             while (enumerator.MoveNext())

@@ -11,6 +11,6 @@ namespace Helsenorge.Messaging.Abstractions
         /// Returns a certificate from a certificate store
         /// </summary>
         /// <returns></returns>
-        X509Certificate2 GetCertificate(string thumbprint);
+        X509Certificate2 GetCertificate(object identifier);
     }
 }
