@@ -5,15 +5,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Helsenorge.Registries.Mocks;
 using Microsoft.Extensions.Logging;
 using System.Configuration;
-using System.Diagnostics.CodeAnalysis;
 using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Security;
 using Helsenorge.Messaging.Tests.Mocks;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
-using Helsenorge.Registries.Abstractions;
 using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Helsenorge.Messaging.Tests
 {
@@ -39,6 +36,10 @@ namespace Helsenorge.Messaging.Tests
         internal MockLoggerProvider MockLoggerProvider { get; set; }
 
         internal MockCertificateValidator CertificateValidator { get; set; }
+
+        internal MockCertificateStore CertificateStore { get; set; }
+
+        internal MockMessageProtection MessageProtection { get; set; }
 
         protected XDocument GenericMessage => new XDocument(new XElement("SomeDummyXmlUsedForTesting"));
 
@@ -119,11 +120,15 @@ namespace Helsenorge.Messaging.Tests
                 MyHerId = MockFactory.HelsenorgeHerId,
                 SigningCertificate = new CertificateSettings()
                 {
-                    Certificate = TestCertificates.HelsenorgePrivateSigntature
+                    StoreName = StoreName.My,
+                    StoreLocation = StoreLocation.LocalMachine,
+                    Thumbprint = TestCertificates.HelsenorgeSigntatureThumbprint
                 },
                 DecryptionCertificate = new CertificateSettings()
                 {
-                    Certificate = TestCertificates.HelsenorgePrivateEncryption
+                    StoreName = StoreName.My,
+                    StoreLocation = StoreLocation.LocalMachine,
+                    Thumbprint = TestCertificates.HelsenorgeEncryptionThumbprint
                 }
             };
             
@@ -136,19 +141,31 @@ namespace Helsenorge.Messaging.Tests
 
             MockFactory = new MockFactory(otherHerId);
             CertificateValidator = new MockCertificateValidator();
+            CertificateStore = new MockCertificateStore();
+            var signingCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeSigntatureThumbprint);
+            var encryptionCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint);
+            MessageProtection = new MockMessageProtection(signingCertificate, encryptionCertificate);
 
-            Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry)
-            {
-                DefaultMessageProtection = new NoMessageProtection(),   // disable protection for most tests
-                DefaultCertificateValidator = CertificateValidator
-            };
+            Client = new MessagingClient(
+                Settings, 
+                CollaborationRegistry, 
+                AddressRegistry, 
+                CertificateStore, 
+                CertificateValidator,
+                MessageProtection
+            );
             Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
-            Server = new MessagingServer(Settings, Logger, LoggerFactory, CollaborationRegistry, AddressRegistry)
-            {
-                DefaultMessageProtection = new NoMessageProtection(),   // disable protection for most tests
-                DefaultCertificateValidator = CertificateValidator
-            };
+            Server = new MessagingServer(
+                Settings, 
+                Logger, 
+                LoggerFactory, 
+                CollaborationRegistry, 
+                AddressRegistry, 
+                CertificateStore, 
+                CertificateValidator, 
+                MessageProtection
+            );
             Server.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
         }
 

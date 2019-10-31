@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.ServiceBus.Management;
-using Helsenorge.Registries.Abstractions;
 
 namespace Helsenorge.Messaging
 {
@@ -60,7 +58,9 @@ namespace Helsenorge.Messaging
         {
             if (MyHerId <= 0) throw new ArgumentOutOfRangeException(nameof(MyHerId));
             if (DecryptionCertificate == null) throw new ArgumentNullException(nameof(DecryptionCertificate));
+            DecryptionCertificate.Validate();
             if (SigningCertificate == null) throw new ArgumentNullException(nameof(SigningCertificate));
+            SigningCertificate.Validate();
             ServiceBus.Validate();
         }
     
@@ -242,8 +242,6 @@ namespace Helsenorge.Messaging
     /// </summary>
     public class CertificateSettings
     {
-        X509Certificate2 _certificate;
-
         /// <summary>
         /// Constructor
         /// </summary>
@@ -265,32 +263,9 @@ namespace Helsenorge.Messaging
         /// </summary>
         public StoreLocation StoreLocation { get; set; }
 
-        /// <summary>
-        /// Gets the actual certificate specified by the configuration
-        /// </summary>
-        public X509Certificate2 Certificate
+        public void Validate()
         {
-            get
-            {
-                if (_certificate != null) return _certificate;
-
-                var store = new X509Store(StoreName, StoreLocation);
-                store.Open(OpenFlags.ReadOnly);
-                var certCollection = store.Certificates.Find(X509FindType.FindByThumbprint, Thumbprint, false);
-                var enumerator = certCollection.GetEnumerator();
-                X509Certificate2 cert = null;
-                while (enumerator.MoveNext())
-                {
-                    cert = enumerator.Current;
-                }
-                store.Close();
-                _certificate = cert;
-                return _certificate;
-            }
-            set
-            {
-                _certificate = value;
-            }
+            if (string.IsNullOrEmpty(Thumbprint)) throw new ArgumentNullException(nameof(Thumbprint));
         }
     }
 }

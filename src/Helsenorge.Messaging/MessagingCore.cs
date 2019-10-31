@@ -4,7 +4,6 @@ using Helsenorge.Messaging.Security;
 using Helsenorge.Messaging.ServiceBus;
 using Helsenorge.Registries;
 using Helsenorge.Registries.Abstractions;
-using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging
 {
@@ -25,18 +24,57 @@ namespace Helsenorge.Messaging
         /// Provides access to the address registry
         /// </summary>
         internal IAddressRegistry AddressRegistry { get; }
+
+        /// <summary>
+        /// Returns the current instance of <see cref="ICertificateStore"/>.
+        /// </summary>
+        internal ICertificateStore CertificateStore { get;  }
+
+        /// <summary>
+        /// Returns the current instance of <see cref="IMessageProtection"/>.
+        /// </summary>
+        // TODO: Remove set part of property when removing DefaultMessageProtection property
+        internal IMessageProtection MessageProtection { get; set; }
+
+        /// <summary>
+        /// Returns the current instance of <see cref="ICertificateValidator"/>.
+        /// </summary>
+        // TODO: Remove set part of property when removing DefaultCertificateValidator property
+        internal ICertificateValidator CertificateValidator { get; set; }
+
         /// <summary>
         /// Gets or sets the default <see cref="ICertificateValidator"/>.The default implementation is <see cref="CertificateValidator"/>
         /// </summary>
-        public ICertificateValidator DefaultCertificateValidator { get; set; }
+        [Obsolete("This property is deprecated use the parameter 'certificateValidator' on the ctor of MessagingCore, MessagingClient or MessagingServer to override default message protection.")]
+        public ICertificateValidator DefaultCertificateValidator { get { return CertificateValidator; } set { CertificateValidator = value; } }
         /// <summary>
         /// Gets or sets the default <see cref="IMessageProtection"/>. The default implementation is <see cref="SignThenEncryptMessageProtection"/>
         /// </summary>
-        public IMessageProtection DefaultMessageProtection { get; set; }
+        [Obsolete("This property is deprecated use parameter 'messageProtection' on the ctor of MessagingCore, MessagingClient or MessagingServer to override default message protection.")]
+        public IMessageProtection DefaultMessageProtection { get { return MessageProtection; } set { MessageProtection = value; } }
         /// <summary>
         /// Provides access to service bus specific functionality
         /// </summary>
         public ServiceBusCore ServiceBus { get; }
+
+        internal ICertificateStore GetDefaultCertificateStore()
+        {
+            return new WindowsCertificateStore(Settings.SigningCertificate?.StoreName, Settings.SigningCertificate?.StoreLocation);
+        }
+
+        internal IMessageProtection GetDefaultMessageProtection()
+        {
+            var signingCertificate = CertificateStore.GetCertificate(Settings.SigningCertificate?.Thumbprint);
+            var encryptionCertificate = CertificateStore.GetCertificate(Settings.DecryptionCertificate?.Thumbprint);
+            var legacyEncryptionCertificate = Settings.LegacyDecryptionCertificate == null ? null : CertificateStore.GetCertificate(Settings.LegacyDecryptionCertificate.Thumbprint);
+
+            return new SignThenEncryptMessageProtection(signingCertificate, encryptionCertificate, legacyEncryptionCertificate);
+        }
+
+        internal ICertificateValidator GetDefaultCertificateValidator()
+        {
+            return new CertificateValidator(Settings.UseOnlineRevocationCheck);
+        }
 
         /// <summary>
         /// Constructor
@@ -51,19 +89,87 @@ namespace Helsenorge.Messaging
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
             IAddressRegistry addressRegistry)
         {
-            if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (collaborationProtocolRegistry == null) throw new ArgumentNullException(nameof(collaborationProtocolRegistry));
-            if (addressRegistry == null) throw new ArgumentNullException(nameof(addressRegistry));
-
-            Settings = settings;
-            CollaborationProtocolRegistry = collaborationProtocolRegistry;
-            AddressRegistry = addressRegistry;
-
-            DefaultCertificateValidator = new CertificateValidator(settings.UseOnlineRevocationCheck);
-            DefaultMessageProtection = new SignThenEncryptMessageProtection();
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            CollaborationProtocolRegistry = collaborationProtocolRegistry ?? throw new ArgumentNullException(nameof(collaborationProtocolRegistry));
+            AddressRegistry = addressRegistry ?? throw new ArgumentNullException(nameof(addressRegistry));
             ServiceBus = new ServiceBusCore(this);
 
             Settings.Validate();
+
+            CertificateStore = GetDefaultCertificateStore();
+            CertificateValidator = GetDefaultCertificateValidator();
+            MessageProtection = GetDefaultMessageProtection();
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="settings">Set of options to use</param>
+        /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
+        /// <param name="addressRegistry">Reference to the address registry</param>
+        /// <param name="certificateStore">
+        /// Reference to a custom implementation of <see cref="ICertificateStore"/>, if not set the library will default to Windows Certificate Store.
+        /// Setting this argument to null will throw an <see cref="ArgumentNullException"/>.
+        /// </param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        protected MessagingCore(
+            MessagingSettings settings,
+            ICollaborationProtocolRegistry collaborationProtocolRegistry,
+            IAddressRegistry addressRegistry,
+            ICertificateStore certificateStore)
+        {
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            CollaborationProtocolRegistry = collaborationProtocolRegistry ?? throw new ArgumentNullException(nameof(collaborationProtocolRegistry));
+            AddressRegistry = addressRegistry ?? throw new ArgumentNullException(nameof(addressRegistry));
+            ServiceBus = new ServiceBusCore(this);
+
+            Settings.Validate();
+
+            CertificateStore = certificateStore ?? throw new ArgumentNullException(nameof(certificateStore));
+            CertificateValidator = GetDefaultCertificateValidator();
+            MessageProtection = GetDefaultMessageProtection();
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="settings">Set of options to use</param>
+        /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
+        /// <param name="addressRegistry">Reference to the address registry</param>
+        /// <param name="certificateStore">
+        /// Reference to a custom implementation of <see cref="ICertificateStore"/>, if not set the library will default to Windows Certificate Store. 
+        /// Setting this argument to null must be done cautiously as the default implementation of <see cref="IMessageProtection"/> 
+        /// <see cref="SignThenEncryptMessageProtection"/> relies on an <see cref="ICertificateStore"/> implementation.
+        /// </param>
+        /// <param name="certificateValidator">
+        /// Reference to a custom implementation of <see cref="ICertificateValidator"/>, if not set the library will default to the standard implementation 
+        /// of <see cref="ICertificateValidator"/>. By setting this parameter to null you effectively disable certificate validation.
+        /// </param>
+        /// <param name="messageProtection">
+        /// Reference to custom implemenation of <see cref="IMessageProtection"/>, if not set the library will default to standard behavior which relies on 
+        /// certificates retrieved from <see cref="ICertificateStore"/>. Setting this parameter to null will throw an <see cref="ArgumentNullException"/>.
+        /// </param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        protected MessagingCore(
+            MessagingSettings settings,
+            ICollaborationProtocolRegistry collaborationProtocolRegistry,
+            IAddressRegistry addressRegistry,
+            ICertificateStore certificateStore,
+            ICertificateValidator certificateValidator,
+            IMessageProtection messageProtection)
+        {
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            CollaborationProtocolRegistry = collaborationProtocolRegistry ?? throw new ArgumentNullException(nameof(collaborationProtocolRegistry));
+            AddressRegistry = addressRegistry ?? throw new ArgumentNullException(nameof(addressRegistry));
+            ServiceBus = new ServiceBusCore(this);
+
+            Settings.Validate();
+
+            CertificateStore = certificateStore;
+            CertificateValidator = certificateValidator;
+            MessageProtection = messageProtection ?? throw new ArgumentNullException(nameof(messageProtection));
         }
     }
 }

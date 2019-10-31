@@ -272,7 +272,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             {
                 contentWasSigned = false;
                 // no certificates to validate
-                payload = new NoMessageProtection().Unprotect(bodyStream, null, null, null);
+                payload = new NoMessageProtection().Unprotect(bodyStream, null)?.ToXDocument();
             }
             else
             {
@@ -281,28 +281,40 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 // Since this can be message we sent, it's encrypted with their certificate and we don't have that private key
                 if (QueueType == QueueType.Error) return null;
 
+                // TODO: The whole part of validating the local certificates below should probably be move into 
+                // the IMessageProtection implementation, but since there are some constraints to properties on 
+                // IMessagingMessage we'll keep it here for now
+
                 // in receive mode, we try to decrypt and validate content even if the certificates are invalid
                 // invalid certificates are flagged to the application layer processing the decrypted message.
                 // with the decrypted content, they may have a chance to figure out who sent it
-                var decryption = Core.Settings.DecryptionCertificate.Certificate;
-                var signature = incomingMessage.CollaborationAgreement?.SignatureCertificate;
-                var legacyDecryption = Core.Settings.LegacyDecryptionCertificate?.Certificate;
 
-                incomingMessage.DecryptionError = Core.DefaultCertificateValidator.Validate(decryption, X509KeyUsageFlags.DataEncipherment);
-                ReportErrorOnLocalCertificate(originalMessage, decryption, incomingMessage.DecryptionError, true);
-
-                incomingMessage.SignatureError = Core.DefaultCertificateValidator.Validate(signature, X509KeyUsageFlags.NonRepudiation);
-                ReportErrorOnRemoteCertificate(originalMessage, signature, incomingMessage.SignatureError);
-
-                if (legacyDecryption != null)
+                var validator = Core.CertificateValidator;
+                // validate the local encryption certificate and, if present, the local legacy encryption certificate 
+                incomingMessage.DecryptionError = validator == null
+                    ? CertificateErrors.None
+                    : validator.Validate(Core.MessageProtection.EncryptionCertificate, X509KeyUsageFlags.DataEncipherment);
+                // in earlier versions of Helsenorge.Messaging we removed the message, but we should rather 
+                // want it to be dead lettered since this is a temp issue that should be fixed locally.
+                ReportErrorOnLocalCertificate(originalMessage, Core.MessageProtection.EncryptionCertificate, incomingMessage.DecryptionError, false);
+                if(Core.MessageProtection.LegacyEncryptionCertificate != null)
                 {
                     // this is optional information that should only be in effect durin a short transition period
-                    incomingMessage.LegacyDecryptionError = Core.DefaultCertificateValidator.Validate(legacyDecryption, X509KeyUsageFlags.DataEncipherment);
+                    incomingMessage.LegacyDecryptionError = validator == null
+                        ? CertificateErrors.None
+                        : validator.Validate(Core.MessageProtection.LegacyEncryptionCertificate, X509KeyUsageFlags.DataEncipherment);
                     // if someone forgets to remove the legacy configuration, we log an error message but don't remove it
-                    ReportErrorOnLocalCertificate(originalMessage, legacyDecryption, incomingMessage.LegacyDecryptionError, false);
+                    ReportErrorOnLocalCertificate(originalMessage, Core.MessageProtection.LegacyEncryptionCertificate, incomingMessage.LegacyDecryptionError, false);
                 }
+                // validate remote signature certificate
+                var signature = incomingMessage.CollaborationAgreement?.SignatureCertificate;
+                incomingMessage.SignatureError = validator == null
+                    ? CertificateErrors.None
+                    : validator.Validate(signature, X509KeyUsageFlags.NonRepudiation);
+                ReportErrorOnRemoteCertificate(originalMessage, signature, incomingMessage.SignatureError);
 
-                payload = Core.DefaultMessageProtection.Unprotect(bodyStream, decryption, signature, legacyDecryption);
+                // decrypt the message and validate the signatureS
+                payload = Core.MessageProtection.Unprotect(bodyStream, signature)?.ToXDocument();
             }
             return payload;
         }

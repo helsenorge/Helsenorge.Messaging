@@ -64,18 +64,12 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         {
             Exception receiveException = null;
 
-            Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry)
-            {
-                DefaultMessageProtection = new SignThenEncryptMessageProtection(),   // disable protection for most tests
-                DefaultCertificateValidator = CertificateValidator
-            };
+            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.CounterpartyPrivateSigntature, TestCertificates.CounterpartyPrivateEncryption);
+            Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyAProtection);
             Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
-            
-            Server = new MessagingServer(Settings, Logger, LoggerFactory, CollaborationRegistry, AddressRegistry)
-            {
-                DefaultMessageProtection = new SignThenEncryptMessageProtection(),   // disable protection for most tests
-                DefaultCertificateValidator = CertificateValidator
-            };
+
+            var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.HelsenorgePrivateSigntature, TestCertificates.HelsenorgePrivateEncryption);
+            Server = new MessagingServer(Settings, Logger, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyBProtection);
             Server.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
             CollaborationRegistry.SetupFindAgreementForCounterparty(i =>
@@ -512,11 +506,11 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         {
             Settings.DecryptionCertificate = new CertificateSettings()
             {
-                Certificate = TestCertificates.CounterpartyPrivateEncryption
+                Thumbprint = "b1fae38326a6cefa72708f7633541262e8633b2c"
             };
             Settings.LegacyDecryptionCertificate = new CertificateSettings()
             {
-                Certificate =  TestCertificates.HelsenorgePrivateEncryption
+                Thumbprint = "fddbcfbb3231f0c66ee2168358229d3cac95e88a"
             };
 
             // postition of arguments have been reversed so that we instert the name of the argument without getting a resharper indication
@@ -542,7 +536,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         [TestMethod]
         public void Asynchronous_Receive_SecurityException()
         {
-            Server.DefaultMessageProtection = new SecurityExceptionMessageProtection();
+            var signatureCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeSigntatureThumbprint);
+            var encryptionCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint);
+            Server.MessageProtection = new SecurityExceptionMessageProtection(signatureCertificate, encryptionCertificate);
 
             RunAsynchronousReceive(
                 postValidation: () =>
@@ -576,10 +572,31 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             messageModification: (m) => { m.SetBody(messageAsStream); });  
         }
 
-class SecurityExceptionMessageProtection : IMessageProtection
+        class SecurityExceptionMessageProtection : IMessageProtection
         {
+            public SecurityExceptionMessageProtection(X509Certificate2 signingCertificate, X509Certificate2 encryptionCertificate)
+            {
+                SigningCertificate = signingCertificate;
+                EncryptionCertificate = encryptionCertificate;
+            }
+            /// <summary>
+            /// Gets the content type applied to protected data
+            /// </summary>
             public string ContentType => Messaging.Abstractions.ContentType.SignedAndEnveloped;
-            
+            /// <summary>
+            /// Gets the signing certificate, but it's not used in this implementation.
+            /// </summary>
+            public X509Certificate2 SigningCertificate { get; private set; }
+            /// <summary>
+            /// Gets the encryption certificate, but it's not used in this implementation.
+            /// </summary>
+            public X509Certificate2 EncryptionCertificate { get; private set; }
+            /// <summary>
+            /// Gets the legacy encryption certificate, but it's not used in this implementation.
+            /// </summary>
+            public X509Certificate2 LegacyEncryptionCertificate => null;
+
+            [Obsolete("This method is deprecated and is superseded by SecurityExceptionMessageProtection.Protect(Stream).")]
             public MemoryStream Protect(XDocument data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate)
             {
                 if (data == null) throw new ArgumentNullException(nameof(data));
@@ -589,7 +606,20 @@ class SecurityExceptionMessageProtection : IMessageProtection
                 return ms;
             }
 
+            public Stream Protect(Stream data, X509Certificate2 encryptionCertificate)
+            {
+                if (data == null) throw new ArgumentNullException(nameof(data));
+
+                return data;
+            }
+
+            [Obsolete("This method is deprecated and is superseded by SecurityExceptionMessageProtection.Unprotect(Stream).")]
             public XDocument Unprotect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate, X509Certificate2 legacyEncryptionCertificate)
+            {
+                throw new SecurityException("Invalid certificate");
+            }
+
+            public Stream Unprotect(Stream data, X509Certificate2 signingCertificate)
             {
                 throw new SecurityException("Invalid certificate");
             }
@@ -680,12 +710,12 @@ class SecurityExceptionMessageProtection : IMessageProtection
         
         private MockMessage CreateAsynchronousMessageProtected()
         {
-            var signing = new SignThenEncryptMessageProtection();
+            var certificateStore = new MockCertificateStore();
+            var messageProtection = new SignThenEncryptMessageProtection(TestCertificates.HelsenorgePrivateSigntature, TestCertificates.HelsenorgePrivateEncryption);
             var messageId = Guid.NewGuid().ToString("D");
             var path = Path.Combine("Files", "Helsenorge_Message.xml");
             var file = File.Exists(path) ? new XDocument(XElement.Load(path)) : null;
-            var protect = signing.Protect(file ?? GenericMessage, TestCertificates.HelsenorgePublicEncryption,
-                TestCertificates.HelsenorgePrivateSigntature); 
+            var protect = messageProtection.Protect(file == null ? GenericMessage.ToStream() : file.ToStream(), TestCertificates.HelsenorgePublicEncryption); 
             return new MockMessage(protect)
             {
                 MessageFunction = "DIALOG_INNBYGGER_EKONTAKT",
