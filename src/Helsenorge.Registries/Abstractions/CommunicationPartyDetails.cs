@@ -31,5 +31,13 @@ namespace Helsenorge.Registries.Abstractions
         /// Name of the queue where the party expects error messages to be received
         /// </summary>
         public string ErrorQueueName { get; set; }
+        /// <summary>
+        /// The HER-ID of the communication party's parent
+        /// </summary>
+        public int ParentHerId { get; set; }
+        /// <summary>
+        /// Name of the communication party's parent
+        /// </summary>
+        public string ParentName { get; set; }
     }
 }
