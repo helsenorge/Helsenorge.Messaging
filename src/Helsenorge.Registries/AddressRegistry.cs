@@ -199,6 +199,8 @@ namespace Helsenorge.Registries
             {
                 Name = !string.IsNullOrEmpty(communicationParty.DisplayName) ? communicationParty.DisplayName : communicationParty.Name,
                 HerId = communicationParty.HerId,
+                ParentHerId = communicationParty.ParentHerId,
+                ParentName = communicationParty.ParentName
             };
 
             foreach (var address in communicationParty.ElectronicAddresses)
