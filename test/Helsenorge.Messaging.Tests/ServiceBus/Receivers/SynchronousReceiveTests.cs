@@ -16,6 +16,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         private bool _receivedCalled;
         private bool _completedCalled;
         private bool _handledExceptionCalled;
+        private string _messageId;
 
         [TestInitialize]
         public override void Setup()
@@ -38,6 +39,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Assert.IsTrue(_startingCalled);
                     Assert.IsTrue(_receivedCalled);
                     Assert.IsTrue(_completedCalled);
+                    var logEntry = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Information
+                        && l.Message.Contains($"Removing processed message { _messageId} from Herid { MockFactory.OtherHerId } from queue { MockFactory.Helsenorge.Synchronous.Name}. Correlation = { _messageId }"));
+                    Assert.AreEqual(1, logEntry.Count());
                     Assert.AreEqual(0, MockFactory.Helsenorge.Synchronous.Messages.Count);
                     Assert.AreEqual(1, MockFactory.OtherParty.SynchronousReply.Messages.Count);
                 },
@@ -159,14 +163,14 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 
         private MockMessage CreateMockMessage()
         {
-            var messageId = Guid.NewGuid().ToString("D");
+            _messageId = Guid.NewGuid().ToString("D");
             return new MockMessage(GenericResponse)
             {
                 MessageFunction = "DIALOG_INNBYGGER_EKONTAKT",
                 ApplicationTimestamp = DateTime.Now,
                 ContentType = ContentType.SignedAndEnveloped,
-                MessageId = messageId,
-                CorrelationId = messageId,
+                MessageId = _messageId,
+                CorrelationId = _messageId,
                 FromHerId = MockFactory.OtherHerId,
                 ToHerId = MockFactory.HelsenorgeHerId,
                 ScheduledEnqueueTimeUtc = DateTime.UtcNow.AddSeconds(2),
