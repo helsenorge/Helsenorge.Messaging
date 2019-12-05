@@ -84,7 +84,8 @@ namespace Helsenorge.Messaging.Tests.Http
             Assert.AreEqual(DateTimeKind.Utc, utcnow.Kind);
         }
 
-        [TestMethod]
+        // TODO: Set the category to TimeZoneIssues because they fail on our build server
+        [TestMethod, TestCategory("TimeZoneIssues")]
         public void ExploreXmlSerializationOfDateTimes()
         {
             var local = new DateTime(2017, 1, 1, 13, 10, 30, DateTimeKind.Local);
@@ -97,7 +98,8 @@ namespace Helsenorge.Messaging.Tests.Http
             Assert.AreEqual("2017-01-01T13:10:30", SerializeDateTimeUsingXElement(unspecified));
         }
 
-        [TestMethod]
+        // TODO: Set the category to TimeZoneIssues because they fail on our build server
+        [TestMethod, TestCategory("TimeZoneIssues")]
         public void ExploreXmlDeserializationOfDateTimes()
         {
             var local = Parse("2017-01-01T13:10:30+01:00");

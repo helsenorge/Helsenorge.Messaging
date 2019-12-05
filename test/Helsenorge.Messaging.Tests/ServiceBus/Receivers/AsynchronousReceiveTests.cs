@@ -59,7 +59,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 received: (m) => { Assert.IsTrue(m.SignatureError == CertificateErrors.Missing); },
                 messageModification: (m) => { });
         }
-        [TestMethod]
+        [TestMethod, TestCategory("X509Chain")]
         public void Asynchronous_Receive_CertificateSignError()
         {
             Exception receiveException = null;
