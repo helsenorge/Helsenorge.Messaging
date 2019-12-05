@@ -40,6 +40,10 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Assert.IsTrue(_completedCalled);
                     Assert.AreEqual(0, MockFactory.Helsenorge.Synchronous.Messages.Count);
                     Assert.AreEqual(1, MockFactory.OtherParty.SynchronousReply.Messages.Count);
+                    var logEntry = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Information
+                        && l.Message.Contains("ResponseTime-")
+                        && l.Message.EndsWith(" ms"));
+                    Assert.AreEqual(1, logEntry.Count());
                 },
                 wait: () => _completedCalled,
                 received: (m) =>
