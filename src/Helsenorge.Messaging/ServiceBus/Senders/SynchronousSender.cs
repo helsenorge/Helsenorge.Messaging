@@ -129,7 +129,7 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
                 {
                     entry.TimedOut = true;
                 }
-                var error = $"Synchronous call {message.MessageId} timed out against HerId: {message.ToHerId}.";
+                var error = $"MUG-000030 Error Synchronous call {QueueType.Synchronous} {message.MessageId} timed out against HerId: {message.ToHerId}.";
                 logger.LogError(EventIds.SynchronousCallTimeout, error);
                 throw new MessagingException(error)
                 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Schema;
 using Helsenorge.Messaging.Abstractions;
@@ -83,9 +84,13 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         public void Send_Synchronous_Timeout()
         {
             var message = CreateMessage();
-            
             //fake timeout by not posting any messag on the reply queue
-            RunAndHandleMessagingException(Client.SendAndWaitAsync(Logger, message), EventIds.SynchronousCallTimeout);
+            var sender = Client.SendAndWaitAsync(Logger, message);
+            var logEntry = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Error
+            && l.Message.StartsWith("MUG-000030"));
+            Assert.AreEqual(1, logEntry.Count());
+            RunAndHandleMessagingException(sender, EventIds.SynchronousCallTimeout);
+            
         }
         [TestMethod]
         public void Send_Synchronous_DelayedReply()
