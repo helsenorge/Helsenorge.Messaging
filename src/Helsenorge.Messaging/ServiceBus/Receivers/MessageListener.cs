@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -137,7 +136,6 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 
             try
             {
-                var resonseTime = Stopwatch.StartNew();
                 var incomingMessage = new IncomingMessage()
                 {
                     MessageFunction = message.MessageFunction,
@@ -173,8 +171,6 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 NotifyMessageProcessingReady(message, incomingMessage);
                 ServiceBusCore.RemoveProcessedMessageFromQueue(Logger, message);
                 NotifyMessageProcessingCompleted(incomingMessage);
-                resonseTime.Stop();
-                Logger.LogResponseTime(QueueType, incomingMessage, resonseTime.ElapsedMilliseconds.ToString());
                 Logger.LogEndReceive(QueueType, incomingMessage);
                 return incomingMessage;
             }
