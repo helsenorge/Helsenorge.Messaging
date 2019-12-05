@@ -174,7 +174,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 ServiceBusCore.RemoveProcessedMessageFromQueue(Logger, message);
                 NotifyMessageProcessingCompleted(incomingMessage);
                 resonseTime.Stop();
-                Logger.LogResponseTimeHandler(QueueType, incomingMessage, resonseTime.ElapsedMilliseconds.ToString());
+                Logger.LogResponseTime(QueueType, incomingMessage, resonseTime.ElapsedMilliseconds.ToString());
                 Logger.LogEndReceive(QueueType, incomingMessage);
                 return incomingMessage;
             }

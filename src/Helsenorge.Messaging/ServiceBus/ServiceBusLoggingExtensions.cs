@@ -11,7 +11,7 @@ namespace Helsenorge.Messaging.ServiceBus
         private static readonly Action<ILogger, QueueType, string, int, int, string, Exception> EndReceive;
         private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> StartSend;
         private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> EndSend;
-        private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> ResponseTimeNotificationHandler;
+        private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> ResponseTime;
 
         private static readonly Action<ILogger, string, string, int, int, string, Exception> BeforeNotificationHandler;
         private static readonly Action<ILogger, string, string, int, int, string, Exception> AfterNotificationHandler;
@@ -51,9 +51,9 @@ namespace Helsenorge.Messaging.ServiceBus
             EndSend(logger, queueType, function, fromHerId, toHerId, messageId, userId, null);
         }
 
-        public static void LogResponseTimeHandler(this ILogger logger, QueueType queueType, IncomingMessage message, string responseTimeMs)
+        public static void LogResponseTime(this ILogger logger, QueueType queueType, IncomingMessage message, string responseTimeMs)
         {
-            ResponseTimeNotificationHandler(logger, queueType, message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId, responseTimeMs, null);
+            ResponseTime(logger, queueType, message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId, responseTimeMs, null);
         }
 
         public static void LogBeforeNotificationHandler(this ILogger logger, string notificationHandler, string messageFunction, int fromHerId, int toHerId, string messageId)
@@ -128,7 +128,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 EventIds.ServiceBusSend,
                 "End-ServiceBusSend{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} PersonalId: {UserId}");
 
-            ResponseTimeNotificationHandler = LoggerMessage.Define<QueueType, string, int, int, string, string>(
+            ResponseTime = LoggerMessage.Define<QueueType, string, int, int, string, string>(
                LogLevel.Information,
                EventIds.NotificationHandler,
                "ResponseTime-{QueueType}: {MessageFunction}: FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} ResponseTime: {ResponseTimeMs} ms");
