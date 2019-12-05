@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -50,6 +51,7 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
         public async Task<XDocument> SendAsync(ILogger logger, OutgoingMessage message)
         {
             await _core.Send(logger, message, QueueType.Synchronous, _core.Settings.Synchronous.FindReplyQueueForMe()).ConfigureAwait(false);
+            var resonseTime = Stopwatch.StartNew();
 
             var listener = new SynchronousReplyListener(_core, logger, this);
             var start = DateTime.UtcNow;
@@ -117,6 +119,9 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
                             // update information for existing entry
                             messageEntry.Payload = incomingMessage.Payload;
                             messageEntry.ReplyEnqueuedTimeUtc = incomingMessage.EnqueuedTimeUtc;
+                            //Logs the response time in ms
+                            resonseTime.Stop();
+                            logger.LogResponseTime(incomingMessage, resonseTime.ElapsedMilliseconds.ToString());
                         }
                     }
                 }
