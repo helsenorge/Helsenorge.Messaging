@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -50,8 +51,10 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
         public async Task<XDocument> SendAsync(ILogger logger, OutgoingMessage message)
         {
             await _core.Send(logger, message, QueueType.Synchronous, _core.Settings.Synchronous.FindReplyQueueForMe()).ConfigureAwait(false);
-
+                        
             var listener = new SynchronousReplyListener(_core, logger, this);
+            //stopwatch used to measure response time
+            var stopwatch = Stopwatch.StartNew();
             var start = DateTime.UtcNow;
             var correlationId = message.MessageId;
 
@@ -81,6 +84,10 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
                 var payload = CheckPendingEntries(correlationId);
                 if (payload != null)
                 {
+                    // logs the response time in ms
+                    stopwatch.Stop();
+                    logger.LogResponseTime(message.MessageFunction, message.ToHerId, _core.Settings.MyHerId, message.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+
                     return payload;
                 }
 
@@ -131,6 +138,10 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
                 }
                 var error = $"Synchronous call {message.MessageId} timed out against HerId: {message.ToHerId}.";
                 logger.LogError(EventIds.SynchronousCallTimeout, error);
+                // logs the response time before throwing exception
+                stopwatch.Stop();
+                logger.LogResponseTime(message.MessageFunction, message.ToHerId, 0, message.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+
                 throw new MessagingException(error)
                 {
                     EventId = EventIds.SynchronousCallTimeout

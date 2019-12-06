@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Schema;
 using Helsenorge.Messaging.Abstractions;
@@ -50,7 +51,11 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             MockFactory.Helsenorge.SynchronousReply.Messages.Add(mockMessage);
 
             var response = RunAndHandleException(Client.SendAndWaitAsync(Logger, message));
-
+            
+            var logEntry = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Information
+                       && l.Message.Contains("ResponseTime")
+                       && l.Message.EndsWith(" ms"));
+            Assert.AreEqual(1, logEntry.Count());
             // make sure the content is what we expect
             Assert.AreEqual(GenericResponse.ToString(), response.ToString());
             // message should be gone from our sync reply

@@ -171,7 +171,6 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 NotifyMessageProcessingReady(message, incomingMessage);
                 ServiceBusCore.RemoveProcessedMessageFromQueue(Logger, message);
                 NotifyMessageProcessingCompleted(incomingMessage);
-
                 Logger.LogEndReceive(QueueType, incomingMessage);
                 return incomingMessage;
             }
