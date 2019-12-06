@@ -51,7 +51,7 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
         public async Task<XDocument> SendAsync(ILogger logger, OutgoingMessage message)
         {
             await _core.Send(logger, message, QueueType.Synchronous, _core.Settings.Synchronous.FindReplyQueueForMe()).ConfigureAwait(false);
-            var resonseTime = Stopwatch.StartNew();
+            var stopwatch = Stopwatch.StartNew();
 
             var listener = new SynchronousReplyListener(_core, logger, this);
             var start = DateTime.UtcNow;
@@ -120,8 +120,8 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
                             messageEntry.Payload = incomingMessage.Payload;
                             messageEntry.ReplyEnqueuedTimeUtc = incomingMessage.EnqueuedTimeUtc;
                             //Logs the response time in ms
-                            resonseTime.Stop();
-                            logger.LogResponseTime(incomingMessage, resonseTime.ElapsedMilliseconds.ToString());
+                            stopwatch.Stop();
+                            logger.LogResponseTime(incomingMessage, stopwatch.ElapsedMilliseconds.ToString());
                         }
                     }
                 }
