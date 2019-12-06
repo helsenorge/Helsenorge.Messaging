@@ -51,9 +51,9 @@ namespace Helsenorge.Messaging.ServiceBus
             EndSend(logger, queueType, function, fromHerId, toHerId, messageId, userId, null);
         }
 
-        public static void LogResponseTime(this ILogger logger, IncomingMessage message, string responseTimeMs)
+        public static void LogResponseTime(this ILogger logger, string messageFunction, int fromHerId, int toHerId, string messageId, string responseTimeMs)
         {
-            ResponseTime(logger, message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId, responseTimeMs, null);
+            ResponseTime(logger, messageFunction, fromHerId, toHerId, messageId, responseTimeMs, null);
         }
 
         public static void LogBeforeNotificationHandler(this ILogger logger, string notificationHandler, string messageFunction, int fromHerId, int toHerId, string messageId)
@@ -131,7 +131,7 @@ namespace Helsenorge.Messaging.ServiceBus
             ResponseTime = LoggerMessage.Define<string, int, int, string, string>(
                LogLevel.Information,
                EventIds.NotificationHandler,
-               "ResponseTime: {MessageFunction}: FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} ResponseTime: {ResponseTimeMs} ms");
+               "ResponseTime {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} ResponseTime: {ResponseTimeMs} ms");
 
             ExternalReportedError = LoggerMessage.Define<string>(
                 LogLevel.Error,
