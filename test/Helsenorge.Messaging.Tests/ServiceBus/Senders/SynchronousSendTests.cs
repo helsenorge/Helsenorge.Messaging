@@ -88,9 +88,13 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         public void Send_Synchronous_Timeout()
         {
             var message = CreateMessage();
-            
+            var sender = Client.SendAndWaitAsync(Logger, message);
+            var logEntry = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Error
+            && l.Message.StartsWith("MUG-000030"));
+            Assert.AreEqual(1, logEntry.Count());
+
             //fake timeout by not posting any messag on the reply queue
-            RunAndHandleMessagingException(Client.SendAndWaitAsync(Logger, message), EventIds.SynchronousCallTimeout);
+            RunAndHandleMessagingException(sender, EventIds.SynchronousCallTimeout);
         }
         [TestMethod]
         public void Send_Synchronous_DelayedReply()
