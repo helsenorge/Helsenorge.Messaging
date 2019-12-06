@@ -398,11 +398,10 @@ namespace Helsenorge.Messaging.ServiceBus
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="message"></param>
-        internal static void RemoveProcessedMessageFromQueue(ILogger logger, IMessagingMessage message, string queueName)
+        internal static void RemoveProcessedMessageFromQueue(ILogger logger, IMessagingMessage message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
-            logger.LogRemoveMessageFromQueueNormal(message, queueName);
             message.Complete();
         }
         /// <summary>
