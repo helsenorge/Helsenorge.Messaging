@@ -12,6 +12,7 @@ namespace Helsenorge.Messaging.ServiceBus
         private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> StartSend;
         private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> EndSend;
         private static readonly Action<ILogger, string, int, int, string, string, Exception> ResponseTime;
+        private static readonly Action<ILogger, QueueType, string, int, Exception> LogTimeout;
 
         private static readonly Action<ILogger, string, string, int, int, string, Exception> BeforeNotificationHandler;
         private static readonly Action<ILogger, string, string, int, int, string, Exception> AfterNotificationHandler;
@@ -106,6 +107,11 @@ namespace Helsenorge.Messaging.ServiceBus
             RemoveMessageFromQueueError(logger, id, null);
         }
 
+        public static void LogTimeoutError(this ILogger logger, QueueType queueType, string messageId, int toHerId)
+        {
+            LogTimeout(logger, queueType, messageId, toHerId, null);
+        }
+
         static ServiceBusLoggingExtensions()
         {
             StartReceive = LoggerMessage.Define<QueueType, string, int, int, string>(
@@ -132,6 +138,11 @@ namespace Helsenorge.Messaging.ServiceBus
                LogLevel.Information,
                EventIds.NotificationHandler,
                "ResponseTime {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} ResponseTime: {ResponseTimeMs} ms");
+
+            LogTimeout = LoggerMessage.Define<QueueType, string, int>(
+                LogLevel.Error,
+                EventIds.SynchronousCallTimeout,
+                "MUG-000030 Error Synchronous call {queueType} {messageId} timed out against HerId: {toHerId}.");
 
             ExternalReportedError = LoggerMessage.Define<string>(
                 LogLevel.Error,
