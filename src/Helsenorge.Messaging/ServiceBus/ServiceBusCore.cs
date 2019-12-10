@@ -402,7 +402,6 @@ namespace Helsenorge.Messaging.ServiceBus
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
-            logger.LogRemoveMessageFromQueueNormal(message.MessageId);
             message.Complete();
         }
         /// <summary>
