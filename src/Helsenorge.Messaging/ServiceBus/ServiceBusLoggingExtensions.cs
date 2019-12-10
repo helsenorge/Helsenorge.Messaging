@@ -27,7 +27,7 @@ namespace Helsenorge.Messaging.ServiceBus
         private static readonly Action<ILogger, string, int, int, string, Exception> AfterFactoryPoolCreateMessage;
 
         private static readonly Action<ILogger, string, Exception> ExternalReportedError;
-        private static readonly Action<ILogger, string, Exception> RemoveMessageFromQueueNormal;
+        private static readonly Action<ILogger, string, int, string, string, Exception> RemoveMessageFromQueueNormal;
         private static readonly Action<ILogger, string, Exception> RemoveMessageFromQueueError;
 
         public static void LogStartReceive(this ILogger logger, QueueType queueType, IncomingMessage message)
@@ -98,9 +98,9 @@ namespace Helsenorge.Messaging.ServiceBus
             ExternalReportedError(logger, message, null);
         }
 
-        public static void LogRemoveMessageFromQueueNormal(this ILogger logger, string id)
+        public static void LogRemoveMessageFromQueueNormal(this ILogger logger, IMessagingMessage message, string queueName)
         {
-            RemoveMessageFromQueueNormal(logger, id, null);
+            RemoveMessageFromQueueNormal(logger, message.MessageId, message.FromHerId, queueName, message.CorrelationId, null);
         }
         public static void LogRemoveMessageFromQueueError(this ILogger logger, string id)
         {
@@ -149,10 +149,10 @@ namespace Helsenorge.Messaging.ServiceBus
                 EventIds.ExternalReportedError,
                 "{Message}");
 
-            RemoveMessageFromQueueNormal = LoggerMessage.Define<string>(
+            RemoveMessageFromQueueNormal = LoggerMessage.Define<string, int, string, string>(
                 LogLevel.Information,
                 EventIds.RemoveMessageFromQueue,
-                "Removing processed message {MessageId} from queue");
+                "Removing processed message {MessageId} from Herid {herId} from queue {queueName}. Correlation = {correlationId}");
 
             RemoveMessageFromQueueError = LoggerMessage.Define<string>(
                 LogLevel.Information,

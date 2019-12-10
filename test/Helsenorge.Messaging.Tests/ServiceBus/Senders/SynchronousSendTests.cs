@@ -51,7 +51,11 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             MockFactory.Helsenorge.SynchronousReply.Messages.Add(mockMessage);
 
             var response = RunAndHandleException(Client.SendAndWaitAsync(Logger, message));
-            
+
+            var logProcessedMessage = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Information
+                       && l.Message.Contains($"Removing processed message { mockMessage.MessageId} from Herid { MockFactory.OtherHerId } from queue { MockFactory.Helsenorge.SynchronousReply.Name}. Correlation = { message.MessageId }"));
+            Assert.AreEqual(1, logProcessedMessage.Count());
+
             var logEntry = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Information
                        && l.Message.Contains("ResponseTime")
                        && l.Message.EndsWith(" ms"));
