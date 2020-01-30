@@ -58,11 +58,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             ILogger logger,
             IMessagingNotification messagingNotification)
         {
-            if (core == null) throw new ArgumentNullException(nameof(core));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
-
-            Logger = logger;
-            Core = core;
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            Core = core ?? throw new ArgumentNullException(nameof(core));
             MessagingNotification = messagingNotification;
         }
 
@@ -157,8 +154,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 // we need the certificates for decryption and certificate use
                 incomingMessage.CollaborationAgreement = await ResolveProfile(message).ConfigureAwait(false);
 
-                bool contentWasSigned;
-                var payload = HandlePayload(message, bodyStream, message.ContentType, incomingMessage, out contentWasSigned);
+                var payload = HandlePayload(message, bodyStream, message.ContentType, incomingMessage, out bool contentWasSigned);
                 incomingMessage.ContentWasSigned = contentWasSigned;
                 if (payload != null)
                 {
@@ -169,7 +165,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     incomingMessage.Payload = payload;
                 }
                 NotifyMessageProcessingReady(message, incomingMessage);
-                ServiceBusCore.RemoveProcessedMessageFromQueue(Logger, message);
+                ServiceBusCore.RemoveProcessedMessageFromQueue(message);
                 Logger.LogRemoveMessageFromQueueNormal(message, QueueName);
                 NotifyMessageProcessingCompleted(incomingMessage);
                 Logger.LogEndReceive(QueueType, incomingMessage);
@@ -248,11 +244,10 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 
         private async Task<CollaborationProtocolProfile> ResolveProfile(IMessagingMessage message)
         {
-            Guid id;
 
             // if we receive an error message then CPA isn't needed because we're not decrypting the message and then the CPA info isn't needed
             if (QueueType == QueueType.Error) return null;
-            if (Guid.TryParse(message.CpaId, out id) && (id != Guid.Empty))
+            if (Guid.TryParse(message.CpaId, out Guid id) && (id != Guid.Empty))
             {
                 return await Core.CollaborationProtocolRegistry.FindAgreementByIdAsync(Logger, id).ConfigureAwait(false);
             }

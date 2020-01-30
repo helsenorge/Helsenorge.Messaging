@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.ServiceBus;

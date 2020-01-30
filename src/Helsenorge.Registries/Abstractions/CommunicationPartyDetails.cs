@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Helsenorge.Registries.Abstractions
+﻿namespace Helsenorge.Registries.Abstractions
 {
     /// <summary>
     /// Represents information about a communication party

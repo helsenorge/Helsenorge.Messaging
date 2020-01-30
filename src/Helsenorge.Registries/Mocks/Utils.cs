@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using System.ServiceModel;
 using System.Xml.Linq;
-using System.Xml.Serialization;
 
 namespace Helsenorge.Registries.Mocks
 {

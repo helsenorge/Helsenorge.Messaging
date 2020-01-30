@@ -1,19 +1,17 @@
 ﻿using Helsenorge.Messaging.Abstractions;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Helsenorge.Messaging.Http
 {
+    [Obsolete("Will be removed in 4.0.0", false)]
     class HttpServiceBusReceiver : IMessagingReceiver
     {
-        private string _url;
-        private string _id;
+        private readonly string _url;
+        private readonly string _id;
 
         public HttpServiceBusReceiver(string url, string id)
         {

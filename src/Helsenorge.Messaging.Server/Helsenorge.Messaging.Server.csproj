@@ -4,10 +4,7 @@
     <TargetFrameworks>net46;net471</TargetFrameworks>
     <AssemblyName>Helsenorge.Messaging.Server</AssemblyName>
     <RootNamespace>Helsenorge.Messaging.Server</RootNamespace>
-	<ProjectGuid>{F8228F1E-51B0-4643-B4B2-CE59491853E2}</ProjectGuid>
-    <Authors>Direktoratet for e-helse</Authors>
-    <Company>Direktoratet for e-helse</Company>
-    <Copyright>Direktoratet for e-helse</Copyright>
+	  <ProjectGuid>{F8228F1E-51B0-4643-B4B2-CE59491853E2}</ProjectGuid>
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <StartupObject />
@@ -29,17 +26,18 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.2" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net471'">
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.1" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.1" />
-    <PackageReference Include="NLog" Version="4.5.9" />
+    <PackageReference Include="NLog" Version="4.6.8" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Helsenorge.Messaging\Helsenorge.Messaging.csproj" />

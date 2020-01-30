@@ -9,6 +9,7 @@ using System.Xml.Linq;
 
 namespace Helsenorge.Messaging.Http
 {
+    [Obsolete("Will be removed in 4.0.0", false)]
     public class IncomingHttpMessage : IMessagingMessage
     {
         public XElement AMQPMessage { get; set; }

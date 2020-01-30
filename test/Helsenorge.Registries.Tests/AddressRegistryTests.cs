@@ -1,18 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Helsenorge.Registries.Mocks;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.ServiceModel;
 using System.Xml.Linq;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Helsenorge.Registries.Tests
 {
@@ -21,7 +17,7 @@ namespace Helsenorge.Registries.Tests
     public class AddressRegistryTests
     {
         private AddressRegistryMock _registry;
-        private LoggerFactory _loggerFactory;
+        private ILoggerFactory _loggerFactory;
         private ILogger _logger;
 
         internal static AddressRegistryMock GetDefaultAddressRegistryMock()
@@ -76,8 +72,10 @@ namespace Helsenorge.Registries.Tests
         [TestInitialize]
         public void Setup()
         {
-            _loggerFactory = new LoggerFactory();
-            _loggerFactory.AddDebug();
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging(loggingBuilder => loggingBuilder.AddDebug());
+            var provider = serviceCollection.BuildServiceProvider();
+            _loggerFactory = provider.GetRequiredService<ILoggerFactory>();            
             _logger = _loggerFactory.CreateLogger<AddressRegistryTests>();
             
             _registry = GetDefaultAddressRegistryMock();

@@ -2,19 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Security;
 using Helsenorge.Registries;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+#if NET471
+using Microsoft.Extensions.DependencyInjection;
+#endif
 
 namespace Helsenorge.Messaging.Client
 {
@@ -25,7 +23,6 @@ namespace Helsenorge.Messaging.Client
     
         private static ILogger _logger;
         private static MessagingClient _messagingClient;
-        private static ILoggerFactory _loggerFactory;
         private static ClientSettings _clientSettings;
 
         static int Main(string[] args)
@@ -60,10 +57,7 @@ namespace Helsenorge.Messaging.Client
                 .AddJsonFile($"{profile}.json", false);
             var configurationRoot = builder.Build();
 
-            // configure logging
-            _loggerFactory = new LoggerFactory();
-            _loggerFactory.AddConsole(configurationRoot.GetSection("Logging"));
-            _logger = _loggerFactory.CreateLogger("TestClient");
+            CreateLogger(configurationRoot);
 
             // configure caching
             var distributedCache = DistributedCacheFactory.Create();
@@ -200,6 +194,25 @@ namespace Helsenorge.Messaging.Client
                 }
             }
             return null;
+        }
+
+        private static void CreateLogger(IConfigurationRoot configurationRoot)
+        {            
+            ILoggerFactory loggerFactory;
+#if NET46
+            loggerFactory = new LoggerFactory();
+            loggerFactory.AddConsole(configurationRoot.GetSection("Logging"));
+#elif NET471            
+            
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging(loggerConfiguration =>
+            {
+                loggerConfiguration.AddConsole();
+            });
+            var provider = serviceCollection.BuildServiceProvider();
+            loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+#endif
+            _logger = loggerFactory.CreateLogger("TestClient");
         }
     }
 
