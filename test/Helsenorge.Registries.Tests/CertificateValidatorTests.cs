@@ -25,6 +25,7 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(CertificateErrors.None, error);
         }
         [TestMethod]
+        [TestCategory("X509Chain"), Ignore]
         public void CertificateValidation_StartDate()
         {
             var validator = new CertificateValidator();
