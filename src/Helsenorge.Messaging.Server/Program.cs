@@ -5,14 +5,16 @@ using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Server.NLog;
 using Helsenorge.Registries;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Config;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+#if NET471
+using NLog.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+#endif
 
 namespace Helsenorge.Messaging.Server
 {
@@ -27,7 +29,7 @@ namespace Helsenorge.Messaging.Server
         {
             var app = new CommandLineApplication();
             app.HelpOption("-?|-h|--help");
-
+            
             var profileArgument = app.Argument("[profile]", "The name of the json profile file to use (excluded file extension)");
             app.OnExecute(() =>
             {
@@ -72,14 +74,7 @@ namespace Helsenorge.Messaging.Server
                 .AddJsonFile($"{profile}.json", false);
             var configurationRoot = builder.Build();
 
-            // configure logging
-            _loggerFactory = new LoggerFactory();
-            _loggerFactory.AddConsole(configurationRoot.GetSection("Logging"));
-            _loggerFactory.AddNLog();
-
-            LogManager.Configuration = new XmlLoggingConfiguration("nlog.config", true);
-            
-            _logger = _loggerFactory.CreateLogger("TestServer");
+            CreateLogger(configurationRoot);
 
             // configure caching
             var distributedCache = DistributedCacheFactory.Create();
@@ -160,6 +155,28 @@ namespace Helsenorge.Messaging.Server
                 MappedDiagnosticsLogicalContext.Set("correlationId", string.Empty); // reset correlation id
             });
         }
+
+        private static void CreateLogger(IConfigurationRoot configurationRoot)
+        {            
+            LogManager.Configuration = new XmlLoggingConfiguration("nlog.config", true);
+
+#if NET46
+            _loggerFactory = new LoggerFactory();
+            _loggerFactory.AddConsole(configurationRoot.GetSection("Logging"));
+            _loggerFactory.AddNLog();           
+#elif NET471
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.AddConsole();
+                loggingBuilder.AddNLog();
+            });            
+            var provider = serviceCollection.BuildServiceProvider();            
+            _loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+#endif
+
+            _logger = _loggerFactory.CreateLogger("TestServer");
+        }        
     }
 
     internal class ServerSettings

@@ -5,8 +5,7 @@ using System.Linq;
 using System.ServiceModel;
 using Helsenorge.Registries.Abstractions;
 using Helsenorge.Registries.Mocks;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -17,7 +16,7 @@ namespace Helsenorge.Registries.Tests
     public class CollaborationRegistryTests
     {
         private CollaborationProtocolRegistryMock _registry;
-        private LoggerFactory _loggerFactory;
+        private ILoggerFactory _loggerFactory;
         private ILogger _logger;
 
         [TestInitialize]
@@ -33,8 +32,10 @@ namespace Helsenorge.Registries.Tests
                 MyHerId = 93238 // matches a value in a CPA test file
             };
 
-            _loggerFactory = new LoggerFactory();
-            _loggerFactory.AddDebug();
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging(loggingBuilder => loggingBuilder.AddDebug());
+            var provider = serviceCollection.BuildServiceProvider();
+            _loggerFactory = provider.GetRequiredService<ILoggerFactory>();            
             _logger = _loggerFactory.CreateLogger<CollaborationRegistryTests>();
 
             var distributedCache = DistributedCacheFactory.Create();

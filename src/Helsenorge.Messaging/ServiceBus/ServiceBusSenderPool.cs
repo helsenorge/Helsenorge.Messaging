@@ -1,8 +1,5 @@
-﻿using System;
-using System.IO;
-using Helsenorge.Messaging.Abstractions;
+﻿using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
-using Microsoft.ServiceBus.Messaging;
 
 namespace Helsenorge.Messaging.ServiceBus
 {

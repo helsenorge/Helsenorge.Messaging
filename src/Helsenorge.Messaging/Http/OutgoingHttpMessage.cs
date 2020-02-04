@@ -1,7 +1,6 @@
 ﻿using Helsenorge.Messaging.Abstractions;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -9,6 +8,7 @@ using System.Xml.Linq;
 namespace Helsenorge.Messaging.Http
 {
     //TODO: Add creator and parser for these types (OHM -> XElement and XElement -> IHM)
+    [Obsolete("Will be removed in 4.0.0", false)]
     public class OutgoingHttpMessage : IMessagingMessage
     {
         public XDocument Payload { get; set; }

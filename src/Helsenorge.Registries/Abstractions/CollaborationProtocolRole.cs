@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Helsenorge.Registries.Abstractions
 {
@@ -76,7 +73,7 @@ namespace Helsenorge.Registries.Abstractions
             {
                 if (_version == null)
                 {
-                    _version = new Version(this.VersionString);
+                    _version = new Version(VersionString);
                 }
                 return _version;
             }
