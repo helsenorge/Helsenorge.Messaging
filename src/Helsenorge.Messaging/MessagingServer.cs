@@ -16,8 +16,7 @@ namespace Helsenorge.Messaging
     /// </summary>
     public sealed class MessagingServer : MessagingCore, IMessagingServer, IMessagingNotification
     {
-        private readonly ILogger _nontypedLogger;
-        private readonly ILogger<MessagingServer> _typedLogger;
+        private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ConcurrentBag<MessageListener> _listeners = new ConcurrentBag<MessageListener>();
         private readonly ConcurrentBag<Task> _tasks = new ConcurrentBag<Task>();
@@ -36,23 +35,7 @@ namespace Helsenorge.Messaging
 
         private Action<IMessagingMessage, Exception> _onUnhandledException;
         private Action<IMessagingMessage, Exception> _onHandledException;
-
-        private ILogger _logger
-        {
-            get
-            {
-                if (_nontypedLogger != null)
-                {
-                    return _nontypedLogger;
-                }
-                else if (_typedLogger != null)
-                {
-                    return _typedLogger;
-                }
-                throw new NullReferenceException("Only null ILogger references was found. Please provide a non-null ILogger reference.");
-            }
-        }
-
+        
         /// <summary>
         /// Constructor
         /// </summary>
@@ -68,7 +51,7 @@ namespace Helsenorge.Messaging
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
             IAddressRegistry addressRegistry) : base(settings, collaborationProtocolRegistry, addressRegistry)
         {
-            _nontypedLogger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -89,7 +72,7 @@ namespace Helsenorge.Messaging
             IAddressRegistry addressRegistry,
             ICertificateStore certificateStore) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore)
         {
-            _nontypedLogger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -114,7 +97,7 @@ namespace Helsenorge.Messaging
             ICertificateValidator certificateValidator,
             IMessageProtection messageProtection) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore, certificateValidator, messageProtection)
         {
-            _nontypedLogger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -133,7 +116,7 @@ namespace Helsenorge.Messaging
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
             IAddressRegistry addressRegistry) : base(settings, collaborationProtocolRegistry, addressRegistry)
         {
-            _typedLogger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -154,7 +137,7 @@ namespace Helsenorge.Messaging
             IAddressRegistry addressRegistry,
             ICertificateStore certificateStore) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore)
         {
-            _typedLogger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -179,7 +162,7 @@ namespace Helsenorge.Messaging
             ICertificateValidator certificateValidator,
             IMessageProtection messageProtection) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore, certificateValidator, messageProtection)
         {
-            _typedLogger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
