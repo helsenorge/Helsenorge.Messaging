@@ -16,7 +16,8 @@ namespace Helsenorge.Messaging
     /// </summary>
     public sealed class MessagingServer : MessagingCore, IMessagingServer, IMessagingNotification
     {
-        private readonly ILogger _logger;
+        private readonly ILogger _nontypedLogger;
+        private readonly ILogger<MessagingServer> _typedLogger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ConcurrentBag<MessageListener> _listeners = new ConcurrentBag<MessageListener>();
         private readonly ConcurrentBag<Task> _tasks = new ConcurrentBag<Task>();
@@ -36,6 +37,22 @@ namespace Helsenorge.Messaging
         private Action<IMessagingMessage, Exception> _onUnhandledException;
         private Action<IMessagingMessage, Exception> _onHandledException;
 
+        private ILogger _logger
+        {
+            get
+            {
+                if (_nontypedLogger != null)
+                {
+                    return _nontypedLogger;
+                }
+                else if (_typedLogger != null)
+                {
+                    return _typedLogger;
+                }
+                throw new NullReferenceException("Only null ILogger references was found. Please provide a non-null ILogger reference.");
+            }
+        }
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -51,7 +68,7 @@ namespace Helsenorge.Messaging
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
             IAddressRegistry addressRegistry) : base(settings, collaborationProtocolRegistry, addressRegistry)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _nontypedLogger = logger ?? throw new ArgumentNullException(nameof(logger));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -72,7 +89,7 @@ namespace Helsenorge.Messaging
             IAddressRegistry addressRegistry,
             ICertificateStore certificateStore) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _nontypedLogger = logger ?? throw new ArgumentNullException(nameof(logger));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -97,7 +114,72 @@ namespace Helsenorge.Messaging
             ICertificateValidator certificateValidator,
             IMessageProtection messageProtection) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore, certificateValidator, messageProtection)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _nontypedLogger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="settings">Set of options to use</param>
+        /// <param name="logger">Logger used for MessagingServer messages</param>
+        /// <param name="loggerFactory">Logger Factory</param>
+        /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
+        /// <param name="addressRegistry">Reference to the address registry</param>
+        public MessagingServer(
+            MessagingSettings settings,
+            ILogger<MessagingServer> logger,
+            ILoggerFactory loggerFactory,
+            ICollaborationProtocolRegistry collaborationProtocolRegistry,
+            IAddressRegistry addressRegistry) : base(settings, collaborationProtocolRegistry, addressRegistry)
+        {
+            _typedLogger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="settings">Set of options to use</param>
+        /// <param name="logger">Logger used for MessagingServer messages</param>
+        /// <param name="loggerFactory">Logger Factory</param>
+        /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
+        /// <param name="addressRegistry">Reference to the address registry</param>
+        /// <param name="certificateStore">Reference to an implementation of <see cref="ICertificateStore"/>.</param>
+        public MessagingServer(
+            MessagingSettings settings,
+            ILogger<MessagingServer> logger,
+            ILoggerFactory loggerFactory,
+            ICollaborationProtocolRegistry collaborationProtocolRegistry,
+            IAddressRegistry addressRegistry,
+            ICertificateStore certificateStore) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore)
+        {
+            _typedLogger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="settings">Set of options to use</param>
+        /// <param name="logger">Logger used for MessagingServer messages</param>
+        /// <param name="loggerFactory">Logger Factory</param>
+        /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
+        /// <param name="addressRegistry">Reference to the address registry</param>
+        /// <param name="certificateStore">Reference to an implementation of <see cref="ICertificateStore"/>.</param>
+        /// <param name="certificateValidator">Reference to an implementation of <see cref="ICertificateValidator"/>.</param>
+        /// <param name="messageProtection">Reference to an implementation of <see cref="IMessageProtection"/>.</param>
+        public MessagingServer(
+            MessagingSettings settings,
+            ILogger<MessagingServer> logger,
+            ILoggerFactory loggerFactory,
+            ICollaborationProtocolRegistry collaborationProtocolRegistry,
+            IAddressRegistry addressRegistry,
+            ICertificateStore certificateStore,
+            ICertificateValidator certificateValidator,
+            IMessageProtection messageProtection) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore, certificateValidator, messageProtection)
+        {
+            _typedLogger = logger ?? throw new ArgumentNullException(nameof(logger));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
@@ -133,9 +215,9 @@ namespace Helsenorge.Messaging
         {
             _logger.LogInformation("Messaging Server shutting down");
             _cancellationTokenSource.Cancel();
-            
+
             Task.WaitAll(_tasks.ToArray(), timeout);
-            
+
             // when all the listeners have shut down, close down the messaging infrastructure
             ServiceBus.SenderPool.Shutdown(_logger);
             ServiceBus.ReceiverPool.Shutdown(_logger);
@@ -152,7 +234,7 @@ namespace Helsenorge.Messaging
         {
             _logger.LogDebug("NotifyAsynchronousMessageReceived");
             _onAsynchronousMessageReceived?.Invoke(message);
-        } 
+        }
         /// <summary>
         /// Registers a delegate that should be called as we start processing a message
         /// </summary>
