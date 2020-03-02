@@ -137,7 +137,7 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
                     entry.TimedOut = true;
                 }
                 var error = $"Synchronous call {message.MessageId} timed out against HerId: {message.ToHerId}.";
-                logger.LogTimeoutError(QueueType.Synchronous,message.MessageId, message.ToHerId);
+                logger.LogTimeoutError(message.MessageFunction, message.MessageId, message.ToHerId);
                 // logs the response time before throwing exception
                 stopwatch.Stop();
                 logger.LogResponseTime(message.MessageFunction, message.ToHerId, 0, message.MessageId, stopwatch.ElapsedMilliseconds.ToString());
