@@ -157,7 +157,6 @@ namespace Helsenorge.Messaging.Tests
 
             Server = new MessagingServer(
                 Settings, 
-                Logger, 
                 LoggerFactory, 
                 CollaborationRegistry, 
                 AddressRegistry, 

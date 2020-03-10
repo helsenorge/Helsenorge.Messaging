@@ -21,7 +21,7 @@ namespace Helsenorge.Messaging.Tests
         public void MessagingServer_DefaultCerificateStoreIsWindowsCerificateStore()
         {
             LoggerFactory loggerFactory = new LoggerFactory();
-            MessagingServer messagingServer = new MessagingServer(Settings, loggerFactory.CreateLogger("Mock"), loggerFactory, CollaborationRegistry, AddressRegistry);
+            MessagingServer messagingServer = new MessagingServer(Settings, loggerFactory, CollaborationRegistry, AddressRegistry);
             Assert.IsInstanceOfType(messagingServer.CertificateStore, typeof(WindowsCertificateStore));
         }
 
@@ -36,7 +36,7 @@ namespace Helsenorge.Messaging.Tests
         public void MessagingServer_CerificateStoreIsMockCerificateStore()
         {
             LoggerFactory loggerFactory = new LoggerFactory();
-            MessagingServer messagingServer = new MessagingServer(Settings, loggerFactory.CreateLogger("Mock"), loggerFactory, CollaborationRegistry, AddressRegistry, new MockCertificateStore());
+            MessagingServer messagingServer = new MessagingServer(Settings, loggerFactory, CollaborationRegistry, AddressRegistry, new MockCertificateStore());
             Assert.IsInstanceOfType(messagingServer.CertificateStore, typeof(MockCertificateStore));
         }
 

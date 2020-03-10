@@ -69,7 +69,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
             var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.HelsenorgePrivateSigntature, TestCertificates.HelsenorgePrivateEncryption);
-            Server = new MessagingServer(Settings, Logger, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyBProtection);
+            Server = new MessagingServer(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyBProtection);
             Server.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
             CollaborationRegistry.SetupFindAgreementForCounterparty(i =>
