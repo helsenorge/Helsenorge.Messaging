@@ -103,7 +103,7 @@ namespace Helsenorge.Messaging.Server
             messagingSettings.ServiceBus.Synchronous.ReplyQueueMapping.Add(Environment.MachineName, "DUMMY"); // we just need a value, it will never be used
             messagingSettings.LogPayload = true;
 
-            _messagingServer = new MessagingServer(messagingSettings, _logger, _loggerFactory, collaborationProtocolRegistry, addressRegistry);
+            _messagingServer = new MessagingServer(messagingSettings, _loggerFactory, collaborationProtocolRegistry, addressRegistry);
 
             _messagingServer.RegisterAsynchronousMessageReceivedStartingCallback((m) =>
             {
