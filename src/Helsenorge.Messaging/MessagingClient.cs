@@ -91,7 +91,6 @@ namespace Helsenorge.Messaging
         /// <param name="loggerFactory"></param>
         /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
         /// <param name="addressRegistry">Reference to the address registry</param>
-        /// [Obsolete("This constructor is replaced by ctor(MessagingSettings, ILoggerFactory, ICollaborationProtocolRegistry, IAddressRegistry) and will be removed in a future version")]
         public MessagingClient(
             MessagingSettings settings,
             ILoggerFactory loggerFactory,
@@ -206,20 +205,9 @@ namespace Helsenorge.Messaging
         /// <returns></returns>
         public async Task SendAndContinueAsync(OutgoingMessage message)
         {
-            var collaborationProtocolMessage = await PreCheck(_logger, message).ConfigureAwait(false);
-
-            switch (collaborationProtocolMessage.DeliveryProtocol)
-            {
-                case DeliveryProtocol.Amqp:
-                    await _asynchronousServiceBusSender.SendAsync(_logger, message).ConfigureAwait(false);
-                    return;
-                case DeliveryProtocol.Unknown:
-                default:
-                    throw new MessagingException("Invalid delivery protocol: " + message.MessageFunction)
-                    {
-                        EventId = EventIds.InvalidMessageFunction
-                    };
-            }
+#pragma warning disable CS0618 // Type or member is obsolete
+            await SendAndContinueAsync(_logger, message);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /// <summary>
@@ -229,19 +217,9 @@ namespace Helsenorge.Messaging
         /// <returns>The received XML</returns>
         public async Task<XDocument> SendAndWaitAsync(OutgoingMessage message)
         {
-            var collaborationProtocolMessage = await PreCheck(_logger, message).ConfigureAwait(false);
-
-            switch (collaborationProtocolMessage.DeliveryProtocol)
-            {
-                case DeliveryProtocol.Amqp:
-                    return await _synchronousServiceBusSender.SendAsync(_logger, message).ConfigureAwait(false);
-                case DeliveryProtocol.Unknown:
-                default:
-                    throw new MessagingException("Invalid delivery protocol: " + message.MessageFunction)
-                    {
-                        EventId = EventIds.InvalidMessageFunction
-                    };
-            }
+#pragma warning disable CS0618 // Type or member is obsolete
+            return await SendAndWaitAsync(_logger, message);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /// <summary>
