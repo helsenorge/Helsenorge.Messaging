@@ -20,7 +20,7 @@ namespace Helsenorge.Messaging.Client
     {
         private static readonly object SyncRoot = new object();
         private static Stack<string> _files;
-    
+        private static ILoggerFactory _loggerFactory;
         private static ILogger _logger;
         private static MessagingClient _messagingClient;
         private static ClientSettings _clientSettings;
@@ -88,9 +88,9 @@ namespace Helsenorge.Messaging.Client
             messagingSettings.LogPayload = true;
 
             if(noProtection)
-                _messagingClient = new MessagingClient(messagingSettings, collaborationProtocolRegistry, addressRegistry, null, null, new NoMessageProtection());
+                _messagingClient = new MessagingClient(messagingSettings, _loggerFactory, collaborationProtocolRegistry, addressRegistry, null, null, new NoMessageProtection());
             else
-                _messagingClient = new MessagingClient(messagingSettings, collaborationProtocolRegistry, addressRegistry);
+                _messagingClient = new MessagingClient(messagingSettings, _loggerFactory, collaborationProtocolRegistry, addressRegistry);
         }
 
         private static void HandleAsyncMessage(CommandLineApplication command)
@@ -125,7 +125,7 @@ namespace Helsenorge.Messaging.Client
                         for (var s = GetNextPath(); !string.IsNullOrEmpty(s); s = GetNextPath())
                         {
                             _logger.LogInformation($"Processing file {s}");
-                            Task.WaitAll(_messagingClient.SendAndContinueAsync(_logger, new OutgoingMessage()
+                            Task.WaitAll(_messagingClient.SendAndContinueAsync(new OutgoingMessage()
                             {
                                 MessageFunction = _clientSettings.MessageFunction,
                                 ToHerId = _clientSettings.ToHerId,
@@ -168,7 +168,7 @@ namespace Helsenorge.Messaging.Client
                 for (var s = GetNextPath(); !string.IsNullOrEmpty(s); s = GetNextPath())
                 {
                     _logger.LogInformation($"Processing file {s}");
-                    var result = _messagingClient.SendAndWaitAsync(_logger, new OutgoingMessage()
+                    var result = _messagingClient.SendAndWaitAsync(new OutgoingMessage()
                     {
                         MessageFunction = _clientSettings.MessageFunction,
                         ToHerId = _clientSettings.ToHerId,
@@ -198,10 +198,9 @@ namespace Helsenorge.Messaging.Client
 
         private static void CreateLogger(IConfigurationRoot configurationRoot)
         {            
-            ILoggerFactory loggerFactory;
 #if NET46
-            loggerFactory = new LoggerFactory();
-            loggerFactory.AddConsole(configurationRoot.GetSection("Logging"));
+            _loggerFactory = new LoggerFactory();
+            _loggerFactory.AddConsole(configurationRoot.GetSection("Logging"));
 #elif NET471            
             
             var serviceCollection = new ServiceCollection();
@@ -210,9 +209,9 @@ namespace Helsenorge.Messaging.Client
                 loggerConfiguration.AddConsole();
             });
             var provider = serviceCollection.BuildServiceProvider();
-            loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+            _loggerFactory = provider.GetRequiredService<ILoggerFactory>();
 #endif
-            _logger = loggerFactory.CreateLogger("TestClient");
+            _logger = _loggerFactory.CreateLogger("TestClient");
         }
     }
 

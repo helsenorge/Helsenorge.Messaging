@@ -65,7 +65,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             Exception receiveException = null;
 
             var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.CounterpartyPrivateSigntature, TestCertificates.CounterpartyPrivateEncryption);
-            Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyAProtection);
+            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyAProtection);
             Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
             var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.HelsenorgePrivateSigntature, TestCertificates.HelsenorgePrivateEncryption);

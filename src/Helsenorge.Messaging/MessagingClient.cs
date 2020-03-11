@@ -23,6 +23,8 @@ namespace Helsenorge.Messaging
     /// </summary>
     public sealed class MessagingClient : MessagingCore, IMessagingClient
     {
+        private readonly ILogger _logger;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly AsynchronousSender _asynchronousServiceBusSender;
         private readonly SynchronousSender _synchronousServiceBusSender;
 
@@ -32,6 +34,7 @@ namespace Helsenorge.Messaging
         /// <param name="settings">Set of options to use</param>
         /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
         /// <param name="addressRegistry">Reference to the address registry</param>
+        [Obsolete("This constructor is replaced by ctor(MessagingSettings, ILoggerFactory, ICollaborationProtocolRegistry, IAddressRegistry) and will be removed in a future version")]
         public MessagingClient(
             MessagingSettings settings,
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
@@ -48,6 +51,7 @@ namespace Helsenorge.Messaging
         /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
         /// <param name="addressRegistry">Reference to the address registry</param>
         /// <param name="certificateStore">Reference to an implementation of <see cref="ICertificateStore"/>.</param>
+        [Obsolete("This constructor is replaced by ctor(MessagingSettings, ILoggerFactory, ICollaborationProtocolRegistry, IAddressRegistry, ICertificateStore) and will be removed in a future version")]
         public MessagingClient(
             MessagingSettings settings,
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
@@ -67,6 +71,7 @@ namespace Helsenorge.Messaging
         /// <param name="certificateStore">Reference to an implementation of <see cref="ICertificateStore"/>.</param>
         /// <param name="certificateValidator">Reference to an implementation of <see cref="ICertificateValidator"/>.</param>
         /// <param name="messageProtection">Reference to an implementation of <see cref="IMessageProtection"/>.</param>
+        [Obsolete("This constructor is replaced by ctor(MessagingSettings, ILoggerFactory, ICollaborationProtocolRegistry, IAddressRegistry, ICertificateStore, ICertificateValidator, IMessageProtection) and will be removed in a future version")]
         public MessagingClient(
             MessagingSettings settings,
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
@@ -80,11 +85,78 @@ namespace Helsenorge.Messaging
         }
 
         /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="settings">Set of options to use</param>
+        /// <param name="loggerFactory"></param>
+        /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
+        /// <param name="addressRegistry">Reference to the address registry</param>
+        /// [Obsolete("This constructor is replaced by ctor(MessagingSettings, ILoggerFactory, ICollaborationProtocolRegistry, IAddressRegistry) and will be removed in a future version")]
+        public MessagingClient(
+            MessagingSettings settings,
+            ILoggerFactory loggerFactory,
+            ICollaborationProtocolRegistry collaborationProtocolRegistry,
+            IAddressRegistry addressRegistry) : base(settings, collaborationProtocolRegistry, addressRegistry)
+        {
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _logger = _loggerFactory.CreateLogger(nameof(MessagingClient));
+            _asynchronousServiceBusSender = new AsynchronousSender(ServiceBus);
+            _synchronousServiceBusSender = new SynchronousSender(ServiceBus);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="settings">Set of options to use</param>
+        /// <param name="loggerFactory"></param>
+        /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
+        /// <param name="addressRegistry">Reference to the address registry</param>
+        /// <param name="certificateStore">Reference to an implementation of <see cref="ICertificateStore"/>.</param>
+        public MessagingClient(
+            MessagingSettings settings,
+            ILoggerFactory loggerFactory,
+            ICollaborationProtocolRegistry collaborationProtocolRegistry,
+            IAddressRegistry addressRegistry,
+            ICertificateStore certificateStore) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore)
+        {
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _logger = _loggerFactory.CreateLogger(nameof(MessagingClient));
+            _asynchronousServiceBusSender = new AsynchronousSender(ServiceBus);
+            _synchronousServiceBusSender = new SynchronousSender(ServiceBus);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="settings">Set of options to use</param>
+        /// <param name="loggerFactory"></param>
+        /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
+        /// <param name="addressRegistry">Reference to the address registry</param>
+        /// <param name="certificateStore">Reference to an implementation of <see cref="ICertificateStore"/>.</param>
+        /// <param name="certificateValidator">Reference to an implementation of <see cref="ICertificateValidator"/>.</param>
+        /// <param name="messageProtection">Reference to an implementation of <see cref="IMessageProtection"/>.</param>
+        public MessagingClient(
+            MessagingSettings settings,
+            ILoggerFactory loggerFactory,
+            ICollaborationProtocolRegistry collaborationProtocolRegistry,
+            IAddressRegistry addressRegistry,
+            ICertificateStore certificateStore,
+            ICertificateValidator certificateValidator,
+            IMessageProtection messageProtection) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore, certificateValidator, messageProtection)
+        {
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _logger = _loggerFactory.CreateLogger(nameof(MessagingClient));
+            _asynchronousServiceBusSender = new AsynchronousSender(ServiceBus);
+            _synchronousServiceBusSender = new SynchronousSender(ServiceBus);
+        }
+
+        /// <summary>
         /// Sends a message and allows the calling code to continue its work
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="message">Information about the message being sent</param>
         /// <returns></returns>
+        [Obsolete("This method is replaced by SendAndContinueAsync(OutgoingMessage) and will be removed in a future version")]
         public async Task SendAndContinueAsync(ILogger logger, OutgoingMessage message)
         {
             var collaborationProtocolMessage = await PreCheck(logger, message).ConfigureAwait(false);
@@ -109,6 +181,7 @@ namespace Helsenorge.Messaging
         /// <param name="logger"></param>
         /// <param name="message"></param>
         /// <returns>The received XML</returns>
+        [Obsolete("This method is replaced by SendAndWaitAsync(OutgoingMessage) and will be removed in a future version")]
         public async Task<XDocument> SendAndWaitAsync(ILogger logger, OutgoingMessage message)
         {
             var collaborationProtocolMessage = await PreCheck(logger, message).ConfigureAwait(false);
@@ -117,6 +190,51 @@ namespace Helsenorge.Messaging
             {
                 case DeliveryProtocol.Amqp:
                     return await _synchronousServiceBusSender.SendAsync(logger, message).ConfigureAwait(false);
+                case DeliveryProtocol.Unknown:
+                default:
+                    throw new MessagingException("Invalid delivery protocol: " + message.MessageFunction)
+                    {
+                        EventId = EventIds.InvalidMessageFunction
+                    };
+            }
+        }
+
+        /// <summary>
+        /// Sends a message and allows the calling code to continue its work
+        /// </summary>
+        /// <param name="message">Information about the message being sent</param>
+        /// <returns></returns>
+        public async Task SendAndContinueAsync(OutgoingMessage message)
+        {
+            var collaborationProtocolMessage = await PreCheck(_logger, message).ConfigureAwait(false);
+
+            switch (collaborationProtocolMessage.DeliveryProtocol)
+            {
+                case DeliveryProtocol.Amqp:
+                    await _asynchronousServiceBusSender.SendAsync(_logger, message).ConfigureAwait(false);
+                    return;
+                case DeliveryProtocol.Unknown:
+                default:
+                    throw new MessagingException("Invalid delivery protocol: " + message.MessageFunction)
+                    {
+                        EventId = EventIds.InvalidMessageFunction
+                    };
+            }
+        }
+
+        /// <summary>
+        /// Sends a message and blocks the calling code until we have an answer
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns>The received XML</returns>
+        public async Task<XDocument> SendAndWaitAsync(OutgoingMessage message)
+        {
+            var collaborationProtocolMessage = await PreCheck(_logger, message).ConfigureAwait(false);
+
+            switch (collaborationProtocolMessage.DeliveryProtocol)
+            {
+                case DeliveryProtocol.Amqp:
+                    return await _synchronousServiceBusSender.SendAsync(_logger, message).ConfigureAwait(false);
                 case DeliveryProtocol.Unknown:
                 default:
                     throw new MessagingException("Invalid delivery protocol: " + message.MessageFunction)
@@ -189,5 +307,6 @@ namespace Helsenorge.Messaging
                 await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, message.ToHerId).ConfigureAwait(false);
             return profile;
         }
+
     }
 }
