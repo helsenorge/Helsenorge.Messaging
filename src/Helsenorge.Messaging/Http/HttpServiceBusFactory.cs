@@ -6,9 +6,10 @@ using System.IO;
 
 namespace Helsenorge.Messaging.Http
 {
+    [Obsolete("Will be removed in 4.0.0", false)]
     internal class HttpServiceBusFactory : IMessagingFactory
     {
-        private string _baseurl;
+        private readonly string _baseurl;
         public HttpServiceBusFactory(string baseurl)
         {
             Debug.Assert(baseurl != null);

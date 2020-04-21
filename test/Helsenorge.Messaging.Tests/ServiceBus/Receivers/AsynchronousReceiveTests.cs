@@ -65,11 +65,11 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             Exception receiveException = null;
 
             var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.CounterpartyPrivateSigntature, TestCertificates.CounterpartyPrivateEncryption);
-            Client = new MessagingClient(Settings, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyAProtection);
+            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyAProtection);
             Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
             var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.HelsenorgePrivateSigntature, TestCertificates.HelsenorgePrivateEncryption);
-            Server = new MessagingServer(Settings, Logger, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyBProtection);
+            Server = new MessagingServer(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyBProtection);
             Server.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
             CollaborationRegistry.SetupFindAgreementForCounterparty(i =>

@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using System.Configuration;
 using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
-using Helsenorge.Messaging.Security;
 using Helsenorge.Messaging.Tests.Mocks;
 using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
@@ -158,7 +157,6 @@ namespace Helsenorge.Messaging.Tests
 
             Server = new MessagingServer(
                 Settings, 
-                Logger, 
                 LoggerFactory, 
                 CollaborationRegistry, 
                 AddressRegistry, 

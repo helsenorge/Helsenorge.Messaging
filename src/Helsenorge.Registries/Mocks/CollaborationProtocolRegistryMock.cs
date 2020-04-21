@@ -6,8 +6,6 @@ using Helsenorge.Registries.CPAService;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Helsenorge.Registries.Abstractions;
-using System.Runtime.Serialization;
-using System.Xml;
 
 namespace Helsenorge.Registries.Mocks
 {

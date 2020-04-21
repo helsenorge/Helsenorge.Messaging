@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
-using System;
 
 namespace Helsenorge.Messaging.Tests.Mocks
 {

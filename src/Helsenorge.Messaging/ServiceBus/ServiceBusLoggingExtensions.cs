@@ -11,6 +11,8 @@ namespace Helsenorge.Messaging.ServiceBus
         private static readonly Action<ILogger, QueueType, string, int, int, string, Exception> EndReceive;
         private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> StartSend;
         private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> EndSend;
+        private static readonly Action<ILogger, string, int, int, string, string, Exception> ResponseTime;
+        private static readonly Action<ILogger, string, string, int, Exception> LogTimeout;
 
         private static readonly Action<ILogger, string, string, int, int, string, Exception> BeforeNotificationHandler;
         private static readonly Action<ILogger, string, string, int, int, string, Exception> AfterNotificationHandler;
@@ -25,7 +27,7 @@ namespace Helsenorge.Messaging.ServiceBus
         private static readonly Action<ILogger, string, int, int, string, Exception> AfterFactoryPoolCreateMessage;
 
         private static readonly Action<ILogger, string, Exception> ExternalReportedError;
-        private static readonly Action<ILogger, string, Exception> RemoveMessageFromQueueNormal;
+        private static readonly Action<ILogger, string, int, string, string, Exception> RemoveMessageFromQueueNormal;
         private static readonly Action<ILogger, string, Exception> RemoveMessageFromQueueError;
 
         public static void LogStartReceive(this ILogger logger, QueueType queueType, IncomingMessage message)
@@ -50,6 +52,10 @@ namespace Helsenorge.Messaging.ServiceBus
             EndSend(logger, queueType, function, fromHerId, toHerId, messageId, userId, null);
         }
 
+        public static void LogResponseTime(this ILogger logger, string messageFunction, int fromHerId, int toHerId, string messageId, string responseTimeMs)
+        {
+            ResponseTime(logger, messageFunction, fromHerId, toHerId, messageId, responseTimeMs, null);
+        }
 
         public static void LogBeforeNotificationHandler(this ILogger logger, string notificationHandler, string messageFunction, int fromHerId, int toHerId, string messageId)
         {
@@ -92,13 +98,18 @@ namespace Helsenorge.Messaging.ServiceBus
             ExternalReportedError(logger, message, null);
         }
 
-        public static void LogRemoveMessageFromQueueNormal(this ILogger logger, string id)
+        public static void LogRemoveMessageFromQueueNormal(this ILogger logger, IMessagingMessage message, string queueName)
         {
-            RemoveMessageFromQueueNormal(logger, id, null);
+            RemoveMessageFromQueueNormal(logger, message.MessageId, message.FromHerId, queueName, message.CorrelationId, null);
         }
         public static void LogRemoveMessageFromQueueError(this ILogger logger, string id)
         {
             RemoveMessageFromQueueError(logger, id, null);
+        }
+
+        public static void LogTimeoutError(this ILogger logger, string messageFunction, string messageId, int toHerId)
+        {
+            LogTimeout(logger, messageFunction, messageId, toHerId, null);
         }
 
         static ServiceBusLoggingExtensions()
@@ -123,15 +134,25 @@ namespace Helsenorge.Messaging.ServiceBus
                 EventIds.ServiceBusSend,
                 "End-ServiceBusSend{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} PersonalId: {UserId}");
 
+            ResponseTime = LoggerMessage.Define<string, int, int, string, string>(
+               LogLevel.Information,
+               EventIds.NotificationHandler,
+               "ResponseTime {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} ResponseTime: {ResponseTimeMs} ms");
+
+            LogTimeout = LoggerMessage.Define<string, string, int>(
+                LogLevel.Error,
+                EventIds.SynchronousCallTimeout,
+                "MUG-000030 Error Synchronous call {MessageFunction} {messageId} timed out against HerId: {toHerId}.");
+
             ExternalReportedError = LoggerMessage.Define<string>(
                 LogLevel.Error,
                 EventIds.ExternalReportedError,
                 "{Message}");
 
-            RemoveMessageFromQueueNormal = LoggerMessage.Define<string>(
+            RemoveMessageFromQueueNormal = LoggerMessage.Define<string, int, string, string>(
                 LogLevel.Information,
                 EventIds.RemoveMessageFromQueue,
-                "Removing processed message {MessageId} from queue");
+                "Removing processed message {MessageId} from Herid {herId} from queue {queueName}. Correlation = {correlationId}");
 
             RemoveMessageFromQueueError = LoggerMessage.Define<string>(
                 LogLevel.Information,

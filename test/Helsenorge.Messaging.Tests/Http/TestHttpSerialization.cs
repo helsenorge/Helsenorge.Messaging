@@ -8,6 +8,7 @@ using System.Globalization;
 namespace Helsenorge.Messaging.Tests.Http
 {
     [TestClass]
+    [Obsolete("Will be removed in 4.0.0")]
     public class TestHttpSerialization
     {
         private OutgoingHttpMessage CreateOutgoingHttpMessage()

@@ -1,5 +1,4 @@
-﻿using System;
-using Helsenorge.Messaging.Abstractions;
+﻿using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.ServiceBus

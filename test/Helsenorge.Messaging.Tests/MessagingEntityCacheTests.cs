@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;

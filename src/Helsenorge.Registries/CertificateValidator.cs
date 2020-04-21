@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Helsenorge.Registries.Abstractions;

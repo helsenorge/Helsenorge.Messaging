@@ -1,10 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging.Debug;
 using System.Diagnostics;
 
 namespace Helsenorge.Messaging.Tests.Mocks

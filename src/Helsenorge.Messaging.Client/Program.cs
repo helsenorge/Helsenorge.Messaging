@@ -2,19 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Security;
 using Helsenorge.Registries;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+#if NET471
+using Microsoft.Extensions.DependencyInjection;
+#endif
 
 namespace Helsenorge.Messaging.Client
 {
@@ -22,10 +20,9 @@ namespace Helsenorge.Messaging.Client
     {
         private static readonly object SyncRoot = new object();
         private static Stack<string> _files;
-    
+        private static ILoggerFactory _loggerFactory;
         private static ILogger _logger;
         private static MessagingClient _messagingClient;
-        private static ILoggerFactory _loggerFactory;
         private static ClientSettings _clientSettings;
 
         static int Main(string[] args)
@@ -60,10 +57,7 @@ namespace Helsenorge.Messaging.Client
                 .AddJsonFile($"{profile}.json", false);
             var configurationRoot = builder.Build();
 
-            // configure logging
-            _loggerFactory = new LoggerFactory();
-            _loggerFactory.AddConsole(configurationRoot.GetSection("Logging"));
-            _logger = _loggerFactory.CreateLogger("TestClient");
+            CreateLogger(configurationRoot);
 
             // configure caching
             var distributedCache = DistributedCacheFactory.Create();
@@ -94,9 +88,9 @@ namespace Helsenorge.Messaging.Client
             messagingSettings.LogPayload = true;
 
             if(noProtection)
-                _messagingClient = new MessagingClient(messagingSettings, collaborationProtocolRegistry, addressRegistry, null, null, new NoMessageProtection());
+                _messagingClient = new MessagingClient(messagingSettings, _loggerFactory, collaborationProtocolRegistry, addressRegistry, null, null, new NoMessageProtection());
             else
-                _messagingClient = new MessagingClient(messagingSettings, collaborationProtocolRegistry, addressRegistry);
+                _messagingClient = new MessagingClient(messagingSettings, _loggerFactory, collaborationProtocolRegistry, addressRegistry);
         }
 
         private static void HandleAsyncMessage(CommandLineApplication command)
@@ -131,7 +125,7 @@ namespace Helsenorge.Messaging.Client
                         for (var s = GetNextPath(); !string.IsNullOrEmpty(s); s = GetNextPath())
                         {
                             _logger.LogInformation($"Processing file {s}");
-                            Task.WaitAll(_messagingClient.SendAndContinueAsync(_logger, new OutgoingMessage()
+                            Task.WaitAll(_messagingClient.SendAndContinueAsync(new OutgoingMessage()
                             {
                                 MessageFunction = _clientSettings.MessageFunction,
                                 ToHerId = _clientSettings.ToHerId,
@@ -174,7 +168,7 @@ namespace Helsenorge.Messaging.Client
                 for (var s = GetNextPath(); !string.IsNullOrEmpty(s); s = GetNextPath())
                 {
                     _logger.LogInformation($"Processing file {s}");
-                    var result = _messagingClient.SendAndWaitAsync(_logger, new OutgoingMessage()
+                    var result = _messagingClient.SendAndWaitAsync(new OutgoingMessage()
                     {
                         MessageFunction = _clientSettings.MessageFunction,
                         ToHerId = _clientSettings.ToHerId,
@@ -200,6 +194,24 @@ namespace Helsenorge.Messaging.Client
                 }
             }
             return null;
+        }
+
+        private static void CreateLogger(IConfigurationRoot configurationRoot)
+        {            
+#if NET46
+            _loggerFactory = new LoggerFactory();
+            _loggerFactory.AddConsole(configurationRoot.GetSection("Logging"));
+#elif NET471            
+            
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging(loggerConfiguration =>
+            {
+                loggerConfiguration.AddConsole();
+            });
+            var provider = serviceCollection.BuildServiceProvider();
+            _loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+#endif
+            _logger = _loggerFactory.CreateLogger("TestClient");
         }
     }
 

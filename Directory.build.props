@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>7.3</LangVersion>    
+    <Version>3.1.1-beta03</Version>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Authors>Direktoratet for e-helse</Authors>
+    <Company>Direktoratet for e-helse</Company>
+    <Copyright>Direktoratet for e-helse</Copyright>
+    <RepositoryUrl>https://github.com/helsenorgelab/Helsenorge.Messaging</RepositoryUrl>    
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\tools\key.snk</AssemblyOriginatorKeyFile>    
+    <NoWarn>CS1591</NoWarn>
+  </PropertyGroup>  
+</Project>
