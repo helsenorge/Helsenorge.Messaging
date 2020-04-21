@@ -69,9 +69,7 @@ namespace Helsenorge.Messaging.ServiceBus
         /// <exception cref="ArgumentNullException"></exception>
         internal ServiceBusCore(MessagingCore core)
         {
-            if (core == null) throw new ArgumentNullException(nameof(core));
-            
-            Core = core;
+            Core = core ?? throw new ArgumentNullException(nameof(core));
             
             var connectionString = core.Settings.ServiceBus.ConnectionString;
             if (connectionString == null)
@@ -202,7 +200,7 @@ namespace Helsenorge.Messaging.ServiceBus
             {
                 messagingMessage.CpaId = profile.CpaId.ToString("D");
             }
-            await Send(logger, messagingMessage, queueType, outgoingMessage.PersonalId, (LogPayload) ? outgoingMessage.Payload : null).ConfigureAwait(false);
+            await Send(logger, messagingMessage).ConfigureAwait(false);
 
             logger.LogEndSend(queueType, messagingMessage.MessageFunction, messagingMessage.FromHerId, messagingMessage.ToHerId, messagingMessage.MessageId, outgoingMessage.PersonalId);
         }
@@ -212,11 +210,8 @@ namespace Helsenorge.Messaging.ServiceBus
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="message">The prepared message</param>
-        /// <param name="queueType">The type of queue to use</param>
-        /// <param name="userId"></param>
-        /// <param name="xml">Optional xml content. This will be logged depending on the logging level.</param>
         /// <returns></returns>
-        private async Task Send(ILogger logger, IMessagingMessage message, QueueType queueType, string userId = "99999999999", XDocument xml = null)
+        private async Task Send(ILogger logger, IMessagingMessage message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
@@ -311,7 +306,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 }
             }
             logger.LogWarning("Reporting error to sender. ErrorCode: {0} ErrorDescription: {1} AdditionalData: {2}", errorCode, errorDescription, additionDataValue);
-            await Send(logger, clonedMessage, QueueType.Error).ConfigureAwait(false);
+            await Send(logger, clonedMessage).ConfigureAwait(false);
         }
         /// <summary>
         /// Gets the queue name that we can use on messages from a more extensive name
@@ -396,13 +391,11 @@ namespace Helsenorge.Messaging.ServiceBus
         /// <summary>
         /// Removes the message from the queue as part of normal operation
         /// </summary>
-        /// <param name="logger"></param>
         /// <param name="message"></param>
-        internal static void RemoveProcessedMessageFromQueue(ILogger logger, IMessagingMessage message)
+        internal static void RemoveProcessedMessageFromQueue(IMessagingMessage message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
-            logger.LogRemoveMessageFromQueueNormal(message.MessageId);
             message.Complete();
         }
         /// <summary>

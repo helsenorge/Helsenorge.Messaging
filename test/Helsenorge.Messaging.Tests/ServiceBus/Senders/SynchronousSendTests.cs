@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Schema;
 using Helsenorge.Messaging.Abstractions;
@@ -51,6 +52,14 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
 
             var response = RunAndHandleException(Client.SendAndWaitAsync(Logger, message));
 
+            var logProcessedMessage = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Information
+                       && l.Message.Contains($"Removing processed message { mockMessage.MessageId} from Herid { MockFactory.OtherHerId } from queue { MockFactory.Helsenorge.SynchronousReply.Name}. Correlation = { message.MessageId }"));
+            Assert.AreEqual(1, logProcessedMessage.Count());
+
+            var logEntry = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Information
+                       && l.Message.Contains("ResponseTime")
+                       && l.Message.EndsWith(" ms"));
+            Assert.AreEqual(1, logEntry.Count());
             // make sure the content is what we expect
             Assert.AreEqual(GenericResponse.ToString(), response.ToString());
             // message should be gone from our sync reply
@@ -83,9 +92,13 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         public void Send_Synchronous_Timeout()
         {
             var message = CreateMessage();
-            
+            var sender = Client.SendAndWaitAsync(Logger, message);
+            var logEntry = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Error
+            && l.Message.StartsWith("MUG-000030"));
+            Assert.AreEqual(1, logEntry.Count());
+
             //fake timeout by not posting any messag on the reply queue
-            RunAndHandleMessagingException(Client.SendAndWaitAsync(Logger, message), EventIds.SynchronousCallTimeout);
+            RunAndHandleMessagingException(sender, EventIds.SynchronousCallTimeout);
         }
         [TestMethod]
         public void Send_Synchronous_DelayedReply()

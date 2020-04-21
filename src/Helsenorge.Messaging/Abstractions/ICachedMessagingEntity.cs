@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Helsenorge.Messaging.Abstractions
+﻿namespace Helsenorge.Messaging.Abstractions
 {
     /// <summary>
     /// Interface for items in <see cref="MessagingEntityCache{T}"/>

@@ -3,11 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.ServiceBus.Messaging;
-using System.Xml.Linq;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
 
 namespace Helsenorge.Messaging.ServiceBus
 {
