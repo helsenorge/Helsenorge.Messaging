@@ -44,7 +44,7 @@ namespace Helsenorge.Messaging.Tests
 
         protected XDocument GenericResponse => new XDocument(new XElement("SomeDummyXmlResponseUsedForTesting"));
 
-        protected XDocument SoapFault => XDocument.Load(File.OpenRead(@"Files\SoapFault.xml"));
+        protected XDocument SoapFault => XDocument.Load(File.OpenRead(@"Files/SoapFault.xml"));
 
 
         [TestInitialize]
@@ -132,7 +132,7 @@ namespace Helsenorge.Messaging.Tests
                     Thumbprint = TestCertificates.HelsenorgeEncryptionThumbprint
                 }
             };
-            
+
             Settings.ServiceBus.ConnectionString = "connection string";
             Settings.ServiceBus.Synchronous.ReplyQueueMapping.Add(Environment.MachineName.ToLower(), "RepliesGoHere");
             // make things easier by only having one processing task per queue
@@ -148,22 +148,22 @@ namespace Helsenorge.Messaging.Tests
             MessageProtection = new MockMessageProtection(signingCertificate, encryptionCertificate);
 
             Client = new MessagingClient(
-                Settings, 
-                CollaborationRegistry, 
-                AddressRegistry, 
-                CertificateStore, 
+                Settings,
+                CollaborationRegistry,
+                AddressRegistry,
+                CertificateStore,
                 CertificateValidator,
                 MessageProtection
             );
             Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
             Server = new MessagingServer(
-                Settings, 
-                LoggerFactory, 
-                CollaborationRegistry, 
-                AddressRegistry, 
-                CertificateStore, 
-                CertificateValidator, 
+                Settings,
+                LoggerFactory,
+                CollaborationRegistry,
+                AddressRegistry,
+                CertificateStore,
+                CertificateValidator,
                 MessageProtection
             );
             Server.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);

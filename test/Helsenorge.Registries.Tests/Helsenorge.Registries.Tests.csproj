@@ -26,25 +26,25 @@
         <Reference Include="System.ServiceModel" />
     </ItemGroup>
     <ItemGroup>
-        <None Update="Files\CommunicationDetails_93252.xml">
+        <None Update="Files/CommunicationDetails_93252.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Counterparty_Signature.cer">
+        <None Update="Files/Counterparty_Signature.cer">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Counterparty_SignatureInvalidEnd.cer">
+        <None Update="Files/Counterparty_SignatureInvalidEnd.cer">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Counterparty_SignatureInvalidStart.cer">
+        <None Update="Files/Counterparty_SignatureInvalidStart.cer">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\CPA_49391409-e528-4919-b4a3-9ccdab72c8c1.xml">
+        <None Update="Files/CPA_49391409-e528-4919-b4a3-9ccdab72c8c1.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\CPA_93252.xml">
+        <None Update="Files/CPA_93252.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\CPP_93238.xml">
+        <None Update="Files/CPP_93238.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>

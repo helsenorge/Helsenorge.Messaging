@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net471</TargetFrameworks>
+        <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
         <AssemblyName>Helsenorge.Messaging.Tests</AssemblyName>
         <RootNamespace>Helsenorge.Messaging.Tests</RootNamespace>
         <ProjectGuid>{EE03ABE5-4B8D-48BB-AA52-0DC9D442634D}</ProjectGuid>
@@ -13,115 +13,116 @@
   <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.4" />
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.4" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
         <PackageReference Include="Moq" Version="4.14.1" />
         <PackageReference Include="MSTest.TestAdapter" Version="2.1.1" />
         <PackageReference Include="MSTest.TestFramework" Version="2.1.1" />
         <PackageReference Include="xunit" Version="2.4.1" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Helsenorge.Messaging\Helsenorge.Messaging.csproj" />
+        <ProjectReference Include="../../src/Helsenorge.Messaging/Helsenorge.Messaging.csproj" />
     </ItemGroup>
     <ItemGroup>
         <Reference Include="System.Configuration" />
     </ItemGroup>
     <ItemGroup>
-        <None Update="Files\CommunicationDetails_91462.xml">
+        <None Update="Files/CommunicationDetails_91462.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\CommunicationDetails_93238.xml">
+        <None Update="Files/CommunicationDetails_93238.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\CommunicationDetails_93252.xml">
+        <None Update="Files/CommunicationDetails_93252.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\CommunicationDetails_94867.xml">
+        <None Update="Files/CommunicationDetails_94867.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Counterparty_Encryption.cer">
+        <None Update="Files/Counterparty_Encryption.cer">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Counterparty_Encryption.p12">
+        <None Update="Files/Counterparty_Encryption.p12">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Counterparty_Signature.cer">
+        <None Update="Files/Counterparty_Signature.cer">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Counterparty_Signature.p12">
+        <None Update="Files/Counterparty_Signature.p12">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Counterparty_SignatureInvalidEnd.cer">
+        <None Update="Files/Counterparty_SignatureInvalidEnd.cer">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Counterparty_SignatureInvalidStart.cer">
+        <None Update="Files/Counterparty_SignatureInvalidStart.cer">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\CPA_49391409-e528-4919-b4a3-9ccdab72c8c1 - Copy.xml">
+        <None Update="Files/CPA_49391409-e528-4919-b4a3-9ccdab72c8c1 - Copy.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\CPA_93252.xml">
+        <None Update="Files/CPA_93252.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\CPA_93252_ChangedSignedCertificate.xml">
+        <None Update="Files/CPA_93252_ChangedSignedCertificate.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\CPA_94867.xml">
+        <None Update="Files/CPA_94867.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\CPP_91462.xml">
+        <None Update="Files/CPP_91462.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\CPP_93238.xml">
+        <None Update="Files/CPP_93238.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\CPP_93252.xml">
+        <None Update="Files/CPP_93252.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\CPP_94867.xml">
+        <None Update="Files/CPP_94867.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\GetCertificateDetailsForEncryption_93238.xml">
+        <None Update="Files/GetCertificateDetailsForEncryption_93238.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\GetCertificateDetailsForEncryption_93252.xml">
+        <None Update="Files/GetCertificateDetailsForEncryption_93252.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\GetCertificateDetailsForEncryption_94867.xml">
+        <None Update="Files/GetCertificateDetailsForEncryption_94867.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\GetCertificateDetailsForValidatingSignature_93238.xml">
+        <None Update="Files/GetCertificateDetailsForValidatingSignature_93238.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\GetCertificateDetailsForValidatingSignature_93252.xml">
+        <None Update="Files/GetCertificateDetailsForValidatingSignature_93252.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\GetCertificateDetailsForValidatingSignature_94867.xml">
+        <None Update="Files/GetCertificateDetailsForValidatingSignature_94867.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Helsenorge_Encryption.cer">
+        <None Update="Files/Helsenorge_Encryption.cer">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Helsenorge_Encryption.p12">
+        <None Update="Files/Helsenorge_Encryption.p12">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Helsenorge_EncryptionInvalidEnd.pfx">
+        <None Update="Files/Helsenorge_EncryptionInvalidEnd.pfx">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Helsenorge_EncryptionInvalidStart.pfx">
+        <None Update="Files/Helsenorge_EncryptionInvalidStart.pfx">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Helsenorge_InvalidEncryption.cer">
+        <None Update="Files/Helsenorge_InvalidEncryption.cer">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Helsenorge_Message.xml">
+        <None Update="Files/Helsenorge_Message.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Helsenorge_Signature.cer">
+        <None Update="Files/Helsenorge_Signature.cer">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\Helsenorge_Signature.p12">
+        <None Update="Files/Helsenorge_Signature.p12">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Files\SoapFault.xml">
+        <None Update="Files/SoapFault.xml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
