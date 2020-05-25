@@ -42,7 +42,7 @@ namespace Helsenorge.Registries.Tests
             {
                 if (i < 0)
                 {
-                    throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."));
+                    throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."), new FaultCode("Client"), "");
                 }
                 var file = Path.Combine("Files", $"CommunicationDetails_{i}.xml");
                 return File.Exists(file) == false ? null : XElement.Load(file);
@@ -52,7 +52,7 @@ namespace Helsenorge.Registries.Tests
             {
                 if (i < 0)
                 {
-                    throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."));
+                    throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."), new FaultCode("Client"), "");
                 }
                 var file = Path.Combine("Files", $"GetCertificateDetailsForEncryption_{i}.xml");
                 return File.Exists(file) == false ? null : XElement.Load(file);
@@ -62,7 +62,7 @@ namespace Helsenorge.Registries.Tests
             {
                 if (i < 0)
                 {
-                    throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."));
+                    throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."), new FaultCode("Client"), "");
                 }
                 var file = Path.Combine("Files", $"GetCertificateDetailsForValidatingSignature_{i}.xml");
                 return File.Exists(file) == false ? null : XElement.Load(file);
@@ -77,9 +77,9 @@ namespace Helsenorge.Registries.Tests
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddLogging(loggingBuilder => loggingBuilder.AddDebug());
             var provider = serviceCollection.BuildServiceProvider();
-            _loggerFactory = provider.GetRequiredService<ILoggerFactory>();            
+            _loggerFactory = provider.GetRequiredService<ILoggerFactory>();
             _logger = _loggerFactory.CreateLogger<AddressRegistryTests>();
-            
+
             _registry = GetDefaultAddressRegistryMock();
         }
         [TestMethod]
@@ -110,7 +110,7 @@ namespace Helsenorge.Registries.Tests
             {
                 Task.WaitAll(task);
             }
-            catch (AggregateException ex )
+            catch (AggregateException ex)
             {
                 var x = ex.InnerException;
             }
@@ -191,5 +191,5 @@ namespace Helsenorge.Registries.Tests
                 Assert.IsInstanceOfType(ex.InnerException, typeof(RegistriesException));
             }
         }
-    } 
+    }
 }

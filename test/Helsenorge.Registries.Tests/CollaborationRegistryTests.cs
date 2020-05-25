@@ -36,7 +36,7 @@ namespace Helsenorge.Registries.Tests
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddLogging(loggingBuilder => loggingBuilder.AddDebug());
             var provider = serviceCollection.BuildServiceProvider();
-            _loggerFactory = provider.GetRequiredService<ILoggerFactory>();            
+            _loggerFactory = provider.GetRequiredService<ILoggerFactory>();
             _logger = _loggerFactory.CreateLogger<CollaborationRegistryTests>();
 
             var distributedCache = DistributedCacheFactory.Create();
@@ -57,7 +57,7 @@ namespace Helsenorge.Registries.Tests
             {
                 if (i < 0)
                 {
-                    throw new FaultException(new FaultReason("Dummy fault from mock"));
+                    throw new FaultException(new FaultReason("Dummy fault from mock"), new FaultCode("Client"), "");
                 }
                 var file = Path.Combine("Files", $"CPP_{i}.xml");
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
@@ -77,7 +77,7 @@ namespace Helsenorge.Registries.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_Cache_Null()
         {
-            
+
             var distributedCache = DistributedCacheFactory.Create();
             IAddressRegistry addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache);
 
@@ -301,7 +301,7 @@ namespace Helsenorge.Registries.Tests
             Assert.IsNull(profile.FindMessagePartsForReceiveAppRec("BOB"));
         }
 
-        
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void FindMessagePartsForSendMessage_ArgumentNull()
