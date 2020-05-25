@@ -1,11 +1,15 @@
 {
     "AddressRegistrySettings": {
-        "UserName": "???",
-        "Password": "???"
+        "WcfConfiguration": {
+            "UserName": "???",
+            "Password": "???"
+        }
     },
     "CollaborationProtocolRegistrySettings": {
-        "UserName": "???",
-        "Password": "???",
+        "WcfConfiguration": {
+            "UserName": "???",
+            "Password": "???"
+        },
         "MyHerId": "6789"
     },
     "MessagingSettings": {

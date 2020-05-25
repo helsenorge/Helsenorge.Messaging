@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.ServiceModel;
 using System.Xml.Linq;
+using Helsenorge.Registries.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Helsenorge.Registries.Tests
@@ -24,10 +25,11 @@ namespace Helsenorge.Registries.Tests
         {
             var settings = new AddressRegistrySettings()
             {
-                UserName = "username",
-                Password = "password",
-                EndpointName = "BasicHttpBinding_ICommunicationPartyService",
-                WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
+                WcfConfiguration = new WcfConfiguration
+                {
+                    UserName = "username",
+                    Password = "password",
+                },
                 CachingInterval = TimeSpan.FromSeconds(5)
             };
 

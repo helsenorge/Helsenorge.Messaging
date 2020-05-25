@@ -1,15 +1,15 @@
-using System;
-using System.IO;
-using Helsenorge.Registries;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Helsenorge.Registries.Mocks;
-using Microsoft.Extensions.Logging;
-using System.Configuration;
-using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Tests.Mocks;
-using System.Threading.Tasks;
+using Helsenorge.Registries;
+using Helsenorge.Registries.Configuration;
+using Helsenorge.Registries.Mocks;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Helsenorge.Messaging.Tests
 {
@@ -57,18 +57,20 @@ namespace Helsenorge.Messaging.Tests
         {
             var addressRegistrySettings = new AddressRegistrySettings()
             {
-                UserName = "username",
-                Password = "password",
-                EndpointName = "SomeEndpointName",
-                WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
+                WcfConfiguration = new WcfConfiguration
+                {
+                    UserName = "username",
+                    Password = "password",
+                },
                 CachingInterval = TimeSpan.FromSeconds(5)
             };
             var collaborationRegistrySettings = new CollaborationProtocolRegistrySettings()
             {
-                UserName = "username",
-                Password = "password",
-                EndpointName = "SomeEndpointName",
-                WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
+                WcfConfiguration = new WcfConfiguration
+                {
+                    UserName = "username",
+                    Password = "password",
+                },
                 CachingInterval = TimeSpan.FromSeconds(5)
             };
 

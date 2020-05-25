@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
-using Microsoft.ServiceBus;
-using Microsoft.ServiceBus.Messaging;
 using System.IO;
+using Amqp;
 
 namespace Helsenorge.Messaging.ServiceBus
 {
@@ -29,10 +28,7 @@ namespace Helsenorge.Messaging.ServiceBus
         protected override IMessagingFactory CreateEntity(ILogger logger, string id)
         {
             if (_alternateMessagingFactor != null) return _alternateMessagingFactor;
-
-            var factory = MessagingFactory.CreateFromConnectionString(_settings.ConnectionString);
-            factory.RetryPolicy = RetryPolicy.Default;
-            return new ServiceBusFactory(factory);
+            return new ServiceBusFactory(new ServiceBusConnection(_settings.ConnectionString), logger);
         }
         public IMessagingMessage CreateMessage(ILogger logger, Stream stream, OutgoingMessage outgoingMessage)
         {
