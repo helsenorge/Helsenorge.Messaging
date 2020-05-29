@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net46;net471</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <AssemblyName>Helsenorge.Messaging.Client</AssemblyName>
     <RootNamespace>Helsenorge.Messaging.Client</RootNamespace>
     <ProjectGuid>{FE928A0E-5B57-4893-8010-DDC54DC1B752}</ProjectGuid>
@@ -9,45 +9,21 @@
     <OutputType>Exe</OutputType>
     <StartupObject />
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net46'">
-    <DefineConstants>NET46</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net471'">
-    <DefineConstants>NET471</DefineConstants>
-  </PropertyGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.2" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net471'">
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.1" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Helsenorge.Messaging\Helsenorge.Messaging.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.Configuration" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="App.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

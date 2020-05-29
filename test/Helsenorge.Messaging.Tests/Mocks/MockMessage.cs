@@ -43,6 +43,8 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public DateTime ScheduledEnqueueTimeUtc { get; set; }
         public TimeSpan TimeToLive { get; set; }
         public string To { get; set; }
+
+        public Guid LockToken => Guid.Empty;
         public void Complete()
         {
             Queue.Remove(this);
