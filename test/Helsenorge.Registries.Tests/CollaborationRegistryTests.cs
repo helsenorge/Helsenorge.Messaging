@@ -1,13 +1,13 @@
-using System;
-using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.ServiceModel;
 using Helsenorge.Registries.Abstractions;
+using Helsenorge.Registries.Configuration;
 using Helsenorge.Registries.Mocks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.IO;
+using System.Linq;
+using System.ServiceModel;
 
 namespace Helsenorge.Registries.Tests
 {
@@ -24,10 +24,11 @@ namespace Helsenorge.Registries.Tests
         {
             var settings = new CollaborationProtocolRegistrySettings()
             {
-                UserName = "username",
-                Password = "password",
-                EndpointName = "BasicHttpBinding_ICommunicationPartyService",
-                WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
+                WcfConfiguration = new WcfConfiguration
+                {
+                    UserName = "username",
+                    Password = "password",
+                },
                 CachingInterval = TimeSpan.FromSeconds(5),
                 MyHerId = 93238 // matches a value in a CPA test file
             };
@@ -56,7 +57,7 @@ namespace Helsenorge.Registries.Tests
             {
                 if (i < 0)
                 {
-                    throw new FaultException(new FaultReason("Dummy fault from mock"));
+                    throw new FaultException(new FaultReason("Dummy fault from mock"), new FaultCode("Client"), string.Empty);
                 }
                 var file = Path.Combine("Files", $"CPP_{i}.xml");
                 return File.Exists(file) == false ? null : File.ReadAllText(file);

@@ -59,7 +59,6 @@ namespace Helsenorge.Registries
             _cache = cache;
             _adressRegistry = adressRegistry;
             _invoker = new SoapServiceInvoker(settings.WcfConfiguration);
-            _invoker.SetClientCredentials(_settings.UserName, _settings.Password);
             CertificateValidator = new CertificateValidator(_settings.UseOnlineRevocationCheck);
         }
 
@@ -296,11 +295,11 @@ namespace Helsenorge.Registries
 
         [ExcludeFromCodeCoverage] // requires wire communication
         private Task<T> Invoke<T>(ILogger logger, Func<CPAService.ICPPAService, Task<T>> action, string methodName)
-            => _invoker.Execute(logger, action, methodName, _settings.EndpointName);
+            => _invoker.Execute(logger, action, methodName);
 
         [ExcludeFromCodeCoverage] // requires wire communication
         private Task<T> Invoke<T>(ILogger logger, Func<ICommunicationPartyService, Task<T>> action, string methodName)
-            => _invoker.Execute(logger, action, methodName, _settings.EndpointName);
+            => _invoker.Execute(logger, action, methodName);
 
         private CollaborationProtocolProfile MapFrompartyInfo(XElement partyInfo)
         {

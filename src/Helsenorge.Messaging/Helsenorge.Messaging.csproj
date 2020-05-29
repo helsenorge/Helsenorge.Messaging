@@ -1,39 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net46;net471</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Helsenorge.Messaging</AssemblyName>
     <RootNamespace>Helsenorge.Messaging</RootNamespace>
     <ProjectGuid>{A0BA02E7-C2EA-496B-85ED-10ACD42B4DE8}</ProjectGuid>
     <Product>Helsenorge Messaging</Product>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Abstractions\IMessageReceiverFactory.cs" />
-    <Compile Remove="Abstractions\IMessageSenderFactory.cs" />
-    <Compile Remove="Abstractions\OutgointMessageDetails.cs" />
-  </ItemGroup>
-
+  
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\..\CustomDictionary.xml">
       <Link>Properties\CustomDictionary.xml</Link>
     </CodeAnalysisDictionary>
   </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="1.1.2" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net471'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.1" />
-  </ItemGroup>
-
+  
   <ItemGroup>
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="4.5.0" />
+    <PackageReference Include="AMQPNetLite" Version="2.4.0" />
+    <PackageReference Include="AMQPNetLite.Serialization" Version="2.4.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.4" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="4.7.0" />
     <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="3.4.0" />
   </ItemGroup>
 
   <ItemGroup>

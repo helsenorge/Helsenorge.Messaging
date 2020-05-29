@@ -1,40 +1,30 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Helsenorge.Registries.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
-using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.ServiceModel;
-using System.ServiceModel.Configuration;
 using System.Threading.Tasks;
 
 namespace Helsenorge.Registries.Utilities
 {
     internal class SoapServiceInvoker
     {
-        private readonly Configuration _wcfConfiguration;
-        private string _userName;
-        private string _password;
+        private readonly WcfConfiguration _wcfConfiguration;
         private readonly ConcurrentDictionary<Type, object> FactoryCache = new ConcurrentDictionary<Type, object>();
         private readonly object _lockerObject = new object();
-    
-        public SoapServiceInvoker(Configuration wcfConfiguration)
+
+        public SoapServiceInvoker(WcfConfiguration wcfConfiguration)
         {
-            if (wcfConfiguration == null) throw new ArgumentNullException(nameof(wcfConfiguration));
-            _wcfConfiguration = wcfConfiguration;
+            _wcfConfiguration = wcfConfiguration ?? throw new ArgumentNullException(nameof(wcfConfiguration));
         }
-        public void SetClientCredentials(string userName, string password)
-        {
-            _userName = userName;
-            _password = password;
-        }
+
         [ExcludeFromCodeCoverage] // requires wire communication
-        public async Task<TResponse> Execute<TContract, TResponse>(ILogger logger, Func<TContract, Task<TResponse>> action, string operationName,
-            string endpointConfigurationName)
+        public async Task<TResponse> Execute<TContract, TResponse>(ILogger logger, Func<TContract, Task<TResponse>> action, string operationName)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
             if (action == null) throw new ArgumentNullException(nameof(action));
             if (string.IsNullOrEmpty(operationName)) throw new ArgumentNullException(nameof(operationName));
-            if (string.IsNullOrEmpty(endpointConfigurationName)) throw new ArgumentNullException(nameof(endpointConfigurationName));
 
             ChannelFactory<TContract> factory = null;
             var channel = default(TContract);
@@ -42,17 +32,17 @@ namespace Helsenorge.Registries.Utilities
 
             try
             {
-                factory = GetChannelFactory<TContract>(endpointConfigurationName);
+                factory = GetChannelFactory<TContract>();
                 channel = factory.CreateChannel();
 
-                logger.LogInformation("Start-ServiceCall: {OperationName} {Address}", 
+                logger.LogInformation("Start-ServiceCall: {OperationName} {Address}",
                     operationName, factory.Endpoint.Address.Uri.AbsoluteUri);
 
                 response = await action(channel).ConfigureAwait(false);
 
                 logger.LogInformation("End-ServiceCall: {OperationName} {Address}",
                     operationName, factory.Endpoint.Address.Uri.AbsoluteUri);
-        
+
                 var communicatonObject = (channel as ICommunicationObject);
                 communicatonObject?.Close();
 
@@ -80,21 +70,15 @@ namespace Helsenorge.Registries.Utilities
         }
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [ExcludeFromCodeCoverage] // requires wire communication
-        private ChannelFactory<TContract> GetChannelFactory<TContract>(string endpointConfigurationName)
+        internal ChannelFactory<TContract> GetChannelFactory<TContract>()
         {
-            object factoryObject;
-
-            if (FactoryCache.TryGetValue(typeof(TContract), out factoryObject) == false)
+            if (!FactoryCache.TryGetValue(typeof(TContract), out var factoryObject))
             {
                 lock (_lockerObject)
                 {
-                    if (FactoryCache.TryGetValue(typeof(TContract), out factoryObject) == false)
+                    if (!FactoryCache.TryGetValue(typeof(TContract), out factoryObject))
                     {
-                        var factory = new ConfigurationChannelFactory<TContract>(endpointConfigurationName, _wcfConfiguration, null);
-
-                        factory.Credentials.UserName.UserName = _userName;
-                        factory.Credentials.UserName.Password = _password;
-
+                        var factory = new ConfigurationChannelFactory<TContract>(_wcfConfiguration);
                         FactoryCache.TryAdd(typeof(TContract), factory);
                         factoryObject = factory;
                     }

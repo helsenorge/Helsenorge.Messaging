@@ -1,31 +1,50 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using Amqp;
+using Amqp.Framing;
 using Helsenorge.Messaging.Abstractions;
-using Microsoft.ServiceBus.Messaging;
+using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.ServiceBus
 {
-    [ExcludeFromCodeCoverage] // Azure service bus implementation
+    [ExcludeFromCodeCoverage]
     internal class ServiceBusFactory : IMessagingFactory
     {
-        private readonly MessagingFactory _implementation;
+        private readonly ServiceBusConnection _connection;
+        private readonly ILogger _logger;
 
-        public ServiceBusFactory(MessagingFactory implementation)
+        public ServiceBusFactory(ServiceBusConnection connection, ILogger logger)
         {
-            if (implementation == null) throw new ArgumentNullException(nameof(implementation));
-            _implementation = implementation;
+            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
+
         public IMessagingReceiver CreateMessageReceiver(string id)
         {
-            return new ServiceBusReceiver(_implementation.CreateMessageReceiver(id, ReceiveMode.PeekLock));
+            return new ServiceBusReceiver(_connection, id, _logger);
         }
+
         public IMessagingSender CreateMessageSender(string id)
         {
-            return new ServiceBusSender(_implementation.CreateMessageSender(id));
+            return new ServiceBusSender(_connection, id, _logger);
         }
-        bool ICachedMessagingEntity.IsClosed => _implementation.IsClosed;
-        void ICachedMessagingEntity.Close() => _implementation.Close();
-        public IMessagingMessage CreteMessage(Stream stream, OutgoingMessage outgoingMessage) => new ServiceBusMessage(new BrokeredMessage(stream, true));
+
+        public bool IsClosed => _connection.IsClosedOrClosing;
+
+        public void Close() => _connection.CloseAsync().Wait();
+
+        public IMessagingMessage CreteMessage(Stream stream, OutgoingMessage outgoingMessage)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                stream.Close();
+                return new ServiceBusMessage(new Message
+                {
+                    BodySection = new Data { Binary = memoryStream.ToArray() }
+                });
+            }
+        }
     }
 }
