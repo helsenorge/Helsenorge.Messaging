@@ -1,0 +1,24 @@
+name: Build and test
+
+on:
+  [push]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+    - name: Install dependencies
+      run: dotnet restore Messaging.sln
+    - name: Build
+      run: dotnet build Messaging.sln --configuration Release --no-restore
+    - name: Unit tests
+      run: |
+        dotnet test "./test/Helsenorge.Messaging.Tests/Helsenorge.Messaging.Tests.csproj"
+        dotnet test "./test/Helsenorge.Registries.Tests/Helsenorge.Registries.Tests.csproj"
