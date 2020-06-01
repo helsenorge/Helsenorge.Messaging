@@ -32,7 +32,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             var message = CreateMessageForCommunicationPartyWithoutCpp();
 
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
 
             Assert.AreEqual(1, MockFactory.OtherParty.Asynchronous.Messages.Count);
         }

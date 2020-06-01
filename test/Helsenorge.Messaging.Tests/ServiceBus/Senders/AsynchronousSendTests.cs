@@ -27,7 +27,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             var message = CreateMessage();
             message.ToHerId = MockFactory.OtherHerId;
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
 
             Assert.AreEqual(1, MockFactory.OtherParty.Asynchronous.Messages.Count);
             // message includes CPA id
@@ -38,7 +38,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             var message = CreateMessage();
             message.ToHerId = MockFactory.HerIdWithOnlyCpp;
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
 
             Assert.AreEqual(1, MockFactory.OtherPartyWithOnlyCpp.Asynchronous.Messages.Count);
             // no CPA id specified
@@ -51,7 +51,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             var message = CreateMessage();
             message.ReceiptForMessageFunction = message.MessageFunction;
             message.MessageFunction = "APPREC";
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
 
             Assert.AreEqual(1, MockFactory.OtherParty.Asynchronous.Messages.Count);
         }
@@ -60,7 +60,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         [ExpectedException(typeof(ArgumentNullException))]
         public void Send_Asynchronous_NoMessage()
         {
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, null));
+            RunAndHandleException(Client.SendAndContinueAsync(null));
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
@@ -68,7 +68,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             var message = CreateMessage();
             message.ToHerId = 0;
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -76,7 +76,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             var message = CreateMessage();
             message.MessageId = null;
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -84,7 +84,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             var message = CreateMessage();
             message.MessageFunction = null;
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -92,7 +92,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             var message = CreateMessage();
             message.Payload = null;
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
         }
         
         [TestMethod]
@@ -101,7 +101,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             var message = CreateMessage();
             message.MessageFunction = "BOB";
-            RunAndHandleMessagingException(Client.SendAndContinueAsync(Logger, message), EventIds.InvalidMessageFunction);
+            RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.InvalidMessageFunction);
         }
         [TestMethod]
         [ExpectedException(typeof(MessagingException))]
@@ -111,7 +111,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             CertificateValidator.SetError((c,u)=> (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.StartDate : CertificateErrors.None);
 
             var message = CreateMessage();
-            RunAndHandleMessagingException(Client.SendAndContinueAsync(Logger, message), EventIds.RemoteCertificate);
+            RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.RemoteCertificate);
         }
         [TestMethod]
         public void Send_Asynchronous_InvalidEncryption_Ignore()
@@ -120,7 +120,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             CertificateValidator.SetError((c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.StartDate : CertificateErrors.None);
 
             var message = CreateMessage();
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
         }
 
         [TestMethod]
@@ -131,7 +131,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             CertificateValidator.SetError((c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.StartDate : CertificateErrors.None);
 
             var message = CreateMessage();
-            RunAndHandleMessagingException(Client.SendAndContinueAsync(Logger, message), EventIds.LocalCertificate);
+            RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.LocalCertificate);
         }
         [TestMethod]
         public void Send_Asynchronous_InvalidSignature_Ignore()
@@ -140,7 +140,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             CertificateValidator.SetError((c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.StartDate : CertificateErrors.None);
 
             var message = CreateMessage();
-            RunAndHandleMessagingException(Client.SendAndContinueAsync(Logger, message), EventIds.LocalCertificate);
+            RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.LocalCertificate);
         }
     }
 }

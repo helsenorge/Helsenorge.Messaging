@@ -50,7 +50,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             mockMessage.Queue = MockFactory.Helsenorge.SynchronousReply.Messages;
             MockFactory.Helsenorge.SynchronousReply.Messages.Add(mockMessage);
 
-            var response = RunAndHandleException(Client.SendAndWaitAsync(Logger, message));
+            var response = RunAndHandleException(Client.SendAndWaitAsync(message));
 
             var logProcessedMessage = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Information
                        && l.Message.Contains($"Removing processed message { mockMessage.MessageId} from Herid { MockFactory.OtherHerId } from queue { MockFactory.Helsenorge.SynchronousReply.Name}. Correlation = { message.MessageId }"));
@@ -81,7 +81,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             Client.RegisterSynchronousReplyMessageReceivedCallback(m => { throw new XmlSchemaValidationException(); });
 
             //This call will timeout while waiting for the sync reply message
-            var response = RunAndHandleException(Client.SendAndWaitAsync(Logger, message));
+            var response = RunAndHandleException(Client.SendAndWaitAsync(message));
 
             // message should be moved to the error queue
             Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
@@ -92,7 +92,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         public void Send_Synchronous_Timeout()
         {
             var message = CreateMessage();
-            var sender = Client.SendAndWaitAsync(Logger, message);
+            var sender = Client.SendAndWaitAsync(message);
             var logEntry = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Error
             && l.Message.StartsWith("MUG-000030"));
             Assert.AreEqual(1, logEntry.Count());
@@ -108,7 +108,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             // make first one time out
             try
             {
-                RunAndHandleMessagingException(Client.SendAndWaitAsync(Logger, message), EventIds.SynchronousCallTimeout);
+                RunAndHandleMessagingException(Client.SendAndWaitAsync(message), EventIds.SynchronousCallTimeout);
             }
             catch (MessagingException) // ignore timeout
             {
@@ -126,7 +126,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
                 System.Threading.Thread.Sleep(1000);
                 // then we post a new one, and this causes the previous one to have timed out
                 message = CreateMessage();
-                RunAndHandleMessagingException(Client.SendAndWaitAsync(Logger, message), EventIds.SynchronousCallTimeout);
+                RunAndHandleMessagingException(Client.SendAndWaitAsync(message), EventIds.SynchronousCallTimeout);
             }
             catch (MessagingException)// ignore timeout
             {
