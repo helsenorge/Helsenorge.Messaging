@@ -42,7 +42,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
             return new MockSender(this, id);
         }
 
-        public IMessagingMessage CreteMessage(Stream stream, OutgoingMessage outgoingMessage)
+        public IMessagingMessage CreateMessage(Stream stream)
         {
             return new MockMessage(stream);
         }
