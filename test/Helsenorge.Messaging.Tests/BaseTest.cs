@@ -14,7 +14,6 @@ using System.Xml.Linq;
 namespace Helsenorge.Messaging.Tests
 {
     [TestClass]
-    [DeploymentItem(@"Files", @"Files")]
     public class BaseTest
     {
         //public const int MyHerId = 93238;
@@ -44,7 +43,7 @@ namespace Helsenorge.Messaging.Tests
 
         protected XDocument GenericResponse => new XDocument(new XElement("SomeDummyXmlResponseUsedForTesting"));
 
-        protected XDocument SoapFault => XDocument.Load(File.OpenRead(@"Files\SoapFault.xml"));
+        protected XDocument SoapFault => XDocument.Load(File.OpenRead(TestFileUtility.GetFullPathToFile($"Files{Path.DirectorySeparatorChar}SoapFault.xml")));
 
 
         [TestInitialize]
@@ -85,34 +84,34 @@ namespace Helsenorge.Messaging.Tests
             AddressRegistry = new AddressRegistryMock(addressRegistrySettings, distributedCache);
             AddressRegistry.SetupFindCommunicationPartyDetails(i =>
             {
-                var file = Path.Combine("Files", $"CommunicationDetails_{i}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CommunicationDetails_{i}.xml"));
                 return File.Exists(file) == false ? null : XElement.Load(file);
             });
             AddressRegistry.SetupGetCertificateDetailsForEncryption(i =>
             {
-                var path = Path.Combine("Files", $"GetCertificateDetailsForEncryption_{i}.xml");
+                var path = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"GetCertificateDetailsForEncryption_{i}.xml"));
                 return File.Exists(path) == false ? null : XElement.Load(path);
             });
             AddressRegistry.SetupGetCertificateDetailsForValidatingSignature(i =>
             {
-                var path = Path.Combine("Files", $"GetCertificateDetailsForValidatingSignature_{i}.xml");
+                var path = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"GetCertificateDetailsForValidatingSignature_{i}.xml"));
                 return File.Exists(path) == false ? null : XElement.Load(path);
             });
 
             CollaborationRegistry = new CollaborationProtocolRegistryMock(collaborationRegistrySettings, distributedCache, AddressRegistry);
             CollaborationRegistry.SetupFindProtocolForCounterparty(i =>
             {
-                var file = Path.Combine("Files", $"CPP_{i}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPP_{i}.xml"));
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
             CollaborationRegistry.SetupFindAgreementForCounterparty(i =>
             {
-                var file = Path.Combine("Files", $"CPA_{i}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_{i}.xml"));
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
             CollaborationRegistry.SetupFindAgreementById(i =>
             {
-                var file = Path.Combine("Files", $"CPA_{i:D}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_{i:D}.xml"));
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
 

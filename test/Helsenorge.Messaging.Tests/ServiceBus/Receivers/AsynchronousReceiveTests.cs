@@ -74,7 +74,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 
             CollaborationRegistry.SetupFindAgreementForCounterparty(i =>
             {
-                var file = Path.Combine("Files", $"CPA_{i}_ChangedSignedCertificate.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_{i}_ChangedSignedCertificate.xml"));
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
 

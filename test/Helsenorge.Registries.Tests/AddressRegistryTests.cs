@@ -14,7 +14,6 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Helsenorge.Registries.Tests
 {
     [TestClass]
-    [DeploymentItem(@"Files", @"Files")]
     public class AddressRegistryTests
     {
         private AddressRegistryMock _registry;
@@ -44,7 +43,7 @@ namespace Helsenorge.Registries.Tests
                 {
                     throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."), new FaultCode("Client"), string.Empty);
                 }
-                var file = Path.Combine("Files", $"CommunicationDetails_{i}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CommunicationDetails_{i}.xml"));
                 return File.Exists(file) == false ? null : XElement.Load(file);
             });
 
@@ -54,7 +53,7 @@ namespace Helsenorge.Registries.Tests
                 {
                     throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."), new FaultCode("Client"), string.Empty);
                 }
-                var file = Path.Combine("Files", $"GetCertificateDetailsForEncryption_{i}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"GetCertificateDetailsForEncryption_{i}.xml"));
                 return File.Exists(file) == false ? null : XElement.Load(file);
             });
 
@@ -64,7 +63,7 @@ namespace Helsenorge.Registries.Tests
                 {
                     throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."), new FaultCode("Client"), string.Empty);
                 }
-                var file = Path.Combine("Files", $"GetCertificateDetailsForValidatingSignature_{i}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"GetCertificateDetailsForValidatingSignature_{i}.xml"));
                 return File.Exists(file) == false ? null : XElement.Load(file);
             });
 
