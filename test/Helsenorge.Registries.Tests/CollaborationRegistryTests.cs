@@ -103,10 +103,7 @@ namespace Helsenorge.Registries.Tests
             Assert.IsNotNull(profile.EncryptionCertificate);
 
             var role = profile.Roles[0];
-            Assert.AreEqual("DIALOG_INNBYGGER_DIGITALBRUKERreceiver", role.Name);
             Assert.AreEqual("DIALOG_INNBYGGER_DIGITALBRUKERreceiver", role.RoleName);
-            Assert.AreEqual("1.1", role.VersionString);
-            Assert.AreEqual(new Version(1, 1), role.Version);
             Assert.AreEqual("1.1", role.ProcessSpecification.VersionString);
             Assert.AreEqual(new Version(1, 1), role.ProcessSpecification.Version);
             Assert.AreEqual("Dialog_Innbygger_Digitalbruker", role.ProcessSpecification.Name);
