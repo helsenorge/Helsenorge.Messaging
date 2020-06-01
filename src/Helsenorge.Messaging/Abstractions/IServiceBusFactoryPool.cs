@@ -8,6 +8,6 @@ namespace Helsenorge.Messaging.Abstractions
         IMessagingFactory FindNextFactory(ILogger logger);
         void RegisterAlternateMessagingFactory(IMessagingFactory factory);
         void Shutdown(ILogger logger);
-        IMessagingMessage CreateMessage(ILogger logger, Stream stream, OutgoingMessage outgoingMessage);
+        IMessagingMessage CreateMessage(ILogger logger, Stream stream);
     }
 }

@@ -23,8 +23,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// Creates an empty message
         /// </summary>
         /// <param name="stream">Stream containing the information</param>
-        /// <param name="outgoingMessage">Parameter outgoinMessage is only used by the <see cref="Http.HttpServiceBusFactory"/> implementation</param>
         /// <returns></returns>
-        IMessagingMessage CreteMessage(Stream stream, OutgoingMessage outgoingMessage);
+        IMessagingMessage CreateMessage(Stream stream);
     }
 }

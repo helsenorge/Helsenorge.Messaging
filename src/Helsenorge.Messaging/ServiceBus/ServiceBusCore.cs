@@ -165,7 +165,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
             logger.LogBeforeFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
             // Create an empty message
-            var messagingMessage = FactoryPool.CreateMessage(logger, stream, outgoingMessage);
+            var messagingMessage = FactoryPool.CreateMessage(logger, stream);
             logger.LogAfterFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
 
             if (queueType != QueueType.SynchronousReply)

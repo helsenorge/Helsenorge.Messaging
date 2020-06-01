@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
         public void Close() => _connection.CloseAsync().Wait();
 
-        public IMessagingMessage CreteMessage(Stream stream, OutgoingMessage outgoingMessage)
+        public IMessagingMessage CreateMessage(Stream stream)
         {
             using (var memoryStream = new MemoryStream())
             {
