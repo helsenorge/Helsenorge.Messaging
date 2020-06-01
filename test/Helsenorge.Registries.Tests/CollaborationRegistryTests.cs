@@ -12,7 +12,6 @@ using System.ServiceModel;
 namespace Helsenorge.Registries.Tests
 {
     [TestClass]
-    [DeploymentItem(@"Files", @"Files")]
     public class CollaborationRegistryTests
     {
         private CollaborationProtocolRegistryMock _registry;
@@ -45,12 +44,12 @@ namespace Helsenorge.Registries.Tests
             _registry = new CollaborationProtocolRegistryMock(settings, distributedCache, addressRegistry);
             _registry.SetupFindAgreementById(i =>
             {
-                var file = Path.Combine("Files", $"CPA_{i:D}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_{i:D}.xml"));
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
             _registry.SetupFindAgreementForCounterparty(i =>
             {
-                var file = Path.Combine("Files", $"CPA_{i}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_{i}.xml"));
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
             _registry.SetupFindProtocolForCounterparty(i =>
@@ -59,7 +58,7 @@ namespace Helsenorge.Registries.Tests
                 {
                     throw new FaultException(new FaultReason("Dummy fault from mock"), new FaultCode("Client"), string.Empty);
                 }
-                var file = Path.Combine("Files", $"CPP_{i}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPP_{i}.xml"));
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
         }

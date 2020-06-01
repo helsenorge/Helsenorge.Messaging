@@ -12,7 +12,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Helsenorge.Messaging.Tests.Security
 {
     [TestClass]
-    [DeploymentItem(@"Files", @"Files")]
     public class SignThenEncryptMessageProtectionTests
     {
         private XDocument _content;

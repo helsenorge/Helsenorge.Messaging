@@ -5,7 +5,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Helsenorge.Registries.Tests
 {
     [TestClass]
-    [DeploymentItem(@"Files", @"Files")]
     public class CertificateValidatorTests
     {
         [TestMethod]
