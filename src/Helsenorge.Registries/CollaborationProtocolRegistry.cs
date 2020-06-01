@@ -356,8 +356,6 @@ namespace Helsenorge.Registries
             {
                 ReceiveMessages = new List<CollaborationProtocolMessage>(),
                 SendMessages = new List<CollaborationProtocolMessage>(),
-                Name = element.Element(_ns + "Role")?.Attribute(_ns + "name").Value,
-                VersionString = element.Element(_ns + "ProcessSpecification")?.Attribute(_ns + "version").Value,
                 RoleName = element.Element(_ns + "Role")?.Attribute(_ns + "name").Value
              };
 
