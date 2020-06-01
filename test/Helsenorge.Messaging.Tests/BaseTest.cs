@@ -148,13 +148,14 @@ namespace Helsenorge.Messaging.Tests
             MessageProtection = new MockMessageProtection(signingCertificate, encryptionCertificate);
 
             Client = new MessagingClient(
-                Settings, 
-                CollaborationRegistry, 
-                AddressRegistry, 
-                CertificateStore, 
+                Settings,
+                LoggerFactory,
+                CollaborationRegistry,
+                AddressRegistry,
+                CertificateStore,
                 CertificateValidator,
                 MessageProtection
-            );
+            ); ;
             Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
             Server = new MessagingServer(
