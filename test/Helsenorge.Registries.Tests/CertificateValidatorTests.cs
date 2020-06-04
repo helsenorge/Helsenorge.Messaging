@@ -33,6 +33,7 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(CertificateErrors.StartDate, error);
         }
         [TestMethod]
+        [TestCategory("X509Chain"), Ignore]
         public void CertificateValidation_EndDate()
         {
             var validator = new CertificateValidator();
