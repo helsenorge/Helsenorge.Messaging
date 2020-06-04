@@ -33,7 +33,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             _fixture.Dispose();
         }
 
-        [Fact]
+        [Fact, Trait("Category", "IntegrationTest")]
         public async Task Received_Message_Should_Have_Valid_Properties()
         {
             var messageId = Guid.NewGuid().ToString("N");
@@ -100,7 +100,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             Assert.Equal(to, incomingMessage.To);
         }
 
-        [Fact]
+        [Fact, Trait("Category", "IntegrationTest")]
         public async Task Should_Mark_Message_As_Accepted_Upon_Completion()
         {
             var messageText = await _fixture.SendTestMessageAsync(QueueName);
@@ -112,7 +112,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             await _fixture.CheckDeadLetterQueueAsync(QueueName);
         }
 
-        [Fact]
+        [Fact, Trait("Category", "IntegrationTest")]
         public async Task Should_Mark_Message_As_Rejected_When_Marking_As_Dead_Letter()
         {
             var messageText = await _fixture.SendTestMessageAsync(QueueName);
@@ -124,7 +124,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             await _fixture.CheckDeadLetterQueueAsync(QueueName, messageText);
         }
 
-        [Fact]
+        [Fact, Trait("Category", "IntegrationTest")]
         public async Task Should_Renew_Message_Lock()
         {
             var messageText = await _fixture.SendTestMessageAsync(QueueName);

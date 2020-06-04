@@ -29,7 +29,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             _fixture.Dispose();
         }
 
-        [Fact]
+        [Fact, Trait("Category", "IntegrationTest")]
         public async Task Should_Not_Recreate_Sender_If_No_Underlying_Object_Is_Closed()
         {
             Assert.False(_sender.IsClosed);
@@ -37,7 +37,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             Assert.False(_sender.IsClosed);
         }
 
-        [Fact]
+        [Fact, Trait("Category", "IntegrationTest")]
         public async Task Should_Recreate_Link_When_Underlying_Connection_Is_Closed()
         {
             Assert.False(_sender.IsClosed);
@@ -46,7 +46,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             Assert.False(_sender.IsClosed);
         }
 
-        [Fact]
+        [Fact, Trait("Category", "IntegrationTest")]
         public async Task Should_Not_Allow_To_Send_Message_When_Connection_Is_Closed()
         {
             var connection = _fixture.Connection;
@@ -55,7 +55,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             await Assert.ThrowsAsync<ObjectDisposedException>(SendTestMessageAsync);
         }
 
-        [Fact]
+        [Fact, Trait("Category", "IntegrationTest")]
         public async Task Should_Not_Allow_To_Send_Message_When_Sender_Is_Closed()
         {
             Assert.False(_sender.IsClosed);

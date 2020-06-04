@@ -19,7 +19,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             _fixture.Dispose();
         }
 
-        [Fact]
+        [Fact, Trait("Category", "IntegrationTest")]
         public async Task Should_Create_New_Connection_On_First_Access()
         {
             var connection = _fixture.Connection;
@@ -31,7 +31,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             Assert.True(conn.IsClosed);
         }
 
-        [Fact]
+        [Fact, Trait("Category", "IntegrationTest")]
         public void Should_Not_Create_New_Connection_When_Underlying_Object_Is_Not_Closed()
         {
             var connection = _fixture.Connection;
@@ -44,7 +44,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             Assert.False(conn.IsClosed);
         }
 
-        [Fact]
+        [Fact, Trait("Category", "IntegrationTest")]
         public void Should_Create_New_Connection_When_Underlying_Object_Is_Closed()
         {
             var connection = _fixture.Connection;
@@ -60,7 +60,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             Assert.False(conn2.IsClosed);
         }
 
-        [Fact]
+        [Fact, Trait("Category", "IntegrationTest")]
         public async Task Should_Not_Allow_To_Access_Connection_When_Closed()
         {
             var connection = _fixture.Connection;
@@ -75,7 +75,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             Assert.Throws<ObjectDisposedException>(() => connection.Connection);
         }
 
-        [Fact]
+        [Fact, Trait("Category", "IntegrationTest")]
         public async Task Should_Allow_To_Close_Already_Closed_Connection()
         {
             var connection = _fixture.Connection;
