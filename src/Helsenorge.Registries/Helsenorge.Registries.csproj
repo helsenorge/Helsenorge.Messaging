@@ -9,6 +9,7 @@
     <Description>Helsenorge messaging registry support</Description>
     <PackageId>Helsenorge.Registries</PackageId>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">

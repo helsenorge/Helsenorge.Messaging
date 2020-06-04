@@ -1,4 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+
+[assembly: AssemblyKeyFile("../../tools/key.snk")]
 
 [assembly: InternalsVisibleTo("Helsenorge.Registries.Tests, PublicKey=00240000048" +
                               "0000094000000060200000024000052534131000400000100" +
