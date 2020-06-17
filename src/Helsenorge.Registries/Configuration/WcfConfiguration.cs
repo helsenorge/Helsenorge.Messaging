@@ -17,7 +17,7 @@
         /// </summary>
         public string Address { get; set; }
 
-        public WfcHttpBinding HttpBinding { get; set; } = WfcHttpBinding.Basic;
+        public WcfHttpBinding HttpBinding { get; set; } = WcfHttpBinding.Basic;
 
         public int MaxBufferSize { get; set; }
 
@@ -26,7 +26,7 @@
         public int MaxReceivedMessageSize { get; set; }
     }
 
-    public enum WfcHttpBinding
+    public enum WcfHttpBinding
     {
         Basic = 1,
         WsHttp

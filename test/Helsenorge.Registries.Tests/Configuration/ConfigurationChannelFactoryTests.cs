@@ -82,7 +82,7 @@ namespace Helsenorge.Registries.Tests.Configuration
             var factory = new ConfigurationChannelFactory<ICommunicationPartyService>(new WcfConfiguration
             {
                 Address = "https://ws-web.test.nhn.no/v1/AR",
-                HttpBinding = WfcHttpBinding.WsHttp
+                HttpBinding = WcfHttpBinding.WsHttp
             });
             var binding = factory.Endpoint.Binding as WSHttpBinding;
             Assert.NotNull(binding);
@@ -99,7 +99,7 @@ namespace Helsenorge.Registries.Tests.Configuration
             var factory = new ConfigurationChannelFactory<ICommunicationPartyService>(new WcfConfiguration
             {
                 Address = "https://ws-web.test.nhn.no/v1/AR",
-                HttpBinding = WfcHttpBinding.WsHttp,
+                HttpBinding = WcfHttpBinding.WsHttp,
                 UserName = "user",
                 Password = "pass",
                 MaxBufferSize = 1001,
