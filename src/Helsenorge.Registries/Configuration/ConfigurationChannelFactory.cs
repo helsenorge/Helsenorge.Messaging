@@ -55,7 +55,7 @@ namespace Helsenorge.Registries.Configuration
             {
                 switch (configuration.HttpBinding)
                 {
-                    case WfcHttpBinding.Basic:
+                    case WcfHttpBinding.Basic:
                         var basicHttpBinding = new BasicHttpBinding(BasicHttpSecurityMode.Transport);
                         basicHttpBinding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
                         if (configuration.MaxBufferSize > 0)
@@ -73,7 +73,7 @@ namespace Helsenorge.Registries.Configuration
                         }
                         return basicHttpBinding;
 
-                    case WfcHttpBinding.WsHttp:
+                    case WcfHttpBinding.WsHttp:
                         var wsHttpBinding = new WSHttpBinding(SecurityMode.Transport);
                         wsHttpBinding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
                         if (configuration.MaxBufferPoolSize > 0)
