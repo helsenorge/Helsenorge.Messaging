@@ -400,13 +400,17 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     description = "Unable to determine revocation status";
                     id = EventIds.LocalCertificateRevocation;
                     break;
+                case CertificateErrors.Missing:
+                    description = "Certificate is missing";
+                    id = EventIds.LocalCertificate;
+                    break;
                 default: // since the value is bitcoded
                     description = "More than one error with certificate";
                     id = EventIds.LocalCertificate;
                     break;
             }
             Logger.LogError(id, null, "Description: {Description} Subject: {Subject} Thumbprint: {Thumbprint}",
-                description, certificate.Subject, certificate.Thumbprint);
+                description, certificate?.Subject, certificate?.Thumbprint);
 
             if (removeMessage)
             {
