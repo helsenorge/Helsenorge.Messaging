@@ -78,6 +78,10 @@ namespace Helsenorge.Messaging.ServiceBus
                         queueName, sequenceNumber, lockToken);
                     return;
                 }
+                else
+                {
+                    _logger.LogError($"Renew lock for message with sequence number {sequenceNumber} and lock token {lockToken} on queue {queueName} failed and returned status code {response.StatusCode}");
+                }
 
                 var content = await response.Content.ReadAsStringAsync();
                 var message = $"Renew lock endpoint returned {response.StatusCode} status code ({content})";
