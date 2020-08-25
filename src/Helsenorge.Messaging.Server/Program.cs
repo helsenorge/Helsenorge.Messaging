@@ -1,7 +1,7 @@
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Server.NLog;
 using Helsenorge.Registries;
-using Microsoft.Extensions.CommandLineUtils;
+using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
