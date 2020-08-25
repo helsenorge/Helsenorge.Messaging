@@ -2,6 +2,7 @@
 using Amqp.Framing;
 using Amqp.Types;
 using Helsenorge.Messaging.Abstractions;
+using Helsenorge.Messaging.ServiceBus.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -144,7 +145,7 @@ namespace Helsenorge.Messaging.ServiceBus
         public string CorrelationId
         {
             [DebuggerStepThrough]
-            get => GetMessageProperties().CorrelationId;
+            get => ValidateIdentifier(GetMessageProperties().GetCorrelationId())?.ToString();
             [DebuggerStepThrough]
             set => GetMessageProperties().CorrelationId = value;
         }
@@ -158,7 +159,8 @@ namespace Helsenorge.Messaging.ServiceBus
         public string MessageId
         {
             [DebuggerStepThrough]
-            get => GetMessageProperties().MessageId;
+            get => ValidateIdentifier(GetMessageProperties().GetMessageId())?.ToString();
+
             [DebuggerStepThrough]
             set => GetMessageProperties().MessageId = value;
         }
@@ -313,5 +315,15 @@ namespace Helsenorge.Messaging.ServiceBus
         private DateTime GetValue(string key, DateTime value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
             ? DateTime.Parse(GetApplicationProperties()[key].ToString(), CultureInfo.InvariantCulture)
             : value;
+        
+        static object ValidateIdentifier(object id)
+        {
+            if (id != null && !(id is string || id is Guid))
+            {
+                throw new UnexpectedMessageIdentifierTypeException($"And identifier of type {id.GetType().FullName} is not supported.");
+            }
+
+            return id;
+        }
     }
 }
