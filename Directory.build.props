@@ -1,13 +1,13 @@
 <Project>
   <PropertyGroup>
-    <LangVersion>8.0</LangVersion>    
+    <LangVersion>8.0</LangVersion>
     <Version>4.0.0-beta03</Version>
   </PropertyGroup>
   <PropertyGroup>
     <Authors>Norsk Helsenett SF</Authors>
     <Company>Norsk Helsenett SF</Company>
     <Copyright>Norsk Helsenett SF</Copyright>
-    <RepositoryUrl>https://github.com/helsenorgelab/Helsenorge.Messaging</RepositoryUrl>    
+    <RepositoryUrl>https://github.com/helsenorge/Helsenorge.Messaging</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE" Pack="true" PackagePath="" />
@@ -15,7 +15,7 @@
   </ItemGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\tools\key.snk</AssemblyOriginatorKeyFile>    
+    <AssemblyOriginatorKeyFile>..\..\tools\key.snk</AssemblyOriginatorKeyFile>
     <NoWarn>CS1591</NoWarn>
-  </PropertyGroup>  
+  </PropertyGroup>
 </Project>

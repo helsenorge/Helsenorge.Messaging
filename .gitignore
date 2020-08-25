@@ -11,6 +11,7 @@ src/Helsenorge.Messaging.Client/ClientSample.json
 src/Helsenorge.Messaging.Server/ServerSample.json
 src/Helsenorge.Messaging.Client/[Pp]roperties/launchSettings.json
 src/Helsenorge.Messaging.Server/[Pp]roperties/launchSettings.json
+.vscode
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -258,3 +259,6 @@ paket-files/
 
 # CodeRush
 .cr/
+
+# Mac files
+.DS_Store
