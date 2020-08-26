@@ -7,7 +7,7 @@ namespace Helsenorge.Messaging.ServiceBus
     internal abstract class CachedAmpqSessionEntity : ICachedMessagingEntity
     {
         protected readonly ServiceBusConnection Connection;
-        private Session _session;
+        protected Session _session;
 
         protected CachedAmpqSessionEntity(ServiceBusConnection connection)
         {

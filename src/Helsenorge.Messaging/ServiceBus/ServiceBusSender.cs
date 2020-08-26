@@ -25,6 +25,20 @@ namespace Helsenorge.Messaging.ServiceBus
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        protected void EnsureLinkOpen()
+        {
+            EnsureOpen();
+            if(_link == null || _link.IsClosed)
+            {
+                if(_session != null)
+                {
+                    _session.Close(TimeSpan.Zero);
+                }
+                _session = new Session(Connection.Connection);
+                OnSessionCreated(_session, Connection.Namespace);
+            }
+        }
+
         protected override void OnSessionCreated(Session session, string ns)
         {
             _link = new SenderLink(session, "sender-link", ServiceBusConnection.GetEntityName(_id, ns));
@@ -49,7 +63,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
             await new ServiceBusOperationBuilder(_logger, "Send").Build(async () =>
             {
-                EnsureOpen();
+                EnsureLinkOpen(); //EnsureOpen();
                 await _link.SendAsync(originalMessage).ConfigureAwait(false);
             }).PerformAsync().ConfigureAwait(false);
         }
