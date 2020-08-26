@@ -20,7 +20,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
         public async Task CloseAsync()
         {
-            await _receiver.CloseAsync();
+            await _receiver.CloseAsync().ConfigureAwait(false);
         }
     }
 }

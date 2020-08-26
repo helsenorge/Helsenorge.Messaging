@@ -40,9 +40,9 @@ namespace Helsenorge.Messaging.ServiceBus
             var message = await new ServiceBusOperationBuilder(_logger, "Receive").Build(async () =>
             {
                 EnsureOpen();
-                var amqpMessage = await _receiver.ReceiveAsync(serverWaitTime);
+                var amqpMessage = await _receiver.ReceiveAsync(serverWaitTime).ConfigureAwait(false);
                 return amqpMessage != null ? new ServiceBusMessage(amqpMessage) : null;
-            }).PerformAsync();
+            }).PerformAsync().ConfigureAwait(false);
 
             if (message != null)
             {
@@ -69,7 +69,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 {
                     EnsureOpen();
                     var lockTimeout = TimeSpan.FromMinutes(1);
-                    await Connection.HttpClient.RenewLockAsync(_id, amqpMessage.GetSequenceNumber(), amqpMessage.GetLockToken(), lockTimeout, serverWaitTime);
+                    await Connection.HttpClient.RenewLockAsync(_id, amqpMessage.GetSequenceNumber(), amqpMessage.GetLockToken(), lockTimeout, serverWaitTime).ConfigureAwait(false);
                     return DateTime.UtcNow + lockTimeout;
                 }).PerformAsync();
             }

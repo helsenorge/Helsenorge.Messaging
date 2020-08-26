@@ -63,7 +63,7 @@ namespace Helsenorge.Messaging.ServiceBus
             _logger.LogDebug("Renewing lock for message {queueName}/{sequenceNumber}/{lockToken}",
                 queueName, sequenceNumber, lockToken);
 
-            var remainingTime = await GetAuthTokenAsync(timeout);
+            var remainingTime = await GetAuthTokenAsync(timeout).ConfigureAwait(false);
 
             var url = new Uri(_stsEndpointUrl, $"{_stsEndpointUrl.LocalPath}/{queueName}/messages/{sequenceNumber:####}/{lockToken}?timeout={lockTimeout.TotalSeconds:####}");
             using (var client = _httpClientFactory.CreateClient())
@@ -71,7 +71,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 client.Timeout = remainingTime;
                 client.DefaultRequestHeaders.Add("Authorization", _token);
 
-                var response = await client.PostAsync(url, new StringContent(""));
+                var response = await client.PostAsync(url, new StringContent("")).ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
                     _logger.LogDebug("Successfully renewed lock for message {queueName}/{sequenceNumber}/{lockToken",
@@ -83,7 +83,7 @@ namespace Helsenorge.Messaging.ServiceBus
                     _logger.LogError($"Renew lock for message with sequence number {sequenceNumber} and lock token {lockToken} on queue {queueName} failed and returned status code {response.StatusCode}");
                 }
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var message = $"Renew lock endpoint returned {response.StatusCode} status code ({content})";
                 _logger.LogDebug(message);
 
@@ -115,13 +115,13 @@ namespace Helsenorge.Messaging.ServiceBus
 
             var deadlineUtc = DateTime.UtcNow + timeout;
 
-            await _authLock.WaitAsync();
+            await _authLock.WaitAsync().ConfigureAwait(false);
 
             try
             {
                 if (_token == null)
                 {
-                    _token = await GetOAuthTokenFromSts(timeout);
+                    _token = await GetOAuthTokenFromSts(timeout).ConfigureAwait(false);
                 }
             }
             finally
@@ -153,9 +153,9 @@ namespace Helsenorge.Messaging.ServiceBus
                         new KeyValuePair<string, string>("client_id", _username),
                         new KeyValuePair<string, string>("client_secret", _password),
                         new KeyValuePair<string, string>("scope", _stsEndpointUrl.AbsoluteUri)
-                    }));
+                    })).ConfigureAwait(false);
 
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
                     _logger.LogDebug("Oauth token successfully retrieved from STS endpoint {requestUri}", requestUri);

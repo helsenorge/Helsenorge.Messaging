@@ -75,7 +75,7 @@ namespace Helsenorge.Messaging.ServiceBus
             IsClosedOrClosing = true;
             if (_connection != null && !_connection.IsClosed)
             {
-                await _connection.CloseAsync();
+                await _connection.CloseAsync().ConfigureAwait(false);
             }
         }
 

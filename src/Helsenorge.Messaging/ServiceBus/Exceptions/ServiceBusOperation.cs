@@ -65,7 +65,7 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
                 "{0} operation encountered an exception and will retry after {1}ms",
                 _operationName, retryAfter.TotalMilliseconds);
 
-            await _timeManager.DelayAsync(retryAfter);
+            await _timeManager.DelayAsync(retryAfter).ConfigureAwait(false);
         }
 
         private static bool CanRetry(Exception e)
@@ -95,7 +95,7 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
                 }
                 catch (Exception e)
                 {
-                    await RetryAsync(e);
+                    await RetryAsync(e).ConfigureAwait(false);
                 }
             }
         }
@@ -121,7 +121,7 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
                 }
                 catch (Exception e)
                 {
-                    await RetryAsync(e);
+                    await RetryAsync(e).ConfigureAwait(false);
                 }
             }
         }

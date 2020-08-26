@@ -197,7 +197,7 @@ namespace Helsenorge.Messaging
         public async Task SendAndContinueAsync(OutgoingMessage message)
         {
 #pragma warning disable CS0618 // Type or member is obsolete
-            await SendAndContinueAsync(_logger, message);
+            await SendAndContinueAsync(_logger, message).ConfigureAwait(false);
 #pragma warning restore CS0618 // Type or member is obsolete
         }
 
@@ -209,7 +209,7 @@ namespace Helsenorge.Messaging
         public async Task<XDocument> SendAndWaitAsync(OutgoingMessage message)
         {
 #pragma warning disable CS0618 // Type or member is obsolete
-            return await SendAndWaitAsync(_logger, message);
+            return await SendAndWaitAsync(_logger, message).ConfigureAwait(false);
 #pragma warning restore CS0618 // Type or member is obsolete
         }
 
