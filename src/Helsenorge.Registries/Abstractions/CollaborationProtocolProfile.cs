@@ -32,8 +32,12 @@ namespace Helsenorge.Registries.Abstractions
         [OnSerializing]
         internal void OnSerializing(StreamingContext context)
         {
-            _encryptionCertificateBase64String = Convert.ToBase64String(EncryptionCertificate.Export(X509ContentType.SerializedCert));
-            _signatureCertificateBase64String = Convert.ToBase64String(SignatureCertificate.Export(X509ContentType.SerializedCert));
+            _encryptionCertificateBase64String = EncryptionCertificate == null 
+                ? null 
+                : Convert.ToBase64String(EncryptionCertificate.Export(X509ContentType.SerializedCert));
+            _signatureCertificateBase64String = SignatureCertificate == null 
+                ? null 
+                : Convert.ToBase64String(SignatureCertificate.Export(X509ContentType.SerializedCert));
         }
 
         /// <summary>
@@ -42,8 +46,12 @@ namespace Helsenorge.Registries.Abstractions
         [OnDeserialized]
         internal void OnDeserialized(StreamingContext context)
         {
-            EncryptionCertificate = new X509Certificate2(Convert.FromBase64String(_encryptionCertificateBase64String));
-            SignatureCertificate = new X509Certificate2(Convert.FromBase64String(_signatureCertificateBase64String));
+            EncryptionCertificate = string.IsNullOrWhiteSpace(_encryptionCertificateBase64String) 
+                ? null 
+                : new X509Certificate2(Convert.FromBase64String(_encryptionCertificateBase64String));
+            SignatureCertificate = string.IsNullOrWhiteSpace(_signatureCertificateBase64String) 
+                ? null 
+                : new X509Certificate2(Convert.FromBase64String(_signatureCertificateBase64String));
         }
 
         /// <summary>
