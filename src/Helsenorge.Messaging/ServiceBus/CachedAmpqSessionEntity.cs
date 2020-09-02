@@ -4,10 +4,12 @@ using Helsenorge.Messaging.Abstractions;
 
 namespace Helsenorge.Messaging.ServiceBus
 {
-    internal abstract class CachedAmpqSessionEntity : ICachedMessagingEntity
+    internal abstract class CachedAmpqSessionEntity<TLink> : ICachedMessagingEntity
+        where TLink : Link
     {
         protected readonly ServiceBusConnection Connection;
         protected Session _session;
+        protected TLink _link;
 
         protected CachedAmpqSessionEntity(ServiceBusConnection connection)
         {
@@ -18,9 +20,21 @@ namespace Helsenorge.Messaging.ServiceBus
         /// Method is called every time it's needed to renew the link,
         /// e.g. when connection is closed or session is expired etc.
         /// </summary>
-        protected abstract void OnSessionCreated(Session session, string ns);
+        protected abstract TLink CreateLink(ISession session);
 
-        protected abstract void OnSessionClosing();
+        protected Session CreateSession(Connection connection)
+        {
+            return ((IConnection)connection).CreateSession() as Session;
+        }
+
+        protected void OnSessionClosing()
+        {
+            if (_link == null || _link.IsClosed)
+            {
+                return;
+            }
+            _link.Close();
+        }
 
         protected void CheckNotClosed()
         {
@@ -33,10 +47,18 @@ namespace Helsenorge.Messaging.ServiceBus
         protected void EnsureOpen()
         {
             CheckNotClosed();
-            if (Connection.EnsureConnection() || _session == null || _session.IsClosed)
+            if (Connection.EnsureConnection() || _session == null || _session.IsClosed || _link == null || _link.IsClosed)
             {
-                _session = new Session(Connection.Connection);
-                OnSessionCreated(_session, Connection.Namespace);
+                if(_link != null && !_link.IsClosed)
+                {
+                    _link.Close();
+                }
+                if (_session != null && !_session.IsClosed)
+                {
+                    _session.Close(TimeSpan.Zero);
+                }
+                _session = CreateSession(Connection.Connection);
+                _link = CreateLink(_session);
             }
         }
 

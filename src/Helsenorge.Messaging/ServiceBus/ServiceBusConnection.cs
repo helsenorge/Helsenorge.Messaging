@@ -84,7 +84,7 @@ namespace Helsenorge.Messaging.ServiceBus
             return GetEntityName(id, Namespace);
         }
 
-        public static string GetEntityName(string id, string ns)
+        internal static string GetEntityName(string id, string ns)
         {
             return !string.IsNullOrEmpty(ns) ? $"{ns}/{id}" : id;
         }

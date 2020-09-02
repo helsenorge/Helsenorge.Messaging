@@ -9,11 +9,10 @@ using Microsoft.Extensions.Logging;
 namespace Helsenorge.Messaging.ServiceBus
 {
     [ExcludeFromCodeCoverage]
-    internal class ServiceBusReceiver : CachedAmpqSessionEntity, IMessagingReceiver
+    internal class ServiceBusReceiver : CachedAmpqSessionEntity<ReceiverLink>, IMessagingReceiver
     {
         private readonly string _id;
         private readonly ILogger _logger;
-        private ReceiverLink _link;
 
         public ServiceBusReceiver(ServiceBusConnection connection, string id, ILogger logger) : base(connection)
         {
@@ -25,35 +24,16 @@ namespace Helsenorge.Messaging.ServiceBus
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        protected void EnsureLinkOpen()
+        protected override ReceiverLink CreateLink(ISession session)
         {
-            EnsureOpen();
-            if (_link == null || _link.IsClosed)
-            {
-                if (_session != null)
-                {
-                    _session.Close(TimeSpan.Zero);
-                }
-                _session = new Session(Connection.Connection);
-                OnSessionCreated(_session, Connection.Namespace);
-            }
-        }
-
-        protected override void OnSessionCreated(Session session, string ns)
-        {
-            _link = new ReceiverLink(session, $"receiver-link-{Guid.NewGuid()}", ServiceBusConnection.GetEntityName(_id, ns));
-        }
-
-        protected override void OnSessionClosing()
-        {
-            _link.CloseAsync().Wait();
+            return session.CreateReceiver($"receiver-link-{Guid.NewGuid()}", Connection.GetEntityName(_id)) as ReceiverLink;
         }
 
         public async Task<IMessagingMessage> ReceiveAsync(TimeSpan serverWaitTime)
         {
             var message = await new ServiceBusOperationBuilder(_logger, "Receive").Build(async () =>
             {
-                EnsureLinkOpen();
+                EnsureOpen();
                 var amqpMessage = await _link.ReceiveAsync(serverWaitTime).ConfigureAwait(false);
                 return amqpMessage != null ? new ServiceBusMessage(amqpMessage) : null;
             }).PerformAsync().ConfigureAwait(false);
@@ -65,7 +45,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 message.CompleteAction = () => new ServiceBusOperationBuilder(_logger, "Complete")
                     .Build(() =>
                 {
-                    EnsureLinkOpen();
+                    EnsureOpen();
                     _link.Accept(amqpMessage);
                     return Task.CompletedTask;
                 }).PerformAsync();
@@ -73,7 +53,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 message.DeadLetterAction = () => new ServiceBusOperationBuilder(_logger, "DeadLetter")
                     .Build(() =>
                 {
-                    EnsureLinkOpen();
+                    EnsureOpen();
                     _link.Reject(amqpMessage);
                     return Task.CompletedTask;
                 }).PerformAsync();
@@ -81,7 +61,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 message.RenewLockAction = () => new ServiceBusOperationBuilder(_logger, "RenewLock")
                     .Build(async () =>
                 {
-                    EnsureLinkOpen();
+                    EnsureOpen();
                     var lockTimeout = TimeSpan.FromMinutes(1);
                     await Connection.HttpClient.RenewLockAsync(_id, amqpMessage.GetSequenceNumber(), amqpMessage.GetLockToken(), lockTimeout, serverWaitTime).ConfigureAwait(false);
                     return DateTime.UtcNow + lockTimeout;

@@ -9,11 +9,10 @@ using Microsoft.Extensions.Logging;
 namespace Helsenorge.Messaging.ServiceBus
 {
     [ExcludeFromCodeCoverage]
-    internal class ServiceBusSender : CachedAmpqSessionEntity, IMessagingSender
+    internal class ServiceBusSender : CachedAmpqSessionEntity<SenderLink>, IMessagingSender
     {
         private readonly string _id;
         private readonly ILogger _logger;
-        private SenderLink _link;
 
         public ServiceBusSender(ServiceBusConnection connection, string id, ILogger logger) : base(connection)
         {
@@ -25,28 +24,9 @@ namespace Helsenorge.Messaging.ServiceBus
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        protected void EnsureLinkOpen()
+        protected override SenderLink CreateLink(ISession session)
         {
-            EnsureOpen();
-            if(_link == null || _link.IsClosed)
-            {
-                if(_session != null)
-                {
-                    _session.Close(TimeSpan.Zero);
-                }
-                _session = new Session(Connection.Connection);
-                OnSessionCreated(_session, Connection.Namespace);
-            }
-        }
-
-        protected override void OnSessionCreated(Session session, string ns)
-        {
-            _link = new SenderLink(session, "sender-link", ServiceBusConnection.GetEntityName(_id, ns));
-        }
-
-        protected override void OnSessionClosing()
-        {
-            _link.Close();
+            return session.CreateSender($"sender-link-{Guid.NewGuid()}", Connection.GetEntityName(_id)) as SenderLink;
         }
 
         public async Task SendAsync(IMessagingMessage message)
@@ -63,7 +43,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
             await new ServiceBusOperationBuilder(_logger, "Send").Build(async () =>
             {
-                EnsureLinkOpen(); //EnsureOpen();
+                EnsureOpen();
                 await _link.SendAsync(originalMessage).ConfigureAwait(false);
             }).PerformAsync().ConfigureAwait(false);
         }
