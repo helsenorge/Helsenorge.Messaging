@@ -257,10 +257,14 @@ namespace Helsenorge.Messaging.ServiceBus
         [DebuggerStepThrough]
         public void Dispose() => _implementation.Dispose();
 
-        [DebuggerStepThrough]
         public Stream GetBody()
         {
-            return new MemoryStream(_implementation.GetBody<byte[]>());
+            if (_implementation.Body is byte[])
+                return new MemoryStream(_implementation.GetBody<byte[]>());
+            else if (_implementation.Body is Stream)
+                return _implementation.GetBody<Stream>();
+
+            return null;
         }
 
         [DebuggerStepThrough]
