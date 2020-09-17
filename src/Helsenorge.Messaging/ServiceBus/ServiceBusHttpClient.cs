@@ -60,8 +60,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 throw new ArgumentException(nameof(lockToken));
             }
 
-            _logger.LogDebug("Renewing lock for message {queueName}/{sequenceNumber}/{lockToken}",
-                queueName, sequenceNumber, lockToken);
+            _logger.LogDebug($"Renewing lock for message {queueName}/{sequenceNumber}/{lockToken}");
 
             var remainingTime = await GetAuthTokenAsync(timeout).ConfigureAwait(false);
 
@@ -74,8 +73,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 var response = await client.PostAsync(url, new StringContent("")).ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
-                    _logger.LogDebug("Successfully renewed lock for message {queueName}/{sequenceNumber}/{lockToken",
-                        queueName, sequenceNumber, lockToken);
+                    _logger.LogDebug($"Successfully renewed lock for message {queueName}/{sequenceNumber}/{lockToken}");
                     return;
                 }
                 else
