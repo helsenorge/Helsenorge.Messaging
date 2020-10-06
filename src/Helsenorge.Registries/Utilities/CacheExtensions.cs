@@ -11,9 +11,10 @@ namespace Helsenorge.Registries.Utilities
     {
         public static async Task<T> ReadValueFromCache<T>(ILogger logger, IDistributedCache cache, string key) where T : class
         {
-            var cached = await cache.GetAsync(key).ConfigureAwait(false);
             try
             {
+                var cached = await cache.GetAsync(key).ConfigureAwait(false);
+
                 if (cached is null)
                     return default;
                 
