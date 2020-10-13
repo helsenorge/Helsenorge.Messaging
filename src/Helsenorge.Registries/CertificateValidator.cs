@@ -42,19 +42,8 @@ namespace Helsenorge.Registries
                 result |= CertificateErrors.EndDate;
             }
 
-            foreach (var extension in certificate.Extensions)
-            {
-                switch (extension.Oid.Value)
-                {
-                    case "2.5.29.15": // Key usage
-                        var usageExtension = (X509KeyUsageExtension)extension;
-                        if ((usageExtension.KeyUsages & usage) != usage)
-                        {
-                            result |= CertificateErrors.Usage;
-                        }
-                        break;
-                }
-            }
+            if(!certificate.HasKeyUsage(usage))
+                result |= CertificateErrors.Usage;
 
             var chain = new X509Chain
             {

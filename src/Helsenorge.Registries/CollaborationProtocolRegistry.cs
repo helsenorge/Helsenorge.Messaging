@@ -322,18 +322,20 @@ namespace Helsenorge.Registries
             {
                 var id = certificate.Attribute(_ns + "certId").Value;
                 var base64 = certificate.Descendants(xmlSig + "X509Certificate").First().Value;
+                var x509Certificate = new X509Certificate2(Convert.FromBase64String(base64));
 
-                if (id.Equals("enc", StringComparison.Ordinal))
+                if (x509Certificate.HasKeyUsage(X509KeyUsageFlags.DataEncipherment))
                 {
-                    cpa.EncryptionCertificate = new X509Certificate2(Convert.FromBase64String(base64));
+                    cpa.EncryptionCertificate = x509Certificate;
                 }
-                else
+                else if (x509Certificate.HasKeyUsage(X509KeyUsageFlags.NonRepudiation))
                 {
-                    cpa.SignatureCertificate = new X509Certificate2(Convert.FromBase64String(base64));
+                    cpa.SignatureCertificate = x509Certificate;
                 }
             }
             return cpa;
         }
+
         private CollaborationProtocolRole CreateFromCollaborationRole(XContainer element, XElement partyInfo)
         {
             if (element == null) throw new ArgumentNullException(nameof(element));
