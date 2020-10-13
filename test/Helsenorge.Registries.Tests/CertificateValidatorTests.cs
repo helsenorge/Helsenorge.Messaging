@@ -50,6 +50,13 @@ namespace Helsenorge.Registries.Tests
                 X509KeyUsageFlags.DataEncipherment);
             Assert.AreEqual(CertificateErrors.Usage, error);
         }
+        [TestMethod]
+        [TestCategory("X509Chain")]
+        public void X509Certificate2Extensions_KeyUsage()
+        {
+            Assert.IsTrue(TestCertificates.CounterpartyPublicSignature.HasKeyUsage(X509KeyUsageFlags.NonRepudiation));
+            Assert.IsFalse(TestCertificates.CounterpartyPublicSignature.HasKeyUsage(X509KeyUsageFlags.DataEncipherment));
+        }
         // don't have a certificate with multiple errors
         //[TestMethod]
         //public void CertificateValidation_Multiple()
