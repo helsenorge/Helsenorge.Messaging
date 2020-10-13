@@ -318,19 +318,18 @@ namespace Helsenorge.Registries
             }
 
             XNamespace xmlSig = "http://www.w3.org/2000/09/xmldsig#";
-            foreach (var certificate in partyInfo.Elements(_ns + "Certificate"))
+            foreach (var certificateElement in partyInfo.Elements(_ns + "Certificate"))
             {
-                var id = certificate.Attribute(_ns + "certId").Value;
-                var base64 = certificate.Descendants(xmlSig + "X509Certificate").First().Value;
-                var x509Certificate = new X509Certificate2(Convert.FromBase64String(base64));
+                var base64 = certificateElement.Descendants(xmlSig + "X509Certificate").First().Value;
+                var certificate = new X509Certificate2(Convert.FromBase64String(base64));
 
-                if (x509Certificate.HasKeyUsage(X509KeyUsageFlags.DataEncipherment))
+                if (certificate.HasKeyUsage(X509KeyUsageFlags.DataEncipherment))
                 {
-                    cpa.EncryptionCertificate = x509Certificate;
+                    cpa.EncryptionCertificate = certificate;
                 }
-                else if (x509Certificate.HasKeyUsage(X509KeyUsageFlags.NonRepudiation))
+                else if (certificate.HasKeyUsage(X509KeyUsageFlags.NonRepudiation))
                 {
-                    cpa.SignatureCertificate = x509Certificate;
+                    cpa.SignatureCertificate = certificate;
                 }
             }
             return cpa;
