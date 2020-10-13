@@ -325,9 +325,13 @@ namespace Helsenorge.Registries
                 var x509Certificate = new X509Certificate2(Convert.FromBase64String(base64));
 
                 if (x509Certificate.HasKeyUsage(X509KeyUsageFlags.DataEncipherment))
+                {
                     cpa.EncryptionCertificate = x509Certificate;
+                }
                 else if (x509Certificate.HasKeyUsage(X509KeyUsageFlags.NonRepudiation))
+                {
                     cpa.SignatureCertificate = x509Certificate;
+                }
             }
             return cpa;
         }
