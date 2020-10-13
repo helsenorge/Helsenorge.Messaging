@@ -322,18 +322,16 @@ namespace Helsenorge.Registries
             {
                 var id = certificate.Attribute(_ns + "certId").Value;
                 var base64 = certificate.Descendants(xmlSig + "X509Certificate").First().Value;
+                var x509Certificate = new X509Certificate2(Convert.FromBase64String(base64));
 
-                if (id.Equals("enc", StringComparison.Ordinal))
-                {
-                    cpa.EncryptionCertificate = new X509Certificate2(Convert.FromBase64String(base64));
-                }
-                else
-                {
-                    cpa.SignatureCertificate = new X509Certificate2(Convert.FromBase64String(base64));
-                }
+                if (CertificateKeyUsage(x509Certificate, X509KeyUsageFlags.DataEncipherment))
+                    cpa.EncryptionCertificate = x509Certificate;
+                else if (CertificateKeyUsage(x509Certificate, X509KeyUsageFlags.NonRepudiation))
+                    cpa.SignatureCertificate = x509Certificate;
             }
             return cpa;
         }
+
         private CollaborationProtocolRole CreateFromCollaborationRole(XContainer element, XElement partyInfo)
         {
             if (element == null) throw new ArgumentNullException(nameof(element));
@@ -503,6 +501,25 @@ namespace Helsenorge.Registries
                 }
             }
             return parts;
+        }
+
+        private static bool CertificateKeyUsage(X509Certificate2 x509Certificate, X509KeyUsageFlags usage)
+        {
+            foreach (var extension in x509Certificate.Extensions)
+            {
+                switch (extension.Oid.Value)
+                {
+                    case "2.5.29.15": // Key usage
+                        var usageExtension = (X509KeyUsageExtension)extension;
+                        if ((usageExtension.KeyUsages & usage) == usage)
+                        {
+                            return true;
+                        }
+                        break;
+                }
+            }
+
+            return false;
         }
 
         private static int ParseInt(string value, int defaultValue)
