@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
 using System.IO;
 using System.Xml.Linq;
+using System.Globalization;
 
 namespace Helsenorge.Messaging.Tests.Mocks
 {
@@ -33,7 +34,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public string CpaId { get; set; }
         public DateTime EnqueuedTimeUtc { get; } = DateTime.Now;
         public DateTime ExpiresAtUtc { get; } = DateTime.Now.AddMinutes(5);
-        public IDictionary<string, object> Properties { get; private set; }
+        public IDictionary<string, object> Properties { get; set; }
         public long Size => _stream.Length;
         public string ContentType { get; set; }
         public string CorrelationId { get; set; }
@@ -114,6 +115,21 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public void AddDetailsToException(Exception ex)
         {
         
+        }
+
+        public void SetProperty(string key, string value)
+        {
+            Properties[key] = value;
+        }
+
+        public void SetProperty(string key, DateTime value)
+        {
+            Properties[key] = value.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo);
+        }
+
+        public void SetProperty(string key, int value)
+        {
+            Properties[key] = value.ToString(CultureInfo.InvariantCulture);
         }
     }
 }

@@ -44,29 +44,29 @@ namespace Helsenorge.Messaging.ServiceBus
         public int FromHerId
         {
             [DebuggerStepThrough]
-            get => GetValue(ServiceBusCore.FromHerIdHeaderKey, 0);
+            get => GetProperty(ServiceBusCore.FromHerIdHeaderKey, 0);
             [DebuggerStepThrough]
-            set => SetValue(ServiceBusCore.FromHerIdHeaderKey, value);
+            set => SetProperty(ServiceBusCore.FromHerIdHeaderKey, value);
         }
         public int ToHerId
         {
             [DebuggerStepThrough]
-            get => GetValue(ServiceBusCore.ToHerIdHeaderKey, 0);
+            get => GetProperty(ServiceBusCore.ToHerIdHeaderKey, 0);
             [DebuggerStepThrough]
-            set => SetValue(ServiceBusCore.ToHerIdHeaderKey, value);
+            set => SetProperty(ServiceBusCore.ToHerIdHeaderKey, value);
         }
         public DateTime ApplicationTimestamp
         {
-            get => GetValue(ServiceBusCore.ApplicationTimestampHeaderKey, DateTime.MinValue);
+            get => GetProperty(ServiceBusCore.ApplicationTimestampHeaderKey, DateTime.MinValue);
             [DebuggerStepThrough]
-            set => SetValue(ServiceBusCore.ApplicationTimestampHeaderKey, value);
+            set => SetProperty(ServiceBusCore.ApplicationTimestampHeaderKey, value);
         }
         public string CpaId
         {
             [DebuggerStepThrough]
-            get => GetValue(ServiceBusCore.CpaIdHeaderKey, string.Empty);
+            get => GetProperty(ServiceBusCore.CpaIdHeaderKey, string.Empty);
             [DebuggerStepThrough]
-            set => SetValue(ServiceBusCore.CpaIdHeaderKey, value);
+            set => SetProperty(ServiceBusCore.CpaIdHeaderKey, value);
         }
         public object OriginalObject => _implementation;
 
@@ -227,14 +227,23 @@ namespace Helsenorge.Messaging.ServiceBus
                 Footer = _implementation.Footer
             };
 
-            if (includePayload && _implementation.Body is Data data)
+            if (includePayload && _implementation.Body is byte[])
             {
-                var clonedBody = new byte[data.Binary.Length];
-                Array.Copy(data.Binary, clonedBody, data.Binary.Length);
                 clone.BodySection = new Data
                 {
-                    Binary = clonedBody
+                    Binary = _implementation.GetBody<byte[]>().ToArray()
                 };
+            }
+            else if (includePayload && _implementation.Body is Stream payloadStream)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    payloadStream.CopyTo(memoryStream);
+                    clone.BodySection = new Data
+                    {
+                        Binary = memoryStream.ToArray()
+                    };
+                }
             }
 
             return new ServiceBusMessage(clone)
@@ -305,18 +314,18 @@ namespace Helsenorge.Messaging.ServiceBus
             }
         }
 
-        private void SetValue(string key, string value) => GetApplicationProperties()[key] = value;
-        private void SetValue(string key, DateTime value) => GetApplicationProperties()[key] = value.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo);
-        private void SetValue(string key, int value) => GetApplicationProperties()[key] = value.ToString(CultureInfo.InvariantCulture);
+        public void SetProperty(string key, string value) => GetApplicationProperties()[key] = value;
+        public void SetProperty(string key, DateTime value) => GetApplicationProperties()[key] = value.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo);
+        public void SetProperty(string key, int value) => GetApplicationProperties()[key] = value.ToString(CultureInfo.InvariantCulture);
 
-        private string GetValue(string key, string value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
+        private string GetProperty(string key, string value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
             ? GetApplicationProperties()[key].ToString()
             : value;
 
-        private int GetValue(string key, int value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
+        private int GetProperty(string key, int value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
             ? int.Parse(GetApplicationProperties()[key].ToString())
             : value;
-        private DateTime GetValue(string key, DateTime value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
+        private DateTime GetProperty(string key, DateTime value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
             ? DateTime.Parse(GetApplicationProperties()[key].ToString(), CultureInfo.InvariantCulture)
             : value;
         
