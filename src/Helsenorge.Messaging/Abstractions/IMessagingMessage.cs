@@ -114,5 +114,18 @@ namespace Helsenorge.Messaging.Abstractions
         /// Gets the number of deliveries.
         /// </summary>
         int DeliveryCount { get; }
+        /// <summary>
+        /// Set additional properties related to the message
+        /// </summary>
+        void SetApplicationProperty(string key, string value);
+        /// <summary>
+        /// Set additional properties related to the message
+        /// </summary>
+        void SetApplicationProperty(string key, DateTime value);
+        /// <summary>
+        /// Set additional properties related to the message
+        /// </summary>
+        void SetApplicationProperty(string key, int value);
+
     }
 }

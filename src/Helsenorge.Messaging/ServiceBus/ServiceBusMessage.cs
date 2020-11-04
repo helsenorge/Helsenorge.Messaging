@@ -46,27 +46,27 @@ namespace Helsenorge.Messaging.ServiceBus
             [DebuggerStepThrough]
             get => GetValue(ServiceBusCore.FromHerIdHeaderKey, 0);
             [DebuggerStepThrough]
-            set => SetValue(ServiceBusCore.FromHerIdHeaderKey, value);
+            set => SetApplicationProperty(ServiceBusCore.FromHerIdHeaderKey, value);
         }
         public int ToHerId
         {
             [DebuggerStepThrough]
             get => GetValue(ServiceBusCore.ToHerIdHeaderKey, 0);
             [DebuggerStepThrough]
-            set => SetValue(ServiceBusCore.ToHerIdHeaderKey, value);
+            set => SetApplicationProperty(ServiceBusCore.ToHerIdHeaderKey, value);
         }
         public DateTime ApplicationTimestamp
         {
             get => GetValue(ServiceBusCore.ApplicationTimestampHeaderKey, DateTime.MinValue);
             [DebuggerStepThrough]
-            set => SetValue(ServiceBusCore.ApplicationTimestampHeaderKey, value);
+            set => SetApplicationProperty(ServiceBusCore.ApplicationTimestampHeaderKey, value);
         }
         public string CpaId
         {
             [DebuggerStepThrough]
             get => GetValue(ServiceBusCore.CpaIdHeaderKey, string.Empty);
             [DebuggerStepThrough]
-            set => SetValue(ServiceBusCore.CpaIdHeaderKey, value);
+            set => SetApplicationProperty(ServiceBusCore.CpaIdHeaderKey, value);
         }
         public object OriginalObject => _implementation;
 
@@ -227,14 +227,23 @@ namespace Helsenorge.Messaging.ServiceBus
                 Footer = _implementation.Footer
             };
 
-            if (includePayload && _implementation.Body is Data data)
+            if (includePayload && _implementation.Body is byte[])
             {
-                var clonedBody = new byte[data.Binary.Length];
-                Array.Copy(data.Binary, clonedBody, data.Binary.Length);
                 clone.BodySection = new Data
                 {
-                    Binary = clonedBody
+                    Binary = _implementation.GetBody<byte[]>().ToArray()
                 };
+            }
+            else if (includePayload && _implementation.Body is Stream payloadStream)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    payloadStream.CopyTo(memoryStream);
+                    clone.BodySection = new Data
+                    {
+                        Binary = memoryStream.ToArray()
+                    };
+                }
             }
 
             return new ServiceBusMessage(clone)
@@ -305,9 +314,9 @@ namespace Helsenorge.Messaging.ServiceBus
             }
         }
 
-        private void SetValue(string key, string value) => GetApplicationProperties()[key] = value;
-        private void SetValue(string key, DateTime value) => GetApplicationProperties()[key] = value.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo);
-        private void SetValue(string key, int value) => GetApplicationProperties()[key] = value.ToString(CultureInfo.InvariantCulture);
+        public void SetApplicationProperty(string key, string value) => GetApplicationProperties()[key] = value;
+        public void SetApplicationProperty(string key, DateTime value) => GetApplicationProperties()[key] = value.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo);
+        public void SetApplicationProperty(string key, int value) => GetApplicationProperties()[key] = value.ToString(CultureInfo.InvariantCulture);
 
         private string GetValue(string key, string value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
             ? GetApplicationProperties()[key].ToString()

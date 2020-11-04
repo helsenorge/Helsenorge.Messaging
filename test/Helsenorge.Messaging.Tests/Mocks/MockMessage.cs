@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
 using System.IO;
 using System.Xml.Linq;
+using System.Globalization;
 
 namespace Helsenorge.Messaging.Tests.Mocks
 {
@@ -114,6 +115,21 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public void AddDetailsToException(Exception ex)
         {
         
+        }
+
+        public void SetApplicationProperty(string key, string value)
+        {
+            Properties[key] = value;
+        }
+
+        public void SetApplicationProperty(string key, DateTime value)
+        {
+            Properties[key] = value.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo);
+        }
+
+        public void SetApplicationProperty(string key, int value)
+        {
+            Properties[key] = value.ToString(CultureInfo.InvariantCulture);
         }
     }
 }
