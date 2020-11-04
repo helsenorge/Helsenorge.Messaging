@@ -117,17 +117,17 @@ namespace Helsenorge.Messaging.Tests.Mocks
         
         }
 
-        public void SetProperty(string key, string value)
+        public void SetApplicationProperty(string key, string value)
         {
             Properties[key] = value;
         }
 
-        public void SetProperty(string key, DateTime value)
+        public void SetApplicationProperty(string key, DateTime value)
         {
             Properties[key] = value.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo);
         }
 
-        public void SetProperty(string key, int value)
+        public void SetApplicationProperty(string key, int value)
         {
             Properties[key] = value.ToString(CultureInfo.InvariantCulture);
         }

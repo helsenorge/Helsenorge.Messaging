@@ -107,9 +107,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus
             DateTime customProperty3 = DateTime.Now;
 
             using ServiceBusMessage message = new ServiceBusMessage(new Message());
-            message.SetProperty("CustomProperty1", customProperty1);
-            message.SetProperty("CustomProperty2", customProperty2);
-            message.SetProperty("CustomProperty3", customProperty3);
+            message.SetApplicationProperty("CustomProperty1", customProperty1);
+            message.SetApplicationProperty("CustomProperty2", customProperty2);
+            message.SetApplicationProperty("CustomProperty3", customProperty3);
 
             Assert.AreEqual(customProperty1.ToString(CultureInfo.InvariantCulture), message.Properties["CustomProperty1"]);
             Assert.AreEqual(customProperty2, message.Properties["CustomProperty2"]);
