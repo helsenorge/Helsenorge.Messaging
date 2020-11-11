@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="4.5.0" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="5.0.0" />
     <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
     <PackageReference Include="WindowsAzure.ServiceBus" Version="3.4.0" />
   </ItemGroup>
