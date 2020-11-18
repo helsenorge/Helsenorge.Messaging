@@ -61,7 +61,7 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
                 throw e;
             }
 
-            _logger.LogWarning(e,
+            _logger.LogInformation(e,
                 "{0} operation encountered an exception and will retry after {1}ms",
                 _operationName, retryAfter.TotalMilliseconds);
 
