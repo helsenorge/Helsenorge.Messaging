@@ -31,10 +31,10 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
                     return new ServiceBusCommunicationException(message, exception);
 
                 case AmqpException amqpException:
-                    return amqpException.Error.ToServiceBusException();
+                    return amqpException.Error.ToServiceBusException(amqpException);
 
                 case OperationCanceledException operationCanceledException when operationCanceledException.InnerException is AmqpException amqpException:
-                    return amqpException.Error.ToServiceBusException();
+                    return amqpException.Error.ToServiceBusException(operationCanceledException);
 
                 case OperationCanceledException _:
                     return new RecoverableServiceBusException(message, exception);
@@ -46,92 +46,92 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
             return exception;
         }
 
-        public static Exception ToServiceBusException(this Error error)
+        public static Exception ToServiceBusException(this Error error, Exception exception)
         {
             return error == null
                 ? new UncategorizedServiceBusException("Unknown error.")
-                : ToServiceBusException(error.Condition, error.Description);
+                : ToServiceBusException(error.Condition, error.Description, exception);
         }
 
-        private static Exception ToServiceBusException(string condition, string message)
+        private static Exception ToServiceBusException(string condition, string message, Exception exception)
         {
             if (string.Equals(condition, AmqpClientConstants.TimeoutError))
             {
-                return new ServiceBusTimeoutException(message);
+                return new ServiceBusTimeoutException(message, exception);
             }
 
             if (string.Equals(condition, ErrorCode.NotFound))
             {
-                return new MessagingEntityNotFoundException(message, null);
+                return new MessagingEntityNotFoundException(message, exception);
             }
 
             if (string.Equals(condition, ErrorCode.NotImplemented))
             {
-                return new NotSupportedException(message);
+                return new NotSupportedException(message, exception);
             }
 
             if (string.Equals(condition, ErrorCode.NotAllowed))
             {
-                return new InvalidOperationException(message);
+                return new InvalidOperationException(message, exception);
             }
 
             if (string.Equals(condition, ErrorCode.UnauthorizedAccess) ||
                 string.Equals(condition, AmqpClientConstants.AuthorizationFailedError))
             {
-                return new UnauthorizedException(message);
+                return new UnauthorizedException(message, exception);
             }
 
             if (string.Equals(condition, AmqpClientConstants.ServerBusyError))
             {
-                return new ServerBusyException(message);
+                return new ServerBusyException(message, exception);
             }
 
             if (string.Equals(condition, AmqpClientConstants.ArgumentError))
             {
-                return new ArgumentException(message);
+                return new ArgumentException(message, exception);
             }
 
             if (string.Equals(condition, AmqpClientConstants.ArgumentOutOfRangeError))
             {
-                return new ArgumentOutOfRangeException(message);
+                return new ArgumentOutOfRangeException(message, exception);
             }
 
             if (string.Equals(condition, AmqpClientConstants.EntityDisabledError))
             {
-                return new MessagingEntityDisabledException(message, null);
+                return new MessagingEntityDisabledException(message, exception);
             }
 
             if (string.Equals(condition, AmqpClientConstants.MessageLockLostError))
             {
-                return new MessageLockLostException(message);
+                return new MessageLockLostException(message, exception);
             }
 
             if (string.Equals(condition, AmqpClientConstants.SessionLockLostError))
             {
-                return new SessionLockLostException(message);
+                return new SessionLockLostException(message, exception);
             }
 
             if (string.Equals(condition, ErrorCode.ResourceLimitExceeded))
             {
-                return new QuotaExceededException(message);
+                return new QuotaExceededException(message, exception);
             }
 
             if (string.Equals(condition, ErrorCode.MessageSizeExceeded))
             {
-                return new MessageSizeExceededException(message);
+                return new MessageSizeExceededException(message, exception);
             }
 
             if (string.Equals(condition, AmqpClientConstants.MessageNotFoundError))
             {
-                return new MessageNotFoundException(message);
+                return new MessageNotFoundException(message, exception);
             }
 
             if (string.Equals(condition, AmqpClientConstants.SessionCannotBeLockedError))
             {
-                return new SessionCannotBeLockedException(message);
+                return new SessionCannotBeLockedException(message, exception);
             }
 
-            return new UncategorizedServiceBusException(message);
+            return new UncategorizedServiceBusException(message, exception);
         }
     }
 }
