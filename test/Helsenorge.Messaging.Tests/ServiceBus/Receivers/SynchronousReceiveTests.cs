@@ -62,7 +62,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Assert.AreEqual("Invalid value in field: 'ReplyTo'", MockFactory.OtherParty.Error.Messages.First().Properties["errorDescription"]);
                     var logEntry = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Critical);
                     Assert.AreEqual(1, logEntry.Count());
-                    Assert.IsTrue(logEntry.First().Message == "Cannot send message to service bus. Invalid endpoint.");
+                    Assert.IsTrue(logEntry.First().Message == "An error occurred during Send operation.");
                 },
                 wait: () => _handledExceptionCalled,
                 received: (m) =>
