@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Tests.Mocks;
 using Helsenorge.Registries.Abstractions;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
@@ -133,6 +135,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             var message = CreateMessage();
             RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.LocalCertificate);
         }
+
         [TestMethod]
         public void Send_Asynchronous_InvalidSignature_Ignore()
         {
@@ -141,6 +144,30 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
 
             var message = CreateMessage();
             RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.LocalCertificate);
+            var errorLog = MockLoggerProvider.Entries.FirstOrDefault(e => e.LogLevel == LogLevel.Error)?.Message;
+            Assert.IsTrue(errorLog.Contains("Certificate error(s): StartDate"));
+        }
+
+        [TestMethod]
+        public void Send_Asynchronous_InvalidEncryptionCertificate()
+        {
+            Settings.IgnoreCertificateErrorOnSend = false;
+            CertificateValidator.SetError((c, u) => {
+                if (u != X509KeyUsageFlags.DataEncipherment) return CertificateErrors.None;
+
+                return CertificateErrors.Revoked | CertificateErrors.EndDate;
+                });
+
+            var message = CreateMessage();
+            try
+            {
+                RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.RemoteCertificate);
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex.Message.Contains("Certificate error(s): EndDate, Revoked."));
+            }
+            
         }
     }
 }

@@ -132,11 +132,13 @@ namespace Helsenorge.Messaging.ServiceBus
                 {
                     if (Core.Settings.IgnoreCertificateErrorOnSend)
                     {
-                        logger.LogError(EventIds.RemoteCertificate, $"Remote encryption certificate {profile.EncryptionCertificate?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid");
+                        logger.LogError(EventIds.RemoteCertificate, $"Remote encryption certificate {profile.EncryptionCertificate?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid.{Environment.NewLine}" +
+                            $"Certificate error(s): {encryptionStatus}.");
                     }
                     else
                     {
-                        throw new MessagingException($"Remote encryption certificate {profile.EncryptionCertificate?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid")
+                        throw new MessagingException($"Remote encryption certificate {profile.EncryptionCertificate?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid.{Environment.NewLine}" +
+                            $"Certificate error(s): {encryptionStatus}.")
                         {
                             EventId = EventIds.RemoteCertificate
                         };
@@ -147,11 +149,17 @@ namespace Helsenorge.Messaging.ServiceBus
                 {
                     if (Core.Settings.IgnoreCertificateErrorOnSend)
                     {
-                        logger.LogError(EventIds.LocalCertificate, $"Locally installed signing certificate {Core.MessageProtection.SigningCertificate?.SerialNumber} is not valid.\nSerial Number: {Core.MessageProtection.SigningCertificate?.SerialNumber}\nThumbprint: {Core.MessageProtection.SigningCertificate?.Thumbprint}");
+                        logger.LogError(EventIds.LocalCertificate, $"Locally installed signing certificate {Core.MessageProtection.SigningCertificate?.SerialNumber} is not valid.{Environment.NewLine}" +
+                            $"Serial Number: {Core.MessageProtection.SigningCertificate?.SerialNumber}{Environment.NewLine}" +
+                            $"Thumbprint: {Core.MessageProtection.SigningCertificate?.Thumbprint}.{Environment.NewLine}" +
+                            $"Certificate error(s): {signatureStatus}.");
                     }
                     else
                     {
-                        throw new MessagingException($"Locally installed signing certificate {Core.MessageProtection.SigningCertificate?.SerialNumber} is not valid.\nSerial Number: {Core.MessageProtection.SigningCertificate?.SerialNumber}\nThumbprint: {Core.MessageProtection.SigningCertificate?.Thumbprint}")
+                        throw new MessagingException($"Locally installed signing certificate {Core.MessageProtection.SigningCertificate?.SerialNumber} is not valid.{Environment.NewLine}" +
+                            $"Serial Number: {Core.MessageProtection.SigningCertificate?.SerialNumber}{Environment.NewLine}" +
+                            $"Thumbprint: {Core.MessageProtection.SigningCertificate?.Thumbprint}{Environment.NewLine}" +
+                            $"Certificate error(s): {signatureStatus}.")
                         {
                             EventId = EventIds.LocalCertificate
                         };
