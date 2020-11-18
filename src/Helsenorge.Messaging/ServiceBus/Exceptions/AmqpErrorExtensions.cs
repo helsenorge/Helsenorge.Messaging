@@ -131,6 +131,11 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
                 return new SessionCannotBeLockedException(message, exception);
             }
 
+            if(string.Equals(condition, ErrorCode.IllegalState))
+            {
+                return new RecoverableServiceBusException(message, exception);
+            }
+
             return new UncategorizedServiceBusException(message, exception);
         }
     }
