@@ -55,7 +55,21 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
 
         private static Exception ToServiceBusException(string condition, string message, Exception exception)
         {
-            if (string.Equals(condition, AmqpClientConstants.TimeoutError))
+            if (string.Equals(condition, ErrorCode.IllegalState)
+                || string.Equals(condition, ErrorCode.DetachForced)
+                || string.Equals(condition, ErrorCode.ConnectionForced)
+                || string.Equals(condition, ErrorCode.Stolen)
+                || string.Equals(condition, ErrorCode.UnattachedHandle)
+                || string.Equals(condition, ErrorCode.HandleInUse)
+                || string.Equals(condition, ErrorCode.ErrantLink)
+                || string.Equals(condition, ErrorCode.WindowViolation)
+                || string.Equals(condition, ErrorCode.ConnectionRedirect))
+            {
+                return new RecoverableServiceBusException(message, exception);
+            }
+
+            if (string.Equals(condition, AmqpClientConstants.TimeoutError)
+                || string.Equals(condition, ErrorCode.TransactionTimeout))
             {
                 return new ServiceBusTimeoutException(message, exception);
             }
@@ -121,6 +135,11 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
                 return new MessageSizeExceededException(message, exception);
             }
 
+            if(string.Equals(condition, ErrorCode.TransferLimitExceeded))
+            {
+                return new TransferLimitExceeded(message, exception);
+            }
+
             if (string.Equals(condition, AmqpClientConstants.MessageNotFoundError))
             {
                 return new MessageNotFoundException(message, exception);
@@ -131,9 +150,44 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
                 return new SessionCannotBeLockedException(message, exception);
             }
 
-            if(string.Equals(condition, ErrorCode.IllegalState))
+            if(string.Equals(condition, ErrorCode.FramingError))
             {
-                return new RecoverableServiceBusException(message, exception);
+                return new FramingErrorException(message, exception);
+            }
+
+            if (string.Equals(condition, ErrorCode.FrameSizeTooSmall))
+            {
+                return new FrameSizeTooSmallException(message, exception);
+            }
+
+            if (string.Equals(condition, ErrorCode.ResourceDeleted))
+            {
+                return new ResourceDeletedException(message, exception);
+            }
+
+            if (string.Equals(condition, ErrorCode.ResourceLocked))
+            {
+                return new ResourceLockedException(message, exception);
+            }
+
+            if (string.Equals(condition, ErrorCode.MessageReleased))
+            {
+                return new MessageReleasedException(message, exception);
+            }
+
+            if (string.Equals(condition, ErrorCode.InvalidField))
+            {
+                return new InvalidFieldException(message, exception);
+            }
+
+            if (string.Equals(condition, ErrorCode.DecodeError))
+            {
+                return new DecodeErrorException(message, exception);
+            }
+
+            if (string.Equals(condition, ErrorCode.InternalError))
+            {
+                return new InternalErrorException(message, exception);
             }
 
             return new UncategorizedServiceBusException(message, exception);
