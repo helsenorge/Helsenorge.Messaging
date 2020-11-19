@@ -21,6 +21,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
     {
         private CommunicationPartyDetails _myDetails;
         private IMessagingReceiver _messageReceiver;
+        private bool _listenerEstablishedConfirmed = false;
         /// <summary>
         /// The timeout used for reading messages from queue
         /// </summary>
@@ -92,6 +93,12 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 try
                 {
                     Task.WaitAll(ReadAndProcessMessage());
+
+                    if (!_listenerEstablishedConfirmed)
+                    {
+                        Logger.LogInformation("Listener established on queue {0}", QueueName);
+                        _listenerEstablishedConfirmed = true;
+                    }
                 }
                 catch (Exception ex) // protect the main message pump
                 {
