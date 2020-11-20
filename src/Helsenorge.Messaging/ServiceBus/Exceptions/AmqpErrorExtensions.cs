@@ -137,7 +137,7 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
 
             if(string.Equals(condition, ErrorCode.TransferLimitExceeded))
             {
-                return new TransferLimitExceeded(message, exception);
+                return new TransferLimitExceededException(message, exception);
             }
 
             if (string.Equals(condition, AmqpClientConstants.MessageNotFoundError))
