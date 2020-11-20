@@ -1,8 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Helsenorge.Messaging.ServiceBus.Exceptions;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
-namespace Helsenorge.Messaging.ServiceBus.Exceptions
+namespace Helsenorge.Messaging.ServiceBus
 {
     /// <summary>
     /// <code>Microsoft.Azure.ServiceBus</code>-like Retry Policy (exponential).

@@ -1,6 +1,6 @@
 ﻿using Amqp.Types;
 
-namespace Helsenorge.Messaging.ServiceBus.Exceptions
+namespace Helsenorge.Messaging.ServiceBus
 {
     internal class AmqpClientConstants
     {

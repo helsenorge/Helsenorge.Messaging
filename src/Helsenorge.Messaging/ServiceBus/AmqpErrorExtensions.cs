@@ -1,12 +1,13 @@
 ﻿using Amqp;
 using Amqp.Framing;
+using Helsenorge.Messaging.ServiceBus.Exceptions;
 using System;
 using System.Globalization;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Helsenorge.Messaging.ServiceBus.Exceptions
+namespace Helsenorge.Messaging.ServiceBus
 {
     internal static class AmqpErrorExtensions
     {

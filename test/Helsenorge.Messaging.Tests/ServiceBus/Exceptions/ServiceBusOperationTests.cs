@@ -1,4 +1,5 @@
-﻿using Helsenorge.Messaging.ServiceBus.Exceptions;
+﻿using Helsenorge.Messaging.ServiceBus;
+using Helsenorge.Messaging.ServiceBus.Exceptions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;

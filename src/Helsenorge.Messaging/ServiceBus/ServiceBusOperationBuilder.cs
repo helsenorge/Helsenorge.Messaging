@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Helsenorge.Messaging.ServiceBus.Exceptions
+namespace Helsenorge.Messaging.ServiceBus
 {
     internal class ServiceBusOperationBuilder
     {
