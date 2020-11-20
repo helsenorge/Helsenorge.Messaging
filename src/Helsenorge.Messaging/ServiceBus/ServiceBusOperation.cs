@@ -1,4 +1,12 @@
-﻿using Helsenorge.Messaging.ServiceBus.Exceptions;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using Helsenorge.Messaging.ServiceBus.Exceptions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
