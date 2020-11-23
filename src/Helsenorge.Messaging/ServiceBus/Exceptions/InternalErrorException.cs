@@ -7,8 +7,6 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Helsenorge.Messaging.ServiceBus.Exceptions
 {
@@ -24,6 +22,6 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
         {
         }
 
-        public override bool CanRetry => false;
+        public override bool CanRetry => true;
     }
 }
