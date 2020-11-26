@@ -103,7 +103,7 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// The maximum number of senders to keep open at any time
         /// </summary>
-        public uint MaxSenders { get; set; } = 200;
+        public uint MaxSenders { get; set; } = 5;
         /// <summary>
         /// The maximum number of messaging factories to use
         /// </summary>
