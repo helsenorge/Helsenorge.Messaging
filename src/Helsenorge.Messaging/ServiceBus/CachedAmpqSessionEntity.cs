@@ -6,7 +6,8 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
-using System;
+﻿using System;
+using System.Threading.Tasks;
 using Amqp;
 using Helsenorge.Messaging.Abstractions;
 
@@ -35,13 +36,13 @@ namespace Helsenorge.Messaging.ServiceBus
             return ((IConnection)connection).CreateSession() as Session;
         }
 
-        protected void OnSessionClosing()
+        protected async Task OnSessionClosing()
         {
             if (_link == null || _link.IsClosed)
             {
                 return;
             }
-            _link.Close();
+            await _link.CloseAsync();
         }
 
         protected void CheckNotClosed()
@@ -52,18 +53,18 @@ namespace Helsenorge.Messaging.ServiceBus
             }
         }
 
-        protected void EnsureOpen()
+        protected async Task EnsureOpen()
         {
             CheckNotClosed();
             if (Connection.EnsureConnection() || _session == null || _session.IsClosed || _link == null || _link.IsClosed)
             {
                 if(_link != null && !_link.IsClosed)
                 {
-                    _link.Close();
+                    await _link.CloseAsync();
                 }
                 if (_session != null && !_session.IsClosed)
                 {
-                    _session.Close(TimeSpan.Zero);
+                    await _session.CloseAsync(TimeSpan.Zero);
                 }
                 _session = CreateSession(Connection.Connection);
                 _link = CreateLink(_session);
@@ -72,7 +73,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
         public bool IsClosed { get; private set; }
 
-        public void Close()
+        public async Task Close()
         {
             if (IsClosed)
             {
@@ -81,8 +82,8 @@ namespace Helsenorge.Messaging.ServiceBus
             IsClosed = true;
             if (_session != null && !_session.IsClosed)
             {
-                OnSessionClosing();
-                _session.Close();
+                await OnSessionClosing();
+                await _session.CloseAsync();
             }
         }
     }

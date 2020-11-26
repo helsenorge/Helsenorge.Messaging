@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
 {
-    public class ServiceBusReceiverTests : IDisposable
+    public class ServiceBusReceiverTests : IAsyncDisposable
     {
         public string QueueName => nameof(ServiceBusReceiverTests);
 
@@ -28,9 +28,9 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             _fixture.PurgeQueueAsync(QueueName).Wait();
         }
 
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
-            _receiver.Close();
+            await _receiver.Close();
             _fixture.Dispose();
         }
 
@@ -64,7 +64,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
         public async Task Should_Not_Allow_To_Receive_Message_When_Receiver_Is_Closed()
         {
             Assert.False(_receiver.IsClosed);
-            _receiver.Close();
+            await _receiver.Close();
             Assert.True(_receiver.IsClosed);
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await _receiver.ReceiveAsync(TimeSpan.Zero));
         }

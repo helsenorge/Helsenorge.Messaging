@@ -8,6 +8,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 using Amqp;
 using Helsenorge.Messaging.Abstractions;
@@ -50,8 +51,8 @@ namespace Helsenorge.Messaging.ServiceBus
 
             await new ServiceBusOperationBuilder(_logger, "Send").Build(async () =>
             {
-                EnsureOpen();
-                await _link.SendAsync(originalMessage).ConfigureAwait(false);
+                await EnsureOpen();
+                await _link.SendAsync(originalMessage);
             }).PerformAsync().ConfigureAwait(false);
         }
     }

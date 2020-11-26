@@ -24,7 +24,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
         }
 
         public bool IsClosed => false;
-        public void Close() {}
+        public Task Close() { return Task.CompletedTask; }
 
         public Task SendAsync(IMessagingMessage message)
         {

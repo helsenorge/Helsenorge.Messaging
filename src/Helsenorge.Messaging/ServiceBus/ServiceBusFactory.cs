@@ -9,6 +9,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading.Tasks;
 using Amqp;
 using Amqp.Framing;
 using Helsenorge.Messaging.Abstractions;
@@ -40,7 +41,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
         public bool IsClosed => _connection.IsClosedOrClosing;
 
-        public void Close() => _connection.CloseAsync().Wait();
+        public async Task Close() => await _connection.CloseAsync();
 
         public IMessagingMessage CreateMessage(Stream stream)
         {

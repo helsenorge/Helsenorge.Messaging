@@ -11,6 +11,7 @@ using System;
 using System.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Tests
 {
@@ -26,7 +27,11 @@ namespace Helsenorge.Messaging.Tests
             {
                 _path = path;
             }
-            public void Close() => _isClosed = true;
+            public Task Close()
+            {
+                _isClosed = true;
+                return Task.CompletedTask;
+            }
         
             public bool IsClosed => _isClosed;
 

@@ -5,6 +5,7 @@
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
+﻿using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Abstractions
 {
@@ -21,6 +22,6 @@ namespace Helsenorge.Messaging.Abstractions
         /// <summary>
         /// Closes the item
         /// </summary>
-        void Close();
+        Task Close();
     }
 }

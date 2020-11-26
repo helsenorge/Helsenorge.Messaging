@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
 
 namespace Helsenorge.Messaging.Tests.Mocks
@@ -36,8 +37,9 @@ namespace Helsenorge.Messaging.Tests.Mocks
             OtherPartyWithOnlyCpp = new MockCommunicationParty(this, HerIdWithOnlyCpp);
         }
 
-        public void Close()
+        public Task Close()
         {
+            return Task.CompletedTask;
         }
 
         public IMessagingReceiver CreateMessageReceiver(string id)
