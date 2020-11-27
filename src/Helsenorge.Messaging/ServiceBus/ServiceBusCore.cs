@@ -345,18 +345,14 @@ namespace Helsenorge.Messaging.ServiceBus
                     EventId = EventIds.SenderMissingInAddressRegistryEventId
                 };
             }
-            
-            switch (type)
+
+            return type switch
             {
-                case QueueType.Asynchronous:
-                    return ExtractQueueName(details.AsynchronousQueueName);
-                case QueueType.Synchronous:
-                    return ExtractQueueName(details.SynchronousQueueName);
-                case QueueType.Error:
-                    return ExtractQueueName(details.ErrorQueueName);
-                default:
-                    throw new InvalidOperationException("QueueType not supported");
-            }
+                QueueType.Asynchronous => ExtractQueueName(details.AsynchronousQueueName),
+                QueueType.Synchronous => ExtractQueueName(details.SynchronousQueueName),
+                QueueType.Error => ExtractQueueName(details.ErrorQueueName),
+                _ => throw new InvalidOperationException($"Queue type '{type}' is not supported"),
+            };
         }
 
         /// <summary>

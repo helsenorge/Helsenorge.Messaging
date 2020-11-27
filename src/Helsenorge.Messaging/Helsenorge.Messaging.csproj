@@ -2,6 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <LangVersion>8.0</LangVersion>
     <AssemblyName>Helsenorge.Messaging</AssemblyName>
     <RootNamespace>Helsenorge.Messaging</RootNamespace>
     <ProjectGuid>{A0BA02E7-C2EA-496B-85ED-10ACD42B4DE8}</ProjectGuid>
