@@ -329,7 +329,7 @@ namespace Helsenorge.Messaging.ServiceBus
             // sb.test.nhn.no/DigitalDialog/91468_async
             // we only want the last part
 
-            if (string.IsNullOrEmpty(queueAddress)) throw new ArgumentNullException(nameof(queueAddress));
+            if (string.IsNullOrEmpty(queueAddress)) throw new ArgumentNullException(nameof(queueAddress), $"Queue address null or empty string. Verify that the Communication Party is set up with a queue address in the Address Registry. Parameter name: {nameof(queueAddress)}");
 
             var i = queueAddress.LastIndexOf('/');
             return queueAddress.Substring(i + 1);
