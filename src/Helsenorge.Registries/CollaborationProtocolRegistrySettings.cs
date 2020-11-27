@@ -23,7 +23,7 @@ namespace Helsenorge.Registries
         /// <summary>
         /// The amount of time values should be cached
         /// </summary>
-        public TimeSpan CachingInterval { get; set; }
+        public TimeSpan CachingInterval { get; set; } = new TimeSpan(1, 0, 0);
         /// <summary>
         /// The HerId that belongs to me. In CPA operations, two communication parties may be returned, need to know which one is us
         /// </summary>

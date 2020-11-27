@@ -23,6 +23,6 @@ namespace Helsenorge.Registries
         /// <summary>
         /// The amount of time values should be cached
         /// </summary>
-        public TimeSpan CachingInterval { get; set; }
+        public TimeSpan CachingInterval { get; set; } = new TimeSpan(1, 0, 0);
     }
 }
