@@ -64,7 +64,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 }
                 if (_session != null && !_session.IsClosed)
                 {
-                    await _session.CloseAsync(TimeSpan.Zero);
+                    await _session.CloseAsync();
                 }
                 _session = CreateSession(Connection.Connection);
                 _link = CreateLink(_session);
