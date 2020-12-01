@@ -7,7 +7,8 @@
  */
 
 ﻿using System;
-using System.Threading.Tasks;
+ using System.Threading;
+ using System.Threading.Tasks;
 using Amqp;
 using Helsenorge.Messaging.Abstractions;
 
@@ -19,6 +20,8 @@ namespace Helsenorge.Messaging.ServiceBus
         protected readonly ServiceBusConnection Connection;
         protected Session _session;
         protected TLink _link;
+        
+        private readonly SemaphoreSlim _mySemaphoreSlim = new SemaphoreSlim(1);
 
         protected CachedAmpqSessionEntity(ServiceBusConnection connection)
         {
@@ -55,19 +58,29 @@ namespace Helsenorge.Messaging.ServiceBus
 
         protected async Task EnsureOpen()
         {
-            CheckNotClosed();
-            if (Connection.EnsureConnection() || _session == null || _session.IsClosed || _link == null || _link.IsClosed)
+            await _mySemaphoreSlim.WaitAsync();
+            try
             {
-                if(_link != null && !_link.IsClosed)
+                CheckNotClosed();
+                if (Connection.EnsureConnection() || _session == null || _session.IsClosed || _link == null || _link.IsClosed)
                 {
-                    await _link.CloseAsync();
+                    if (_link != null && !_link.IsClosed)
+                    {
+                        await _link.CloseAsync();
+                    }
+
+                    if (_session != null && !_session.IsClosed)
+                    {
+                        await _session.CloseAsync();
+                    }
+
+                    _session = CreateSession(Connection.Connection);
+                    _link = CreateLink(_session);
                 }
-                if (_session != null && !_session.IsClosed)
-                {
-                    await _session.CloseAsync();
-                }
-                _session = CreateSession(Connection.Connection);
-                _link = CreateLink(_session);
+            }
+            finally
+            {
+                _mySemaphoreSlim.Release();
             }
         }
 
