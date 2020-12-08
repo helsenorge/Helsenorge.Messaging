@@ -34,11 +34,11 @@ namespace Helsenorge.Registries.Configuration
 
         public int MaxReceivedMessageSize { get; set; }
         
-        public bool UseDefaultWebProxy { get; internal set; }
+        public bool UseDefaultWebProxy { get; set; }
         
-        public bool BypassProxyOnLocal { get; internal set; }
+        public bool BypassProxyOnLocal { get; set; }
         
-        public Uri ProxyAddress { get; internal set; }
+        public Uri ProxyAddress { get; set; }
     }
 
     public enum WcfHttpBinding
