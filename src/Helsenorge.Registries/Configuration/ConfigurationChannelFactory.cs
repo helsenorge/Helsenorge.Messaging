@@ -78,15 +78,15 @@ namespace Helsenorge.Registries.Configuration
                         {
                             basicHttpBinding.MaxReceivedMessageSize = configuration.MaxReceivedMessageSize;
                         }
-                        if (configuration.UseDefaultWebProxy != default(bool))
+                        if (configuration.UseDefaultWebProxy != default)
                         {
                             basicHttpBinding.UseDefaultWebProxy = configuration.UseDefaultWebProxy;
                         }
-                        if (configuration.BypassProxyOnLocal != default(bool))
+                        if (configuration.BypassProxyOnLocal != default)
                         {
                             basicHttpBinding.BypassProxyOnLocal = configuration.BypassProxyOnLocal;
                         }
-                        if (configuration.ProxyAddress != default(Uri))
+                        if (configuration.ProxyAddress != default)
                         {
                             basicHttpBinding.ProxyAddress = configuration.ProxyAddress;
                         }
