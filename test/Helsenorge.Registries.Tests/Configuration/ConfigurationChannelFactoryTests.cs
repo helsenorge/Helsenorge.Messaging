@@ -56,6 +56,9 @@ namespace Helsenorge.Registries.Tests.Configuration
             Assert.Equal(HttpClientCredentialType.Basic, binding.Security.Transport.ClientCredentialType);
             Assert.Null(factory.Credentials?.UserName.UserName);
             Assert.Null(factory.Credentials?.UserName.Password);
+            Assert.Equal(default(Uri), binding.ProxyAddress);
+            Assert.False(binding.BypassProxyOnLocal);
+            Assert.False(binding.UseDefaultWebProxy);
         }
 
         [Fact]
@@ -68,7 +71,10 @@ namespace Helsenorge.Registries.Tests.Configuration
                 Password = "pass",
                 MaxBufferSize = 1001,
                 MaxBufferPoolSize = 2001,
-                MaxReceivedMessageSize = 30001
+                MaxReceivedMessageSize = 30001,
+                ProxyAddress = new Uri("http://test.test"),
+                BypassProxyOnLocal = true,
+                UseDefaultWebProxy = true
             });
             var binding = factory.Endpoint.Binding as BasicHttpBinding;
             Assert.NotNull(binding);
@@ -82,6 +88,9 @@ namespace Helsenorge.Registries.Tests.Configuration
             Assert.NotNull(factory.Credentials?.UserName.Password);
             Assert.Equal("user", factory.Credentials.UserName.UserName);
             Assert.Equal("pass", factory.Credentials.UserName.Password);
+            Assert.Equal(new Uri("http://test.test").AbsoluteUri, binding.ProxyAddress.AbsoluteUri);
+            Assert.True(binding.BypassProxyOnLocal);
+            Assert.True(binding.UseDefaultWebProxy);
         }
 
         [Fact]

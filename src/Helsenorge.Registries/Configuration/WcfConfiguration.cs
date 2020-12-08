@@ -1,10 +1,11 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
+
+using System;
 
 namespace Helsenorge.Registries.Configuration
 {
@@ -32,6 +33,12 @@ namespace Helsenorge.Registries.Configuration
         public int MaxBufferPoolSize { get; set; }
 
         public int MaxReceivedMessageSize { get; set; }
+        
+        public bool UseDefaultWebProxy { get; internal set; }
+        
+        public bool BypassProxyOnLocal { get; internal set; }
+        
+        public Uri ProxyAddress { get; internal set; }
     }
 
     public enum WcfHttpBinding
