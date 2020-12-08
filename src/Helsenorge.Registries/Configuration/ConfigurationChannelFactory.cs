@@ -74,10 +74,21 @@ namespace Helsenorge.Registries.Configuration
                         {
                             basicHttpBinding.MaxBufferPoolSize = configuration.MaxBufferPoolSize;
                         }
-
                         if (configuration.MaxReceivedMessageSize > 0)
                         {
                             basicHttpBinding.MaxReceivedMessageSize = configuration.MaxReceivedMessageSize;
+                        }
+                        if (configuration.UseDefaultWebProxy != default(bool))
+                        {
+                            basicHttpBinding.UseDefaultWebProxy = configuration.UseDefaultWebProxy;
+                        }
+                        if (configuration.BypassProxyOnLocal != default(bool))
+                        {
+                            basicHttpBinding.BypassProxyOnLocal = configuration.BypassProxyOnLocal;
+                        }
+                        if (configuration.ProxyAddress != default(Uri))
+                        {
+                            basicHttpBinding.ProxyAddress = configuration.ProxyAddress;
                         }
                         return basicHttpBinding;
 
@@ -91,6 +102,18 @@ namespace Helsenorge.Registries.Configuration
                         if (configuration.MaxReceivedMessageSize > 0)
                         {
                             wsHttpBinding.MaxReceivedMessageSize = configuration.MaxReceivedMessageSize;
+                        }
+                        if (configuration.UseDefaultWebProxy != default)
+                        {
+                            wsHttpBinding.UseDefaultWebProxy = configuration.UseDefaultWebProxy;
+                        }
+                        if (configuration.BypassProxyOnLocal != default)
+                        {
+                            wsHttpBinding.BypassProxyOnLocal = configuration.BypassProxyOnLocal;
+                        }
+                        if (configuration.ProxyAddress != default)
+                        {
+                            wsHttpBinding.ProxyAddress = configuration.ProxyAddress;
                         }
                         return wsHttpBinding;
                 }
