@@ -70,6 +70,10 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         public Action RenewLock { get; internal set; }
         /// <summary>
+        /// Removes the message from the queue.
+        /// </summary>
+        public Action Complete { get; internal set; }
+        /// <summary>
         /// Gets the number of deliveries.
         /// </summary>
         public int DeliveryCount { get ; internal set; }

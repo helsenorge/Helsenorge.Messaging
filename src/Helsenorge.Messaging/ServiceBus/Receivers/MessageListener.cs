@@ -157,6 +157,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     CorrelationId = message.CorrelationId,
                     EnqueuedTimeUtc = message.EnqueuedTimeUtc,
                     RenewLock = message.RenewLock,
+                    Complete = message.Complete,
                     DeliveryCount = message.DeliveryCount
                 };
                 NotifyMessageProcessingStarted(incomingMessage);
