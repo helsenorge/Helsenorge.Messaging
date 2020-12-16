@@ -42,7 +42,7 @@ namespace Helsenorge.Messaging.ServiceBus
         {
             var message = await new ServiceBusOperationBuilder(_logger, "Receive").Build(async () =>
             {
-                await EnsureOpen();
+                await EnsureOpen().ConfigureAwait(false);
                 var amqpMessage = await _link.ReceiveAsync(serverWaitTime).ConfigureAwait(false);
                 return amqpMessage != null ? new ServiceBusMessage(amqpMessage) : null;
             }).PerformAsync().ConfigureAwait(false);
@@ -54,35 +54,35 @@ namespace Helsenorge.Messaging.ServiceBus
                 message.CompleteAction = () => new ServiceBusOperationBuilder(_logger, "Complete")
                     .Build(async () =>
                     {
-                        await EnsureOpen();
+                        await EnsureOpen().ConfigureAwait(false);
                         _link.Accept(amqpMessage);
                     }).PerformAsync();
 
                 message.RejectAction = () => new ServiceBusOperationBuilder(_logger, "Reject")
                     .Build(async () =>
                     {
-                        await EnsureOpen();
+                        await EnsureOpen().ConfigureAwait(false);;
                         _link.Reject(amqpMessage);
                     }).PerformAsync();
 
                 message.ReleaseAction = () => new ServiceBusOperationBuilder(_logger, "Release")
                     .Build(async () =>
                     {
-                        await EnsureOpen();
+                        await EnsureOpen().ConfigureAwait(false);;
                         _link.Release(amqpMessage);
                     }).PerformAsync();
 
                 message.DeadLetterAction = () => new ServiceBusOperationBuilder(_logger, "DeadLetter")
                     .Build(async () =>
                     {
-                        await EnsureOpen();
+                        await EnsureOpen().ConfigureAwait(false);
                         _link.Reject(amqpMessage);
                     }).PerformAsync();
 
                 message.RenewLockAction = () => new ServiceBusOperationBuilder(_logger, "RenewLock")
                     .Build(async () =>
                     {
-                        await EnsureOpen();
+                        await EnsureOpen().ConfigureAwait(false);
                         var lockTimeout = TimeSpan.FromMinutes(1);
                         await Connection.HttpClient.RenewLockAsync(_id, amqpMessage.GetSequenceNumber(), amqpMessage.GetLockToken(), lockTimeout, serverWaitTime).ConfigureAwait(false);
                         return DateTime.UtcNow + lockTimeout;

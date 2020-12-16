@@ -8,6 +8,7 @@
 
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.ServiceBus
 {
@@ -20,9 +21,9 @@ namespace Helsenorge.Messaging.ServiceBus
         {
             _factoryPool = factoryPool;
         }
-        protected override IMessagingSender CreateEntity(ILogger logger, string id)
+        protected override async Task<IMessagingSender> CreateEntity(ILogger logger, string id)
         {
-            var factory = _factoryPool.FindNextFactory(logger);
+            var factory = await _factoryPool.FindNextFactory(logger).ConfigureAwait(false);
             return factory.CreateMessageSender(id);
         }
 
@@ -32,13 +33,13 @@ namespace Helsenorge.Messaging.ServiceBus
         /// <param name="logger"></param>
         /// <param name="queueName"></param>
         /// <returns></returns>
-        public IMessagingSender CreateCachedMessageSender(ILogger logger, string queueName) => Create(logger, queueName);
+        public async Task<IMessagingSender> CreateCachedMessageSender(ILogger logger, string queueName) => await Create(logger, queueName).ConfigureAwait(false);
 
         /// <summary>
         /// Releases a cached message sender
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="queueName"></param>
-        public void ReleaseCachedMessageSender(ILogger logger, string queueName) => Release(logger, queueName);
+        public async Task ReleaseCachedMessageSender(ILogger logger, string queueName) => await Release(logger, queueName).ConfigureAwait(false);
     }
 }

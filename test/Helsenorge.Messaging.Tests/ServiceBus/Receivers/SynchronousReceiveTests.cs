@@ -13,6 +13,7 @@ using Helsenorge.Messaging.ServiceBus.Receivers;
 using Helsenorge.Messaging.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 {
@@ -36,11 +37,11 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         }
 
         [TestMethod]
-        public void Synchronous_Receive_OK()
+        public async Task Synchronous_Receive_OK()
         {
             // postition of arguments have been reversed so that we inster the name of the argument without getting a resharper indication
             // makes it easier to read
-            RunReceive(
+            await RunReceive(
                 postValidation: () =>
                 {
                     Assert.IsTrue(_startingCalled);
@@ -57,9 +58,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         }
 
         [TestMethod]
-        public void Synchronous_Receive_InvalidReplyToQueue_SendToErrorQueue()
+        public async Task Synchronous_Receive_InvalidReplyToQueue_SendToErrorQueue()
         {
-            RunReceive(
+            await RunReceive(
                 postValidation: () =>
                 {
                     Assert.IsTrue(_startingCalled);
@@ -81,10 +82,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 
 
         [TestMethod]
-        public void Synchronous_ReceiveHerIdMismatch_ErrorQueueWithSpoofingErrorCode()
+        public async Task Synchronous_ReceiveHerIdMismatch_ErrorQueueWithSpoofingErrorCode()
         {
-            RunReceive(
-
+            await RunReceive(
                 postValidation: () =>
                 {
                     Assert.IsTrue(_startingCalled);
@@ -99,10 +99,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         }
 
         [TestMethod]
-        public void Synchronous_Receive_ApplicationThrowsUnsupportedMessageException()
+        public async Task Synchronous_Receive_ApplicationThrowsUnsupportedMessageException()
         {
-            RunReceive(
-
+            await RunReceive(
                 postValidation: () =>
                 {
                     Assert.IsTrue(_startingCalled);
@@ -116,7 +115,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 messageModification: m => { });
         }
 
-        private void RunReceive(
+        private async Task RunReceive(
             Action<MockMessage> messageModification,
             Action<IncomingMessage> received,
             Func<bool> wait,
@@ -128,20 +127,32 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             MockFactory.Helsenorge.Synchronous.Messages.Add(message);
 
             // configure notifications
-            Server.RegisterSynchronousMessageReceivedStartingCallback((m) => _startingCalled = true);
+            Server.RegisterSynchronousMessageReceivedStartingCallback((m) =>
+            {
+                _startingCalled = true;
+                return Task.CompletedTask;
+            });
             Server.RegisterSynchronousMessageReceivedCallback((m) => 
             {
                 received(m);
                 _receivedCalled = true;
-                return GenericResponse;
+                return Task.FromResult(GenericResponse);
             });
-            Server.RegisterSynchronousMessageReceivedCompletedCallback((m) => _completedCalled = true);
-            Server.RegisterHandledExceptionCallback((messagingMessage, exception) => _handledExceptionCalled = true);
+            Server.RegisterSynchronousMessageReceivedCompletedCallback((m) =>
+            {
+                _completedCalled = true;
+                return Task.CompletedTask;
+            });
+            Server.RegisterHandledExceptionCallback((messagingMessage, exception) =>
+            {
+                _handledExceptionCalled = true;
+                return Task.CompletedTask;
+            });
 
-            Server.Start();
+            await Server.Start();
 
             Wait(15, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout
-            Server.Stop(TimeSpan.FromSeconds(10));
+            await Server.Stop(TimeSpan.FromSeconds(10));
 
             // check the state of the system
             postValidation();

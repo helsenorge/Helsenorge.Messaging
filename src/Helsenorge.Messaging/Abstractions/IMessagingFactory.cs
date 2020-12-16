@@ -7,6 +7,7 @@
  */
 
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Abstractions
 {
@@ -32,6 +33,6 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="stream">Stream containing the information</param>
         /// <returns></returns>
-        IMessagingMessage CreateMessage(Stream stream);
+        Task<IMessagingMessage> CreateMessage(Stream stream);
     }
 }

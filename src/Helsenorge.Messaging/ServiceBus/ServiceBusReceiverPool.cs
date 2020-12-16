@@ -8,6 +8,7 @@
 
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.ServiceBus
 {
@@ -21,9 +22,9 @@ namespace Helsenorge.Messaging.ServiceBus
             _factoryPool = factoryPool;
         }
 
-        protected override IMessagingReceiver CreateEntity(ILogger logger, string id)
+        protected override async Task<IMessagingReceiver> CreateEntity(ILogger logger, string id)
         {
-            var factory = _factoryPool.FindNextFactory(logger);
+            var factory = await _factoryPool.FindNextFactory(logger).ConfigureAwait(false);
             return factory.CreateMessageReceiver(id);
         }
 
@@ -33,13 +34,13 @@ namespace Helsenorge.Messaging.ServiceBus
         /// <param name="logger"></param>
         /// <param name="queueName"></param>
         /// <returns></returns>
-        public IMessagingReceiver CreateCachedMessageReceiver(ILogger logger, string queueName) => Create(logger, queueName);
+        public async Task<IMessagingReceiver> CreateCachedMessageReceiver(ILogger logger, string queueName) => await Create(logger, queueName).ConfigureAwait(false);
 
         /// <summary>
         /// Releases a cached message receiver
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="queueName"></param>
-        public void ReleaseCachedMessageReceiver(ILogger logger, string queueName) => Release(logger, queueName);
+        public async Task ReleaseCachedMessageReceiver(ILogger logger, string queueName) => await Release(logger, queueName).ConfigureAwait(false);
     }
 }

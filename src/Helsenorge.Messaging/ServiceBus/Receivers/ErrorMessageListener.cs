@@ -9,6 +9,7 @@
 using System;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -47,10 +48,10 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// Called prior to message processing
         /// </summary>
         /// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
-        protected override void NotifyMessageProcessingStarted(IncomingMessage message)
+        protected override async Task NotifyMessageProcessingStarted(IncomingMessage message)
         {
             Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
-            MessagingNotification.NotifyErrorMessageReceivedStarting(message);
+            await MessagingNotification.NotifyErrorMessageReceivedStarting(message).ConfigureAwait(false);
             Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
         /// <summary>
@@ -58,7 +59,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// </summary>
         /// <param name="rawMessage">The message from the queue</param>
         /// <param name="message">The refined message data. All information should now be present</param>
-        protected override void NotifyMessageProcessingReady(IMessagingMessage rawMessage, IncomingMessage message)
+        protected override async Task NotifyMessageProcessingReady(IMessagingMessage rawMessage, IncomingMessage message)
         {
             if (rawMessage == null) throw new ArgumentNullException(nameof(rawMessage));
             if (message == null) throw new ArgumentNullException(nameof(message));
@@ -113,7 +114,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             Logger.LogExternalReportedError(stringBuilder.ToString());
 
             Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
-            MessagingNotification.NotifyErrorMessageReceived(rawMessage);
+            await MessagingNotification.NotifyErrorMessageReceived(rawMessage).ConfigureAwait(false);
             Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
 
@@ -121,9 +122,10 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// Called when message processing is complete
         /// </summary>
         /// <param name="message">Reference to the incoming message</param>
-        protected override void NotifyMessageProcessingCompleted(IncomingMessage message)
+        protected override Task NotifyMessageProcessingCompleted(IncomingMessage message)
         {
             // not relevant for error messages
+            return Task.CompletedTask;
         }
     }
 }

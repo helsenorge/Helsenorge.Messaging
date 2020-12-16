@@ -181,7 +181,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
             logger.LogBeforeFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
             // Create an empty message
-            var messagingMessage = FactoryPool.CreateMessage(logger, stream);
+            var messagingMessage = await FactoryPool.CreateMessage(logger, stream).ConfigureAwait(false);
             logger.LogAfterFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
 
             if (queueType != QueueType.SynchronousReply)
@@ -229,7 +229,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
             try
             {
-                messageSender = SenderPool.CreateCachedMessageSender(logger, message.To);
+                messageSender = await SenderPool.CreateCachedMessageSender(logger, message.To).ConfigureAwait(false);
                 await messageSender.SendAsync(message).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -245,7 +245,7 @@ namespace Helsenorge.Messaging.ServiceBus
             {
                 if (messageSender != null)
                 {
-                    SenderPool.ReleaseCachedMessageSender(logger, message.To);
+                    await SenderPool.ReleaseCachedMessageSender(logger, message.To).ConfigureAwait(false);
                 }
             }
         }

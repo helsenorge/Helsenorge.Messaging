@@ -58,7 +58,7 @@ namespace Helsenorge.Registries.Tests.Configuration
             Assert.Null(factory.Credentials?.UserName.Password);
             Assert.Equal(default(Uri), binding.ProxyAddress);
             Assert.False(binding.BypassProxyOnLocal);
-            Assert.False(binding.UseDefaultWebProxy);
+            Assert.True(binding.UseDefaultWebProxy);
         }
 
         [Fact]

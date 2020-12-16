@@ -46,7 +46,8 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
         public async Task Should_Recreate_Link_When_Underlying_Connection_Is_Closed()
         {
             Assert.False(_receiver.IsClosed);
-            await _fixture.Connection.Connection.CloseAsync();
+            var connection = await _fixture.Connection.GetConnection();
+            await connection.CloseAsync();
             await ReceiveTestMessageAsync();
             Assert.False(_receiver.IsClosed);
         }

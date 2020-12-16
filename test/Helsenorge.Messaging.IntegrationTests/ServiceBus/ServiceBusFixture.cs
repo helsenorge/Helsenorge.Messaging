@@ -72,8 +72,9 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
         {
             var list = new List<Message>();
             var connection = new ServiceBusConnection(GetConnectionString(), _logger);
-            var session = new Session(connection.Connection);
-            var receiverLink = new ReceiverLink(session, $"test-receiver-link-{Guid.NewGuid()}", connection.GetEntityName(queueName));
+            var rawConnection = await connection.GetConnection();
+            var session = rawConnection.CreateSession();
+            var receiverLink = session.CreateReceiver($"test-receiver-link-{Guid.NewGuid()}", connection.GetEntityName(queueName));
             Message message;
             while ((message = await receiverLink.ReceiveAsync(ServiceBusTestingConstants.DefaultReadTimeout)) != null)
             {
@@ -95,8 +96,9 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
                 messageText = $"Test message {Guid.NewGuid()}";
             }
             var connection = new ServiceBusConnection(GetConnectionString(), _logger);
-            var session = new Session(connection.Connection);
-            var senderLink = new SenderLink(session, $"test-sender-link-{Guid.NewGuid()}", connection.GetEntityName(queueName));
+            var rawConnection = await connection.GetConnection();
+            var session = rawConnection.CreateSession();
+            var senderLink = session.CreateSender($"test-sender-link-{Guid.NewGuid()}", connection.GetEntityName(queueName));
             await senderLink.SendAsync(new Message
             {
                 BodySection = new Data
@@ -113,8 +115,9 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
         public async Task CheckMessageSentAsync(string queueName, string text)
         {
             var connection = new ServiceBusConnection(GetConnectionString(), _logger);
-            var session = new Session(connection.Connection);
-            var receiverLink = new ReceiverLink(session, $"test-receiver-link-{Guid.NewGuid()}", connection.GetEntityName(queueName));
+            var rawConnection = await connection.GetConnection();
+            var session = rawConnection.CreateSession();
+            var receiverLink = session.CreateReceiver($"test-receiver-link-{Guid.NewGuid()}", connection.GetEntityName(queueName));
             var message = await receiverLink.ReceiveAsync(ServiceBusTestingConstants.DefaultReadTimeout);
             Assert.NotNull(message);
             receiverLink.Accept(message);

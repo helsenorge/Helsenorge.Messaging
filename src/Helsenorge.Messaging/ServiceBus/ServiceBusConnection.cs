@@ -21,17 +21,14 @@ namespace Helsenorge.Messaging.ServiceBus
 
         public ServiceBusHttpClient HttpClient { get; }
 
-        private Connection _connection;
+        private IConnection _connection;
 
         public string Namespace { get; }
 
-        public Connection Connection
+        public async Task<IConnection> GetConnection()
         {
-            get
-            {
-                EnsureConnection();
-                return _connection;
-            }
+            await EnsureConnection().ConfigureAwait(false);
+            return _connection;
         }
 
         public ServiceBusConnection(string connectionString, ILogger logger)
@@ -76,7 +73,7 @@ namespace Helsenorge.Messaging.ServiceBus
         /// Auto-reconnects until Close() is not called explicitly.
         /// </summary>
         /// <returns>Whether it's reconnected</returns>
-        public bool EnsureConnection()
+        public async Task<bool> EnsureConnection()
         {
             if (IsClosedOrClosing)
             {
@@ -84,7 +81,7 @@ namespace Helsenorge.Messaging.ServiceBus
             }
             if (_connection == null || _connection.IsClosed)
             {
-                _connection = _connectionFactory.CreateAsync(_address).GetAwaiter().GetResult();
+                _connection = await _connectionFactory.CreateAsync(_address).ConfigureAwait(false);
                 return true;
             }
             return false;

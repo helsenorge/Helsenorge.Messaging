@@ -225,7 +225,7 @@ namespace Helsenorge.Messaging
         /// Registers a delegate that should be called when we receive a synchronous reply message. This is where the main reply message processing is done.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterSynchronousReplyMessageReceivedCallback(Action<IncomingMessage> action) => _synchronousServiceBusSender.OnSynchronousReplyMessageReceived = action;
+        public void RegisterSynchronousReplyMessageReceivedCallback(Func<IncomingMessage, Task> action) => _synchronousServiceBusSender.OnSynchronousReplyMessageReceived = action;
 
         private async Task<CollaborationProtocolMessage> PreCheck(ILogger logger, OutgoingMessage message)
         {

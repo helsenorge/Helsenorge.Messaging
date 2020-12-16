@@ -30,19 +30,19 @@ namespace Helsenorge.Messaging
         private readonly ConcurrentBag<Task> _tasks = new ConcurrentBag<Task>();
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        private Action<IncomingMessage> _onAsynchronousMessageReceived;
-        private Action<IncomingMessage> _onAsynchronousMessageReceivedStarting;
-        private Action<IncomingMessage> _onAsynchronousMessageReceivedCompleted;
+        private Func<IncomingMessage, Task> _onAsynchronousMessageReceived;
+        private Func<IncomingMessage, Task> _onAsynchronousMessageReceivedStarting;
+        private Func<IncomingMessage, Task> _onAsynchronousMessageReceivedCompleted;
 
-        private Func<IncomingMessage, XDocument> _onSynchronousMessageReceived;
-        private Action<IncomingMessage> _onSynchronousMessageReceivedCompleted;
-        private Action<IncomingMessage> _onSynchronousMessageReceivedStarting;
+        private Func<IncomingMessage, Task<XDocument>> _onSynchronousMessageReceived;
+        private Func<IncomingMessage, Task> _onSynchronousMessageReceivedCompleted;
+        private Func<IncomingMessage, Task> _onSynchronousMessageReceivedStarting;
 
-        private Action<IMessagingMessage> _onErrorMessageReceived;
-        private Action<IncomingMessage> _onErrorMessageReceivedStarting;
+        private Func<IMessagingMessage, Task> _onErrorMessageReceived;
+        private Func<IncomingMessage, Task> _onErrorMessageReceivedStarting;
 
-        private Action<IMessagingMessage, Exception> _onUnhandledException;
-        private Action<IMessagingMessage, Exception> _onHandledException;
+        private Func<IMessagingMessage, Exception, Task> _onUnhandledException;
+        private Func<IMessagingMessage, Exception, Task> _onHandledException;
 
         /// <summary>
         /// Constructor
@@ -174,7 +174,7 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Start the server
         /// </summary>
-        public void Start()
+        public Task Start()
         {
             _logger.LogInformation("Messaging Server starting up");
 
@@ -192,14 +192,16 @@ namespace Helsenorge.Messaging
             }
             foreach (var listener in _listeners)
             {
-                _tasks.Add(Task.Factory.StartNew(() => listener.Start(_cancellationTokenSource.Token)));
+                _tasks.Add(Task.Run(() => listener.Start(_cancellationTokenSource.Token)));
             }
+
+            return Task.CompletedTask;
         }
         /// <summary>
         /// Stops the server
         /// </summary>
         /// <param name="timeout">The amount of time we wait for thigns to shut down</param>
-        public void Stop(TimeSpan timeout)
+        public async Task Stop(TimeSpan timeout)
         {
             _logger.LogInformation("Messaging Server shutting down");
             _cancellationTokenSource.Cancel();
@@ -207,121 +209,152 @@ namespace Helsenorge.Messaging
             Task.WaitAll(_tasks.ToArray(), timeout);
             
             // when all the listeners have shut down, close down the messaging infrastructure
-            ServiceBus.SenderPool.Shutdown(_logger);
-            ServiceBus.ReceiverPool.Shutdown(_logger);
-            ServiceBus.FactoryPool.Shutdown(_logger);
+            await ServiceBus.SenderPool.Shutdown(_logger).ConfigureAwait(false);
+            await ServiceBus.ReceiverPool.Shutdown(_logger).ConfigureAwait(false);
+            await ServiceBus.FactoryPool.Shutdown(_logger).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterAsynchronousMessageReceivedCallback(Action<IncomingMessage> action) => _onAsynchronousMessageReceived = action;
+        public void RegisterAsynchronousMessageReceivedCallback(Func<IncomingMessage, Task> action) => _onAsynchronousMessageReceived = action;
 
-        void IMessagingNotification.NotifyAsynchronousMessageReceived(IncomingMessage message)
+        async Task IMessagingNotification.NotifyAsynchronousMessageReceived(IncomingMessage message)
         {
             _logger.LogDebug("NotifyAsynchronousMessageReceived");
-            _onAsynchronousMessageReceived?.Invoke(message);
+            if (_onAsynchronousMessageReceived != null)
+            {
+                await _onAsynchronousMessageReceived.Invoke(message).ConfigureAwait(false);
+            }
         } 
         /// <summary>
         /// Registers a delegate that should be called as we start processing a message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterAsynchronousMessageReceivedStartingCallback(Action<IncomingMessage> action) => _onAsynchronousMessageReceivedStarting = action;
+        public void RegisterAsynchronousMessageReceivedStartingCallback(Func<IncomingMessage, Task> action) => _onAsynchronousMessageReceivedStarting = action;
 
-        void IMessagingNotification.NotifyAsynchronousMessageReceivedStarting(IncomingMessage message)
+        async Task IMessagingNotification.NotifyAsynchronousMessageReceivedStarting(IncomingMessage message)
         {
             _logger.LogDebug("NotifyAsynchronousMessageReceivedStarting");
-            _onAsynchronousMessageReceivedStarting?.Invoke(message);
+            if (_onAsynchronousMessageReceivedStarting != null)
+            {
+                await _onAsynchronousMessageReceivedStarting.Invoke(message).ConfigureAwait(false);
+            }
         }
         /// <summary>
         /// Registers a delegate that should be called when we are finished processing the message.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterAsynchronousMessageReceivedCompletedCallback(Action<IncomingMessage> action) => _onAsynchronousMessageReceivedCompleted = action;
+        public void RegisterAsynchronousMessageReceivedCompletedCallback(Func<IncomingMessage, Task> action) => _onAsynchronousMessageReceivedCompleted = action;
 
-        void IMessagingNotification.NotifyAsynchronousMessageReceivedCompleted(IncomingMessage message)
+        async Task IMessagingNotification.NotifyAsynchronousMessageReceivedCompleted(IncomingMessage message)
         {
             _logger.LogDebug("NotifyAsynchronousMessageReceivedCompleted");
-            _onAsynchronousMessageReceivedCompleted?.Invoke(message);
+            if (_onAsynchronousMessageReceivedCompleted != null)
+            {
+                await _onAsynchronousMessageReceivedCompleted.Invoke(message).ConfigureAwait(false);
+            }
         }
         /// <summary>
         /// Registers a delegate that should be called when we receive an error message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterErrorMessageReceivedCallback(Action<IMessagingMessage> action) => _onErrorMessageReceived = action;
+        public void RegisterErrorMessageReceivedCallback(Func<IMessagingMessage, Task> action) => _onErrorMessageReceived = action;
 
         /// <summary>
         /// Registers a delegate that should be called as we start processing a message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterErrorMessageReceivedStartingCallback(Action<IncomingMessage> action) => _onErrorMessageReceivedStarting = action;
+        public void RegisterErrorMessageReceivedStartingCallback(Func<IncomingMessage, Task> action) => _onErrorMessageReceivedStarting = action;
 
-        void IMessagingNotification.NotifyErrorMessageReceivedStarting(IncomingMessage message)
+        async Task IMessagingNotification.NotifyErrorMessageReceivedStarting(IncomingMessage message)
         {
             _logger.LogDebug("NotifyErrorMessageReceivedStarting");
-            _onErrorMessageReceivedStarting?.Invoke(message);
+            if (_onErrorMessageReceivedStarting != null)
+            {
+                await _onErrorMessageReceivedStarting.Invoke(message).ConfigureAwait(false);
+            }
         }
 
-        void IMessagingNotification.NotifyErrorMessageReceived(IMessagingMessage message)
+        async Task IMessagingNotification.NotifyErrorMessageReceived(IMessagingMessage message)
         {
             _logger.LogDebug("NotifyErrorMessageReceived");
-            _onErrorMessageReceived?.Invoke(message);
+            if (_onErrorMessageReceived != null)
+            {
+                await _onErrorMessageReceived.Invoke(message).ConfigureAwait(false);
+            }
         }
         /// <summary>
         /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterSynchronousMessageReceivedCallback(Func<IncomingMessage, XDocument> action) => _onSynchronousMessageReceived = action;
+        public void RegisterSynchronousMessageReceivedCallback(Func<IncomingMessage, Task<XDocument>> action) => _onSynchronousMessageReceived = action;
 
-        XDocument IMessagingNotification.NotifySynchronousMessageReceived(IncomingMessage message)
+        async Task<XDocument> IMessagingNotification.NotifySynchronousMessageReceived(IncomingMessage message)
         {
             _logger.LogDebug("NotifySynchronousMessageReceived");
-            return _onSynchronousMessageReceived?.Invoke(message);
+            if (_onSynchronousMessageReceived != null)
+            {
+                return await _onSynchronousMessageReceived.Invoke(message).ConfigureAwait(false);
+            }
+            return default;
         }
         /// <summary>
         /// Registers a delegate that should be called when we are finished processing the message.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterSynchronousMessageReceivedCompletedCallback(Action<IncomingMessage> action) => _onSynchronousMessageReceivedCompleted = action;
+        public void RegisterSynchronousMessageReceivedCompletedCallback(Func<IncomingMessage, Task> action) => _onSynchronousMessageReceivedCompleted = action;
 
-        void IMessagingNotification.NotifySynchronousMessageReceivedCompleted(IncomingMessage message)
+        async Task IMessagingNotification.NotifySynchronousMessageReceivedCompleted(IncomingMessage message)
         {
             _logger.LogDebug("NotifySynchronousMessageReceivedCompleted");
-            _onSynchronousMessageReceivedCompleted?.Invoke(message);
+            if (_onSynchronousMessageReceivedCompleted != null)
+            {
+                await _onSynchronousMessageReceivedCompleted.Invoke(message).ConfigureAwait(false);
+            }
         }
         /// <summary>
         /// Registers a delegate that should be called as we start processing a message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterSynchronousMessageReceivedStartingCallback(Action<IncomingMessage> action) => _onSynchronousMessageReceivedStarting = action;
+        public void RegisterSynchronousMessageReceivedStartingCallback(Func<IncomingMessage, Task> action) => _onSynchronousMessageReceivedStarting = action;
 
-        void IMessagingNotification.NotifySynchronousMessageReceivedStarting(IncomingMessage message)
+        async Task IMessagingNotification.NotifySynchronousMessageReceivedStarting(IncomingMessage message)
         {
             _logger.LogDebug("NotifySynchronousMessageReceivedStarting");
-            _onSynchronousMessageReceivedStarting?.Invoke(message);
+            if (_onSynchronousMessageReceivedStarting != null)
+            {
+                await _onSynchronousMessageReceivedStarting.Invoke(message).ConfigureAwait(false);
+            }
         }
         /// <summary>
         /// Registers a delegate that should be called when we have an handled exception
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterHandledExceptionCallback(Action<IMessagingMessage, Exception> action) => _onHandledException = action;
+        public void RegisterHandledExceptionCallback(Func<IMessagingMessage, Exception, Task> action) => _onHandledException = action;
 
-        void IMessagingNotification.NotifyHandledException(IMessagingMessage message, Exception ex)
+        async Task IMessagingNotification.NotifyHandledException(IMessagingMessage message, Exception ex)
         {
             _logger.LogDebug("NotifyHandledException");
-            _onHandledException?.Invoke(message, ex);
+            if (_onHandledException != null)
+            {
+                await _onHandledException.Invoke(message, ex).ConfigureAwait(false);
+            }
         }
         /// <summary>
         /// Registers a delegate that should be called when we have an unhandled exception
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterUnhandledExceptionCallback(Action<IMessagingMessage, Exception> action) => _onUnhandledException = action;
+        public void RegisterUnhandledExceptionCallback(Func<IMessagingMessage, Exception, Task> action) => _onUnhandledException = action;
 
-        void IMessagingNotification.NotifyUnhandledException(IMessagingMessage message, Exception ex)
+        async Task IMessagingNotification.NotifyUnhandledException(IMessagingMessage message, Exception ex)
         {
             _logger.LogDebug("NotifyUnhandledException");
-            _onUnhandledException?.Invoke(message, ex);
+            if (_onUnhandledException != null)
+            {
+                await _onUnhandledException.Invoke(message, ex).ConfigureAwait(false);
+            }
         }
     }
 }
