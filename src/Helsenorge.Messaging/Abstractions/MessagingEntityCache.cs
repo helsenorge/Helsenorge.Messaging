@@ -175,7 +175,7 @@ namespace Helsenorge.Messaging.Abstractions
             {
                 try
                 {
-                    entry.Entity.Close();
+                    entry.Entity.Close().GetAwaiter().GetResult();
                 }
                 catch (Exception)
                 {
