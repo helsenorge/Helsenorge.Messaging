@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.ServiceBus
 {
-    public class DefaultTimeManager : ITimeManager
+    internal class DefaultTimeManager : ITimeManager
     {
         public async Task DelayAsync(TimeSpan timeSpan)
         {
