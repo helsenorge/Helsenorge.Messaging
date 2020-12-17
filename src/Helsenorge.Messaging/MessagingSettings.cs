@@ -78,6 +78,9 @@ namespace Helsenorge.Messaging
     /// </summary>
     public class ServiceBusSettings
     {
+        internal const int DefaultMaxLinksPerSession = 64;
+        internal const ushort DefaultMaxSessions = 256;
+
         private readonly MessagingSettings _settings;
 
         /// <summary>
@@ -108,7 +111,14 @@ namespace Helsenorge.Messaging
         /// The maximum number of messaging factories to use
         /// </summary>
         public uint MaxFactories { get; set; } = 5;
-
+        /// <summary>
+        /// Get or set the begin-handle-max field (less by one)
+        /// </summary>
+        public int MaxLinksPerSession { get; set; } = DefaultMaxLinksPerSession;
+        /// <summary>
+        /// Get or set the open.channel-max field (less by one)
+        /// </summary>
+        public ushort MaxSessionsPerConnection { get; set; } = DefaultMaxSessions;
 
         /// <summary>
         /// The Her id that we represent
