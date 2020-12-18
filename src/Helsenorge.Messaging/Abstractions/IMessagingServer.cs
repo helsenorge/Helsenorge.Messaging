@@ -24,9 +24,13 @@ namespace Helsenorge.Messaging.Abstractions
         /// <summary>
         /// Terminate message processing
         /// </summary>
+        Task Stop();
+
+        /// <summary>
+        /// Terminate message processing
+        /// </summary>
         /// <param name="timeout">The amount of time we wait for things to shut down</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords", MessageId = "Stop")]
-        Task Stop(TimeSpan timeout);
+        Task Stop(TimeSpan timeout = default);
         /// <summary>
         /// Registers a delegate that should be called as we start processing a message
         /// </summary>

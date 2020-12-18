@@ -192,20 +192,29 @@ namespace Helsenorge.Messaging
             }
             foreach (var listener in _listeners)
             {
-                _tasks.Add(Task.Run(() => listener.Start(_cancellationTokenSource.Token)));
+                _tasks.Add(Task.Run(async () => await listener.Start(_cancellationTokenSource.Token).ConfigureAwait(false)));
             }
 
             return Task.CompletedTask;
         }
+
         /// <summary>
-        /// Stops the server
+        /// Stops the server, waiting for all tasks to complete their current work
         /// </summary>
-        /// <param name="timeout">The amount of time we wait for thigns to shut down</param>
+        public Task Stop()
+        {
+            return Stop(TimeSpan.FromSeconds(10));
+        }
+
+        /// <summary>
+        /// Stops the server, waiting for all tasks to complete their current work
+        /// </summary>
+        /// <param name="timeout">The amount of time we wait for things to shut down</param>
         public async Task Stop(TimeSpan timeout)
         {
             _logger.LogInformation("Messaging Server shutting down");
+
             _cancellationTokenSource.Cancel();
-            
             Task.WaitAll(_tasks.ToArray(), timeout);
             
             // when all the listeners have shut down, close down the messaging infrastructure

@@ -113,8 +113,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     Logger.LogException("Generic service bus error", ex);
                     // if there are problems with the message bus, we don't get interval of the ReadTimeout
                     // pause a bit so that we don't take over the whole system
-                    await Task.Delay(5000).ConfigureAwait(false);
-                    //Thread.Sleep(5000);
+                    await Task.Delay(5000, cancellation).ConfigureAwait(false);
                 }
             }
         }

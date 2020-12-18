@@ -152,7 +152,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             await Server.Start();
 
             Wait(15, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout
-            await Server.Stop(TimeSpan.FromSeconds(10));
+            await Server.Stop();
 
             // check the state of the system
             postValidation();
