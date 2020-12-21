@@ -36,7 +36,7 @@ namespace Helsenorge.Messaging.ServiceBus
         protected override IMessagingFactory CreateEntity(ILogger logger, string id)
         {
             if (_alternateMessagingFactor != null) return _alternateMessagingFactor;
-            var connection = new ServiceBusConnection(_settings.ConnectionString, logger);
+            var connection = new ServiceBusConnection(_settings.ConnectionString, _settings.MaxLinksPerSession, _settings.MaxSessionsPerConnection, logger);
             return new ServiceBusFactory(connection, logger);
         }
         public IMessagingMessage CreateMessage(ILogger logger, Stream stream)
