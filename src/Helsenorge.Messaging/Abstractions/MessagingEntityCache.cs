@@ -134,6 +134,7 @@ namespace Helsenorge.Messaging.Abstractions
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCacheCreate: Creating new entity for {Path}", path);
                 entry.Entity = await CreateEntity(logger, path).ConfigureAwait(false);
                 entry.ClosePending = false;
+            }
             finally
             {
                 await _semaphore.WaitAsync().ConfigureAwait(false);

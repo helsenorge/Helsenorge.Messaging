@@ -109,12 +109,12 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 wait: () => _completedCalled,
                 received: (m) => { return Task.CompletedTask; },
                 messageModification: (m) => { },
-                handledException: (async (m, e) =>
+                handledException: ((m, e) =>
                 {
-                    await Server.Stop();
                     _handledExceptionCalled = true;
                     _completedCalled = true;
                     receiveException = e;
+                    return Task.CompletedTask;
                 }),
                 messageProtected: true);
         }

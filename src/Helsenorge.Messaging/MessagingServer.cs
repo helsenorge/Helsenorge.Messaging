@@ -215,7 +215,7 @@ namespace Helsenorge.Messaging
             _logger.LogInformation("Messaging Server shutting down");
 
             _cancellationTokenSource.Cancel();
-            Task.WaitAll(_tasks.ToArray(), timeout);
+            await Task.WhenAll(_tasks.ToArray()).ConfigureAwait(false);
             
             // when all the listeners have shut down, close down the messaging infrastructure
             await ServiceBus.SenderPool.Shutdown(_logger).ConfigureAwait(false);
