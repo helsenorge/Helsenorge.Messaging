@@ -38,6 +38,10 @@ namespace Helsenorge.Messaging.Abstractions
             /// Number of pending users
             /// </summary>
             public int ActiveCount { get; set; }
+            /// <summary>
+            /// Entry has ben scheduled for closure
+            /// </summary>
+            public bool ClosePending { get; set; }
         }
 
         private readonly Dictionary<string, CacheEntry<T>> _entries = new Dictionary<string, CacheEntry<T>>();
@@ -100,6 +104,7 @@ namespace Helsenorge.Messaging.Abstractions
                         ActiveCount = 1,
                         LastUsed = DateTime.Now,
                         Entity = CreateEntity(logger, path),
+                        ClosePending = false
                     };
                     _entries.Add(path, entry);
 
@@ -120,6 +125,7 @@ namespace Helsenorge.Messaging.Abstractions
 
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCacheCreate: Creating new entity for {Path}", path);
                 entry.Entity = CreateEntity(logger, path);
+                entry.ClosePending = false;
             }
 
             logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCacheCreate: Create entry for {Path}", path);
@@ -153,7 +159,7 @@ namespace Helsenorge.Messaging.Abstractions
 
                 // under a high volume scenario, this may be the last used entry even if it was just used
                 // in those cases we need to close the connection and set respective properties
-                if (entry.ActiveCount < 1)
+                if (entry.ClosePending)
                 {
                     CloseEntity(logger, entry, path);
                 }
@@ -177,6 +183,7 @@ namespace Helsenorge.Messaging.Abstractions
                 }
             }
             entry.Entity = null;
+            entry.ClosePending = false;
         }
         /// <summary>
         /// Closes all entities
@@ -201,7 +208,7 @@ namespace Helsenorge.Messaging.Abstractions
             lock (_entries)
             {
                 // we haven't reached our max capacity yet
-                if (_entries.Keys.Count <= Capacity) return;
+                if (_entries.Keys.Count < Capacity) return;
 
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Trimming entries");
                 const int count = 10;
@@ -217,6 +224,10 @@ namespace Helsenorge.Messaging.Abstractions
                         if (item.ActiveCount == 0)
                         {
                             CloseEntity(logger, item, "");
+                        }
+                        else
+                        {
+                            item.ClosePending = true; // flad it so that the release function will close the connection
                         }
                     }
                 }
