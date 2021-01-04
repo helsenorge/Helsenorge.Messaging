@@ -42,6 +42,10 @@ namespace Helsenorge.Messaging.Abstractions
             /// Entry has ben scheduled for closure
             /// </summary>
             public bool ClosePending { get; set; }
+            /// <summary>
+            /// Entity Path for this entity
+            /// </summary>
+            public string Path { get; set; }
         }
 
         private readonly Dictionary<string, CacheEntry<T>> _entries = new Dictionary<string, CacheEntry<T>>();
@@ -90,45 +94,51 @@ namespace Helsenorge.Messaging.Abstractions
 
             CacheEntry<T> entry;
 
-            TrimEntries(logger); // see if we need to trim entries
-
             // create an entry if it doesn't exist
-            lock (_entries)
+            try
             {
-                if (_entries.ContainsKey(path) == false)
+                lock (_entries)
                 {
-                    // create a new record for this entity
-                    logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCacheCreate: Creating entry for {Path}", path);
-                    entry = new CacheEntry<T>()
+                    if (_entries.ContainsKey(path) == false)
                     {
-                        ActiveCount = 1,
-                        LastUsed = DateTime.Now,
-                        Entity = CreateEntity(logger, path),
-                        ClosePending = false
-                    };
-                    _entries.Add(path, entry);
+                        // create a new record for this entity
+                        logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCacheCreate: Creating entry for {Path}", path);
+                        entry = new CacheEntry<T>()
+                        {
+                            ActiveCount = 1,
+                            LastUsed = DateTime.Now,
+                            Entity = CreateEntity(logger, path),
+                            ClosePending = false,
+                            Path = path,
+                        };
+                        _entries.Add(path, entry);
 
-                    logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCacheCreate: Create entry for {Path}", path);
-                    return entry.Entity;
+                        logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCacheCreate: Create entry for {Path}", path);
+                        return entry.Entity;
+                    }
+                    entry = _entries[path];
                 }
-                entry = _entries[path];
+                // update information for existing item
+                lock (entry)
+                {
+                    entry.ActiveCount++;
+                    entry.LastUsed = DateTime.Now;
+                    logger.LogInformation(EventIds.MessagingEntityCacheProcessor, $"MessagingEntityCacheCreate: Updating entry for {path} with ActiveCount {entry.ActiveCount}");
+
+                    // if this entity previously was closed, we need to create a new instance
+                    if (entry.Entity != null) return entry.Entity;
+
+                    logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCacheCreate: Creating new entity for {Path}", path);
+                    entry.Entity = CreateEntity(logger, path);
+                    entry.ClosePending = false;
+                }
             }
-            // update information for existing item
-            lock (entry)
+            finally
             {
-                entry.ActiveCount++;
-                entry.LastUsed = DateTime.Now;
-                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCacheCreate: Updating entry for {Path}", path);
-
-                // if this entity previously was closed, we need to create a new instance
-                if (entry.Entity != null) return entry.Entity;
-
-                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCacheCreate: Creating new entity for {Path}", path);
-                entry.Entity = CreateEntity(logger, path);
-                entry.ClosePending = false;
+                TrimEntries(logger); // see if we need to trim entries
+                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCacheCreate: Create entry for {Path}", path);
             }
 
-            logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCacheCreate: Create entry for {Path}", path);
             return entry.Entity;
         }
 
@@ -159,7 +169,7 @@ namespace Helsenorge.Messaging.Abstractions
 
                 // under a high volume scenario, this may be the last used entry even if it was just used
                 // in those cases we need to close the connection and set respective properties
-                if (entry.ClosePending)
+                if (entry.ClosePending && entry.ActiveCount <= 0)
                 {
                     CloseEntity(logger, entry, path);
                 }
@@ -208,12 +218,14 @@ namespace Helsenorge.Messaging.Abstractions
             lock (_entries)
             {
                 // we haven't reached our max capacity yet
-                if (_entries.Keys.Count < Capacity) return;
+                if (_entries.Keys.Count <= Capacity) return;
 
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Trimming entries");
-                const int count = 10;
+                
+                int count = (int)(_entries.Keys.Count - Capacity);
                 // get the oldest n entries
                 var removal = (from v in _entries.Values
+                               where v.Entity != null
                                orderby v.LastUsed ascending
                                select v).Take(count);
 
@@ -221,9 +233,9 @@ namespace Helsenorge.Messaging.Abstractions
                 {
                     lock (item) // need to lock each entry so that nobody messes with the reference count and other properties
                     {
-                        if (item.ActiveCount == 0)
+                        if (item.ClosePending && item.ActiveCount <= 0)
                         {
-                            CloseEntity(logger, item, "");
+                            CloseEntity(logger, item, item.Path);
                         }
                         else
                         {
