@@ -42,6 +42,10 @@ namespace Helsenorge.Messaging.Abstractions
             /// Entry has ben scheduled for closure
             /// </summary>
             public bool ClosePending { get; set; }
+            /// <summary>
+            /// Entity Path for this entity
+            /// </summary>
+            public string Path { get; set; }
         }
 
         private readonly Dictionary<string, CacheEntry<T>> _entries = new Dictionary<string, CacheEntry<T>>();
@@ -118,7 +122,7 @@ namespace Helsenorge.Messaging.Abstractions
             {
                 entry.ActiveCount++;
                 entry.LastUsed = DateTime.Now;
-                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCacheCreate: Updating entry for {Path}", path);
+                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, $"MessagingEntityCacheCreate: Updating entry for {path} with ActiveCount {entry.ActiveCount}");
 
                 // if this entity previously was closed, we need to create a new instance
                 if (entry.Entity != null) return entry.Entity;
@@ -223,7 +227,7 @@ namespace Helsenorge.Messaging.Abstractions
                     {
                         if (item.ActiveCount == 0)
                         {
-                            CloseEntity(logger, item, "");
+                            CloseEntity(logger, item, item.Path);
                         }
                         else
                         {
