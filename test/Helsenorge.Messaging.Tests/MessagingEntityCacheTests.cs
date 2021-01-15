@@ -230,6 +230,11 @@ namespace Helsenorge.Messaging.Tests
             Assert.IsNotNull(entry.Entity, "Entity");
             Assert.IsFalse(entry.ClosePending, "ClosePending");
 
+            _cache.Create(Logger, "path6");
+            Assert.AreEqual(1, entry.ActiveCount, "ActiveCount");
+            Assert.IsNotNull(entry.Entity, "Entity");
+            Assert.IsFalse(entry.ClosePending, "ClosePending");
+
             //entity object for path2 has been reclaimed
             entry = _cache.Entries["path2"];
             Assert.AreEqual(0, entry.ActiveCount, "ActiveCount");
