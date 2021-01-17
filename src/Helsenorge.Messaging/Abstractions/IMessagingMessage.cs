@@ -92,6 +92,22 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         Task CompleteAsync();
         /// <summary>
+        /// Released the message
+        /// </summary>
+        void Release();
+        /// <summary>
+        /// Released the message
+        /// </summary>
+        Task RelaseAsync();
+        /// <summary>
+        /// Rejects the message
+        /// </summary>
+        void Reject();
+        /// <summary>
+        /// Rejects the message
+        /// </summary>
+        Task RejectAsync();
+        /// <summary>
         /// Creates a clone of the message
         /// </summary>
         /// <returns></returns>
@@ -118,6 +134,10 @@ namespace Helsenorge.Messaging.Abstractions
         /// Sends this message to the deadletter queue
         /// </summary>
         void DeadLetter();
+        /// <summary>
+        /// Sends this message to the deadletter queue
+        /// </summary>
+        Task DeadLetterAsync();
         /// <summary>
         /// Gets the number of deliveries.
         /// </summary>

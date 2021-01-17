@@ -41,6 +41,8 @@ namespace Helsenorge.Messaging.ServiceBus
         public static readonly Symbol SequenceNumberSymbol = new Symbol("x-opt-sequence-number");
 
         public Func<Task> CompleteAction { get; set; }
+        public Func<Task> RejectAction { get; set; }
+        public Func<Task> ReleaseAction { get; set; }
         public Func<Task> DeadLetterAction { get; set; }
         public Func<Task<DateTime>> RenewLockAction { get; set; }
 
@@ -257,19 +259,28 @@ namespace Helsenorge.Messaging.ServiceBus
             return new ServiceBusMessage(clone)
             {
                 CompleteAction = CompleteAction,
+                RejectAction = RejectAction,
+                ReleaseAction = ReleaseAction,
                 DeadLetterAction = DeadLetterAction,
                 RenewLockAction = RenewLockAction
             };
         }
 
-        [DebuggerStepThrough]
-        public void Complete() => CompleteAction?.Invoke()?.Wait();
+        public void Complete() => CompleteAction.Invoke().GetAwaiter().GetResult();
 
-        [DebuggerStepThrough]
-        public void DeadLetter() => DeadLetterAction?.Invoke()?.Wait();
+        public async Task CompleteAsync() => await CompleteAction.Invoke().ConfigureAwait(false);
 
-        [DebuggerStepThrough]
-        public Task CompleteAsync() => CompleteAction?.Invoke();
+        public void Reject() => ReleaseAction.Invoke().GetAwaiter().GetResult();
+
+        public async Task RejectAsync() => await ReleaseAction.Invoke().ConfigureAwait(false);
+
+        public void Release() => ReleaseAction.Invoke().GetAwaiter().GetResult();
+
+        public async Task RelaseAsync() =>  await ReleaseAction.Invoke().ConfigureAwait(false);
+
+        public void DeadLetter() => DeadLetterAction.Invoke().GetAwaiter().GetResult();
+
+        public async Task DeadLetterAsync() => await DeadLetterAction.Invoke().ConfigureAwait(false);
 
         [DebuggerStepThrough]
         public void Dispose() => _implementation.Dispose();
@@ -292,7 +303,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
         public void RenewLock()
         {
-            var task = RenewLockAction?.Invoke();
+            var task = RenewLockAction.Invoke();
             var lockedUntilUtc = task?.Result ?? DateTime.MinValue;
             _implementation.MessageAnnotations[LockedUntilSymbol] = lockedUntilUtc;
         }

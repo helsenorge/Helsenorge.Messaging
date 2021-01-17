@@ -51,26 +51,40 @@ namespace Helsenorge.Messaging.ServiceBus
 
                 message.CompleteAction = () => new ServiceBusOperationBuilder(_logger, "Complete")
                     .Build(async () =>
-                {
-                    await EnsureOpen();
-                    _link.Accept(amqpMessage);
-                }).PerformAsync();
+                    {
+                        await EnsureOpen();
+                        _link.Accept(amqpMessage);
+                    }).PerformAsync();
+
+                message.RejectAction = () => new ServiceBusOperationBuilder(_logger, "Reject")
+                    .Build(async () =>
+                    {
+                        await EnsureOpen();
+                        _link.Reject(amqpMessage);
+                    }).PerformAsync();
+
+                message.ReleaseAction = () => new ServiceBusOperationBuilder(_logger, "Release")
+                    .Build(async () =>
+                    {
+                        await EnsureOpen();
+                        _link.Release(amqpMessage);
+                    }).PerformAsync();
 
                 message.DeadLetterAction = () => new ServiceBusOperationBuilder(_logger, "DeadLetter")
                     .Build(async () =>
-                {
-                    await EnsureOpen();
-                    _link.Reject(amqpMessage);
-                }).PerformAsync();
+                    {
+                        await EnsureOpen();
+                        _link.Reject(amqpMessage);
+                    }).PerformAsync();
 
                 message.RenewLockAction = () => new ServiceBusOperationBuilder(_logger, "RenewLock")
                     .Build(async () =>
-                {
-                    await EnsureOpen();
-                    var lockTimeout = TimeSpan.FromMinutes(1);
-                    await Connection.HttpClient.RenewLockAsync(_id, amqpMessage.GetSequenceNumber(), amqpMessage.GetLockToken(), lockTimeout, serverWaitTime).ConfigureAwait(false);
-                    return DateTime.UtcNow + lockTimeout;
-                }).PerformAsync();
+                    {
+                        await EnsureOpen();
+                        var lockTimeout = TimeSpan.FromMinutes(1);
+                        await Connection.HttpClient.RenewLockAsync(_id, amqpMessage.GetSequenceNumber(), amqpMessage.GetLockToken(), lockTimeout, serverWaitTime).ConfigureAwait(false);
+                        return DateTime.UtcNow + lockTimeout;
+                    }).PerformAsync();
             }
 
             return message;

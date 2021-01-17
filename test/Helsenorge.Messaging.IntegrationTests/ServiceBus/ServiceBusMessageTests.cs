@@ -37,7 +37,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
 
         public void Dispose()
         {
-            _receiver.Close();
+             _receiver.Close().GetAwaiter().GetResult();
             _fixture.Dispose();
         }
 
@@ -127,7 +127,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             var message = await _receiver.ReceiveAsync(ServiceBusTestingConstants.DefaultReadTimeout);
             Assert.NotNull(message);
             Assert.Equal(messageText, await message.GetBodyAsStingAsync());
-            message.DeadLetter();
+            await message.DeadLetterAsync();
 
             await _fixture.CheckDeadLetterQueueAsync(QueueName, messageText);
         }

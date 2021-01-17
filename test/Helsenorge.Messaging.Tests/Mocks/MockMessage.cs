@@ -64,10 +64,36 @@ namespace Helsenorge.Messaging.Tests.Mocks
             Queue.Remove(this);
             return Task.CompletedTask;
         }
+
+
+        public void Release()
+        {
+        }
+
+        public Task RelaseAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public void Reject()
+        {
+        }
+
+        public Task RejectAsync()
+        {
+            return Task.CompletedTask;
+        }
+
         public void DeadLetter()
         {
             Queue.Remove(this);
             DeadLetterQueue.Add(this);
+        }
+
+        public Task DeadLetterAsync()
+        {
+            DeadLetter();
+            return Task.CompletedTask;
         }
 
         public List<IMessagingMessage> Queue { get; set; }
