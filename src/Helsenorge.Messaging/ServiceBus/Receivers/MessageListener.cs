@@ -148,6 +148,12 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 
             try
             {
+                if(message.LockedUntil.ToUniversalTime() <= DateTime.UtcNow)
+                {
+                    Logger.LogInformation($"MessageListener::ReadAndProcessMessage - Ignoring message, lock expired at: {message.LockedUntil.ToUniversalTime()}");
+                    return null;
+                }
+
                 var incomingMessage = new IncomingMessage()
                 {
                     MessageFunction = message.MessageFunction,

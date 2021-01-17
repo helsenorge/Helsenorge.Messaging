@@ -75,6 +75,10 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         DateTime ScheduledEnqueueTimeUtc { get; set; }
         /// <summary>
+        /// Gets a value indicating how long this message will be locked on the server
+        /// </summary>
+        DateTime LockedUntil { get;  }
+        /// <summary>
         /// The amount of time this message should live
         /// </summary>
         TimeSpan TimeToLive { get; set; }

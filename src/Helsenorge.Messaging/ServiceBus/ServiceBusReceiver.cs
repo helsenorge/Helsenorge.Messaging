@@ -33,7 +33,9 @@ namespace Helsenorge.Messaging.ServiceBus
 
         protected override ReceiverLink CreateLink(ISession session)
         {
-            return session.CreateReceiver($"receiver-link-{Guid.NewGuid()}", Connection.GetEntityName(_id)) as ReceiverLink;
+            var receiver = session.CreateReceiver($"receiver-link-{Guid.NewGuid()}", Connection.GetEntityName(_id)) as ReceiverLink;
+            receiver.SetCredit(1);
+            return receiver;
         }
 
         public async Task<IMessagingMessage> ReceiveAsync(TimeSpan serverWaitTime)
