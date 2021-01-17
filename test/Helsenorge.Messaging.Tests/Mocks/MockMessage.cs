@@ -127,7 +127,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
 
         public int DeliveryCount => 0;
 
-        public DateTime LockedUntil => throw new NotImplementedException();
+        public DateTime LockedUntil => DateTime.UtcNow.AddSeconds(60);
 
         public Stream GetBody()
         {
