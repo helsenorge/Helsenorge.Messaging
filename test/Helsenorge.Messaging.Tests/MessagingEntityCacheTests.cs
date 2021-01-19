@@ -197,9 +197,9 @@ namespace Helsenorge.Messaging.Tests
             await _cache.Release(Logger, "path3"); // we are done with path 3
 
             // entity object for path3 has been reclaimed
-            Assert.AreEqual(0, entry.ActiveCount, "ActiveCount");
-            Assert.IsNull(entry.Entity, "Entity");
-            Assert.IsFalse(entry.ClosePending, "ClosePending");
+            Assert.AreEqual(0, entry.ActiveCount, "ActiveCount is not equal to zero");
+            Assert.IsNull(entry.Entity, "Entity is not null");
+            Assert.IsFalse(entry.ClosePending, "ClosePending is not false");
         }
 
         /// <summary>
