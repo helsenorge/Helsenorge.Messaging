@@ -8,6 +8,7 @@
 
 using Helsenorge.Messaging.ServiceBus;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Tests.ServiceBus
 {
@@ -15,7 +16,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus
     public class ServiceBusFactoryPoolTests : BaseTest
     {
         [TestMethod]
-        public void ServiceBusFactoryPool_RounTripTest()
+        public async Task ServiceBusFactoryPool_RounTripTest()
         {
             var settings = new ServiceBusSettings(new MessagingSettings())
             {
@@ -24,12 +25,12 @@ namespace Helsenorge.Messaging.Tests.ServiceBus
             };
             var factoryPool = new ServiceBusFactoryPool(settings);
 
-            var factory1 = factoryPool.FindNextFactory(Logger);
-            var factory2 = factoryPool.FindNextFactory(Logger);
-            var factory3 = factoryPool.FindNextFactory(Logger);
-            var factory4 = factoryPool.FindNextFactory(Logger);
-            var factory5 = factoryPool.FindNextFactory(Logger);
-            var factory6 = factoryPool.FindNextFactory(Logger);
+            var factory1 = await factoryPool.FindNextFactory(Logger);
+            var factory2 = await factoryPool.FindNextFactory(Logger);
+            var factory3 = await factoryPool.FindNextFactory(Logger);
+            var factory4 = await factoryPool.FindNextFactory(Logger);
+            var factory5 = await factoryPool.FindNextFactory(Logger);
+            var factory6 = await factoryPool.FindNextFactory(Logger);
 
             Assert.AreNotSame(factory1, factory5);
             Assert.AreSame(factory1, factory6);

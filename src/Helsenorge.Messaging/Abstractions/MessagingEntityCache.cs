@@ -95,11 +95,8 @@ namespace Helsenorge.Messaging.Abstractions
             if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path));
             if (_shutdownPending) return null;
 
-            await TrimEntries(logger).ConfigureAwait(false); // see if we need to trim entries
-
             CacheEntry<T> entry;
             await _semaphore.WaitAsync().ConfigureAwait(false);
-
             try
             {
 
@@ -137,8 +134,10 @@ namespace Helsenorge.Messaging.Abstractions
             }
             finally
             {
-                await _semaphore.WaitAsync().ConfigureAwait(false);
                 _semaphore.Release();
+
+                await TrimEntries(logger).ConfigureAwait(false); // see if we need to trim entries
+
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCacheCreate: Create entry for {Path}", path);
             }
 
