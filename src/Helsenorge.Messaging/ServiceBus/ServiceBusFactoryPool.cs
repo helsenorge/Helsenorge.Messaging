@@ -18,7 +18,7 @@ namespace Helsenorge.Messaging.ServiceBus
     {
         private readonly ServiceBusSettings _settings;
         private readonly object _lock= new object();
-        private int _index = -1;
+        private int _index;
         private IMessagingFactory _alternateMessagingFactor;
 
         public ServiceBusFactoryPool(ServiceBusSettings settings) :
@@ -48,7 +48,7 @@ namespace Helsenorge.Messaging.ServiceBus
         {
             lock (_lock)
             {
-                // increase value in a round-robin fashion
+                // increas value in a round-robin fashion
                 _index++;
                 if (_index == Capacity)
                 {
