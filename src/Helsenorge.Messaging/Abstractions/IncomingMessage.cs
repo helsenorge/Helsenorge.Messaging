@@ -77,5 +77,9 @@ namespace Helsenorge.Messaging.Abstractions
         /// Gets the number of deliveries.
         /// </summary>
         public int DeliveryCount { get ; internal set; }
+        /// <summary>
+        /// Gets a value indicating how long this message will be locked on the server
+        /// </summary>
+        public DateTime LockedUntil { get; internal set; }
     }
 }
