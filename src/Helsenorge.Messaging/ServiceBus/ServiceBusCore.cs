@@ -106,7 +106,7 @@ namespace Helsenorge.Messaging.ServiceBus
             if (string.IsNullOrEmpty(outgoingMessage.MessageId)) throw new ArgumentNullException(nameof(outgoingMessage.MessageId));
             if (outgoingMessage.Payload == null) throw new ArgumentNullException(nameof(outgoingMessage.Payload));
 
-            logger.LogStartSend(queueType, outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, outgoingMessage.PersonalId, outgoingMessage.Payload);
+            logger.LogStartSend(queueType, outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, outgoingMessage.Payload);
 
             var hasAgreement = true;
             // first we try and find an agreement
@@ -212,7 +212,7 @@ namespace Helsenorge.Messaging.ServiceBus
             }
             await Send(logger, messagingMessage).ConfigureAwait(false);
 
-            logger.LogEndSend(queueType, messagingMessage.MessageFunction, messagingMessage.FromHerId, messagingMessage.ToHerId, messagingMessage.MessageId, outgoingMessage.PersonalId);
+            logger.LogEndSend(queueType, messagingMessage.MessageFunction, messagingMessage.FromHerId, messagingMessage.ToHerId, messagingMessage.MessageId);
         }
 
         /// <summary>
