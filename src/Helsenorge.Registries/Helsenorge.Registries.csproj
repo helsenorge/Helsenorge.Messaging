@@ -11,6 +11,7 @@
     <PackageId>Helsenorge.Registries</PackageId>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <SignAssembly>false</SignAssembly>
+    <PackageId>Nhn.Helsenorge.Registries</PackageId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">

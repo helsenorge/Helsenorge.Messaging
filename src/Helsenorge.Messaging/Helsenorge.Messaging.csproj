@@ -9,6 +9,7 @@
     <Product>Helsenorge Messaging</Product>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <SignAssembly>false</SignAssembly>
+    <PackageId>Nhn.Helsenorge.Messaging</PackageId>
   </PropertyGroup>
   
   <ItemGroup>
