@@ -30,6 +30,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         private CommunicationPartyDetails _myDetails;
         private IMessagingReceiver _messageReceiver;
         private bool _listenerEstablishedConfirmed = false;
+        private readonly int _credit;
+
         /// <summary>
         /// The timeout used for reading messages from queue
         /// </summary>
@@ -62,14 +64,17 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <param name="core">Reference to core service bus infrastructure</param>
         /// <param name="logger">Logger used for diagnostics information</param>
         /// <param name="messagingNotification">A reference to the messaging notification system</param>
+        /// <param name="credit">Controls the link credit for the receiver link. Setting this overrides the default value of 200 credits.</param>
         protected MessageListener(
             ServiceBusCore core,
             ILogger logger,
-            IMessagingNotification messagingNotification)
+            IMessagingNotification messagingNotification,
+            int credit = -1)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             Core = core ?? throw new ArgumentNullException(nameof(core));
             MessagingNotification = messagingNotification;
+            _credit = credit;
         }
 
         /// <summary>
@@ -127,6 +132,10 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         public async Task<IncomingMessage> ReadAndProcessMessage(bool alwaysRemoveMessage = false)
         {
             SetUpReceiver();
+            if (_credit > -1)
+            {
+                await _messageReceiver.SetCredit(_credit, false);
+            }
             IMessagingMessage message;
             try
             {

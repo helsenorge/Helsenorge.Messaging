@@ -27,6 +27,11 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public bool IsClosed => false;
         public Task Close() { return Task.CompletedTask; }
 
+        public Task SetCredit(int credit, bool autoRestore)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<IMessagingMessage> ReceiveAsync(TimeSpan serverWaitTime)
         {
             if (_factory.Qeueues.ContainsKey(_id))
