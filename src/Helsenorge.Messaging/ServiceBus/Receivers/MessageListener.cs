@@ -164,7 +164,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     EnqueuedTimeUtc = message.EnqueuedTimeUtc,
                     RenewLock = message.RenewLock,
                     Complete = message.Complete,
-                    DeliveryCount = message.DeliveryCount
+                    DeliveryCount = message.DeliveryCount,
+                    LockedUntil = message.LockedUntil,
                 };
                 NotifyMessageProcessingStarted(incomingMessage);
                 Logger.LogStartReceive(QueueType, incomingMessage);
