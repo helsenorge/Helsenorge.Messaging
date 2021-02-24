@@ -8,6 +8,7 @@
     <Company>Norsk Helsenett SF</Company>
     <Copyright>Norsk Helsenett SF</Copyright>
     <RepositoryUrl>https://github.com/helsenorge/Helsenorge.Messaging</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE" Pack="true" PackagePath="" />
