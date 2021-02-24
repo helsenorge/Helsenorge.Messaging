@@ -181,9 +181,10 @@ namespace Helsenorge.Messaging.Abstractions
                 {
                     entry.Entity.Close().GetAwaiter().GetResult();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    logger.LogCritical(EventIds.MessagingEntityCacheFailedToCloseEntity, "Failed to close message entity: {Path}", path);
+                    var message = "Failed to close message entity: {Path}. Exception: " + ex.Message + " Stack Trace: " + ex.StackTrace;
+                    logger.LogCritical(EventIds.MessagingEntityCacheFailedToCloseEntity, message, path);
                 }
             }
             entry.Entity = null;
