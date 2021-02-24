@@ -29,7 +29,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
 
         public Task SetCredit(int credit, bool autoRestore)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public async Task<IMessagingMessage> ReceiveAsync(TimeSpan serverWaitTime)
