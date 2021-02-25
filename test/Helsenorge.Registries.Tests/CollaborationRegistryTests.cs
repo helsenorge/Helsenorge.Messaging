@@ -345,5 +345,28 @@ namespace Helsenorge.Registries.Tests
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNull(profile.FindMessagePartsForSendAppRec("BOB"));
         }
+
+        [TestMethod]
+        public void Read_CollaborationAgreement_v2_ById()
+        {
+            _registry.SetupFindAgreementById(i =>
+            {
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_v2_{i:D}.xml"));
+                return File.Exists(file) == false ? null : File.ReadAllText(file);
+            });
+
+            var profile = _registry.FindAgreementByIdAsync(_logger, Guid.Parse("51795e2c-9d39-44e0-9168-5bee38f20819")).Result;
+
+            Assert.AreEqual("Digitale innbyggertjenester", profile.Name);
+            Assert.AreEqual(8093240, profile.HerId);
+            Assert.AreEqual(32, profile.Roles.Count);
+            Assert.AreEqual(4, profile.Roles[0].SendMessages.Count);
+            Assert.AreEqual(5, profile.Roles[0].SendMessages[0].Parts.Count());
+            Assert.AreEqual("MsgHead-v1_2.xsd", profile.Roles[0].SendMessages[0].Parts.ToList()[0].XmlSchema);
+
+            Assert.IsNotNull(profile.SignatureCertificate);
+            Assert.IsNotNull(profile.EncryptionCertificate);
+            Assert.IsTrue(profile.FindMessagePartsForReceiveMessage("DIALOG_INNBYGGER_TEST").Any());
+        }
     }
 }
