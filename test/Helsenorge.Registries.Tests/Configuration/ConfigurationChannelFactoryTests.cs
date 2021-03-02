@@ -58,7 +58,38 @@ namespace Helsenorge.Registries.Tests.Configuration
             Assert.Null(factory.Credentials?.UserName.Password);
             Assert.Equal(default(Uri), binding.ProxyAddress);
             Assert.False(binding.BypassProxyOnLocal);
+            Assert.True(binding.UseDefaultWebProxy);
+            Assert.Equal(65536, binding.MaxBufferSize);
+            Assert.Equal(524288, binding.MaxBufferPoolSize);
+            Assert.Equal(65536, binding.MaxReceivedMessageSize);
+        }
+
+        [Fact]
+        public void Should_Create_Channel_Factory_With_Basic_Http_Binding_Configured()
+        {
+            var factory = new ConfigurationChannelFactory<ICommunicationPartyService>(new WcfConfiguration
+            {
+                UserName = "John",
+                Password = "Doe",
+                Address = "https://ws-web.test.nhn.no/v1/AR/Basic",
+                UseDefaultWebProxy = false,
+                BypassProxyOnLocal = true,
+                ProxyAddress = new Uri("http://proxy.helsenorge.utvikling:8080"),
+                MaxBufferSize = 1,
+                MaxBufferPoolSize = 2,
+                MaxReceivedMessageSize = 3
+            });
+            var binding = factory.Endpoint.Binding as BasicHttpBinding;
+            Assert.NotNull(binding);
+            Assert.Equal("John", factory.Credentials?.UserName.UserName);
+            Assert.Equal("Doe", factory.Credentials?.UserName.Password);
+            Assert.Equal("https://ws-web.test.nhn.no/v1/AR/Basic", factory.Endpoint.Address.Uri.OriginalString);
+            Assert.True(binding.BypassProxyOnLocal);
             Assert.False(binding.UseDefaultWebProxy);
+            Assert.Equal("http://proxy.helsenorge.utvikling:8080", binding.ProxyAddress.OriginalString);
+            Assert.Equal(1, binding.MaxBufferSize);
+            Assert.Equal(2, binding.MaxBufferPoolSize);
+            Assert.Equal(3, binding.MaxReceivedMessageSize);
         }
 
         [Fact]
