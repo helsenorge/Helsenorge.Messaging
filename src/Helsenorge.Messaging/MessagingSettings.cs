@@ -111,7 +111,7 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// The maximum number of messaging factories to use
         /// </summary>
-        public uint MaxFactories { get; set; } = 5;
+        public uint MaxFactories { get; set; } = 1;
         /// <summary>
         /// Get or set the begin-handle-max field (less by one)
         /// </summary>
