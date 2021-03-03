@@ -60,7 +60,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
 
         public ServiceBusReceiver CreateReceiver(string queueName)
         {
-            return new ServiceBusReceiver(Connection, queueName, _logger);
+            return new ServiceBusReceiver(Connection, queueName, 1, _logger);
         }
 
         public ServiceBusSender CreateSender(string queueName)

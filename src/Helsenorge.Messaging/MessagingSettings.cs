@@ -80,6 +80,7 @@ namespace Helsenorge.Messaging
     {
         internal const int DefaultMaxLinksPerSession = 64;
         internal const ushort DefaultMaxSessions = 256;
+        internal const int DefaultLinkCredits = 1;
 
         private readonly MessagingSettings _settings;
 
@@ -119,6 +120,10 @@ namespace Helsenorge.Messaging
         /// Get or set the open.channel-max field (less by one)
         /// </summary>
         public ushort MaxSessionsPerConnection { get; set; } = DefaultMaxSessions;
+        /// <summary>
+        /// Get or set the link-credit being used by the receiver link. Setting this overrides the default value of 1 credit.
+        /// </summary>
+        public int LinkCredits { get; set; } = DefaultLinkCredits;
 
         /// <summary>
         /// The Her id that we represent

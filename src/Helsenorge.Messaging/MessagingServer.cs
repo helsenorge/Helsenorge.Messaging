@@ -180,7 +180,7 @@ namespace Helsenorge.Messaging
 
             for (var i = 0; i < Settings.ServiceBus.Asynchronous.ProcessingTasks; i++)
             {
-                _listeners.Add(new AsynchronousMessageListener(ServiceBus, _loggerFactory.CreateLogger($"AsyncListener_{i}"), this, credit: 1));
+                _listeners.Add(new AsynchronousMessageListener(ServiceBus, _loggerFactory.CreateLogger($"AsyncListener_{i}"), this));
             }
             for (var i = 0; i < Settings.ServiceBus.Synchronous.ProcessingTasks; i++)
             {

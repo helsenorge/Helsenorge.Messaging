@@ -31,12 +31,10 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <param name="core">Reference to core service bus infrastructure</param>
         /// <param name="logger">Logger used for diagnostic purposes</param>
         /// <param name="messagingNotification">A reference to the messaging notification system</param>
-        /// <param name="credit">Controls the link credit for the receiver link. Setting this overrides the default value of 200 credits.</param>
         internal AsynchronousMessageListener(
             ServiceBusCore core,
             ILogger logger,
-            IMessagingNotification messagingNotification,
-            int credit = -1) : base(core, logger, messagingNotification, credit)
+            IMessagingNotification messagingNotification) : base(core, logger, messagingNotification)
         {
             ReadTimeout = Core.Settings.Asynchronous.ReadTimeout;
         }

@@ -16,7 +16,6 @@ namespace Helsenorge.Messaging.Abstractions
     /// </summary>
     public interface IMessagingReceiver : ICachedMessagingEntity
     {
-        Task SetCredit(int credit, bool autoRestore);
         /// <summary>
         /// Receives a message
         /// </summary>
