@@ -15,17 +15,19 @@ namespace Helsenorge.Messaging.ServiceBus
     internal class ServiceBusReceiverPool : MessagingEntityCache<IMessagingReceiver>
     {
         private readonly IServiceBusFactoryPool _factoryPool;
+        private readonly int _credit;
         
         public ServiceBusReceiverPool(ServiceBusSettings settings, IServiceBusFactoryPool factoryPool) :
             base("ReceiverPool", settings.MaxReceivers)
         {
             _factoryPool = factoryPool;
+            _credit = settings.LinkCredits;
         }
 
         protected override async Task<IMessagingReceiver> CreateEntity(ILogger logger, string id)
         {
             var factory = await _factoryPool.FindNextFactory(logger).ConfigureAwait(false);
-            return factory.CreateMessageReceiver(id);
+            return factory.CreateMessageReceiver(id, _credit);
         }
 
         /// <summary>

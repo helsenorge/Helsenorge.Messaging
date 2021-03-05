@@ -1,13 +1,14 @@
 <Project>
   <PropertyGroup>
     <LangVersion>8.0</LangVersion>
-    <Version>4.0.0-beta26</Version>
+    <Version>4.0.0-beta30</Version>
   </PropertyGroup>
   <PropertyGroup>
     <Authors>Norsk Helsenett SF</Authors>
     <Company>Norsk Helsenett SF</Company>
     <Copyright>Norsk Helsenett SF</Copyright>
     <RepositoryUrl>https://github.com/helsenorge/Helsenorge.Messaging</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE" Pack="true" PackagePath="" />

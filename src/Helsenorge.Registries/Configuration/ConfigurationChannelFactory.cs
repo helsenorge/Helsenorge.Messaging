@@ -44,17 +44,17 @@ namespace Helsenorge.Registries.Configuration
             {
                 var netTcpBinding = new NetTcpBinding(SecurityMode.TransportWithMessageCredential);
                 netTcpBinding.Security.Message.ClientCredentialType = MessageCredentialType.UserName;
-                if (configuration.MaxBufferSize > 0)
+                if (configuration.MaxBufferSize != default)
                 {
-                    netTcpBinding.MaxBufferSize = configuration.MaxBufferSize;
+                    netTcpBinding.MaxBufferSize = configuration.MaxBufferSize.GetValueOrDefault();
                 }
-                if (configuration.MaxBufferPoolSize > 0)
+                if (configuration.MaxBufferPoolSize != default)
                 {
-                    netTcpBinding.MaxBufferPoolSize = configuration.MaxBufferPoolSize;
+                    netTcpBinding.MaxBufferPoolSize = configuration.MaxBufferPoolSize.GetValueOrDefault();
                 }
-                if (configuration.MaxReceivedMessageSize > 0)
+                if (configuration.MaxReceivedMessageSize != default)
                 {
-                    netTcpBinding.MaxReceivedMessageSize = configuration.MaxReceivedMessageSize;
+                    netTcpBinding.MaxReceivedMessageSize = configuration.MaxReceivedMessageSize.GetValueOrDefault();
                 }
                 return netTcpBinding;
             }
@@ -66,25 +66,25 @@ namespace Helsenorge.Registries.Configuration
                     case WcfHttpBinding.Basic:
                         var basicHttpBinding = new BasicHttpBinding(BasicHttpSecurityMode.Transport);
                         basicHttpBinding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
-                        if (configuration.MaxBufferSize > 0)
+                        if (configuration.MaxBufferSize != default)
                         {
-                            basicHttpBinding.MaxBufferSize = configuration.MaxBufferSize;
+                            basicHttpBinding.MaxBufferSize = configuration.MaxBufferSize.GetValueOrDefault();
                         }
-                        if (configuration.MaxBufferPoolSize > 0)
+                        if (configuration.MaxBufferPoolSize != default)
                         {
-                            basicHttpBinding.MaxBufferPoolSize = configuration.MaxBufferPoolSize;
+                            basicHttpBinding.MaxBufferPoolSize = configuration.MaxBufferPoolSize.GetValueOrDefault();
                         }
-                        if (configuration.MaxReceivedMessageSize > 0)
+                        if (configuration.MaxReceivedMessageSize != default)
                         {
-                            basicHttpBinding.MaxReceivedMessageSize = configuration.MaxReceivedMessageSize;
+                            basicHttpBinding.MaxReceivedMessageSize = configuration.MaxReceivedMessageSize.GetValueOrDefault();
                         }
-                        if (configuration.UseDefaultWebProxy != default)
+                        if (configuration.UseDefaultWebProxy != default) 
                         {
-                            basicHttpBinding.UseDefaultWebProxy = configuration.UseDefaultWebProxy;
+                            basicHttpBinding.UseDefaultWebProxy = configuration.UseDefaultWebProxy.GetValueOrDefault();
                         }
                         if (configuration.BypassProxyOnLocal != default)
                         {
-                            basicHttpBinding.BypassProxyOnLocal = configuration.BypassProxyOnLocal;
+                            basicHttpBinding.BypassProxyOnLocal = configuration.BypassProxyOnLocal.GetValueOrDefault();
                         }
                         if (configuration.ProxyAddress != default)
                         {
@@ -95,21 +95,21 @@ namespace Helsenorge.Registries.Configuration
                     case WcfHttpBinding.WsHttp:
                         var wsHttpBinding = new WSHttpBinding(SecurityMode.Transport);
                         wsHttpBinding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
-                        if (configuration.MaxBufferPoolSize > 0)
+                        if (configuration.MaxBufferPoolSize != default)
                         {
-                            wsHttpBinding.MaxBufferPoolSize = configuration.MaxBufferPoolSize;
+                            wsHttpBinding.MaxBufferPoolSize = configuration.MaxBufferPoolSize.GetValueOrDefault();
                         }
-                        if (configuration.MaxReceivedMessageSize > 0)
+                        if (configuration.MaxReceivedMessageSize != default)
                         {
-                            wsHttpBinding.MaxReceivedMessageSize = configuration.MaxReceivedMessageSize;
+                            wsHttpBinding.MaxReceivedMessageSize = configuration.MaxReceivedMessageSize.GetValueOrDefault();
                         }
                         if (configuration.UseDefaultWebProxy != default)
                         {
-                            wsHttpBinding.UseDefaultWebProxy = configuration.UseDefaultWebProxy;
+                            wsHttpBinding.UseDefaultWebProxy = configuration.UseDefaultWebProxy.GetValueOrDefault();
                         }
                         if (configuration.BypassProxyOnLocal != default)
                         {
-                            wsHttpBinding.BypassProxyOnLocal = configuration.BypassProxyOnLocal;
+                            wsHttpBinding.BypassProxyOnLocal = configuration.BypassProxyOnLocal.GetValueOrDefault();
                         }
                         if (configuration.ProxyAddress != default)
                         {

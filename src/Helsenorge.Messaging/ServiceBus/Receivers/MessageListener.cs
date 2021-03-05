@@ -30,6 +30,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         private CommunicationPartyDetails _myDetails;
         private IMessagingReceiver _messageReceiver;
         private bool _listenerEstablishedConfirmed = false;
+
         /// <summary>
         /// The timeout used for reading messages from queue
         /// </summary>
@@ -164,7 +165,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     EnqueuedTimeUtc = message.EnqueuedTimeUtc,
                     RenewLock = message.RenewLock,
                     Complete = message.Complete,
-                    DeliveryCount = message.DeliveryCount
+                    DeliveryCount = message.DeliveryCount,
+                    LockedUntil = message.LockedUntil,
                 };
                 await NotifyMessageProcessingStarted(incomingMessage).ConfigureAwait(false);
                 Logger.LogStartReceive(QueueType, incomingMessage);

@@ -33,23 +33,23 @@ namespace Helsenorge.Registries.Configuration
         /// <summary>
         /// Gets or sets the maximum size, in bytes, for a buffer that receives messages from the channel.
         /// </summary>
-        public int MaxBufferSize { get; set; }
+        public int? MaxBufferSize { get; set; }
         /// <summary>
         /// Gets or sets the maximum amount of memory, in bytes, that is allocated for use by the manager of the message buffers that receive messages from the channel.
         /// </summary>
-        public int MaxBufferPoolSize { get; set; }
+        public int? MaxBufferPoolSize { get; set; }
         /// <summary>
         /// Gets or sets the maximum size, in bytes, for a message that can be received on a channel configured with this binding.
         /// </summary>
-        public int MaxReceivedMessageSize { get; set; }
+        public int? MaxReceivedMessageSize { get; set; }
         /// <summary>
         /// Gets or sets a value that indicates whether the auto-configured HTTP proxy of the system should be used, if available.
         /// </summary>
-        public bool UseDefaultWebProxy { get; set; }
+        public bool? UseDefaultWebProxy { get; set; }
         /// <summary>
         /// Gets or sets a value that indicates whether to bypass the proxy server for local addresses.
         /// </summary>
-        public bool BypassProxyOnLocal { get; set; }
+        public bool? BypassProxyOnLocal { get; set; }
         /// <summary>
         /// Gets or sets the URI address of the HTTP proxy.
         /// </summary>

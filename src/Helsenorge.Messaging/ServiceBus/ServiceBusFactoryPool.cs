@@ -19,7 +19,7 @@ namespace Helsenorge.Messaging.ServiceBus
     {
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly ServiceBusSettings _settings;
-        private int _index = -1;
+        private int _index;
         private IMessagingFactory _alternateMessagingFactor;
 
         public ServiceBusFactoryPool(ServiceBusSettings settings) :
@@ -50,7 +50,7 @@ namespace Helsenorge.Messaging.ServiceBus
             await _semaphore.WaitAsync().ConfigureAwait(false);
             try
             {
-                // increase value in a round-robin fashion
+                // increas value in a round-robin fashion
                 _index++;
                 if (_index == Capacity)
                 {

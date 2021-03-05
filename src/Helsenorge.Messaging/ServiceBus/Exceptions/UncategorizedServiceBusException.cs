@@ -20,6 +20,10 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
         {
         }
 
+        public UncategorizedServiceBusException(string message, string condition, Exception innerException) : base($"{message} Condition: {condition}", innerException)
+        {
+        }
+
         public override bool CanRetry => false;
     }
 }

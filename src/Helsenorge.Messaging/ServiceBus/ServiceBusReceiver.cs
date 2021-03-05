@@ -19,22 +19,28 @@ namespace Helsenorge.Messaging.ServiceBus
     internal class ServiceBusReceiver : CachedAmpqSessionEntity<ReceiverLink>, IMessagingReceiver
     {
         private readonly string _id;
+        private readonly int _credit;
         private readonly ILogger _logger;
+        private readonly string _name;
 
-        public ServiceBusReceiver(ServiceBusConnection connection, string id, ILogger logger) : base(connection)
+        public ServiceBusReceiver(ServiceBusConnection connection, string id, int credit, ILogger logger) : base(connection)
         {
             if (string.IsNullOrEmpty(id))
             {
                 throw new ArgumentException(nameof(id));
             }
             _id = id;
+            _credit = credit;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _name = $"receiver-link-{Guid.NewGuid()}";
         }
+
+        public string Name => _name;
 
         protected override ReceiverLink CreateLink(ISession session)
         {
-            var receiver = session.CreateReceiver($"receiver-link-{Guid.NewGuid()}", Connection.GetEntityName(_id)) as ReceiverLink;
-            receiver.SetCredit(1);
+            var receiver = session.CreateReceiver(Name, Connection.GetEntityName(_id)) as ReceiverLink;
+            receiver.SetCredit(_credit);
             return receiver;
         }
 

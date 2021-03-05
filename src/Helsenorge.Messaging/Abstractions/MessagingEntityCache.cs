@@ -96,6 +96,7 @@ namespace Helsenorge.Messaging.Abstractions
             if (_shutdownPending) return null;
 
             CacheEntry<T> entry;
+            await TrimEntries(logger).ConfigureAwait(false); // see if we need to trim entries
             await _semaphore.WaitAsync().ConfigureAwait(false);
             try
             {
@@ -135,12 +136,10 @@ namespace Helsenorge.Messaging.Abstractions
             finally
             {
                 _semaphore.Release();
-
-                await TrimEntries(logger).ConfigureAwait(false); // see if we need to trim entries
-
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCacheCreate: Create entry for {Path}", path);
             }
 
+            logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCacheCreate: Create entry for {Path}", path);
             return entry.Entity;
         }
 
@@ -167,7 +166,7 @@ namespace Helsenorge.Messaging.Abstractions
 
                 // under a high volume scenario, this may be the last used entry even if it was just used
                 // in those cases we need to close the connection and set respective properties
-                if (entry.ClosePending && entry.ActiveCount <= 0)
+                if (entry.ClosePending)
                 {
                     await CloseEntity(logger, entry, path).ConfigureAwait(false);
                 }
@@ -189,9 +188,10 @@ namespace Helsenorge.Messaging.Abstractions
                 {
                     await entry.Entity.Close().ConfigureAwait(false);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    logger.LogCritical(EventIds.MessagingEntityCacheFailedToCloseEntity, "Failed to close message entity: {Path}", path);
+                    var message = "Failed to close message entity: {Path}. Exception: " + ex.Message + " Stack Trace: " + ex.StackTrace;
+                    logger.LogCritical(EventIds.MessagingEntityCacheFailedToCloseEntity, message, path);
                 }
             }
             entry.Entity = null;
@@ -225,20 +225,18 @@ namespace Helsenorge.Messaging.Abstractions
             try
             {
                 // we haven't reached our max capacity yet
-                if (_entries.Keys.Count <= Capacity) return;
+                if (_entries.Keys.Count < Capacity) return;
 
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Trimming entries");
-                
-                int count = (int)(_entries.Keys.Count - Capacity);
+                const int count = 10;
                 // get the oldest n entries
                 var removal = (from v in _entries.Values
-                               where v.Entity != null
                                orderby v.LastUsed ascending
                                select v).Take(count);
 
                 foreach (var item in removal)
                 {
-                    if (item.ClosePending && item.ActiveCount <= 0)
+                    if (item.ActiveCount == 0)
                     {
                         await CloseEntity(logger, item, item.Path).ConfigureAwait(false);
                     }

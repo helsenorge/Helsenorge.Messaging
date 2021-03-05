@@ -29,9 +29,9 @@ namespace Helsenorge.Messaging.ServiceBus
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public IMessagingReceiver CreateMessageReceiver(string id)
+        public IMessagingReceiver CreateMessageReceiver(string id, int credit)
         {
-            return new ServiceBusReceiver(_connection, id, _logger);
+            return new ServiceBusReceiver(_connection, id, credit, _logger);
         }
 
         public IMessagingSender CreateMessageSender(string id)

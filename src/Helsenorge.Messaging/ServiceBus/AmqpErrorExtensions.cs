@@ -58,7 +58,7 @@ namespace Helsenorge.Messaging.ServiceBus
         public static Exception ToServiceBusException(this Error error, Exception exception)
         {
             return error == null
-                ? new UncategorizedServiceBusException("Unknown error.")
+                ? new UncategorizedServiceBusException("Unknown error.", exception)
                 : ToServiceBusException(error.Condition, error.Description, exception);
         }
 
@@ -199,7 +199,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 return new InternalErrorException(message, exception);
             }
 
-            return new UncategorizedServiceBusException(message, exception);
+            return new UncategorizedServiceBusException(message, condition, exception);
         }
     }
 }

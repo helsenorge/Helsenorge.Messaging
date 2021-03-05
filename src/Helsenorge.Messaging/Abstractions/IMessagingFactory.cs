@@ -20,8 +20,9 @@ namespace Helsenorge.Messaging.Abstractions
         /// Creates a receiver
         /// </summary>
         /// <param name="id">Id representing the receiver</param>
+        /// <param name="credit">Let's you set the link-credit for the receiver link</param>
         /// <returns></returns>
-        IMessagingReceiver CreateMessageReceiver(string id);
+        IMessagingReceiver CreateMessageReceiver(string id, int credit);
         /// <summary>
         /// Creates a sender
         /// </summary>
