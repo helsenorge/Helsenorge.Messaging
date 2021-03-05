@@ -44,9 +44,9 @@ namespace Helsenorge.Messaging.Tests
             {
             }
 
-            protected override EntityItem CreateEntity(ILogger logger, string id)
+            protected override Task<EntityItem> CreateEntity(ILogger logger, string id)
             {
-                return new EntityItem(id);
+                return Task.FromResult(new EntityItem(id));
             }
         }
 
@@ -69,9 +69,9 @@ namespace Helsenorge.Messaging.Tests
         /// Creates a simple entity
         /// </summary>
         [TestMethod]
-        public void MessageClientEntity_Create()
+        public async Task MessageClientEntity_Create()
         {
-            _cache.Create(Logger, "path");
+            await _cache.Create(Logger, "path");
 
             Assert.AreEqual(1, _cache.Entries.Count, "EntryCount");
             var entry = _cache.Entries.First().Value;
@@ -85,10 +85,10 @@ namespace Helsenorge.Messaging.Tests
         /// Creates an entity and releases it
         /// </summary>
         [TestMethod]
-        public void MessageClientEntity_CreateAndRelease()
+        public async Task MessageClientEntity_CreateAndRelease()
         {
             var path = "path";
-            _cache.Create(Logger, path);
+            await _cache.Create(Logger, path);
 
             Assert.AreEqual(1, _cache.Entries.Count, "EntryCount");
             var entry = _cache.Entries.First().Value;
@@ -97,7 +97,7 @@ namespace Helsenorge.Messaging.Tests
             Assert.IsFalse(entry.ClosePending, "ClosePending");
             Assert.IsNotNull(entry.Entity, "Entity");
 
-            _cache.Release(Logger, path);
+            await _cache.Release(Logger, path);
 
             Assert.AreEqual(0, entry.ActiveCount, "ActiveCount");
             Assert.IsFalse(entry.ClosePending, "ClosePending");
@@ -108,11 +108,11 @@ namespace Helsenorge.Messaging.Tests
         /// Creates 10 entities witht the same path
         /// </summary>
         [TestMethod]
-        public void MessageClientEntity_CreateAndRelase100WithSamePath()
+        public async Task MessageClientEntity_CreateAndRelase100WithSamePath()
         {
             for (int i = 0; i < 100; i++)
             {
-                _cache.Create(Logger, "path");
+                await _cache.Create(Logger, "path");
             }
             Assert.AreEqual(1, _cache.Entries.Count, "EntryCount");
             var entry = _cache.Entries.First().Value;
@@ -123,7 +123,7 @@ namespace Helsenorge.Messaging.Tests
 
             for (int i = 0; i < 100; i++)
             {
-                _cache.Release(Logger, "path");
+                await _cache.Release(Logger, "path");
             }
             Assert.AreEqual(1, _cache.Entries.Count, "EntryCount");
             entry = _cache.Entries.First().Value;
@@ -137,11 +137,11 @@ namespace Helsenorge.Messaging.Tests
         /// Creates 10 entities with different paths. We are within the threshold, so no one should be closed
         /// </summary>
         [TestMethod]
-        public void MessageClientEntity_CreateFullCapacity()
+        public async Task MessageClientEntity_CreateFullCapacity()
         {
             for (int i = 0; i < _cache.Capacity; i++)
             {
-                _cache.Create(Logger, "path" + i.ToString());
+                await _cache.Create(Logger, "path" + i.ToString());
             }
             Assert.AreEqual(5, _cache.Entries.Count, "EntryCount");
 
@@ -159,19 +159,19 @@ namespace Helsenorge.Messaging.Tests
         /// Creating more than the capacity, open active entrys are markes as close pending
         /// </summary>
         [TestMethod]
-        public void MessageClientEntity_EntityGetsClosePending()
+        public async Task MessageClientEntity_EntityGetsClosePending()
         {
-            _cache.Create(Logger, "path1");
-            _cache.Create(Logger, "path2");
-            _cache.Create(Logger, "path3");
-            _cache.Create(Logger, "path4");
-            _cache.Create(Logger, "path5");
+            await _cache.Create(Logger, "path1");
+            await _cache.Create(Logger, "path2");
+            await _cache.Create(Logger, "path3");
+            await _cache.Create(Logger, "path4");
+            await _cache.Create(Logger, "path5");
 
             // path3 will be the one that will be reclaimed
             var entry = _cache.Entries["path3"];
             entry.LastUsed = DateTime.Now.AddSeconds(-15);
 
-            _cache.Create(Logger, "path6");
+            await _cache.Create(Logger, "path6");
 
             Assert.AreEqual(1, entry.ActiveCount, "ActiveCount"); // path3 is still active since we haven't release it
             Assert.IsTrue(entry.ClosePending, "ClosePending");
@@ -181,51 +181,51 @@ namespace Helsenorge.Messaging.Tests
         /// Go beyond capacity, then close one of the previously opened
         /// </summary>
         [TestMethod]
-        public void MessageClientEntity_CloseEntityWhenBeyondCapacity()
+        public async Task MessageClientEntity_CloseEntityWhenBeyondCapacity()
         {
-            _cache.Create(Logger, "path1");
-            _cache.Create(Logger, "path2");
-            _cache.Create(Logger, "path3");
-            _cache.Create(Logger, "path4");
-            _cache.Create(Logger, "path5");
+            await _cache.Create(Logger, "path1");
+            await _cache.Create(Logger, "path2");
+            await _cache.Create(Logger, "path3");
+            await _cache.Create(Logger, "path4");
+            await _cache.Create(Logger, "path5");
 
             // path3 will be the one that will be reclaimed
             var entry = _cache.Entries["path3"];
             entry.LastUsed = DateTime.Now.AddSeconds(-15);
 
-            _cache.Create(Logger, "path6");
-            _cache.Release(Logger, "path3"); // we are done with path 3
+            await _cache.Create(Logger, "path6");
+            await _cache.Release(Logger, "path3"); // we are done with path 3
 
             // entity object for path3 has been reclaimed
-            Assert.AreEqual(0, entry.ActiveCount, "ActiveCount");
-            Assert.IsNull(entry.Entity, "Entity");
-            Assert.IsFalse(entry.ClosePending, "ClosePending");
+            Assert.AreEqual(0, entry.ActiveCount, "ActiveCount is not equal to zero");
+            Assert.IsNull(entry.Entity, "Entity is not null");
+            Assert.IsFalse(entry.ClosePending, "ClosePending is not false");
         }
 
         /// <summary>
         /// go beyound capacity, then close and re-open an entity
         /// </summary>
         [TestMethod]
-        public void MessageClientEntity_RecreatePreviouslyClosed()
+        public async Task MessageClientEntity_RecreatePreviouslyClosed()
         {
-            _cache.Create(Logger, "path1");
-            _cache.Create(Logger, "path2");
-            _cache.Create(Logger, "path3");
-            _cache.Create(Logger, "path4");
-            _cache.Create(Logger, "path5");
+            await _cache.Create(Logger, "path1");
+            await _cache.Create(Logger, "path2");
+            await _cache.Create(Logger, "path3");
+            await _cache.Create(Logger, "path4");
+            await _cache.Create(Logger, "path5");
 
             // path3 will be the one that will be reclaimed
             var entry = _cache.Entries["path3"];
             entry.LastUsed = DateTime.Now.AddSeconds(-15);
 
-            _cache.Create(Logger, "path6"); // create a new entry so that we have to free up another
-            _cache.Release(Logger, "path3"); // we are done with path 3
-            _cache.Release(Logger, "path2");
+            await _cache.Create(Logger, "path6"); // create a new entry so that we have to free up another
+            await _cache.Release(Logger, "path3"); // we are done with path 3
+            await _cache.Release(Logger, "path2");
 
             //we need to use path3 again, so path 2 becomes the one being bumped
             _cache.Entries["path2"].LastUsed = DateTime.Now.AddSeconds(-10);
 
-            _cache.Create(Logger, "path3");
+            await _cache.Create(Logger, "path3");
             Assert.AreEqual(1, entry.ActiveCount, "ActiveCount");
             Assert.IsNotNull(entry.Entity, "Entity");
             Assert.IsFalse(entry.ClosePending, "ClosePending");
@@ -241,20 +241,21 @@ namespace Helsenorge.Messaging.Tests
         /// Call the shudown command
         /// </summary>
         [TestMethod]
-        public void Shutdown()
+        public async Task Shutdown()
         {
-            _cache.Create(Logger, "path1");
-            _cache.Create(Logger, "path2");
-            _cache.Create(Logger, "path3");
-            _cache.Create(Logger, "path4");
-            _cache.Create(Logger, "path5");
+            await _cache.Create(Logger, "path1");
+            await _cache.Create(Logger, "path2");
+            await _cache.Create(Logger, "path3");
+            await _cache.Create(Logger, "path4");
+            await _cache.Create(Logger, "path5");
 
             _cache.Entries["path2"].ClosePending = true;
 
-            _cache.Shutdown(Logger);
+            await _cache.Shutdown(Logger);
+
 
             // new create commands are ignored in shutdown mode
-            _cache.Create(Logger, "path6");
+            await _cache.Create(Logger, "path6");
             Assert.AreEqual(5, _cache.Entries.Count, "EntryCount");
 
             foreach (var key in _cache.Entries.Keys)

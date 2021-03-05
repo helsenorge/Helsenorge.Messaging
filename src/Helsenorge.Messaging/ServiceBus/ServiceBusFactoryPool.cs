@@ -10,14 +10,15 @@ using System.Diagnostics.CodeAnalysis;
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
 using System.IO;
-using Amqp;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Helsenorge.Messaging.ServiceBus
 {
     internal class ServiceBusFactoryPool : MessagingEntityCache<IMessagingFactory>, IServiceBusFactoryPool
     {
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly ServiceBusSettings _settings;
-        private readonly object _lock= new object();
         private int _index;
         private IMessagingFactory _alternateMessagingFactor;
 
@@ -33,20 +34,21 @@ namespace Helsenorge.Messaging.ServiceBus
         }
 
         [ExcludeFromCodeCoverage] // Azure service bus implementation
-        protected override IMessagingFactory CreateEntity(ILogger logger, string id)
+        protected override Task<IMessagingFactory> CreateEntity(ILogger logger, string id)
         {
-            if (_alternateMessagingFactor != null) return _alternateMessagingFactor;
+            if (_alternateMessagingFactor != null) return Task.FromResult(_alternateMessagingFactor);
             var connection = new ServiceBusConnection(_settings.ConnectionString, _settings.MaxLinksPerSession, _settings.MaxSessionsPerConnection, logger);
-            return new ServiceBusFactory(connection, logger);
+            return Task.FromResult<IMessagingFactory>(new ServiceBusFactory(connection, logger));
         }
-        public IMessagingMessage CreateMessage(ILogger logger, Stream stream)
+        public async Task<IMessagingMessage> CreateMessage(ILogger logger, Stream stream)
         {
-            var factory = FindNextFactory(logger);
-            return factory.CreateMessage(stream);
+            var factory = await FindNextFactory(logger).ConfigureAwait(false);
+            return await factory.CreateMessage(stream).ConfigureAwait(false);
         }
-        public IMessagingFactory FindNextFactory(ILogger logger)
+        public async Task<IMessagingFactory> FindNextFactory(ILogger logger)
         {
-            lock (_lock)
+            await _semaphore.WaitAsync().ConfigureAwait(false);
+            try
             {
                 // increas value in a round-robin fashion
                 _index++;
@@ -55,7 +57,11 @@ namespace Helsenorge.Messaging.ServiceBus
                     _index = 0;
                 }
                 var name = string.Format(null, "MessagingFactory{0}", _index);
-                return Create(logger, name);
+                return await Create(logger, name).ConfigureAwait(false);
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
     }

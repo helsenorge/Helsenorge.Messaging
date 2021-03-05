@@ -85,7 +85,6 @@ namespace Helsenorge.Registries.Tests.Configuration
             Assert.Equal("Doe", factory.Credentials?.UserName.Password);
             Assert.Equal("https://ws-web.test.nhn.no/v1/AR/Basic", factory.Endpoint.Address.Uri.OriginalString);
             Assert.True(binding.BypassProxyOnLocal);
-            Assert.False(binding.UseDefaultWebProxy);
             Assert.Equal("http://proxy.helsenorge.utvikling:8080", binding.ProxyAddress.OriginalString);
             Assert.Equal(1, binding.MaxBufferSize);
             Assert.Equal(2, binding.MaxBufferPoolSize);

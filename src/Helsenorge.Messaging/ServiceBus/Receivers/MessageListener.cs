@@ -77,23 +77,23 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// Called prior to message processing
         /// </summary>
         /// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
-        protected abstract void NotifyMessageProcessingStarted(IncomingMessage message);
+        protected abstract Task NotifyMessageProcessingStarted(IncomingMessage message);
         /// <summary>
         /// Called to process message
         /// </summary>
         /// <param name="rawMessage">The message from the queue</param>
         /// <param name="message">The refined message data. All information should now be present</param>
-        protected abstract void NotifyMessageProcessingReady(IMessagingMessage rawMessage, IncomingMessage message);
+        protected abstract Task NotifyMessageProcessingReady(IMessagingMessage rawMessage, IncomingMessage message);
         /// <summary>
         /// Called when message processing is complete
         /// </summary>
         /// <param name="message">Reference to the incoming message</param>
-        protected abstract void NotifyMessageProcessingCompleted(IncomingMessage message);
+        protected abstract Task NotifyMessageProcessingCompleted(IncomingMessage message);
         /// <summary>
         /// Starts the listener
         /// </summary>
         /// <param name="cancellation">Cancellation token that signals when we should stop</param>
-        public void Start(CancellationToken cancellation)
+        public async Task Start(CancellationToken cancellation)
         {
             Logger.LogInformation("Starting listener on queue {0}", QueueName);
 
@@ -101,7 +101,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             {
                 try
                 {
-                    Task.WaitAll(ReadAndProcessMessage());
+                    await ReadAndProcessMessage().ConfigureAwait(false);
 
                     if (!_listenerEstablishedConfirmed)
                     {
@@ -114,7 +114,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     Logger.LogException("Generic service bus error", ex);
                     // if there are problems with the message bus, we don't get interval of the ReadTimeout
                     // pause a bit so that we don't take over the whole system
-                    Thread.Sleep(5000);
+                    await Task.Delay(5000, cancellation).ConfigureAwait(false);
                 }
             }
         }
@@ -127,7 +127,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// </summary>
         public async Task<IncomingMessage> ReadAndProcessMessage(bool alwaysRemoveMessage = false)
         {
-            SetUpReceiver();
+            await SetUpReceiver().ConfigureAwait(false);
             IMessagingMessage message;
             try
             {
@@ -168,7 +168,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     DeliveryCount = message.DeliveryCount,
                     LockedUntil = message.LockedUntil,
                 };
-                NotifyMessageProcessingStarted(incomingMessage);
+                await NotifyMessageProcessingStarted(incomingMessage).ConfigureAwait(false);
                 Logger.LogStartReceive(QueueType, incomingMessage);
 
                 // we cannot dispose of the stream before we have potentially cloned the message for error use
@@ -188,57 +188,57 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     }
                     incomingMessage.Payload = payload;
                 }
-                NotifyMessageProcessingReady(message, incomingMessage);
+                await NotifyMessageProcessingReady(message, incomingMessage).ConfigureAwait(false);
                 ServiceBusCore.RemoveProcessedMessageFromQueue(message);
                 Logger.LogRemoveMessageFromQueueNormal(message, QueueName);
-                NotifyMessageProcessingCompleted(incomingMessage);
+                await NotifyMessageProcessingCompleted(incomingMessage).ConfigureAwait(false);
                 Logger.LogEndReceive(QueueType, incomingMessage);
                 return incomingMessage;
             }
             catch (SecurityException ex)
             {
                 Core.ReportErrorToExternalSender(Logger, EventIds.RemoteCertificate, message, "transport:invalid-certificate", ex.Message, null, ex);
-                MessagingNotification.NotifyHandledException(message, ex);
+                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (HeaderValidationException ex)
             {
                 Core.ReportErrorToExternalSender(Logger, EventIds.MissingField, message, "transport:invalid-field-value", ex.Message, ex.Fields);
-                MessagingNotification.NotifyHandledException(message, ex);
+                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (XmlSchemaValidationException ex) // reportable error from message handler (application)
             {
                 Core.ReportErrorToExternalSender(Logger, EventIds.NotXml, message, "transport:not-well-formed-xml", ex.Message, null, ex);
-                MessagingNotification.NotifyHandledException(message, ex);
+                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (ReceivedDataMismatchException ex) // reportable error from message handler (application)
             {
                 Core.ReportErrorToExternalSender(Logger, EventIds.DataMismatch, message, "transport:invalid-field-value", ex.Message, new[] { ex.ExpectedValue, ex.ReceivedValue }, ex);
-                MessagingNotification.NotifyHandledException(message, ex);
+                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (NotifySenderException ex) // reportable error from message handler (application)
             {
                 Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:internal-error", ex.Message, null, ex);
-                MessagingNotification.NotifyHandledException(message, ex);
+                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (SenderHerIdMismatchException ex) // reportable error from message handler (application)
             {
                 Core.ReportErrorToExternalSender(Logger, EventIds.DataMismatch, message, "abuse:spoofing-attack", ex.Message, null, ex);
-                MessagingNotification.NotifyHandledException(message, ex);
+                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (PayloadDeserializationException ex) // from parsing to XML, reportable exception
             {
                 Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:not-well-formed-xml", ex.Message, null, ex);
-                MessagingNotification.NotifyHandledException(message, ex);
+                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (AggregateException ex) when (ex.InnerException is MessagingException && ((MessagingException)ex.InnerException).EventId.Id == EventIds.Send.Id)
             {
                 Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:invalid-field-value", "Invalid value in field: 'ReplyTo'", null, ex);
-                MessagingNotification.NotifyHandledException(message, ex);
+                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (UnsupportedMessageException ex)  // reportable error from message handler (application)
             {
                 Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:unsupported-message", ex.Message, null, ex);
-                MessagingNotification.NotifyHandledException(message, ex);
+                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (Exception ex) // unknown error
             {
@@ -256,7 +256,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 {
                     ServiceBusCore.RemoveMessageFromQueueAfterError(Logger, message);
                 }
-                MessagingNotification.NotifyUnhandledException(message, ex);
+                await MessagingNotification.NotifyUnhandledException(message, ex).ConfigureAwait(false);
             }
             finally
             {
@@ -497,7 +497,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             var queueName = action(_myDetails);
             return string.IsNullOrEmpty(queueName) == false ? Core.ExtractQueueName(queueName) : null;
         }
-        private void SetUpReceiver()
+
+        private async Task SetUpReceiver()
         {
             if (string.IsNullOrEmpty(QueueName))
             {
@@ -512,7 +513,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             }
             if (_messageReceiver == null)
             {
-                _messageReceiver = Core.ReceiverPool.CreateCachedMessageReceiver(Logger, QueueName);
+                _messageReceiver = await Core.ReceiverPool.CreateCachedMessageReceiver(Logger, QueueName).ConfigureAwait(false);
             }
         }
     }

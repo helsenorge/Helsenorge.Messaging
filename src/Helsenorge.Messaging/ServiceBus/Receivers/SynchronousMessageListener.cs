@@ -44,10 +44,10 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// Called prior to message processing
         /// </summary>
         /// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
-        protected override void NotifyMessageProcessingStarted(IncomingMessage message)
+        protected override async Task NotifyMessageProcessingStarted(IncomingMessage message)
         {
             Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
-            MessagingNotification.NotifySynchronousMessageReceivedStarting(message);
+            await MessagingNotification.NotifySynchronousMessageReceivedStarting(message).ConfigureAwait(false);
             Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
         /// <summary>
@@ -55,10 +55,10 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// </summary>
         /// <param name="rawMessage">The message from the queue</param>
         /// <param name="message">The refined message data. All information should now be present</param>
-        protected override void NotifyMessageProcessingReady(IMessagingMessage rawMessage, IncomingMessage message)
+        protected override async Task NotifyMessageProcessingReady(IMessagingMessage rawMessage, IncomingMessage message)
         {
             Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
-            var reply = MessagingNotification.NotifySynchronousMessageReceived(message);
+            var reply = await MessagingNotification.NotifySynchronousMessageReceived(message).ConfigureAwait(false);
             Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
 
             if (reply == null)
@@ -79,10 +79,10 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// Called when message processing is complete
         /// </summary>
         /// <param name="message">Reference to the incoming message</param>
-        protected override void NotifyMessageProcessingCompleted(IncomingMessage message)
+        protected override async Task NotifyMessageProcessingCompleted(IncomingMessage message)
         {
             Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedCompleted), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
-            MessagingNotification.NotifySynchronousMessageReceivedCompleted(message);
+            await MessagingNotification.NotifySynchronousMessageReceivedCompleted(message).ConfigureAwait(false);
             Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedCompleted), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
     }

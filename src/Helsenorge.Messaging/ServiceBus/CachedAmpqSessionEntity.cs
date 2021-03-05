@@ -18,7 +18,7 @@ namespace Helsenorge.Messaging.ServiceBus
         where TLink : Link
     {
         protected readonly ServiceBusConnection Connection;
-        protected Session _session;
+        protected ISession _session;
         protected TLink _link;
         
         private readonly SemaphoreSlim _mySemaphoreSlim = new SemaphoreSlim(1);
@@ -34,9 +34,9 @@ namespace Helsenorge.Messaging.ServiceBus
         /// </summary>
         protected abstract TLink CreateLink(ISession session);
 
-        protected Session CreateSession(Connection connection)
+        protected ISession CreateSession(IConnection connection)
         {
-            return ((IConnection)connection).CreateSession() as Session;
+            return connection.CreateSession();
         }
 
         protected async Task OnSessionClosing()
@@ -45,7 +45,7 @@ namespace Helsenorge.Messaging.ServiceBus
             {
                 return;
             }
-            await _link.CloseAsync();
+            await _link.CloseAsync().ConfigureAwait(false);
         }
 
         protected void CheckNotClosed()
@@ -58,23 +58,23 @@ namespace Helsenorge.Messaging.ServiceBus
 
         protected async Task EnsureOpen()
         {
-            await _mySemaphoreSlim.WaitAsync();
+            await _mySemaphoreSlim.WaitAsync().ConfigureAwait(false);
             try
             {
                 CheckNotClosed();
-                if (Connection.EnsureConnection() || _session == null || _session.IsClosed || _link == null || _link.IsClosed)
+                if (await Connection.EnsureConnection().ConfigureAwait(false) || _session == null || _session.IsClosed || _link == null || _link.IsClosed)
                 {
                     if (_link != null && !_link.IsClosed)
                     {
-                        await _link.CloseAsync();
+                        await _link.CloseAsync().ConfigureAwait(false);
                     }
 
                     if (_session != null && !_session.IsClosed)
                     {
-                        await _session.CloseAsync();
+                        await _session.CloseAsync().ConfigureAwait(false);
                     }
 
-                    _session = CreateSession(Connection.Connection);
+                    _session = CreateSession(await Connection.GetConnection().ConfigureAwait(false));
                     _link = CreateLink(_session);
                 }
             }
@@ -95,8 +95,8 @@ namespace Helsenorge.Messaging.ServiceBus
             IsClosed = true;
             if (_session != null && !_session.IsClosed)
             {
-                await OnSessionClosing();
-                await _session.CloseAsync();
+                await OnSessionClosing().ConfigureAwait(false);
+                await _session.CloseAsync().ConfigureAwait(false);
             }
         }
     }

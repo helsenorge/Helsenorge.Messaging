@@ -12,6 +12,7 @@ using System.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 {
@@ -30,11 +31,11 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         }
 
         [TestMethod]
-        public void Error_Receive_Encrypted()
+        public async Task Error_Receive_Encrypted()
         {
             // postition of arguments have been reversed so that we inster the name of the argument without getting a resharper indication
             // makes it easier to read
-            RunReceive(
+            await RunReceive(
                 GenericMessage,
                 postValidation: () =>
                 {
@@ -52,11 +53,11 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 });
         }
         [TestMethod]
-        public void Error_Receive_Soap()
+        public async Task Error_Receive_Soap()
         {
             // postition of arguments have been reversed so that we inster the name of the argument without getting a resharper indication
             // makes it easier to read
-            RunReceive(
+            await RunReceive(
                 SoapFault,
                 postValidation: () =>
                 {
@@ -73,7 +74,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 });
         }
 
-        private void RunReceive(
+        private async Task RunReceive(
             XDocument content,
             Action<MockMessage> messageModification,
             Func<bool> wait,
@@ -84,12 +85,20 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             messageModification(message);
             MockFactory.Helsenorge.Error.Messages.Add(message);
 
-            Server.RegisterErrorMessageReceivedCallback((m) => { _errorReceiveCalled = true; });
-            Server.RegisterErrorMessageReceivedStartingCallback((m) => _errorStartingCalled = true);
-            Server.Start();
+            Server.RegisterErrorMessageReceivedCallback((m) => 
+            { 
+                _errorReceiveCalled = true;
+                return Task.CompletedTask;
+            });
+            Server.RegisterErrorMessageReceivedStartingCallback((m) =>
+            {
+                _errorStartingCalled = true;
+                return Task.CompletedTask;
+            });
+            await Server.Start();
 
             Wait(15, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout
-            Server.Stop(TimeSpan.FromSeconds(10));
+            await Server.Stop();
 
             // check the state of the system
             postValidation();

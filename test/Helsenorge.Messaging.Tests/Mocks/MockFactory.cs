@@ -52,9 +52,9 @@ namespace Helsenorge.Messaging.Tests.Mocks
             return new MockSender(this, id);
         }
 
-        public IMessagingMessage CreateMessage(Stream stream)
+        public Task<IMessagingMessage> CreateMessage(Stream stream)
         {
-            return new MockMessage(stream);
+            return Task.FromResult<IMessagingMessage>(new MockMessage(stream));
         }
     }
 

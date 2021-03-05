@@ -18,7 +18,7 @@ using Xunit.Abstractions;
 
 namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
 {
-    public class ServiceBusMessageTests : IDisposable
+    public class ServiceBusMessageTests : IAsyncDisposable
     {
         private readonly ServiceBusFixture _fixture;
         private readonly ServiceBusSender _sender;
@@ -35,9 +35,9 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             _fixture.PurgeQueueAsync(ServiceBusTestingConstants.GetDeadLetterQueueName(QueueName)).Wait();
         }
 
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
-             _receiver.Close().GetAwaiter().GetResult();
+            await _receiver.Close();
             _fixture.Dispose();
         }
 

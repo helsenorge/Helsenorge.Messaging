@@ -23,6 +23,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using Helsenorge.Messaging.Security;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 {
@@ -46,11 +47,11 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         }
         
         [TestMethod]
-        public void Asynchronous_Receive_RemoteCertificateMissing()
+        public async Task Asynchronous_Receive_RemoteCertificateMissing()
         {
             CertificateValidator.SetError((c, u) => CertificateErrors.Missing);
 
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                 postValidation: () =>
                 {
                     Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -64,11 +65,16 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Assert.IsTrue(error.Single().Message.Contains("MessageFunction: DIALOG_INNBYGGER_EKONTAKT FromHerId: 93252 ToHerId: 93238"));
                 },
                 wait: () => _completedCalled,
-                received: (m) => { Assert.IsTrue(m.SignatureError == CertificateErrors.Missing); },
+                received: (m) => 
+                { 
+                    Assert.IsTrue(m.SignatureError == CertificateErrors.Missing);
+                    return Task.CompletedTask;
+                },
                 messageModification: (m) => { });
         }
+
         [TestMethod, TestCategory("X509Chain")]
-        public void Asynchronous_Receive_CertificateSignError()
+        public async Task Asynchronous_Receive_CertificateSignError()
         {
             Exception receiveException = null;
 
@@ -86,7 +92,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
 
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                 postValidation: () => {
                     Assert.IsTrue(_startingCalled);
                     Assert.IsFalse(_receivedCalled);
@@ -101,24 +107,24 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Assert.IsNotNull(signingException.Payload);
                 },
                 wait: () => _completedCalled,
-                received: (m) => { },
+                received: (m) => { return Task.CompletedTask; },
                 messageModification: (m) => { },
                 handledException: ((m, e) =>
                 {
-                    Server.Stop(TimeSpan.FromSeconds(10));
                     _handledExceptionCalled = true;
                     _completedCalled = true;
                     receiveException = e;
+                    return Task.CompletedTask;
                 }),
                 messageProtected: true);
         }
 
         [TestMethod]
-        public void Asynchronous_Receive_NoCpaId()
+        public async Task Asynchronous_Receive_NoCpaId()
         {
             // postition of arguments have been reversed so that we inster the name of the argument without getting a resharper indication
             // makes it easier to read
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                 postValidation: () =>
                 {
                     Assert.IsTrue(_startingCalled);
@@ -132,13 +138,14 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Assert.AreEqual(MockFactory.HelsenorgeHerId, m.ToHerId);
                     Assert.AreEqual(MockFactory.OtherHerId, m.FromHerId);
                     Assert.AreEqual("DIALOG_INNBYGGER_EKONTAKT", m.MessageFunction);
+                    return Task.CompletedTask;
                 },
                 messageModification: (m) => { });
         }
         [TestMethod]
-        public void Asynchronous_Receive_WithCpaId()
+        public async Task Asynchronous_Receive_WithCpaId()
         {
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                 postValidation: () =>
                 {
                     Assert.IsTrue(_startingCalled);
@@ -152,13 +159,14 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Assert.AreEqual(MockFactory.HelsenorgeHerId, m.ToHerId);
                     Assert.AreEqual(MockFactory.OtherHerId, m.FromHerId);
                     Assert.AreEqual("DIALOG_INNBYGGER_EKONTAKT", m.MessageFunction);
+                    return Task.CompletedTask;
                 },
                 messageModification: (m) => { m.CpaId = "49391409-e528-4919-b4a3-9ccdab72c8c1"; });
         }
         [TestMethod]
-        public void Asynchronous_Receive_MissingFunction()
+        public async Task Asynchronous_Receive_MissingFunction()
         {
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                 postValidation: () =>
                 {
                     Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -167,13 +175,13 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 
                 },
                 wait: () => _handledExceptionCalled,
-                received: (m) => { },
+                received: (m) => { return Task.CompletedTask; },
                 messageModification: (m) => { m.MessageFunction = null; });
         }
         [TestMethod]
-        public void Asynchronous_Receive_MissingToHerId()
+        public async Task Asynchronous_Receive_MissingToHerId()
         {
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
             postValidation: () =>
             {
                 Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -182,13 +190,13 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 
             },
             wait: () => _handledExceptionCalled,
-            received: (m) => { },
+            received: (m) => { return Task.CompletedTask; },
             messageModification: (m) => { m.ToHerId = 0; });
         }
         [TestMethod]
-        public void Asynchronous_Receive_MissingFromHerId()
+        public async Task Asynchronous_Receive_MissingFromHerId()
         {
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
             postValidation: () =>
             {
                 Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -196,13 +204,17 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
             },
             wait: () => _receivedCalled,
-            received: (m) => { Assert.AreEqual(CertificateErrors.Missing, m.SignatureError); },
+            received: (m) => 
+            { 
+                Assert.AreEqual(CertificateErrors.Missing, m.SignatureError);
+                return Task.CompletedTask;
+            },
             messageModification: (m) => { m.FromHerId = 0; });
         }
         [TestMethod]
-        public void Asynchronous_Receive_MissingApplicationTimeStamp()
+        public async Task Asynchronous_Receive_MissingApplicationTimeStamp()
         {
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
             postValidation: () =>
             {
                 Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -210,13 +222,13 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-field-value", "One or more fields are missing", "applicationTimeStamp;");
             },
             wait: () => _handledExceptionCalled,
-            received: (m) => { },
+            received: (m) => { return Task.CompletedTask; },
             messageModification: (m) => { m.ApplicationTimestamp = DateTime.MinValue; });
         }
         [TestMethod]
-        public void Asynchronous_Receive_ContentType()
+        public async Task Asynchronous_Receive_ContentType()
         {
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
             postValidation: () =>
             {
                 Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -224,13 +236,13 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-field-value", "One or more fields are missing", "ContentType;");
             },
             wait: () => _handledExceptionCalled,
-            received: (m) => { },
+            received: (m) => { return Task.CompletedTask; },
             messageModification: (m) => { m.ContentType = null; });
         }
         [TestMethod]
-        public void Asynchronous_Receive_XmlSchemaError()
+        public async Task Asynchronous_Receive_XmlSchemaError()
         {
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
             postValidation: () =>
             {
                 Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -245,9 +257,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             messageModification: (m) => { });
         }
         [TestMethod]
-        public void Asynchronous_Receive_ReceivedDataMismatch()
+        public async Task Asynchronous_Receive_ReceivedDataMismatch()
         {
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
             postValidation: () =>
             {
                 Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -262,9 +274,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             messageModification: (m) => { });
         }
         [TestMethod]
-        public void Asynchronous_Receive_NotifySender()
+        public async Task Asynchronous_Receive_NotifySender()
         {
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
             postValidation: () =>
             {
                 Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -279,9 +291,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             messageModification: (m) => { });
         }
         [TestMethod]
-        public void Asynchronous_Receive_GenericException()
+        public async Task Asynchronous_Receive_GenericException()
         {
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
             postValidation: () =>
             {
                 Assert.AreEqual(1, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -292,12 +304,12 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             messageModification: (m) => { });
         }
         [TestMethod]
-        public void Asynchronous_Receive_LocalCertificateStartDate()
+        public async Task Asynchronous_Receive_LocalCertificateStartDate()
         {
             CertificateValidator.SetError(
                 (c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.StartDate : CertificateErrors.None);
 
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                postValidation: () =>
                {
                     Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -305,16 +317,20 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificateStartDate));
                },
                wait: () => _completedCalled,
-               received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
+               received: (m) => 
+               { 
+                   Assert.IsTrue(m.DecryptionError != CertificateErrors.None);
+                   return Task.CompletedTask;
+               },
                messageModification: (m) => { });
         }
         [TestMethod]
-        public void Asynchronous_Receive_LocalCertificateEndDate()
+        public async Task Asynchronous_Receive_LocalCertificateEndDate()
         {
             CertificateValidator.SetError(
                 (c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.EndDate : CertificateErrors.None);
 
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                postValidation: () =>
                {
                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -322,16 +338,20 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificateEndDate));
                },
                wait: () => _completedCalled,
-               received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
+               received: (m) => 
+               { 
+                   Assert.IsTrue(m.DecryptionError != CertificateErrors.None);
+                   return Task.CompletedTask;
+               },
                messageModification: (m) => { });
         }
         [TestMethod]
-        public void Asynchronous_Receive_LocalCertificateUsage()
+        public async Task Asynchronous_Receive_LocalCertificateUsage()
         {
             CertificateValidator.SetError(
                 (c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.Usage : CertificateErrors.None);
 
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                postValidation: () =>
                {
                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -339,16 +359,20 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificateUsage));
                },
                wait: () => _completedCalled,
-               received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
+               received: (m) => 
+               { 
+                   Assert.IsTrue(m.DecryptionError != CertificateErrors.None);
+                   return Task.CompletedTask;
+               },
                messageModification: (m) => { });
         }
         [TestMethod]
-        public void Asynchronous_Receive_LocalCertificateRevoked()
+        public async Task Asynchronous_Receive_LocalCertificateRevoked()
         {
             CertificateValidator.SetError(
                 (c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.Revoked : CertificateErrors.None);
 
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                postValidation: () =>
                {
                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -356,16 +380,20 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificateRevocation));
                },
                wait: () => _completedCalled,
-               received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
+               received: (m) => 
+               { 
+                   Assert.IsTrue(m.DecryptionError != CertificateErrors.None);
+                   return Task.CompletedTask;
+               },
                messageModification: (m) => { });
         }
         [TestMethod]
-        public void Asynchronous_Receive_LocalCertificateRevokedUnknown()
+        public async Task Asynchronous_Receive_LocalCertificateRevokedUnknown()
         {
             CertificateValidator.SetError(
                 (c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.RevokedUnknown : CertificateErrors.None);
 
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                postValidation: () =>
                {
                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -373,11 +401,15 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificateRevocation));
                },
                wait: () => _completedCalled,
-               received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
+               received: (m) => 
+               { 
+                   Assert.IsTrue(m.DecryptionError != CertificateErrors.None);
+                   return Task.CompletedTask;
+               },
                messageModification: (m) => { });
         }
         [TestMethod]
-        public void Asynchronous_Receive_LocalCertificateMultiple()
+        public async Task Asynchronous_Receive_LocalCertificateMultiple()
         {
             CertificateValidator.SetError(
                 (c, u) =>
@@ -385,7 +417,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                         ? CertificateErrors.StartDate | CertificateErrors.EndDate
                         : CertificateErrors.None);
 
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                postValidation: () =>
                {
                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -393,17 +425,21 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificate));
                },
                wait: () => _completedCalled,
-               received: (m) => { Assert.IsTrue(m.DecryptionError != CertificateErrors.None); },
+               received: (m) => 
+               { 
+                   Assert.IsTrue(m.DecryptionError != CertificateErrors.None);
+                   return Task.CompletedTask;
+               },
                messageModification: (m) => { });
         }
 
         [TestMethod]
-        public void Asynchronous_Receive_RemoteCertificateStartDate()
+        public async Task Asynchronous_Receive_RemoteCertificateStartDate()
         {
             CertificateValidator.SetError(
                 (c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.StartDate : CertificateErrors.None);
 
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                postValidation: () =>
                {
                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -412,16 +448,20 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:expired-certificate", "Invalid start date", string.Empty);
                },
                wait: () => _completedCalled,
-               received: (m) => { Assert.IsTrue(m.SignatureError != CertificateErrors.None); },
+               received: (m) => 
+               { 
+                   Assert.IsTrue(m.SignatureError != CertificateErrors.None);
+                   return Task.CompletedTask;
+               },
                messageModification: (m) => { });
         }
         [TestMethod]
-        public void Asynchronous_ReceiveRemoteCertificateEndDate()
+        public async Task Asynchronous_ReceiveRemoteCertificateEndDate()
         {
             CertificateValidator.SetError(
             (c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.EndDate : CertificateErrors.None);
 
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                postValidation: () =>
                {
                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -430,16 +470,20 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:expired-certificate", "Invalid end date", string.Empty);
                },
                wait: () => _completedCalled,
-               received: (m) => { Assert.IsTrue(m.SignatureError != CertificateErrors.None); },
+               received: (m) => 
+               { 
+                   Assert.IsTrue(m.SignatureError != CertificateErrors.None);
+                   return Task.CompletedTask;
+               },
                messageModification: (m) => { });
         }
         [TestMethod]
-        public void Asynchronous_Receive_RemoteCertificateUsage()
+        public async Task Asynchronous_Receive_RemoteCertificateUsage()
         {
             CertificateValidator.SetError(
                (c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.Usage : CertificateErrors.None);
 
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                postValidation: () =>
                {
                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -448,16 +492,20 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-certificate", "Invalid usage", string.Empty);
                },
                wait: () => _completedCalled,
-               received: (m) => { Assert.IsTrue(m.SignatureError != CertificateErrors.None); },
+               received: (m) => 
+               { 
+                   Assert.IsTrue(m.SignatureError != CertificateErrors.None);
+                   return Task.CompletedTask;
+               },
                messageModification: (m) => { });
         }
         [TestMethod]
-        public void Asynchronous_Receive_RemoteCertificateRevoked()
+        public async Task Asynchronous_Receive_RemoteCertificateRevoked()
         {
             CertificateValidator.SetError(
                   (c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.Revoked : CertificateErrors.None);
 
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                postValidation: () =>
                {
                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -466,16 +514,20 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:revoked-certificate", "Certificate has been revoked", string.Empty);
                },
                wait: () => _completedCalled,
-               received: (m) => { Assert.IsTrue(m.SignatureError != CertificateErrors.None); },
+               received: (m) => 
+               { 
+                   Assert.IsTrue(m.SignatureError != CertificateErrors.None);
+                   return Task.CompletedTask;
+               },
                messageModification: (m) => { });
         }
         [TestMethod]
-        public void Asynchronous_Receive_RemoteCertificateRevokedUnknown()
+        public async Task Asynchronous_Receive_RemoteCertificateRevokedUnknown()
         {
             CertificateValidator.SetError(
                   (c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.RevokedUnknown : CertificateErrors.None);
 
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                   postValidation: () =>
                   {
                       Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -484,11 +536,15 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                       CheckError(MockFactory.OtherParty.Error.Messages, "transport:revoked-certificate", "Unable to determine revocation status", string.Empty);
                   },
                   wait: () => _completedCalled,
-                  received: (m) => { Assert.IsTrue(m.SignatureError != CertificateErrors.None); },
+                  received: (m) => 
+                  { 
+                      Assert.IsTrue(m.SignatureError != CertificateErrors.None);
+                      return Task.CompletedTask;
+                  },
                   messageModification: (m) => { });
         }
         [TestMethod]
-        public void Asynchronous_Receive_RemoteCertificateMultiple()
+        public async Task Asynchronous_Receive_RemoteCertificateMultiple()
         {
             CertificateValidator.SetError(
                    (c, u) =>
@@ -496,7 +552,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                            ? CertificateErrors.StartDate | CertificateErrors.EndDate
                            : CertificateErrors.None);
 
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                postValidation: () =>
                {
                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
@@ -505,12 +561,16 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-certificate", "More than one error with certificate", string.Empty);
                },
                wait: () => _completedCalled,
-               received: (m) => { Assert.IsTrue(m.SignatureError != CertificateErrors.None); },
+               received: (m) => 
+               { 
+                   Assert.IsTrue(m.SignatureError != CertificateErrors.None);
+                   return Task.CompletedTask;
+               },
                messageModification: (m) => { });
         }
 
         [TestMethod]
-        public void Asynchronous_Receive_UseLegacyOK()
+        public async Task Asynchronous_Receive_UseLegacyOK()
         {
             Settings.DecryptionCertificate = new CertificateSettings()
             {
@@ -523,7 +583,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 
             // postition of arguments have been reversed so that we instert the name of the argument without getting a resharper indication
             // makes it easier to read
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                 postValidation: () =>
                 {
                     Assert.IsTrue(_startingCalled);
@@ -537,18 +597,19 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Assert.AreEqual(MockFactory.HelsenorgeHerId, m.ToHerId);
                     Assert.AreEqual(MockFactory.OtherHerId, m.FromHerId);
                     Assert.AreEqual("DIALOG_INNBYGGER_EKONTAKT", m.MessageFunction);
+                    return Task.CompletedTask;
                 },
                 messageModification: (m) => { });
         }
 
         [TestMethod]
-        public void Asynchronous_Receive_SecurityException()
+        public async Task Asynchronous_Receive_SecurityException()
         {
             var signatureCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeSigntatureThumbprint);
             var encryptionCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint);
             Server.MessageProtection = new SecurityExceptionMessageProtection(signatureCertificate, encryptionCertificate);
 
-            RunAsynchronousReceive(
+            await RunAsynchronousReceive(
                 postValidation: () =>
                 {
                     
@@ -556,18 +617,18 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-certificate", "Invalid certificate", string.Empty);
                 },
                 wait: () => _handledExceptionCalled,
-                received: (m) => { },
+                received: (m) => { return Task.CompletedTask; },
                 messageModification: (m) => { });
         }
 
         [TestMethod]  
-        public void Asynchronous_Receive_InvalidXML()
+        public async Task Asynchronous_Receive_InvalidXML()
         {  
             var messageAsStream = new MemoryStream();  
             var messageAsString = "Invalid XMLMessage";  
             messageAsStream.Write(new UnicodeEncoding().GetBytes(messageAsString), 0, messageAsString.Length);
 
-            RunAsynchronousReceive(  
+            await RunAsynchronousReceive(  
                 postValidation: () =>  
                 {
                     Assert.IsTrue(_startingCalled);
@@ -576,7 +637,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     CheckError(MockFactory.OtherParty.Error.Messages, "transport:not-well-formed-xml", "Could not deserialize payload", string.Empty);
                 },  
             wait: () => _handledExceptionCalled,  
-            received: (m) => { },  
+            received: (m) => { return Task.CompletedTask; },
             messageModification: (m) => { m.SetBody(messageAsStream); });  
         }
 
@@ -645,12 +706,12 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             }
         }
 
-        private void RunAsynchronousReceive(
+        private async Task RunAsynchronousReceive(
             Action<MockMessage> messageModification, 
-            Action<IncomingMessage> received, 
+            Func<IncomingMessage, Task> received, 
             Func<bool> wait,
             Action postValidation,
-            Action<IMessagingMessage, Exception> handledException = null,
+            Func<IMessagingMessage, Exception, Task> handledException = null,
             bool messageProtected = false)
         {
             // create and post message
@@ -659,21 +720,38 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             MockFactory.Helsenorge.Asynchronous.Messages.Add(message);
 
             // configure notifications
-            Server.RegisterAsynchronousMessageReceivedStartingCallback((m) => _startingCalled = true);
-            Server.RegisterAsynchronousMessageReceivedCallback((m) =>
+            Server.RegisterAsynchronousMessageReceivedStartingCallback((m) => 
             {
-                received(m);
+                _startingCalled = true;
+                return Task.CompletedTask;
+            });
+            Server.RegisterAsynchronousMessageReceivedCallback(async (m) =>
+            {
+                 await received(m);
                 _receivedCalled = true;
             });
-            Server.RegisterAsynchronousMessageReceivedCompletedCallback((m) => _completedCalled = true);
-            Server.RegisterUnhandledExceptionCallback((m, e) => _unhandledExceptionCalled = true);
+            Server.RegisterAsynchronousMessageReceivedCompletedCallback((m) => 
+            {
+                _completedCalled = true;
+                return Task.CompletedTask;
+            });
+            Server.RegisterUnhandledExceptionCallback((m, e) => 
+            {
+                _unhandledExceptionCalled = true;
+                return Task.CompletedTask;
+            });
             if (handledException != null) Server.RegisterHandledExceptionCallback(handledException);
-            else Server.RegisterHandledExceptionCallback((m, e) => _handledExceptionCalled = true);
+            else Server.RegisterHandledExceptionCallback((m, e) =>
+            {
+                _handledExceptionCalled = true;
+                return Task.CompletedTask;
+            }
+            );
             
-            Server.Start();
+            await Server.Start();
 
             Wait(20, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout
-            Server.Stop(TimeSpan.FromSeconds(10));
+            await Server.Stop();
             
             // check the state of the system
             postValidation();

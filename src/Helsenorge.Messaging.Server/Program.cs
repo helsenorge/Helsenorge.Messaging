@@ -17,6 +17,8 @@ using NLog;
 using NLog.Config;
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -109,8 +111,9 @@ namespace Helsenorge.Messaging.Server
             _messagingServer.RegisterAsynchronousMessageReceivedStartingCallback((m) =>
             {
                 MappedDiagnosticsLogicalContext.Set("correlationId", m.MessageId);
+                return Task.CompletedTask;
             });
-            _messagingServer.RegisterAsynchronousMessageReceivedCallback((m) =>
+            _messagingServer.RegisterAsynchronousMessageReceivedCallback(async (m) =>
             {
                 if (m.Payload.ToString().Contains("ThrowException"))
                 {
@@ -123,21 +126,22 @@ namespace Helsenorge.Messaging.Server
                     Directory.CreateDirectory(path);
                 }
                 var fileName = Path.Combine(path, m.MessageId + ".xml");
-                using (var sw = File.CreateText(fileName))
-                {
-                    m.Payload.Save(sw);
-                }
+                
+                using var sw = File.CreateText(fileName);
+                await m.Payload.SaveAsync(sw, SaveOptions.None, CancellationToken.None);
             });
             _messagingServer.RegisterAsynchronousMessageReceivedCompletedCallback((m) =>
             {
                 MappedDiagnosticsLogicalContext.Set("correlationId", m.MessageId);
+                return Task.CompletedTask;
             });
 
             _messagingServer.RegisterSynchronousMessageReceivedStartingCallback((m) =>
             {
                 MappedDiagnosticsLogicalContext.Set("correlationId", string.Empty);// reset correlation id
+                return Task.CompletedTask;
             });
-            _messagingServer.RegisterSynchronousMessageReceivedCallback((m) =>
+            _messagingServer.RegisterSynchronousMessageReceivedCallback(async (m) =>
             {
                 var path = Path.Combine(_serverSettings.DestinationDirectory, "Synchronous");
                 if (Directory.Exists(path) == false)
@@ -147,13 +151,14 @@ namespace Helsenorge.Messaging.Server
                 var fileName = Path.Combine(path, m.MessageId + ".xml");
                 using (var sw = File.CreateText(fileName))
                 {
-                    m.Payload.Save(sw);
+                    await m.Payload.SaveAsync(sw, SaveOptions.None, CancellationToken.None);
                 }
                 return new XDocument(new XElement("DummyResponse"));
             });
             _messagingServer.RegisterSynchronousMessageReceivedCompletedCallback((m) =>
             {
                 MappedDiagnosticsLogicalContext.Set("correlationId", string.Empty); // reset correlation id
+                return Task.CompletedTask;
             });
         }
 

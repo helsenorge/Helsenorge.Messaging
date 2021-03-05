@@ -41,19 +41,17 @@ namespace Helsenorge.Messaging.ServiceBus
 
         public bool IsClosed => _connection.IsClosedOrClosing;
 
-        public async Task Close() => await _connection.CloseAsync();
+        public async Task Close() => await _connection.CloseAsync().ConfigureAwait(false);
 
-        public IMessagingMessage CreateMessage(Stream stream)
+        public async Task<IMessagingMessage> CreateMessage(Stream stream)
         {
-            using (var memoryStream = new MemoryStream())
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream).ConfigureAwait(false);
+            stream.Close();
+            return new ServiceBusMessage(new Message
             {
-                stream.CopyTo(memoryStream);
-                stream.Close();
-                return new ServiceBusMessage(new Message
-                {
-                    BodySection = new Data { Binary = memoryStream.ToArray() }
-                });
-            }
+                BodySection = new Data { Binary = memoryStream.ToArray() }
+            });
         }
     }
 }
