@@ -486,6 +486,7 @@ namespace Helsenorge.Registries
             if (compositeListNode == null) return null;
 
             var constituents = compositeListNode.Elements(_ns + "Encapsulation").Elements(_ns + "Constituent").ToList();
+            constituents.AddRange(compositeListNode.Elements(_ns + "Composite").Elements(_ns + "Constituent"));
             if (!constituents.Any()) return null;
 
             var parts = new List<CollaborationProtocolMessagePart>();
