@@ -18,7 +18,7 @@ Dette biblioteket støtter oppunder basisbehovet for en kommunikasjonsløsning v
 ## Contributing
 We are welcoming contributors!
 
-If you want to contribute to this project we are using [GiHub Flow](https://guides.github.com/introduction/flow/) for our branching strategy. When contributing please branch from master.
+If you want to contribute to this project we are using [GitHub Flow](https://guides.github.com/introduction/flow/) for our branching strategy. When contributing please branch from master.
 
 ### Branching strategy 
-- [GiHub Flow](https://guides.github.com/introduction/flow/)
+- [GitHub Flow](https://guides.github.com/introduction/flow/)
