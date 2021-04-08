@@ -48,8 +48,8 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 wait: () => _errorReceiveCalled,
                 messageModification: (m) =>
                 {
-                    m.Properties.Add("property1", 1);
-                    m.Properties.Add("property2", 1);
+                    m.SetApplicationProperty("property1", 1);
+                    m.SetApplicationProperty("property2", 1);
                 });
         }
         [TestMethod]

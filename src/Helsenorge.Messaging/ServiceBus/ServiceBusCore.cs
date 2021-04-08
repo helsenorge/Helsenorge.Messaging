@@ -281,19 +281,19 @@ namespace Helsenorge.Messaging.ServiceBus
             
             if (clonedMessage.Properties.ContainsKey(OriginalMessageIdHeaderKey) == false)
             {
-                clonedMessage.Properties.Add(OriginalMessageIdHeaderKey, originalMessage.MessageId);
+                clonedMessage.SetApplicationProperty(OriginalMessageIdHeaderKey, originalMessage.MessageId);
             }
             if (clonedMessage.Properties.ContainsKey(ReceiverTimestampHeaderKey) == false)
             {
-                clonedMessage.Properties.Add(ReceiverTimestampHeaderKey, DateTime.Now.ToString(DateTimeFormatInfo.InvariantInfo));
+                clonedMessage.SetApplicationProperty(ReceiverTimestampHeaderKey, DateTime.Now.ToString(DateTimeFormatInfo.InvariantInfo));
             }
             if (clonedMessage.Properties.ContainsKey(ErrorConditionHeaderKey) == false)
             {
-                clonedMessage.Properties.Add(ErrorConditionHeaderKey, errorCode);
+                clonedMessage.SetApplicationProperty(ErrorConditionHeaderKey, errorCode);
             }
             if (clonedMessage.Properties.ContainsKey(ErrorDescriptionHeaderKey) == false)
             {
-                clonedMessage.Properties.Add(ErrorDescriptionHeaderKey, errorDescription);
+                clonedMessage.SetApplicationProperty(ErrorDescriptionHeaderKey, errorDescription);
             }
 
             var additionDataValue = "None";
@@ -312,7 +312,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
                 if (clonedMessage.Properties.ContainsKey(ErrorConditionDataHeaderKey) == false)
                 {
-                    clonedMessage.Properties.Add(ErrorConditionDataHeaderKey, additionDataValue);
+                    clonedMessage.SetApplicationProperty(ErrorConditionDataHeaderKey, additionDataValue);
                 }
             }
             logger.LogWarning("Reporting error to sender. ErrorCode: {0} ErrorDescription: {1} AdditionalData: {2}", errorCode, errorDescription, additionDataValue);
