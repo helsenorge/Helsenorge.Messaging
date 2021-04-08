@@ -110,6 +110,12 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Exceptions
         {
             public List<TimeSpan> Delays { get; } = new List<TimeSpan>();
 
+            public void Delay(TimeSpan timeSpan)
+            {
+                Delays.Add(timeSpan);
+                CurrentTimeUtc += timeSpan;
+            }
+
             public Task DelayAsync(TimeSpan timeSpan)
             {
                 Delays.Add(timeSpan);

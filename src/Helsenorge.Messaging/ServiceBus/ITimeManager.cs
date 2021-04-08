@@ -13,6 +13,8 @@ namespace Helsenorge.Messaging.ServiceBus
 {
     internal interface ITimeManager
     {
+        void Delay(TimeSpan timeSpan);
+
         Task DelayAsync(TimeSpan timeSpan);
 
         DateTime CurrentTimeUtc { get; }
