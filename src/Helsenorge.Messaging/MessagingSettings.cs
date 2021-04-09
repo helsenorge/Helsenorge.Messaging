@@ -285,7 +285,9 @@ namespace Helsenorge.Messaging
         /// The location of the certificate store to use
         /// </summary>
         public StoreLocation StoreLocation { get; set; }
-
+        /// <summary>
+        /// Validates the CertificateSettings, ensuring required values has been set
+        /// </summary>
         public void Validate()
         {
             if (string.IsNullOrEmpty(Thumbprint)) throw new ArgumentNullException(nameof(Thumbprint));
