@@ -105,9 +105,12 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     var signingException = receiveException as CertificateException;
                     Assert.IsNotNull(signingException);
                     Assert.IsNotNull(signingException.Payload);
+                    Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                    Assert.AreEqual(4, MockFactory.OtherParty.Error.Messages[0].Properties.Count);
+                    Assert.AreEqual("transport:invalid-certificate", MockFactory.OtherParty.Error.Messages[0].Properties["errorCondition"]);
                 },
                 wait: () => _completedCalled,
-                received: (m) => { return Task.CompletedTask; },
+                received: (m) => throw new Exception("Message should not come this far when there is issue with the certificate"),
                 messageModification: (m) => { },
                 handledException: ((m, e) =>
                 {
