@@ -102,7 +102,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                         .Contains($"{TestCertificates.HelsenorgePrivateSigntature.Thumbprint}"));
                     Assert.IsTrue(error.Message
                         .Contains($"{TestCertificates.HelsenorgePrivateSigntature.NotBefore}"));
-                    var signingException = receiveException as CertificateException;
+                    var signingException = receiveException as CertificateMessagePayloadException;
                     Assert.IsNotNull(signingException);
                     Assert.IsNotNull(signingException.Payload);
                     Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
