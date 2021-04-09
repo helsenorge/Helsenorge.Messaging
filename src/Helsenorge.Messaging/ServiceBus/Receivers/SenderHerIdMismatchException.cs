@@ -43,9 +43,5 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         public SenderHerIdMismatchException(string message, Exception innerException) : base(message, innerException)
         {
         }
-
-        protected SenderHerIdMismatchException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }
