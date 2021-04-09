@@ -44,6 +44,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Assert.IsTrue(_errorStartingCalled, "Error message received starting callback not called");
                     Assert.IsNull(MockLoggerProvider.Entries.FirstOrDefault(e => e.Message.Contains("CPA_FindAgreementForCounterpartyAsync_0_93252")));
                     Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.ExternalReportedError));
+                    Assert.AreEqual("Label: DIALOG_INNBYGGER_EKONTAKT property1: 1 property2: 1 ", MockLoggerProvider.FindEntry(EventIds.ExternalReportedError).Message);
                 },
                 wait: () => _errorReceiveCalled,
                 messageModification: (m) =>
