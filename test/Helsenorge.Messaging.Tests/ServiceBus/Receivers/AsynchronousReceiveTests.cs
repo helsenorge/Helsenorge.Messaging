@@ -205,11 +205,15 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
                 // we don't have enough information to know where to send it back
                 Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+                var logEntries = MockLoggerProvider.Entries
+                .Where(entry => 
+                    entry.EventId == EventIds.MissingField && entry.Message.Contains("FromHerId is missing. No idea where to send the error")
+                );
+                Assert.AreEqual(1, logEntries.Count());
             },
-            wait: () => _receivedCalled,
+            wait: () => _handledExceptionCalled,
             received: (m) => 
             { 
-                Assert.AreEqual(CertificateErrors.Missing, m.SignatureError);
                 return Task.CompletedTask;
             },
             messageModification: (m) => { m.FromHerId = 0; });

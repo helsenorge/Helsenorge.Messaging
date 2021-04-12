@@ -459,6 +459,10 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             {
                 missingFields.Add(ServiceBusCore.ToHerIdHeaderKey);
             }
+            if(message.FromHerId == 0)
+            {
+                missingFields.Add(ServiceBusCore.FromHerIdHeaderKey);
+            }
             if (string.IsNullOrEmpty(message.MessageFunction))
             {
                 missingFields.Add("Label");
