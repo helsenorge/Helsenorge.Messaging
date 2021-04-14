@@ -142,6 +142,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             }
             return await HandleRawMessage(message, alwaysRemoveMessage).ConfigureAwait(false);
         }
+
         private async Task<IncomingMessage> HandleRawMessage(IMessagingMessage message, bool alwaysRemoveMessage)
         {
             if (message == null) return null;
@@ -149,9 +150,10 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 
             try
             {
-                if(message.LockedUntil.ToUniversalTime() <= DateTime.UtcNow)
+                if (message.LockedUntil.ToUniversalTime() <= DateTime.UtcNow)
                 {
-                    Logger.LogInformation($"MessageListener::ReadAndProcessMessage - Ignoring message, lock expired at: {message.LockedUntil.ToUniversalTime()}");
+                    Logger.LogInformation(
+                        $"MessageListener::ReadAndProcessMessage - Ignoring message, lock expired at: {message.LockedUntil.ToUniversalTime()}");
                     return null;
                 }
 
@@ -184,7 +186,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 // we need the certificates for decryption and certificate use
                 incomingMessage.CollaborationAgreement = await ResolveProfile(message).ConfigureAwait(false);
 
-                var payload = HandlePayload(message, bodyStream, message.ContentType, incomingMessage, out bool contentWasSigned);
+                var payload = HandlePayload(message, bodyStream, message.ContentType, incomingMessage,
+                    out bool contentWasSigned);
                 incomingMessage.ContentWasSigned = contentWasSigned;
                 if (payload != null)
                 {
@@ -192,14 +195,25 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     {
                         Logger.LogDebug(payload.ToString());
                     }
+
                     incomingMessage.Payload = payload;
                 }
+
                 await NotifyMessageProcessingReady(message, incomingMessage).ConfigureAwait(false);
                 ServiceBusCore.RemoveProcessedMessageFromQueue(message);
                 Logger.LogRemoveMessageFromQueueNormal(message, QueueName);
                 await NotifyMessageProcessingCompleted(incomingMessage).ConfigureAwait(false);
                 Logger.LogEndReceive(QueueType, incomingMessage);
                 return incomingMessage;
+            }
+            catch (CertificateException ex)
+            {
+                Logger.LogWarning($"{ex.Description}. MessageFunction: {message.MessageFunction} " +
+                  $"FromHerId: {message.FromHerId} ToHerId: {message.ToHerId} CpaId: {message.CpaId} " +
+                  $"CorrelationId: {message.CorrelationId} Certificate thumbprint: {ex.AdditionalInformation}");
+
+                Core.ReportErrorToExternalSender(Logger, ex.EventId, message, ex.ErrorCode, ex.Description, ex.AdditionalInformation);
+                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (SecurityException ex)
             {
@@ -321,7 +335,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     : validator.Validate(Core.MessageProtection.EncryptionCertificate, X509KeyUsageFlags.DataEncipherment);
                 // in earlier versions of Helsenorge.Messaging we removed the message, but we should rather 
                 // want it to be dead lettered since this is a temp issue that should be fixed locally.
-                ReportErrorOnLocalCertificate(originalMessage, Core.MessageProtection.EncryptionCertificate, incomingMessage.DecryptionError, false);
+                ReportErrorOnLocalCertificate(originalMessage, Core.MessageProtection.EncryptionCertificate, incomingMessage.DecryptionError);
                 if(Core.MessageProtection.LegacyEncryptionCertificate != null)
                 {
                     // this is optional information that should only be in effect durin a short transition period
@@ -329,7 +343,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                         ? CertificateErrors.None
                         : validator.Validate(Core.MessageProtection.LegacyEncryptionCertificate, X509KeyUsageFlags.DataEncipherment);
                     // if someone forgets to remove the legacy configuration, we log an error message but don't remove it
-                    ReportErrorOnLocalCertificate(originalMessage, Core.MessageProtection.LegacyEncryptionCertificate, incomingMessage.LegacyDecryptionError, false);
+                    ReportErrorOnLocalCertificate(originalMessage, Core.MessageProtection.LegacyEncryptionCertificate, incomingMessage.LegacyDecryptionError);
                 }
                 // validate remote signature certificate
                 var signature = incomingMessage.CollaborationAgreement?.SignatureCertificate;
@@ -347,62 +361,41 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         private void ReportErrorOnRemoteCertificate(IMessagingMessage originalMessage, X509Certificate2 certificate,
             CertificateErrors error)
         {
-            string errorCode;
-            string description;
-            EventId id;
-
             switch (error)
             {
                 case CertificateErrors.None:
                     // no error
                     return;
                 case CertificateErrors.Missing:
-                    // if the certificate is missing, it's because we don't know where it came from
-                    // and have no idea where to send an error message
-                    Logger.LogWarning($"Certificate is missing for message. MessageFunction: {originalMessage.MessageFunction} " +
-                        $"FromHerId: {originalMessage.FromHerId} ToHerId: {originalMessage.ToHerId} CpaId: {originalMessage.CpaId} " +
-                        $"CorrelationId: {originalMessage.CorrelationId} Certificate thumbprint: {certificate?.Thumbprint}");
-                    return;
+                    throw new CertificateException(error, "transport:missing-certificate", "Certificate is missing",
+                        EventIds.RemoteCertificateStartDate, AdditionalInformation(certificate));
                 case CertificateErrors.StartDate:
-                    errorCode = "transport:expired-certificate";
-                    description = "Invalid start date";
-                    id = EventIds.RemoteCertificateStartDate;
-                    break;
+                    throw new CertificateException(error, "transport:expired-certificate", "Invalid start date", 
+                        EventIds.RemoteCertificateStartDate, AdditionalInformation(certificate));
                 case CertificateErrors.EndDate:
-                    errorCode = "transport:expired-certificate";
-                    description = "Invalid end date";
-                    id = EventIds.RemoteCertificateEndDate;
-                    break;
+                    throw new CertificateException(error, "transport:expired-certificate", "Invalid end date",
+                        EventIds.RemoteCertificateEndDate, AdditionalInformation(certificate));
                 case CertificateErrors.Usage:
-                    errorCode = "transport:invalid-certificate";
-                    description = "Invalid usage";
-                    id = EventIds.RemoteCertificateUsage;
-                    break;
+                    throw new CertificateException(error, "transport:invalid-certificate", "Invalid usage",
+                        EventIds.RemoteCertificateUsage, AdditionalInformation(certificate));
                 case CertificateErrors.Revoked:
-                    errorCode = "transport:revoked-certificate";
-                    description = "Certificate has been revoked";
-                    id = EventIds.RemoteCertificateRevocation;
-                    break;
+                    throw new CertificateException(error, "transport:revoked-certificate", "Certificate has been revoked",
+                        EventIds.RemoteCertificateRevocation, AdditionalInformation(certificate));
                 case CertificateErrors.RevokedUnknown:
-                    errorCode = "transport:revoked-certificate";
-                    description = "Unable to determine revocation status";
-                    id = EventIds.RemoteCertificateRevocation;
-                    break;
+                    throw new CertificateException(error, "transport:revoked-certificate", "Unable to determine revocation status",
+                        EventIds.RemoteCertificateRevocation, AdditionalInformation(certificate));
                 default: // since the value is bitcoded
-                    errorCode = "transport:invalid-certificate";
-                    description = "More than one error with certificate";
-                    id = EventIds.RemoteCertificate;
-                    break;
+                    throw new CertificateException(error, "transport:invalid-certificate", "More than one error with certificate",
+                        EventIds.RemoteCertificate, AdditionalInformation(certificate));
             }
-            var additionalInformation =
-                (error != CertificateErrors.Missing) || (error != CertificateErrors.None) ?
-                new[] { certificate.Subject, certificate.Thumbprint } :
-                new string[] { };
-
-            Core.ReportErrorToExternalSender(Logger, id, originalMessage, errorCode, description, additionalInformation);
         }
 
-        private void ReportErrorOnLocalCertificate(IMessagingMessage originalMessage, X509Certificate2 certificate, CertificateErrors error, bool removeMessage)
+        private static string[] AdditionalInformation(X509Certificate2 certificate)
+        {
+            return certificate != null ? new[] {certificate.Subject, certificate.Thumbprint} : new string[] { };
+        }
+
+        private void ReportErrorOnLocalCertificate(IMessagingMessage originalMessage, X509Certificate2 certificate, CertificateErrors error)
         {
             string description;
             EventId id;
@@ -441,11 +434,6 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             }
             Logger.LogError(id, null, "Description: {Description} Subject: {Subject} Thumbprint: {Thumbprint}",
                 description, certificate?.Subject, certificate?.Thumbprint);
-
-            if (removeMessage)
-            {
-                ServiceBusCore.RemoveMessageFromQueueAfterError(Logger, originalMessage);
-            }
         }
 
         private void ValidateMessageHeader(IMessagingMessage message)
