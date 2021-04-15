@@ -36,7 +36,6 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         private bool _handledExceptionCalled;
         private bool _unhandledExceptionCalled;
 
-
         [TestInitialize]
         public override void Setup()
         {
@@ -55,16 +54,15 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 postValidation: () =>
                 {
                     Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                    Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
-                    var error = MockLoggerProvider.Entries
+                    Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                    var logEntries = MockLoggerProvider.Entries
                         .Where(a =>
                             a.LogLevel == LogLevel.Warning &&
-                            a.Message.Contains("Certificate is missing for message. MessageFunction: DIALOG_INNBYGGER_EKONTAKT"))
+                            a.Message.Contains("Certificate is missing. MessageFunction:"))
                         .ToList();
-                    Assert.AreEqual(1, error.Count);
-                    Assert.IsTrue(error.Single().Message.Contains("MessageFunction: DIALOG_INNBYGGER_EKONTAKT FromHerId: 93252 ToHerId: 93238"));
+                    Assert.AreEqual(1, logEntries.Count);
                 },
-                wait: () => _completedCalled,
+                wait: () => _handledExceptionCalled,
                 received: (m) => 
                 { 
                     Assert.IsTrue(m.SignatureError == CertificateErrors.Missing);
@@ -454,7 +452,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateStartDate));
                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:expired-certificate", "Invalid start date", string.Empty);
                },
-               wait: () => _completedCalled,
+               wait: () => _handledExceptionCalled,
                received: (m) => 
                { 
                    Assert.IsTrue(m.SignatureError != CertificateErrors.None);
@@ -476,7 +474,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateEndDate));
                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:expired-certificate", "Invalid end date", string.Empty);
                },
-               wait: () => _completedCalled,
+               wait: () => _handledExceptionCalled,
                received: (m) => 
                { 
                    Assert.IsTrue(m.SignatureError != CertificateErrors.None);
@@ -498,7 +496,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateUsage));
                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-certificate", "Invalid usage", string.Empty);
                },
-               wait: () => _completedCalled,
+               wait: () => _handledExceptionCalled,
                received: (m) => 
                { 
                    Assert.IsTrue(m.SignatureError != CertificateErrors.None);
@@ -520,7 +518,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateRevocation));
                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:revoked-certificate", "Certificate has been revoked", string.Empty);
                },
-               wait: () => _completedCalled,
+               wait: () => _handledExceptionCalled,
                received: (m) => 
                { 
                    Assert.IsTrue(m.SignatureError != CertificateErrors.None);
@@ -542,7 +540,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                       Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateRevocation));
                       CheckError(MockFactory.OtherParty.Error.Messages, "transport:revoked-certificate", "Unable to determine revocation status", string.Empty);
                   },
-                  wait: () => _completedCalled,
+                  wait: () => _handledExceptionCalled,
                   received: (m) => 
                   { 
                       Assert.IsTrue(m.SignatureError != CertificateErrors.None);
@@ -567,7 +565,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificate));
                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-certificate", "More than one error with certificate", string.Empty);
                },
-               wait: () => _completedCalled,
+               wait: () => _handledExceptionCalled,
                received: (m) => 
                { 
                    Assert.IsTrue(m.SignatureError != CertificateErrors.None);
