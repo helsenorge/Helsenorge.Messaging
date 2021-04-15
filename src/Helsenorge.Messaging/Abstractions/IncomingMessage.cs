@@ -8,7 +8,6 @@
 
 using Helsenorge.Registries.Abstractions;
 using System;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Helsenorge.Messaging.Abstractions
@@ -67,37 +66,13 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         public bool ContentWasSigned { get; set; }
         /// <summary>
-        /// Renews the lock of the message
+        /// Renews the peerlock of the message
         /// </summary>
         public Action RenewLock { get; internal set; }
-        /// <summary>
-        /// Renews the lock of the message
-        /// </summary>
-        public Func<Task> RenewLockAsync { get; internal set; }
         /// <summary>
         /// Removes the message from the queue.
         /// </summary>
         public Action Complete { get; internal set; }
-        /// <summary>
-        /// Removes the message from the queue.
-        /// </summary>
-        public Func<Task> CompleteAsync { get; internal set; }
-        /// <summary>
-        /// Releases the message.
-        /// </summary>
-        public Action Release { get; internal set; }
-        /// <summary>
-        /// Releases the message.
-        /// </summary>
-        public Func<Task> ReleaseAsync { get; internal set; }
-        /// <summary>
-        /// Deadletters the message.
-        /// </summary>
-        public Action Deadletter { get; internal set; }
-        /// <summary>
-        /// Deadletters the message.
-        /// </summary>
-        public Func<Task> DeadletterAsync { get; internal set; }
         /// <summary>
         /// Gets the number of deliveries.
         /// </summary>

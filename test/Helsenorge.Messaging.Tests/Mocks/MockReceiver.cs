@@ -27,19 +27,6 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public bool IsClosed => false;
         public Task Close() { return Task.CompletedTask; }
 
-        public IMessagingMessage Receive(TimeSpan serverWaitTime)
-        {
-            if (_factory.Qeueues.ContainsKey(_id))
-            {
-                var queue = _factory.Qeueues[_id];
-                if (queue.Count > 0)
-                {
-                    return queue.First();
-                }
-            }
-            return null;
-        }
-
         public async Task<IMessagingMessage> ReceiveAsync(TimeSpan serverWaitTime)
         {
             if (_factory.Qeueues.ContainsKey(_id))
@@ -50,6 +37,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
                     return await Task.FromResult(queue.First());
                 }
             }
+            //System.Threading.Thread.Sleep(serverWaitTime);
             return null;
         }
     }

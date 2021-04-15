@@ -47,28 +47,16 @@ namespace Helsenorge.Messaging.ServiceBus
             }
         }
 
-        public ServiceBusAsyncOperation<T> Build<T>(Func<Task<T>> func)
-        {
-            Validate();
-            return new ServiceBusAsyncOperation<T>(this, func);
-        }
-
-        public ServiceBusAsyncOperation Build(Func<Task> func)
-        {
-            Validate();
-            return new ServiceBusAsyncOperation(this, func);
-        }
-
-        public ServiceBusOperation<T> Build<T>(Func<T> func)
+        public ServiceBusOperation<T> Build<T>(Func<Task<T>> func)
         {
             Validate();
             return new ServiceBusOperation<T>(this, func);
         }
 
-        public ServiceBusOperation Build(Action action)
+        public ServiceBusOperation Build(Func<Task> func)
         {
             Validate();
-            return new ServiceBusOperation(this, action);
+            return new ServiceBusOperation(this, func);
         }
     }
 }

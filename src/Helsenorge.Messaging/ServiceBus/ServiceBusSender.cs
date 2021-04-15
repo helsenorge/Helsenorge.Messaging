@@ -55,7 +55,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
             await new ServiceBusOperationBuilder(_logger, "Send").Build(async () =>
             {
-                await EnsureOpenAsync().ConfigureAwait(false);
+                await EnsureOpen().ConfigureAwait(false);
                 await _link.SendAsync(originalMessage).ConfigureAwait(false);
             }).PerformAsync().ConfigureAwait(false);
         }

@@ -25,15 +25,9 @@ namespace Helsenorge.Messaging.ServiceBus
 
         public string Namespace { get; }
 
-        public IConnection GetConnection()
+        public async Task<IConnection> GetConnection()
         {
-            EnsureConnection();
-            return _connection;
-        }
-
-        public async Task<IConnection> GetConnectionAsync()
-        {
-            await EnsureConnectionAsync().ConfigureAwait(false);
+            await EnsureConnection().ConfigureAwait(false);
             return _connection;
         }
 
@@ -79,25 +73,7 @@ namespace Helsenorge.Messaging.ServiceBus
         /// Auto-reconnects until Close() is not called explicitly.
         /// </summary>
         /// <returns>Whether it's reconnected</returns>
-        public bool EnsureConnection()
-        {
-            if (IsClosedOrClosing)
-            {
-                throw new ObjectDisposedException("Connection is closed");
-            }
-            if (_connection == null || _connection.IsClosed)
-            {
-                _connection = _connectionFactory.CreateAsync(_address).GetAwaiter().GetResult();
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Auto-reconnects until Close() is not called explicitly.
-        /// </summary>
-        /// <returns>Whether it's reconnected</returns>
-        public async Task<bool> EnsureConnectionAsync()
+        public async Task<bool> EnsureConnection()
         {
             if (IsClosedOrClosing)
             {

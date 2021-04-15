@@ -40,16 +40,11 @@ namespace Helsenorge.Messaging.ServiceBus
         public static readonly Symbol PartitionKeySymbol = new Symbol("x-opt-partition-key");
         public static readonly Symbol SequenceNumberSymbol = new Symbol("x-opt-sequence-number");
 
-        public Action CompleteAction { get; set; }
-        public Func<Task> CompleteActionAsync { get; set; }
-        public Action RejectAction { get; set; }
-        public Func<Task> RejectActionAsync { get; set; }
-        public Action ReleaseAction { get; set; }
-        public Func<Task> ReleaseActionAsync { get; set; }
-        public Action DeadLetterAction { get; set; }
-        public Func<Task> DeadLetterActionAsync { get; set; }
-        public Func<DateTime> RenewLockAction { get; set; }
-        public Func<Task<DateTime>> RenewLockActionAsync { get; set; }
+        public Func<Task> CompleteAction { get; set; }
+        public Func<Task> RejectAction { get; set; }
+        public Func<Task> ReleaseAction { get; set; }
+        public Func<Task> DeadLetterAction { get; set; }
+        public Func<Task<DateTime>> RenewLockAction { get; set; }
 
         public ServiceBusMessage(Message implementation)
         {
@@ -264,33 +259,28 @@ namespace Helsenorge.Messaging.ServiceBus
             return new ServiceBusMessage(clone)
             {
                 CompleteAction = CompleteAction,
-                CompleteActionAsync = CompleteActionAsync,
                 RejectAction = RejectAction,
-                RejectActionAsync = RejectActionAsync,
                 ReleaseAction = ReleaseAction,
-                ReleaseActionAsync = ReleaseActionAsync,
                 DeadLetterAction = DeadLetterAction,
-                DeadLetterActionAsync = DeadLetterActionAsync,
-                RenewLockAction = RenewLockAction,
-                RenewLockActionAsync = RenewLockActionAsync
+                RenewLockAction = RenewLockAction
             };
         }
 
-        public void Complete() => CompleteAction.Invoke();
+        public void Complete() => CompleteAction.Invoke().GetAwaiter().GetResult();
 
-        public async Task CompleteAsync() => await CompleteActionAsync.Invoke().ConfigureAwait(false);
+        public async Task CompleteAsync() => await CompleteAction.Invoke().ConfigureAwait(false);
 
-        public void Reject() => ReleaseAction.Invoke();
+        public void Reject() => ReleaseAction.Invoke().GetAwaiter().GetResult();
 
-        public async Task RejectAsync() => await ReleaseActionAsync.Invoke().ConfigureAwait(false);
+        public async Task RejectAsync() => await ReleaseAction.Invoke().ConfigureAwait(false);
 
-        public void Release() => ReleaseAction.Invoke();
+        public void Release() => ReleaseAction.Invoke().GetAwaiter().GetResult();
 
-        public async Task RelaseAsync() =>  await ReleaseActionAsync.Invoke().ConfigureAwait(false);
+        public async Task RelaseAsync() =>  await ReleaseAction.Invoke().ConfigureAwait(false);
 
-        public void DeadLetter() => DeadLetterAction.Invoke();
+        public void DeadLetter() => DeadLetterAction.Invoke().GetAwaiter().GetResult();
 
-        public async Task DeadLetterAsync() => await DeadLetterActionAsync.Invoke().ConfigureAwait(false);
+        public async Task DeadLetterAsync() => await DeadLetterAction.Invoke().ConfigureAwait(false);
 
         [DebuggerStepThrough]
         public void Dispose() => _implementation.Dispose();
@@ -313,13 +303,8 @@ namespace Helsenorge.Messaging.ServiceBus
 
         public void RenewLock()
         {
-            var lockedUntilUtc = RenewLockAction.Invoke();
-            _implementation.MessageAnnotations[LockedUntilSymbol] = lockedUntilUtc;
-        }
-
-        public async Task RenewLockAsync()
-        {
-            var lockedUntilUtc = await RenewLockActionAsync.Invoke().ConfigureAwait(false);
+            var task = RenewLockAction.Invoke();
+            var lockedUntilUtc = task?.Result ?? DateTime.MinValue;
             _implementation.MessageAnnotations[LockedUntilSymbol] = lockedUntilUtc;
         }
 

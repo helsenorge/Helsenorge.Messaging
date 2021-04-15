@@ -164,13 +164,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     CorrelationId = message.CorrelationId,
                     EnqueuedTimeUtc = message.EnqueuedTimeUtc,
                     RenewLock = message.RenewLock,
-                    RenewLockAsync = message.RenewLockAsync,
                     Complete = message.Complete,
-                    CompleteAsync = message.CompleteAsync,
-                    Release = message.Release,
-                    ReleaseAsync = message.RelaseAsync,
-                    Deadletter = message.DeadLetter,
-                    DeadletterAsync = message.DeadLetterAsync,
                     DeliveryCount = message.DeliveryCount,
                     LockedUntil = message.LockedUntil,
                 };

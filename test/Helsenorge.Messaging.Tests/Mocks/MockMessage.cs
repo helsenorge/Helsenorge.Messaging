@@ -141,7 +141,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
 
         public void RenewLock()
         {
-            
+            throw new NotImplementedException();
         }
 
         public void Dispose()
@@ -166,11 +166,6 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public void SetApplicationProperty(string key, int value)
         {
             Properties[key] = value.ToString(CultureInfo.InvariantCulture);
-        }
-
-        public Task RenewLockAsync()
-        {
-            return Task.CompletedTask;
         }
     }
 }

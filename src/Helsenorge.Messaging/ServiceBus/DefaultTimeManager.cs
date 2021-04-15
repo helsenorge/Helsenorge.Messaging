@@ -7,18 +7,12 @@
  */
 
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.ServiceBus
 {
     internal class DefaultTimeManager : ITimeManager
     {
-        public void Delay(TimeSpan timeSpan)
-        {
-            Thread.Sleep(timeSpan);
-        }
-
         public async Task DelayAsync(TimeSpan timeSpan)
         {
             await Task.Delay(timeSpan).ConfigureAwait(false);

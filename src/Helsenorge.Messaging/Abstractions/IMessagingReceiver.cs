@@ -21,12 +21,6 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="serverWaitTime">Timeout applied to receive operation</param>
         /// <returns></returns>
-        IMessagingMessage Receive(TimeSpan serverWaitTime);
-        /// <summary>
-        /// Receives a message
-        /// </summary>
-        /// <param name="serverWaitTime">Timeout applied to receive operation</param>
-        /// <returns></returns>
         Task<IMessagingMessage> ReceiveAsync(TimeSpan serverWaitTime);
     }
 }
