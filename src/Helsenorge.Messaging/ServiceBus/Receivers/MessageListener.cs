@@ -142,7 +142,6 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             }
             return await HandleRawMessage(message, alwaysRemoveMessage).ConfigureAwait(false);
         }
-
         private async Task<IncomingMessage> HandleRawMessage(IMessagingMessage message, bool alwaysRemoveMessage)
         {
             if (message == null) return null;
@@ -150,10 +149,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 
             try
             {
-                if (message.LockedUntil.ToUniversalTime() <= DateTime.UtcNow)
+                if(message.LockedUntil.ToUniversalTime() <= DateTime.UtcNow)
                 {
-                    Logger.LogInformation(
-                        $"MessageListener::ReadAndProcessMessage - Ignoring message, lock expired at: {message.LockedUntil.ToUniversalTime()}");
+                    Logger.LogInformation($"MessageListener::ReadAndProcessMessage - Ignoring message, lock expired at: {message.LockedUntil.ToUniversalTime()}");
                     return null;
                 }
 
@@ -186,8 +184,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 // we need the certificates for decryption and certificate use
                 incomingMessage.CollaborationAgreement = await ResolveProfile(message).ConfigureAwait(false);
 
-                var payload = HandlePayload(message, bodyStream, message.ContentType, incomingMessage,
-                    out bool contentWasSigned);
+                var payload = HandlePayload(message, bodyStream, message.ContentType, incomingMessage, out bool contentWasSigned);
                 incomingMessage.ContentWasSigned = contentWasSigned;
                 if (payload != null)
                 {
@@ -195,10 +192,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     {
                         Logger.LogDebug(payload.ToString());
                     }
-
                     incomingMessage.Payload = payload;
                 }
-
                 await NotifyMessageProcessingReady(message, incomingMessage).ConfigureAwait(false);
                 ServiceBusCore.RemoveProcessedMessageFromQueue(message);
                 Logger.LogRemoveMessageFromQueueNormal(message, QueueName);
