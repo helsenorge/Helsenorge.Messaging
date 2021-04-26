@@ -31,50 +31,104 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="timeout">The amount of time we wait for things to shut down</param>
         Task Stop(TimeSpan timeout = default);
+
         /// <summary>
         /// Registers a delegate that should be called as we start processing a message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterAsynchronousMessageReceivedStartingCallback(Func<IncomingMessage, Task> action);
-        /// <summary>
-        /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
-        /// </summary>
-        /// <param name="action">The delegate that should be called</param>
-        void RegisterAsynchronousMessageReceivedCallback(Func<IncomingMessage, Task> action);
-        /// <summary>
-        /// Registers a delegate that should be called when we are finished processing the message.
-        /// </summary>
-        /// <param name="action">The delegate that should be called</param>
-        void RegisterAsynchronousMessageReceivedCompletedCallback(Func<IncomingMessage, Task> action);
+        void RegisterAsynchronousMessageReceivedStartingCallback(Action<IncomingMessage> action);
         /// <summary>
         /// Registers a delegate that should be called as we start processing a message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterSynchronousMessageReceivedStartingCallback(Func<IncomingMessage, Task> action);
+        void RegisterAsynchronousMessageReceivedStartingCallbackAsync(Func<IncomingMessage, Task> action);
+
         /// <summary>
         /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterSynchronousMessageReceivedCallback(Func<IncomingMessage, Task<XDocument>> action);
+        void RegisterAsynchronousMessageReceivedCallback(Action<IncomingMessage> action);
+        /// <summary>
+        /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterAsynchronousMessageReceivedCallbackAsync(Func<IncomingMessage, Task> action);
+
         /// <summary>
         /// Registers a delegate that should be called when we are finished processing the message.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterSynchronousMessageReceivedCompletedCallback(Func<IncomingMessage, Task> action);
+        void RegisterAsynchronousMessageReceivedCompletedCallback(Action<IncomingMessage> action);
+        /// <summary>
+        /// Registers a delegate that should be called when we are finished processing the message.
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterAsynchronousMessageReceivedCompletedCallbackAsync(Func<IncomingMessage, Task> action);
+
+        /// <summary>
+        /// Registers a delegate that should be called as we start processing a message
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterSynchronousMessageReceivedStartingCallback(Action<IncomingMessage> action);
+        /// <summary>
+        /// Registers a delegate that should be called as we start processing a message
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterSynchronousMessageReceivedStartingCallbackAsync(Func<IncomingMessage, Task> action);
+
+        /// <summary>
+        /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterSynchronousMessageReceivedCallback(Func<IncomingMessage, XDocument> action);
+        /// <summary>
+        /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterSynchronousMessageReceivedCallbackAsync(Func<IncomingMessage, Task<XDocument>> action);
+
+        /// <summary>
+        /// Registers a delegate that should be called when we are finished processing the message.
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterSynchronousMessageReceivedCompletedCallback(Action<IncomingMessage> action);
+        /// <summary>
+        /// Registers a delegate that should be called when we are finished processing the message.
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterSynchronousMessageReceivedCompletedCallbackAsync(Func<IncomingMessage, Task> action);
+
         /// <summary>
         /// Registers a delegate that should be called when we receive an error message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterErrorMessageReceivedCallback(Func<IMessagingMessage, Task> action);
+        void RegisterErrorMessageReceivedCallback(Action<IMessagingMessage> action);
+        /// <summary>
+        /// Registers a delegate that should be called when we receive an error message
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterErrorMessageReceivedCallbackAsync(Func<IMessagingMessage, Task> action);
+
         /// <summary>
         /// Registers a delegate that should be called when we have an handled exception
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterHandledExceptionCallback(Func<IMessagingMessage, Exception, Task> action);
+        void RegisterHandledExceptionCallback(Action<IMessagingMessage, Exception> action);
+        /// <summary>
+        /// Registers a delegate that should be called when we have an handled exception
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterHandledExceptionCallbackAsync(Func<IMessagingMessage, Exception, Task> action);
+
         /// <summary>
         /// Registers a delegate that should be called when we have an unhandled exception
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterUnhandledExceptionCallback(Func<IMessagingMessage, Exception, Task> action);
+        void RegisterUnhandledExceptionCallback(Action<IMessagingMessage, Exception> action);
+        /// <summary>
+        /// Registers a delegate that should be called when we have an unhandled exception
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterUnhandledExceptionCallbackAsync(Func<IMessagingMessage, Exception, Task> action);
     }
 }

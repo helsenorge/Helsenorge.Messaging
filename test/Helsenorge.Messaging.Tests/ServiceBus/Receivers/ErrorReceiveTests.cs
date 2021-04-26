@@ -86,7 +86,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             messageModification(message);
             MockFactory.Helsenorge.Error.Messages.Add(message);
 
-            Server.RegisterErrorMessageReceivedCallback((m) => 
+            Server.RegisterErrorMessageReceivedCallbackAsync((m) => 
             { 
                 _errorReceiveCalled = true;
                 return Task.CompletedTask;

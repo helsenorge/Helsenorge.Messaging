@@ -108,12 +108,12 @@ namespace Helsenorge.Messaging.Server
 
             _messagingServer = new MessagingServer(messagingSettings, _loggerFactory, collaborationProtocolRegistry, addressRegistry);
 
-            _messagingServer.RegisterAsynchronousMessageReceivedStartingCallback((m) =>
+            _messagingServer.RegisterAsynchronousMessageReceivedStartingCallbackAsync((m) =>
             {
                 MappedDiagnosticsLogicalContext.Set("correlationId", m.MessageId);
                 return Task.CompletedTask;
             });
-            _messagingServer.RegisterAsynchronousMessageReceivedCallback(async (m) =>
+            _messagingServer.RegisterAsynchronousMessageReceivedCallbackAsync(async (m) =>
             {
                 if (m.Payload.ToString().Contains("ThrowException"))
                 {
@@ -130,18 +130,18 @@ namespace Helsenorge.Messaging.Server
                 using var sw = File.CreateText(fileName);
                 await m.Payload.SaveAsync(sw, SaveOptions.None, CancellationToken.None);
             });
-            _messagingServer.RegisterAsynchronousMessageReceivedCompletedCallback((m) =>
+            _messagingServer.RegisterAsynchronousMessageReceivedCompletedCallbackAsync((m) =>
             {
                 MappedDiagnosticsLogicalContext.Set("correlationId", m.MessageId);
                 return Task.CompletedTask;
             });
 
-            _messagingServer.RegisterSynchronousMessageReceivedStartingCallback((m) =>
+            _messagingServer.RegisterSynchronousMessageReceivedStartingCallbackAsync((m) =>
             {
                 MappedDiagnosticsLogicalContext.Set("correlationId", string.Empty);// reset correlation id
                 return Task.CompletedTask;
             });
-            _messagingServer.RegisterSynchronousMessageReceivedCallback(async (m) =>
+            _messagingServer.RegisterSynchronousMessageReceivedCallbackAsync(async (m) =>
             {
                 var path = Path.Combine(_serverSettings.DestinationDirectory, "Synchronous");
                 if (Directory.Exists(path) == false)
@@ -155,7 +155,7 @@ namespace Helsenorge.Messaging.Server
                 }
                 return new XDocument(new XElement("DummyResponse"));
             });
-            _messagingServer.RegisterSynchronousMessageReceivedCompletedCallback((m) =>
+            _messagingServer.RegisterSynchronousMessageReceivedCompletedCallbackAsync((m) =>
             {
                 MappedDiagnosticsLogicalContext.Set("correlationId", string.Empty); // reset correlation id
                 return Task.CompletedTask;

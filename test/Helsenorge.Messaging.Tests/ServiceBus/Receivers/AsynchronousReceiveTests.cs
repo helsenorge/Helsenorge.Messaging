@@ -725,28 +725,28 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             MockFactory.Helsenorge.Asynchronous.Messages.Add(message);
 
             // configure notifications
-            Server.RegisterAsynchronousMessageReceivedStartingCallback((m) => 
+            Server.RegisterAsynchronousMessageReceivedStartingCallbackAsync((m) => 
             {
                 _startingCalled = true;
                 return Task.CompletedTask;
             });
-            Server.RegisterAsynchronousMessageReceivedCallback(async (m) =>
+            Server.RegisterAsynchronousMessageReceivedCallbackAsync(async (m) =>
             {
                  await received(m);
                 _receivedCalled = true;
             });
-            Server.RegisterAsynchronousMessageReceivedCompletedCallback((m) => 
+            Server.RegisterAsynchronousMessageReceivedCompletedCallbackAsync((m) => 
             {
                 _completedCalled = true;
                 return Task.CompletedTask;
             });
-            Server.RegisterUnhandledExceptionCallback((m, e) => 
+            Server.RegisterUnhandledExceptionCallbackAsync((m, e) => 
             {
                 _unhandledExceptionCalled = true;
                 return Task.CompletedTask;
             });
-            if (handledException != null) Server.RegisterHandledExceptionCallback(handledException);
-            else Server.RegisterHandledExceptionCallback((m, e) =>
+            if (handledException != null) Server.RegisterHandledExceptionCallbackAsync(handledException);
+            else Server.RegisterHandledExceptionCallbackAsync((m, e) =>
             {
                 _handledExceptionCalled = true;
                 return Task.CompletedTask;

@@ -127,23 +127,23 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             MockFactory.Helsenorge.Synchronous.Messages.Add(message);
 
             // configure notifications
-            Server.RegisterSynchronousMessageReceivedStartingCallback((m) =>
+            Server.RegisterSynchronousMessageReceivedStartingCallbackAsync((m) =>
             {
                 _startingCalled = true;
                 return Task.CompletedTask;
             });
-            Server.RegisterSynchronousMessageReceivedCallback((m) => 
+            Server.RegisterSynchronousMessageReceivedCallbackAsync((m) => 
             {
                 received(m);
                 _receivedCalled = true;
                 return Task.FromResult(GenericResponse);
             });
-            Server.RegisterSynchronousMessageReceivedCompletedCallback((m) =>
+            Server.RegisterSynchronousMessageReceivedCompletedCallbackAsync((m) =>
             {
                 _completedCalled = true;
                 return Task.CompletedTask;
             });
-            Server.RegisterHandledExceptionCallback((messagingMessage, exception) =>
+            Server.RegisterHandledExceptionCallbackAsync((messagingMessage, exception) =>
             {
                 _handledExceptionCalled = true;
                 return Task.CompletedTask;
