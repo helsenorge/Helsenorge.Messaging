@@ -266,6 +266,10 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     ServiceBusCore.RemoveMessageFromQueueAfterError(Logger, message);
                 }
                 await MessagingNotification.NotifyUnhandledException(message, ex).ConfigureAwait(false);
+
+                // Start a thread which will await until we reach LockedUntilUtc
+                // before releasing the message.
+                RunMessageReleaseThread(message);
             }
             finally
             {
@@ -273,6 +277,12 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 message.Dispose();
             }
             return null;
+        }
+
+        private void RunMessageReleaseThread(IMessagingMessage message)
+        {
+            var messageReleaseThread = new Thread(MessageReleaseThread.AwaitRelease);
+            messageReleaseThread.Start(new MessageReleaseThread.ThreadData { Message = message, Logger = Logger });
         }
 
         private async Task<CollaborationProtocolProfile> ResolveProfile(IMessagingMessage message)
