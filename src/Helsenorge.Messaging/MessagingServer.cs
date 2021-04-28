@@ -31,10 +31,10 @@ namespace Helsenorge.Messaging
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         private Action<IncomingMessage> _onAsynchronousMessageReceived;
-        private Action<IncomingMessage> _onAsynchronousMessageReceivedStarting;
+        private Action<MessageListener, IncomingMessage> _onAsynchronousMessageReceivedStarting;
         private Action<IncomingMessage> _onAsynchronousMessageReceivedCompleted;
         private Func<IncomingMessage, Task> _onAsynchronousMessageReceivedAsync;
-        private Func<IncomingMessage, Task> _onAsynchronousMessageReceivedStartingAsync;
+        private Func<MessageListener, IncomingMessage, Task> _onAsynchronousMessageReceivedStartingAsync;
         private Func<IncomingMessage, Task> _onAsynchronousMessageReceivedCompletedAsync;
 
         private Func<IncomingMessage, XDocument> _onSynchronousMessageReceived;
@@ -262,23 +262,23 @@ namespace Helsenorge.Messaging
         /// Registers a delegate that should be called as we start processing a message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterAsynchronousMessageReceivedStartingCallback(Action<IncomingMessage> action) => _onAsynchronousMessageReceivedStarting = action;
+        public void RegisterAsynchronousMessageReceivedStartingCallback(Action<MessageListener, IncomingMessage> action) => _onAsynchronousMessageReceivedStarting = action;
         /// <summary>
         /// Registers a delegate that should be called as we start processing a message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterAsynchronousMessageReceivedStartingCallbackAsync(Func<IncomingMessage, Task> action) => _onAsynchronousMessageReceivedStartingAsync = action;
+        public void RegisterAsynchronousMessageReceivedStartingCallbackAsync(Func<MessageListener, IncomingMessage, Task> action) => _onAsynchronousMessageReceivedStartingAsync = action;
 
-        async Task IMessagingNotification.NotifyAsynchronousMessageReceivedStarting(IncomingMessage message)
+        async Task IMessagingNotification.NotifyAsynchronousMessageReceivedStarting(MessageListener listener, IncomingMessage message)
         {
             _logger.LogDebug("NotifyAsynchronousMessageReceivedStarting");
             if (_onAsynchronousMessageReceivedStartingAsync != null)
             {
-                await _onAsynchronousMessageReceivedStartingAsync.Invoke(message).ConfigureAwait(false);
+                await _onAsynchronousMessageReceivedStartingAsync.Invoke(listener, message).ConfigureAwait(false);
             }
             if (_onAsynchronousMessageReceivedStarting != null)
             {
-                _onAsynchronousMessageReceivedStarting.Invoke(message);
+                _onAsynchronousMessageReceivedStarting.Invoke(listener, message);
             }
         }
 

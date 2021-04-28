@@ -6,6 +6,7 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using Helsenorge.Messaging.ServiceBus.Receivers;
 using System;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -36,12 +37,12 @@ namespace Helsenorge.Messaging.Abstractions
         /// Registers a delegate that should be called as we start processing a message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterAsynchronousMessageReceivedStartingCallback(Action<IncomingMessage> action);
+        void RegisterAsynchronousMessageReceivedStartingCallback(Action<MessageListener, IncomingMessage> action);
         /// <summary>
         /// Registers a delegate that should be called as we start processing a message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterAsynchronousMessageReceivedStartingCallbackAsync(Func<IncomingMessage, Task> action);
+        void RegisterAsynchronousMessageReceivedStartingCallbackAsync(Func<MessageListener, IncomingMessage, Task> action);
 
         /// <summary>
         /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.

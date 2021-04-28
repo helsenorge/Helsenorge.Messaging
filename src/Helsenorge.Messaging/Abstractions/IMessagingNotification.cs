@@ -6,6 +6,7 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using Helsenorge.Messaging.ServiceBus.Receivers;
 using System;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -25,8 +26,9 @@ namespace Helsenorge.Messaging.Abstractions
         /// <summary>
         /// Called to notify that we are starting to process an asynchronous message
         /// </summary>
+        /// <param name="listener">Reference to the listener which invoked the callback.</param>
         /// <param name="message">Information about the message</param>
-        Task NotifyAsynchronousMessageReceivedStarting(IncomingMessage message);
+        Task NotifyAsynchronousMessageReceivedStarting(MessageListener listener, IncomingMessage message);
         /// <summary>
         /// Called to notify that we are finished processing an asynchronous message
         /// </summary>

@@ -725,7 +725,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
             MockFactory.Helsenorge.Asynchronous.Messages.Add(message);
 
             // configure notifications
-            Server.RegisterAsynchronousMessageReceivedStartingCallbackAsync((m) => 
+            Server.RegisterAsynchronousMessageReceivedStartingCallbackAsync((listener, message) => 
             {
                 _startingCalled = true;
                 return Task.CompletedTask;

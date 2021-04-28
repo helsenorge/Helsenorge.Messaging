@@ -40,8 +40,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <summary>
         /// Called prior to message processing
         /// </summary>
+        /// <param name="listener">Reference to the listener which invoked the callback.</param>
         /// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
-        protected override Task NotifyMessageProcessingStarted(IncomingMessage message)
+        protected override Task NotifyMessageProcessingStarted(MessageListener listener, IncomingMessage message)
         {
             Logger.LogDebug("NotifyMessageProcessingStarted");
             // Not relevant for this implementation

@@ -199,7 +199,7 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
             return Task.CompletedTask;
         }
 
-        public Task NotifyAsynchronousMessageReceivedStarting(IncomingMessage message)
+        public Task NotifyAsynchronousMessageReceivedStarting(MessageListener listener, IncomingMessage message)
         {
             return Task.CompletedTask;
         }

@@ -47,8 +47,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <summary>
         /// Called prior to message processing
         /// </summary>
+        /// <param name="listener">Reference to the listener which invoked the callback.</param>
         /// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
-        protected override async Task NotifyMessageProcessingStarted(IncomingMessage message)
+        protected override async Task NotifyMessageProcessingStarted(MessageListener listener, IncomingMessage message)
         {
             Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
             await MessagingNotification.NotifyErrorMessageReceivedStarting(message).ConfigureAwait(false);

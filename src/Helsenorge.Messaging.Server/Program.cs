@@ -108,9 +108,9 @@ namespace Helsenorge.Messaging.Server
 
             _messagingServer = new MessagingServer(messagingSettings, _loggerFactory, collaborationProtocolRegistry, addressRegistry);
 
-            _messagingServer.RegisterAsynchronousMessageReceivedStartingCallbackAsync((m) =>
+            _messagingServer.RegisterAsynchronousMessageReceivedStartingCallbackAsync((listener, message) =>
             {
-                MappedDiagnosticsLogicalContext.Set("correlationId", m.MessageId);
+                MappedDiagnosticsLogicalContext.Set("correlationId", message.MessageId);
                 return Task.CompletedTask;
             });
             _messagingServer.RegisterAsynchronousMessageReceivedCallbackAsync(async (m) =>

@@ -31,6 +31,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         private IMessagingReceiver _messageReceiver;
         private bool _listenerEstablishedConfirmed = false;
 
+        public Action<string> SetCorrelationIdAction { get; set; }
+
         /// <summary>
         /// The timeout used for reading messages from queue
         /// </summary>
@@ -76,8 +78,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <summary>
         /// Called prior to message processing
         /// </summary>
+        /// <param name="listener">Reference to the listener which invoked the callback.</param>
         /// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
-        protected abstract Task NotifyMessageProcessingStarted(IncomingMessage message);
+        protected abstract Task NotifyMessageProcessingStarted(MessageListener listener, IncomingMessage message);
         /// <summary>
         /// Called to process message
         /// </summary>
@@ -168,7 +171,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     DeliveryCount = message.DeliveryCount,
                     LockedUntil = message.LockedUntil,
                 };
-                await NotifyMessageProcessingStarted(incomingMessage).ConfigureAwait(false);
+                await NotifyMessageProcessingStarted(this, incomingMessage).ConfigureAwait(false);
+                
+                SetCorrelationIdAction?.Invoke(incomingMessage.MessageId);
                 Logger.LogStartReceive(QueueType, incomingMessage);
 
                 // we cannot dispose of the stream before we have potentially cloned the message for error use
