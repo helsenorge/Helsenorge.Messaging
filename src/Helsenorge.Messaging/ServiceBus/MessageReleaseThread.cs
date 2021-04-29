@@ -33,20 +33,22 @@ namespace Helsenorge.Messaging.ServiceBus
 
             var message = threadData.Message;
             var logger = threadData.Logger;
+            var messageId = message.MessageId;
+            var messageFunction = message.MessageFunction;
             try
             {
-                logger.LogInformation($"Start-MessageReleaseThread-AwaitRelease: MessageId: {message.MessageId} MessageFunction: {message.MessageFunction}");
+                logger.LogInformation($"Start-MessageReleaseThread-AwaitRelease: MessageId: {messageId} MessageFunction: {messageFunction}");
 
                 var lockedUntil = message.LockedUntil;
                 var millisecondsBuffer = 300;
                 var millisecondsDelay = (int)lockedUntil.Subtract(DateTime.UtcNow).TotalMilliseconds - millisecondsBuffer;
 
-                logger.LogDebug($"MessageReleaseThread-AwaitRelease: MessageId: {message.MessageId}. Awaiting {millisecondsDelay} before releasing message.");
+                logger.LogDebug($"MessageReleaseThread-AwaitRelease: MessageId: {messageId}. Awaiting {millisecondsDelay} before releasing message.");
 
                 Thread.Sleep(millisecondsDelay);
                 message.Release();
 
-                logger.LogDebug($"MessageReleaseThread-AwaitRelease: MessageId: {message.MessageId}. Message has been released.");
+                logger.LogDebug($"MessageReleaseThread-AwaitRelease: MessageId: {messageId}. Message has been released.");
             }
             catch (Exception ex)
             {
@@ -54,7 +56,8 @@ namespace Helsenorge.Messaging.ServiceBus
             }
             finally
             {
-                logger.LogInformation($"End-MessageReleaseThread-AwaitRelease: MessageId: {message.MessageId} MessageFunction: {message.MessageFunction}");
+                message?.Dispose();
+                logger.LogInformation($"End-MessageReleaseThread-AwaitRelease: MessageId: {messageId} MessageFunction: {messageFunction}");
             }
         }
     }

@@ -149,6 +149,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         {
             if (message == null) return null;
             Stream bodyStream = null;
+            bool disposeMessage = true;
 
             try
             {
@@ -275,11 +276,13 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 // Start a thread which will await until we reach LockedUntilUtc
                 // before releasing the message.
                 RunMessageReleaseThread(message);
+                disposeMessage = false;
             }
             finally
             {
                 bodyStream?.Dispose();
-                message.Dispose();
+                if(disposeMessage)
+                    message.Dispose();
             }
             return null;
         }
