@@ -37,7 +37,7 @@ namespace Helsenorge.Messaging.ServiceBus
             var messageFunction = message.MessageFunction;
             try
             {
-                logger.LogInformation($"Start-MessageReleaseThread-AwaitRelease: MessageId: {messageId} MessageFunction: {messageFunction}");
+                logger.LogInformation($"Start-MessageReleaseThread-AwaitRelease: MessageId: {messageId} MessageFunction: {messageFunction} DeliveryCount: {message.DeliveryCount}");
 
                 var lockedUntil = message.LockedUntil;
                 var millisecondsBuffer = 300;
@@ -46,13 +46,14 @@ namespace Helsenorge.Messaging.ServiceBus
                 logger.LogDebug($"MessageReleaseThread-AwaitRelease: MessageId: {messageId}. Awaiting {millisecondsDelay} before releasing message.");
 
                 Thread.Sleep(millisecondsDelay);
-                message.Release();
+
+                message.Modify(deliveryFailed: true);
 
                 logger.LogDebug($"MessageReleaseThread-AwaitRelease: MessageId: {messageId}. Message has been released.");
             }
             catch (Exception ex)
             {
-                logger.LogWarning(EventIds.MessageReleaseFailed, ex, $"MessageReleaseThread-AwaitRelease: {ex.Message}");
+                logger.LogWarning(EventIds.MessageReleaseFailed, ex, $"MessageReleaseThread-AwaitRelease: MessageId: {messageId} Exception: {ex.Message}");
             }
             finally
             {

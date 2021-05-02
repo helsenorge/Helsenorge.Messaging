@@ -19,6 +19,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
     class MockMessage : IMessagingMessage
     {
         private Stream _stream;
+        private int _deliveryCount = 0;
 
         public MockMessage(Stream stream)
         {
@@ -96,6 +97,19 @@ namespace Helsenorge.Messaging.Tests.Mocks
             return Task.CompletedTask;
         }
 
+        public void Modify(bool deliveryFailed, bool undeliverableHere = false)
+        {
+            if(deliveryFailed)
+            {
+                _deliveryCount++;
+            }
+        }
+
+        public Task ModifyAsync(bool deliveryFailed, bool undeliverableHere = false)
+        {
+            return Task.CompletedTask;
+        }
+
         public List<IMessagingMessage> Queue { get; set; }
 
         public List<IMessagingMessage> DeadLetterQueue { get; set; }
@@ -125,7 +139,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
 
         public object OriginalObject { get; }
 
-        public int DeliveryCount => 0;
+        public int DeliveryCount => _deliveryCount;
 
         public DateTime LockedUntil => DateTime.UtcNow.AddSeconds(60);
 

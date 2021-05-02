@@ -112,6 +112,18 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         Task RejectAsync();
         /// <summary>
+        /// Modifies a message. It sends a modified outcome to the peer.
+        /// </summary>
+        /// <param name="deliveryFailed">If set, the message's delivery-count is incremented.</param>
+        /// <param name="undeliverableHere">Indicates if the message should not be redelivered to this endpoint.</param>
+        void Modify(bool deliveryFailed, bool undeliverableHere = false);
+        /// <summary>
+        /// Modifies a message. It sends a modified outcome to the peer.
+        /// </summary>
+        /// <param name="deliveryFailed">If set, the message's delivery-count is incremented.</param>
+        /// <param name="undeliverableHere">Indicates if the message should not be redelivered to this endpoint.</param>
+        Task ModifyAsync(bool deliveryFailed, bool undeliverableHere = false);
+        /// <summary>
         /// Creates a clone of the message
         /// </summary>
         /// <returns></returns>

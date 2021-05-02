@@ -93,6 +93,13 @@ namespace Helsenorge.Messaging.ServiceBus
                         await Connection.HttpClient.RenewLockAsync(_id, amqpMessage.GetSequenceNumber(), amqpMessage.GetLockToken(), lockTimeout, serverWaitTime).ConfigureAwait(false);
                         return DateTime.UtcNow + lockTimeout;
                     }).PerformAsync();
+
+                message.ModifyAction = (deliveryFailed, undeliverableHere) => new ServiceBusOperationBuilder(_logger, "Modify")
+                    .Build(async () =>
+                    {
+                        await EnsureOpen().ConfigureAwait(false);
+                        _link.Modify(amqpMessage, deliveryFailed, undeliverableHere);
+                    }).PerformAsync();
             }
 
             return message;

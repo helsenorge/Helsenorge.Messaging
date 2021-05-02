@@ -45,6 +45,7 @@ namespace Helsenorge.Messaging.ServiceBus
         public Func<Task> ReleaseAction { get; set; }
         public Func<Task> DeadLetterAction { get; set; }
         public Func<Task<DateTime>> RenewLockAction { get; set; }
+        public Func<bool, bool, Task> ModifyAction { get; set; }
 
         public ServiceBusMessage(Message implementation)
         {
@@ -281,6 +282,10 @@ namespace Helsenorge.Messaging.ServiceBus
         public void DeadLetter() => DeadLetterAction.Invoke().GetAwaiter().GetResult();
 
         public async Task DeadLetterAsync() => await DeadLetterAction.Invoke().ConfigureAwait(false);
+
+        public void Modify(bool deliveryFailed, bool undeliverableHere = false) => ModifyAction.Invoke(deliveryFailed, undeliverableHere).GetAwaiter().GetResult();
+
+        public async Task ModifyAsync(bool deliveryFailed, bool undeliverableHere = false) => await ModifyAction.Invoke(deliveryFailed, undeliverableHere).ConfigureAwait(false);
 
         [DebuggerStepThrough]
         public void Dispose() => _implementation.Dispose();
