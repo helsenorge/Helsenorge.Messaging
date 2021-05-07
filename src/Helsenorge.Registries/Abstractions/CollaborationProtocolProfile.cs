@@ -156,7 +156,7 @@ namespace Helsenorge.Registries.Abstractions
 
             if (messages == null)
             {
-                return Roles.SelectMany(role => role.SendMessages).FirstOrDefault((m) => m.Name.Equals(messageName, StringComparison.Ordinal));
+                return Roles.SelectMany(role => role.SendMessages).FirstOrDefault((m) => m.Name.Equals(messageName, StringComparison.OrdinalIgnoreCase));
             }
             else
             {
@@ -178,7 +178,7 @@ namespace Helsenorge.Registries.Abstractions
 
             if (messages == null)
             {
-                return Roles.SelectMany(role => role.ReceiveMessages).FirstOrDefault((m) => m.Name.Equals(messageName, StringComparison.Ordinal));
+                return Roles.SelectMany(role => role.ReceiveMessages).FirstOrDefault((m) => m.Name.Equals(messageName, StringComparison.OrdinalIgnoreCase));
             }
             else
             {

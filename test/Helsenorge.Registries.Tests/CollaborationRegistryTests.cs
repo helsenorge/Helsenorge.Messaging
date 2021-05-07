@@ -218,6 +218,12 @@ namespace Helsenorge.Registries.Tests
             Assert.IsNotNull(profile.FindMessageForSender("APPREC"));
         }
         [TestMethod]
+        public void FindMessageForSender_Found_AppRec_IgnoreCase()
+        {
+            var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
+            Assert.IsNotNull(profile.FindMessageForSender("Apprec"));
+        }
+        [TestMethod]
         public void FindMessageForSender_Found_Ny_CPP()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
