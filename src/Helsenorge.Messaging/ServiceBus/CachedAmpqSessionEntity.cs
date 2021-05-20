@@ -22,6 +22,7 @@ namespace Helsenorge.Messaging.ServiceBus
         protected TLink _link;
         
         private readonly SemaphoreSlim _mySemaphoreSlim = new SemaphoreSlim(1);
+        private readonly object _lockObject = new object();
 
         protected CachedAmpqSessionEntity(ServiceBusConnection connection)
         {
@@ -56,13 +57,36 @@ namespace Helsenorge.Messaging.ServiceBus
             }
         }
 
-        protected async Task EnsureOpen()
+        protected void EnsureOpen()
+        {
+            lock (_lockObject)
+            {
+                CheckNotClosed();
+                if (Connection.EnsureConnection() || _session == null || _session.IsClosed || _link == null || _link.IsClosed)
+                {
+                    if (_link != null && !_link.IsClosed)
+                    {
+                        _link.Close();
+                    }
+
+                    if (_session != null && !_session.IsClosed)
+                    {
+                        _session.Close();
+                    }
+
+                    _session = CreateSession(Connection.GetConnection());
+                    _link = CreateLink(_session);
+                }
+            }
+        }
+
+        protected async Task EnsureOpenAsync()
         {
             await _mySemaphoreSlim.WaitAsync().ConfigureAwait(false);
             try
             {
                 CheckNotClosed();
-                if (await Connection.EnsureConnection().ConfigureAwait(false) || _session == null || _session.IsClosed || _link == null || _link.IsClosed)
+                if (await Connection.EnsureConnectionAsync().ConfigureAwait(false) || _session == null || _session.IsClosed || _link == null || _link.IsClosed)
                 {
                     if (_link != null && !_link.IsClosed)
                     {
@@ -74,7 +98,7 @@ namespace Helsenorge.Messaging.ServiceBus
                         await _session.CloseAsync().ConfigureAwait(false);
                     }
 
-                    _session = CreateSession(await Connection.GetConnection().ConfigureAwait(false));
+                    _session = CreateSession(await Connection.GetConnectionAsync().ConfigureAwait(false));
                     _link = CreateLink(_session);
                 }
             }

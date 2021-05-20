@@ -155,7 +155,11 @@ namespace Helsenorge.Messaging.Tests.Mocks
 
         public void RenewLock()
         {
-            throw new NotImplementedException();
+        }
+
+        public Task RenewLockAsync()
+        {
+            return Task.CompletedTask;
         }
 
         public void Dispose()
