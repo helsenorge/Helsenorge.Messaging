@@ -1,6 +1,15 @@
-﻿using System;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Helsenorge.Registries.Abstractions
@@ -11,6 +20,10 @@ namespace Helsenorge.Registries.Abstractions
     [Serializable]
     public class CollaborationProtocolProfile
     {
+        // These are used during serialization and deserialization since X509Certificate2 and X509Certificate are no longer serializable in .net core.
+        private string _signatureCertificateBase64String;
+        private string _encryptionCertificateBase64String;
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -18,6 +31,37 @@ namespace Helsenorge.Registries.Abstractions
         {
             CpaId = Guid.Empty;
         }
+
+
+
+        /// <summary>
+        /// Called on serializing the object, exports the certificate to a base64-encoded string.
+        /// </summary>
+        [OnSerializing]
+        internal void OnSerializing(StreamingContext context)
+        {
+            _encryptionCertificateBase64String = EncryptionCertificate == null 
+                ? null 
+                : Convert.ToBase64String(EncryptionCertificate.Export(X509ContentType.SerializedCert));
+            _signatureCertificateBase64String = SignatureCertificate == null 
+                ? null 
+                : Convert.ToBase64String(SignatureCertificate.Export(X509ContentType.SerializedCert));
+        }
+
+        /// <summary>
+        /// Called when object is deserialized, imports the certificates from the previously serialized base64-encoded string.
+        /// </summary>
+        [OnDeserialized]
+        internal void OnDeserialized(StreamingContext context)
+        {
+            EncryptionCertificate = string.IsNullOrWhiteSpace(_encryptionCertificateBase64String) 
+                ? null 
+                : new X509Certificate2(Convert.FromBase64String(_encryptionCertificateBase64String));
+            SignatureCertificate = string.IsNullOrWhiteSpace(_signatureCertificateBase64String) 
+                ? null 
+                : new X509Certificate2(Convert.FromBase64String(_signatureCertificateBase64String));
+        }
+
         /// <summary>
         /// Name of other party
         /// </summary>
@@ -39,10 +83,12 @@ namespace Helsenorge.Registries.Abstractions
         /// <summary>
         /// The public certificate used for signature validations
         /// </summary>
+        [field: NonSerialized]
         public X509Certificate2 SignatureCertificate { get; set; }
         /// <summary>
         /// The public certificate used for encryption
         /// </summary>
+        [field: NonSerialized]
         public X509Certificate2 EncryptionCertificate { get; set; }
 
         /// <summary>

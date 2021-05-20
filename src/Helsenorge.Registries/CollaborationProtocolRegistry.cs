@@ -1,3 +1,11 @@
+/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -59,7 +67,6 @@ namespace Helsenorge.Registries
             _cache = cache;
             _adressRegistry = adressRegistry;
             _invoker = new SoapServiceInvoker(settings.WcfConfiguration);
-            _invoker.SetClientCredentials(_settings.UserName, _settings.Password);
             CertificateValidator = new CertificateValidator(_settings.UseOnlineRevocationCheck);
         }
 
@@ -296,11 +303,11 @@ namespace Helsenorge.Registries
 
         [ExcludeFromCodeCoverage] // requires wire communication
         private Task<T> Invoke<T>(ILogger logger, Func<CPAService.ICPPAService, Task<T>> action, string methodName)
-            => _invoker.Execute(logger, action, methodName, _settings.EndpointName);
+            => _invoker.Execute(logger, action, methodName);
 
         [ExcludeFromCodeCoverage] // requires wire communication
         private Task<T> Invoke<T>(ILogger logger, Func<ICommunicationPartyService, Task<T>> action, string methodName)
-            => _invoker.Execute(logger, action, methodName, _settings.EndpointName);
+            => _invoker.Execute(logger, action, methodName);
 
         private CollaborationProtocolProfile MapFrompartyInfo(XElement partyInfo)
         {
@@ -319,22 +326,23 @@ namespace Helsenorge.Registries
             }
 
             XNamespace xmlSig = "http://www.w3.org/2000/09/xmldsig#";
-            foreach (var certificate in partyInfo.Elements(_ns + "Certificate"))
+            foreach (var certificateElement in partyInfo.Elements(_ns + "Certificate"))
             {
-                var id = certificate.Attribute(_ns + "certId").Value;
-                var base64 = certificate.Descendants(xmlSig + "X509Certificate").First().Value;
+                var base64 = certificateElement.Descendants(xmlSig + "X509Certificate").First().Value;
+                var certificate = new X509Certificate2(Convert.FromBase64String(base64));
 
-                if (id.Equals("enc", StringComparison.Ordinal))
+                if (certificate.HasKeyUsage(X509KeyUsageFlags.DataEncipherment))
                 {
-                    cpa.EncryptionCertificate = new X509Certificate2(Convert.FromBase64String(base64));
+                    cpa.EncryptionCertificate = certificate;
                 }
-                else
+                else if (certificate.HasKeyUsage(X509KeyUsageFlags.NonRepudiation))
                 {
-                    cpa.SignatureCertificate = new X509Certificate2(Convert.FromBase64String(base64));
+                    cpa.SignatureCertificate = certificate;
                 }
             }
             return cpa;
         }
+
         private CollaborationProtocolRole CreateFromCollaborationRole(XContainer element, XElement partyInfo)
         {
             if (element == null) throw new ArgumentNullException(nameof(element));
@@ -357,8 +365,6 @@ namespace Helsenorge.Registries
             {
                 ReceiveMessages = new List<CollaborationProtocolMessage>(),
                 SendMessages = new List<CollaborationProtocolMessage>(),
-                Name = element.Element(_ns + "Role")?.Attribute(_ns + "name").Value,
-                VersionString = element.Element(_ns + "ProcessSpecification")?.Attribute(_ns + "version").Value,
                 RoleName = element.Element(_ns + "Role")?.Attribute(_ns + "name").Value
              };
 
@@ -480,6 +486,7 @@ namespace Helsenorge.Registries
             if (compositeListNode == null) return null;
 
             var constituents = compositeListNode.Elements(_ns + "Encapsulation").Elements(_ns + "Constituent").ToList();
+            constituents.AddRange(compositeListNode.Elements(_ns + "Composite").Elements(_ns + "Constituent"));
             if (!constituents.Any()) return null;
 
             var parts = new List<CollaborationProtocolMessagePart>();

@@ -1,3 +1,11 @@
+/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
 using System;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -6,16 +14,7 @@ using Helsenorge.Messaging.ServiceBus.Senders;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Helsenorge.Messaging.Tests, PublicKey=00240000048" + 
-                              "0000094000000060200000024000052534131000400000100" +
-                              "0100773d7b513076df908a05edadb53a26effc169310d844f" +
-                              "f47ed842bebef258bcfda39e2c62e4d6ceabb04037a24bcd2" +
-                              "85efd882ee7623170664411d5f5107cd2756221ba572b4903" +
-                              "bd45153c192cae7c544ea23b88f814c49a4709218355eac93" +
-                              "98524c353f4a5678ea9a2755bb012707d2de25019af5fd511" +
-                              "b1f48aa5a6eadd4")]
 namespace Helsenorge.Messaging
 {
     /// <summary>
@@ -206,7 +205,7 @@ namespace Helsenorge.Messaging
         public async Task SendAndContinueAsync(OutgoingMessage message)
         {
 #pragma warning disable CS0618 // Type or member is obsolete
-            await SendAndContinueAsync(_logger, message);
+            await SendAndContinueAsync(_logger, message).ConfigureAwait(false);
 #pragma warning restore CS0618 // Type or member is obsolete
         }
 
@@ -218,7 +217,7 @@ namespace Helsenorge.Messaging
         public async Task<XDocument> SendAndWaitAsync(OutgoingMessage message)
         {
 #pragma warning disable CS0618 // Type or member is obsolete
-            return await SendAndWaitAsync(_logger, message);
+            return await SendAndWaitAsync(_logger, message).ConfigureAwait(false);
 #pragma warning restore CS0618 // Type or member is obsolete
         }
 
@@ -226,7 +225,7 @@ namespace Helsenorge.Messaging
         /// Registers a delegate that should be called when we receive a synchronous reply message. This is where the main reply message processing is done.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterSynchronousReplyMessageReceivedCallback(Action<IncomingMessage> action) => _synchronousServiceBusSender.OnSynchronousReplyMessageReceived = action;
+        public void RegisterSynchronousReplyMessageReceivedCallback(Func<IncomingMessage, Task> action) => _synchronousServiceBusSender.OnSynchronousReplyMessageReceived = action;
 
         private async Task<CollaborationProtocolMessage> PreCheck(ILogger logger, OutgoingMessage message)
         {

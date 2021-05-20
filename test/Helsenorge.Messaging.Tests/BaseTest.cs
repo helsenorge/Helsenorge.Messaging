@@ -1,20 +1,27 @@
-using System;
-using System.IO;
-using Helsenorge.Registries;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Helsenorge.Registries.Mocks;
-using Microsoft.Extensions.Logging;
-using System.Configuration;
-using System.Xml.Linq;
+/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Tests.Mocks;
-using System.Threading.Tasks;
+using Helsenorge.Registries;
+using Helsenorge.Registries.Configuration;
+using Helsenorge.Registries.Mocks;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Helsenorge.Messaging.Tests
 {
     [TestClass]
-    [DeploymentItem(@"Files", @"Files")]
     public class BaseTest
     {
         //public const int MyHerId = 93238;
@@ -44,7 +51,7 @@ namespace Helsenorge.Messaging.Tests
 
         protected XDocument GenericResponse => new XDocument(new XElement("SomeDummyXmlResponseUsedForTesting"));
 
-        protected XDocument SoapFault => XDocument.Load(File.OpenRead(@"Files\SoapFault.xml"));
+        protected XDocument SoapFault => XDocument.Load(File.OpenRead(TestFileUtility.GetFullPathToFile($"Files{Path.DirectorySeparatorChar}SoapFault.xml")));
 
 
         [TestInitialize]
@@ -57,18 +64,20 @@ namespace Helsenorge.Messaging.Tests
         {
             var addressRegistrySettings = new AddressRegistrySettings()
             {
-                UserName = "username",
-                Password = "password",
-                EndpointName = "SomeEndpointName",
-                WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
+                WcfConfiguration = new WcfConfiguration
+                {
+                    UserName = "username",
+                    Password = "password",
+                },
                 CachingInterval = TimeSpan.FromSeconds(5)
             };
             var collaborationRegistrySettings = new CollaborationProtocolRegistrySettings()
             {
-                UserName = "username",
-                Password = "password",
-                EndpointName = "SomeEndpointName",
-                WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
+                WcfConfiguration = new WcfConfiguration
+                {
+                    UserName = "username",
+                    Password = "password",
+                },
                 CachingInterval = TimeSpan.FromSeconds(5)
             };
 
@@ -83,34 +92,34 @@ namespace Helsenorge.Messaging.Tests
             AddressRegistry = new AddressRegistryMock(addressRegistrySettings, distributedCache);
             AddressRegistry.SetupFindCommunicationPartyDetails(i =>
             {
-                var file = Path.Combine("Files", $"CommunicationDetails_{i}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CommunicationDetails_{i}.xml"));
                 return File.Exists(file) == false ? null : XElement.Load(file);
             });
             AddressRegistry.SetupGetCertificateDetailsForEncryption(i =>
             {
-                var path = Path.Combine("Files", $"GetCertificateDetailsForEncryption_{i}.xml");
+                var path = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"GetCertificateDetailsForEncryption_{i}.xml"));
                 return File.Exists(path) == false ? null : XElement.Load(path);
             });
             AddressRegistry.SetupGetCertificateDetailsForValidatingSignature(i =>
             {
-                var path = Path.Combine("Files", $"GetCertificateDetailsForValidatingSignature_{i}.xml");
+                var path = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"GetCertificateDetailsForValidatingSignature_{i}.xml"));
                 return File.Exists(path) == false ? null : XElement.Load(path);
             });
 
             CollaborationRegistry = new CollaborationProtocolRegistryMock(collaborationRegistrySettings, distributedCache, AddressRegistry);
             CollaborationRegistry.SetupFindProtocolForCounterparty(i =>
             {
-                var file = Path.Combine("Files", $"CPP_{i}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPP_{i}.xml"));
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
             CollaborationRegistry.SetupFindAgreementForCounterparty(i =>
             {
-                var file = Path.Combine("Files", $"CPA_{i}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_{i}.xml"));
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
             CollaborationRegistry.SetupFindAgreementById(i =>
             {
-                var file = Path.Combine("Files", $"CPA_{i:D}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_{i:D}.xml"));
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
 
@@ -146,13 +155,14 @@ namespace Helsenorge.Messaging.Tests
             MessageProtection = new MockMessageProtection(signingCertificate, encryptionCertificate);
 
             Client = new MessagingClient(
-                Settings, 
-                CollaborationRegistry, 
-                AddressRegistry, 
-                CertificateStore, 
+                Settings,
+                LoggerFactory,
+                CollaborationRegistry,
+                AddressRegistry,
+                CertificateStore,
                 CertificateValidator,
                 MessageProtection
-            );
+            ); ;
             Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
             Server = new MessagingServer(

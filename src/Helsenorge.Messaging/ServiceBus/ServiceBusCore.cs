@@ -1,14 +1,20 @@
+/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
-using Helsenorge.Messaging.Http;
 
 namespace Helsenorge.Messaging.ServiceBus
 {
@@ -76,10 +82,6 @@ namespace Helsenorge.Messaging.ServiceBus
             {
                 throw new ArgumentNullException("connectionString");
             }
-            if (connectionString.StartsWith("http://") || connectionString.StartsWith("https://"))
-            {
-                FactoryPool = new HttpServiceBusFactoryPool(core.Settings.ServiceBus);
-            }
             else
             {
                 FactoryPool = new ServiceBusFactoryPool(core.Settings.ServiceBus);
@@ -104,7 +106,7 @@ namespace Helsenorge.Messaging.ServiceBus
             if (string.IsNullOrEmpty(outgoingMessage.MessageId)) throw new ArgumentNullException(nameof(outgoingMessage.MessageId));
             if (outgoingMessage.Payload == null) throw new ArgumentNullException(nameof(outgoingMessage.Payload));
 
-            logger.LogStartSend(queueType, outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, outgoingMessage.PersonalId, outgoingMessage.Payload);
+            logger.LogStartSend(queueType, outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, outgoingMessage.Payload);
 
             var hasAgreement = true;
             // first we try and find an agreement
@@ -138,11 +140,13 @@ namespace Helsenorge.Messaging.ServiceBus
                 {
                     if (Core.Settings.IgnoreCertificateErrorOnSend)
                     {
-                        logger.LogError(EventIds.RemoteCertificate, $"Remote encryption certificate {profile.EncryptionCertificate?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid");
+                        logger.LogError(EventIds.RemoteCertificate, $"Remote encryption certificate {profile.EncryptionCertificate?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid.{Environment.NewLine}" +
+                            $"Certificate error(s): {encryptionStatus}.");
                     }
                     else
                     {
-                        throw new MessagingException($"Remote encryption certificate {profile.EncryptionCertificate?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid")
+                        throw new MessagingException($"Remote encryption certificate {profile.EncryptionCertificate?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid.{Environment.NewLine}" +
+                            $"Certificate error(s): {encryptionStatus}.")
                         {
                             EventId = EventIds.RemoteCertificate
                         };
@@ -153,11 +157,17 @@ namespace Helsenorge.Messaging.ServiceBus
                 {
                     if (Core.Settings.IgnoreCertificateErrorOnSend)
                     {
-                        logger.LogError(EventIds.LocalCertificate, $"Locally installed signing certificate {Core.MessageProtection.SigningCertificate?.SerialNumber} is not valid.\nSerial Number: {Core.MessageProtection.SigningCertificate?.SerialNumber}\nThumbprint: {Core.MessageProtection.SigningCertificate?.Thumbprint}");
+                        logger.LogError(EventIds.LocalCertificate, $"Locally installed signing certificate {Core.MessageProtection.SigningCertificate?.SerialNumber} is not valid.{Environment.NewLine}" +
+                            $"Serial Number: {Core.MessageProtection.SigningCertificate?.SerialNumber}{Environment.NewLine}" +
+                            $"Thumbprint: {Core.MessageProtection.SigningCertificate?.Thumbprint}.{Environment.NewLine}" +
+                            $"Certificate error(s): {signatureStatus}.");
                     }
                     else
                     {
-                        throw new MessagingException($"Locally installed signing certificate {Core.MessageProtection.SigningCertificate?.SerialNumber} is not valid.\nSerial Number: {Core.MessageProtection.SigningCertificate?.SerialNumber}\nThumbprint: {Core.MessageProtection.SigningCertificate?.Thumbprint}")
+                        throw new MessagingException($"Locally installed signing certificate {Core.MessageProtection.SigningCertificate?.SerialNumber} is not valid.{Environment.NewLine}" +
+                            $"Serial Number: {Core.MessageProtection.SigningCertificate?.SerialNumber}{Environment.NewLine}" +
+                            $"Thumbprint: {Core.MessageProtection.SigningCertificate?.Thumbprint}{Environment.NewLine}" +
+                            $"Certificate error(s): {signatureStatus}.")
                         {
                             EventId = EventIds.LocalCertificate
                         };
@@ -171,7 +181,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
             logger.LogBeforeFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
             // Create an empty message
-            var messagingMessage = FactoryPool.CreateMessage(logger, stream, outgoingMessage);
+            var messagingMessage = await FactoryPool.CreateMessage(logger, stream).ConfigureAwait(false);
             logger.LogAfterFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
 
             if (queueType != QueueType.SynchronousReply)
@@ -202,7 +212,7 @@ namespace Helsenorge.Messaging.ServiceBus
             }
             await Send(logger, messagingMessage).ConfigureAwait(false);
 
-            logger.LogEndSend(queueType, messagingMessage.MessageFunction, messagingMessage.FromHerId, messagingMessage.ToHerId, messagingMessage.MessageId, outgoingMessage.PersonalId);
+            logger.LogEndSend(queueType, messagingMessage.MessageFunction, messagingMessage.FromHerId, messagingMessage.ToHerId, messagingMessage.MessageId);
         }
 
         /// <summary>
@@ -219,12 +229,12 @@ namespace Helsenorge.Messaging.ServiceBus
 
             try
             {
-                messageSender = SenderPool.CreateCachedMessageSender(logger, message.To);
+                messageSender = await SenderPool.CreateCachedMessageSender(logger, message.To).ConfigureAwait(false);
                 await messageSender.SendAsync(message).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                logger.LogException("Cannot send message to service bus. Invalid endpoint.", ex);
+                logger.LogException("An error occurred during Send operation.", ex);
 
                 throw new MessagingException(ex.Message)
                 {
@@ -235,7 +245,7 @@ namespace Helsenorge.Messaging.ServiceBus
             {
                 if (messageSender != null)
                 {
-                    SenderPool.ReleaseCachedMessageSender(logger, message.To);
+                    await SenderPool.ReleaseCachedMessageSender(logger, message.To).ConfigureAwait(false);
                 }
             }
         }
@@ -271,19 +281,19 @@ namespace Helsenorge.Messaging.ServiceBus
             
             if (clonedMessage.Properties.ContainsKey(OriginalMessageIdHeaderKey) == false)
             {
-                clonedMessage.Properties.Add(OriginalMessageIdHeaderKey, originalMessage.MessageId);
+                clonedMessage.SetApplicationProperty(OriginalMessageIdHeaderKey, originalMessage.MessageId);
             }
             if (clonedMessage.Properties.ContainsKey(ReceiverTimestampHeaderKey) == false)
             {
-                clonedMessage.Properties.Add(ReceiverTimestampHeaderKey, DateTime.Now.ToString(DateTimeFormatInfo.InvariantInfo));
+                clonedMessage.SetApplicationProperty(ReceiverTimestampHeaderKey, DateTime.Now.ToString(DateTimeFormatInfo.InvariantInfo));
             }
             if (clonedMessage.Properties.ContainsKey(ErrorConditionHeaderKey) == false)
             {
-                clonedMessage.Properties.Add(ErrorConditionHeaderKey, errorCode);
+                clonedMessage.SetApplicationProperty(ErrorConditionHeaderKey, errorCode);
             }
             if (clonedMessage.Properties.ContainsKey(ErrorDescriptionHeaderKey) == false)
             {
-                clonedMessage.Properties.Add(ErrorDescriptionHeaderKey, errorDescription);
+                clonedMessage.SetApplicationProperty(ErrorDescriptionHeaderKey, errorDescription);
             }
 
             var additionDataValue = "None";
@@ -302,7 +312,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
                 if (clonedMessage.Properties.ContainsKey(ErrorConditionDataHeaderKey) == false)
                 {
-                    clonedMessage.Properties.Add(ErrorConditionDataHeaderKey, additionDataValue);
+                    clonedMessage.SetApplicationProperty(ErrorConditionDataHeaderKey, additionDataValue);
                 }
             }
             logger.LogWarning("Reporting error to sender. ErrorCode: {0} ErrorDescription: {1} AdditionalData: {2}", errorCode, errorDescription, additionDataValue);
@@ -319,7 +329,7 @@ namespace Helsenorge.Messaging.ServiceBus
             // sb.test.nhn.no/DigitalDialog/91468_async
             // we only want the last part
 
-            if (string.IsNullOrEmpty(queueAddress)) throw new ArgumentNullException(nameof(queueAddress));
+            if (string.IsNullOrEmpty(queueAddress)) throw new ArgumentNullException(nameof(queueAddress), $"Queue address null or empty string. Verify that the Communication Party is set up with a queue address in the Address Registry. Parameter name: {nameof(queueAddress)}");
 
             var i = queueAddress.LastIndexOf('/');
             return queueAddress.Substring(i + 1);
@@ -335,18 +345,14 @@ namespace Helsenorge.Messaging.ServiceBus
                     EventId = EventIds.SenderMissingInAddressRegistryEventId
                 };
             }
-            
-            switch (type)
+
+            return type switch
             {
-                case QueueType.Asynchronous:
-                    return ExtractQueueName(details.AsynchronousQueueName);
-                case QueueType.Synchronous:
-                    return ExtractQueueName(details.SynchronousQueueName);
-                case QueueType.Error:
-                    return ExtractQueueName(details.ErrorQueueName);
-                default:
-                    throw new InvalidOperationException("QueueType not supported");
-            }
+                QueueType.Asynchronous => ExtractQueueName(details.AsynchronousQueueName),
+                QueueType.Synchronous => ExtractQueueName(details.SynchronousQueueName),
+                QueueType.Error => ExtractQueueName(details.ErrorQueueName),
+                _ => throw new InvalidOperationException($"Queue type '{type}' is not supported"),
+            };
         }
 
         /// <summary>

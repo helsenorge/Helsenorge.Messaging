@@ -1,4 +1,12 @@
-﻿using System;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Helsenorge.Registries.Abstractions;
@@ -42,19 +50,8 @@ namespace Helsenorge.Registries
                 result |= CertificateErrors.EndDate;
             }
 
-            foreach (var extension in certificate.Extensions)
-            {
-                switch (extension.Oid.Value)
-                {
-                    case "2.5.29.15": // Key usage
-                        var usageExtension = (X509KeyUsageExtension)extension;
-                        if ((usageExtension.KeyUsages & usage) != usage)
-                        {
-                            result |= CertificateErrors.Usage;
-                        }
-                        break;
-                }
-            }
+            if(!certificate.HasKeyUsage(usage))
+                result |= CertificateErrors.Usage;
 
             var chain = new X509Chain
             {

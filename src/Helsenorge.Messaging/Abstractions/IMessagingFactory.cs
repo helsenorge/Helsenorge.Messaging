@@ -1,4 +1,13 @@
-﻿using System.IO;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Abstractions
 {
@@ -11,8 +20,9 @@ namespace Helsenorge.Messaging.Abstractions
         /// Creates a receiver
         /// </summary>
         /// <param name="id">Id representing the receiver</param>
+        /// <param name="credit">Let's you set the link-credit for the receiver link</param>
         /// <returns></returns>
-        IMessagingReceiver CreateMessageReceiver(string id);
+        IMessagingReceiver CreateMessageReceiver(string id, int credit);
         /// <summary>
         /// Creates a sender
         /// </summary>
@@ -23,8 +33,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// Creates an empty message
         /// </summary>
         /// <param name="stream">Stream containing the information</param>
-        /// <param name="outgoingMessage">Parameter outgoinMessage is only used by the <see cref="Http.HttpServiceBusFactory"/> implementation</param>
         /// <returns></returns>
-        IMessagingMessage CreteMessage(Stream stream, OutgoingMessage outgoingMessage);
+        Task<IMessagingMessage> CreateMessage(Stream stream);
     }
 }

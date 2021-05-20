@@ -1,4 +1,12 @@
-﻿using System;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
@@ -17,7 +25,21 @@ namespace Helsenorge.Messaging.Tests.Mocks
         }
 
         public bool IsClosed => false;
-        public void Close() {}
+        public Task Close() { return Task.CompletedTask; }
+
+        public IMessagingMessage Receive(TimeSpan serverWaitTime)
+        {
+            if (_factory.Qeueues.ContainsKey(_id))
+            {
+                var queue = _factory.Qeueues[_id];
+                if (queue.Count > 0)
+                {
+                    return queue.First();
+                }
+            }
+
+            return null;
+        }
 
         public async Task<IMessagingMessage> ReceiveAsync(TimeSpan serverWaitTime)
         {
@@ -29,7 +51,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
                     return await Task.FromResult(queue.First());
                 }
             }
-            //System.Threading.Thread.Sleep(serverWaitTime);
+
             return null;
         }
     }

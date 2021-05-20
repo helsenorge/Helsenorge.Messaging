@@ -1,8 +1,18 @@
+/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
 using System;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Tests.Mocks;
 using Helsenorge.Registries.Abstractions;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
@@ -27,7 +37,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             var message = CreateMessage();
             message.ToHerId = MockFactory.OtherHerId;
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
 
             Assert.AreEqual(1, MockFactory.OtherParty.Asynchronous.Messages.Count);
             // message includes CPA id
@@ -38,7 +48,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             var message = CreateMessage();
             message.ToHerId = MockFactory.HerIdWithOnlyCpp;
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
 
             Assert.AreEqual(1, MockFactory.OtherPartyWithOnlyCpp.Asynchronous.Messages.Count);
             // no CPA id specified
@@ -51,7 +61,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             var message = CreateMessage();
             message.ReceiptForMessageFunction = message.MessageFunction;
             message.MessageFunction = "APPREC";
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
 
             Assert.AreEqual(1, MockFactory.OtherParty.Asynchronous.Messages.Count);
         }
@@ -60,7 +70,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         [ExpectedException(typeof(ArgumentNullException))]
         public void Send_Asynchronous_NoMessage()
         {
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, null));
+            RunAndHandleException(Client.SendAndContinueAsync(null));
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
@@ -68,7 +78,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             var message = CreateMessage();
             message.ToHerId = 0;
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -76,7 +86,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             var message = CreateMessage();
             message.MessageId = null;
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -84,7 +94,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             var message = CreateMessage();
             message.MessageFunction = null;
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -92,7 +102,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             var message = CreateMessage();
             message.Payload = null;
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
         }
         
         [TestMethod]
@@ -101,7 +111,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             var message = CreateMessage();
             message.MessageFunction = "BOB";
-            RunAndHandleMessagingException(Client.SendAndContinueAsync(Logger, message), EventIds.InvalidMessageFunction);
+            RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.InvalidMessageFunction);
         }
         [TestMethod]
         [ExpectedException(typeof(MessagingException))]
@@ -111,7 +121,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             CertificateValidator.SetError((c,u)=> (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.StartDate : CertificateErrors.None);
 
             var message = CreateMessage();
-            RunAndHandleMessagingException(Client.SendAndContinueAsync(Logger, message), EventIds.RemoteCertificate);
+            RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.RemoteCertificate);
         }
         [TestMethod]
         public void Send_Asynchronous_InvalidEncryption_Ignore()
@@ -120,7 +130,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             CertificateValidator.SetError((c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.StartDate : CertificateErrors.None);
 
             var message = CreateMessage();
-            RunAndHandleException(Client.SendAndContinueAsync(Logger, message));
+            RunAndHandleException(Client.SendAndContinueAsync(message));
         }
 
         [TestMethod]
@@ -131,8 +141,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             CertificateValidator.SetError((c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.StartDate : CertificateErrors.None);
 
             var message = CreateMessage();
-            RunAndHandleMessagingException(Client.SendAndContinueAsync(Logger, message), EventIds.LocalCertificate);
+            RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.LocalCertificate);
         }
+
         [TestMethod]
         public void Send_Asynchronous_InvalidSignature_Ignore()
         {
@@ -140,7 +151,31 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             CertificateValidator.SetError((c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.StartDate : CertificateErrors.None);
 
             var message = CreateMessage();
-            RunAndHandleMessagingException(Client.SendAndContinueAsync(Logger, message), EventIds.LocalCertificate);
+            RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.LocalCertificate);
+            var errorLog = MockLoggerProvider.Entries.FirstOrDefault(e => e.LogLevel == LogLevel.Error)?.Message;
+            Assert.IsTrue(errorLog.Contains("Certificate error(s): StartDate"));
+        }
+
+        [TestMethod]
+        public void Send_Asynchronous_InvalidEncryptionCertificate()
+        {
+            Settings.IgnoreCertificateErrorOnSend = false;
+            CertificateValidator.SetError((c, u) => {
+                if (u != X509KeyUsageFlags.DataEncipherment) return CertificateErrors.None;
+
+                return CertificateErrors.Revoked | CertificateErrors.EndDate;
+                });
+
+            var message = CreateMessage();
+            try
+            {
+                RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.RemoteCertificate);
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex.Message.Contains("Certificate error(s): EndDate, Revoked."));
+            }
+            
         }
     }
 }

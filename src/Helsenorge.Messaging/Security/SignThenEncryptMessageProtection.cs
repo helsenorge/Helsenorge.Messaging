@@ -1,4 +1,12 @@
-﻿using System;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using System;
 using System.IO;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -154,7 +162,7 @@ namespace Helsenorge.Messaging.Security
                         ? signed.Certificates[signed.Certificates.Count - 1] : null;
                     
                     // it looks like that last certificate in the collection is the one at the end of the chain
-                    throw new CertificateException(
+                    throw new CertificateMessagePayloadException(
                         $"Expected signingcertificate: {Environment.NewLine} {signingCertificate} {Environment.NewLine}{Environment.NewLine}" +
                         $"Actual signingcertificate: {Environment.NewLine} {actualSignedCertificate} {Environment.NewLine}{Environment.NewLine}",
                         raw);
@@ -226,7 +234,7 @@ namespace Helsenorge.Messaging.Security
                         ? signedCms.Certificates[signedCms.Certificates.Count - 1] : null;
 
                     // it looks like that last certificate in the collection is the one at the end of the chain
-                    throw new CertificateException(
+                    throw new CertificateMessagePayloadException(
                         $"Expected signingcertificate: {Environment.NewLine} {signingCertificate} {Environment.NewLine}{Environment.NewLine}" +
                         $"Actual signingcertificate: {Environment.NewLine} {actualSignedCertificate} {Environment.NewLine}{Environment.NewLine}",
                         content);

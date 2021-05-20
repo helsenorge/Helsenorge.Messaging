@@ -1,4 +1,12 @@
-﻿using System.Collections.Generic;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
 
@@ -16,7 +24,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
         }
 
         public bool IsClosed => false;
-        public void Close() {}
+        public Task Close() { return Task.CompletedTask; }
 
         public Task SendAsync(IMessagingMessage message)
         {

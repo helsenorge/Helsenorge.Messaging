@@ -1,18 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Security;
 using Helsenorge.Registries;
-using Microsoft.Extensions.CommandLineUtils;
+using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-#if NET471
 using Microsoft.Extensions.DependencyInjection;
-#endif
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Helsenorge.Messaging.Client
 {
@@ -65,14 +70,11 @@ namespace Helsenorge.Messaging.Client
             // set up address registry
             var addressRegistrySettings = new AddressRegistrySettings();
             configurationRoot.GetSection("AddressRegistrySettings").Bind(addressRegistrySettings);
-            addressRegistrySettings.WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             var addressRegistry = new AddressRegistry(addressRegistrySettings, distributedCache);
 
             // set up collaboration registry
             var collaborationProtocolRegistrySettings = new CollaborationProtocolRegistrySettings();
             configurationRoot.GetSection("CollaborationProtocolRegistrySettings").Bind(collaborationProtocolRegistrySettings);
-            collaborationProtocolRegistrySettings.WcfConfiguration =
-                ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
             var collaborationProtocolRegistry = new CollaborationProtocolRegistry(collaborationProtocolRegistrySettings, 
                 distributedCache, addressRegistry);
@@ -197,12 +199,7 @@ namespace Helsenorge.Messaging.Client
         }
 
         private static void CreateLogger(IConfigurationRoot configurationRoot)
-        {            
-#if NET46
-            _loggerFactory = new LoggerFactory();
-            _loggerFactory.AddConsole(configurationRoot.GetSection("Logging"));
-#elif NET471            
-            
+        {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddLogging(loggerConfiguration =>
             {
@@ -210,7 +207,6 @@ namespace Helsenorge.Messaging.Client
             });
             var provider = serviceCollection.BuildServiceProvider();
             _loggerFactory = provider.GetRequiredService<ILoggerFactory>();
-#endif
             _logger = _loggerFactory.CreateLogger("TestClient");
         }
     }

@@ -1,4 +1,12 @@
-﻿using System;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using System;
 using System.Collections.Generic;
 
 namespace Helsenorge.Registries.Abstractions
@@ -48,36 +56,10 @@ namespace Helsenorge.Registries.Abstractions
     [Serializable]
     public class CollaborationProtocolRole
     {
-        Version _version;
-        /// <summary>
-        /// Name of role
-        /// </summary>
-        [Obsolete("Contains Role.Name for backwards compatibility. Change to use ProcessSpecification.Name or RoleName.")]
-        public string Name { get; set; }
         /// <summary>
         /// Name of role
         /// </summary>
         public string RoleName { get; set; }
-        /// <summary>
-        /// String representation of version
-        /// </summary>
-        [Obsolete("Contains ProcessSpecification.VersionString for backwards compatibility. Change to use ProcessSpecification.VersionString. ")]
-        public string VersionString { get; set; }
-        /// <summary>
-        /// Version of role
-        /// </summary>
-        [Obsolete("Contains ProcessSpecification.Version for backwards compatibility. Change to use ProcessSpecification.Version. ")]
-        public Version Version
-        {
-            get
-            {
-                if (_version == null)
-                {
-                    _version = new Version(VersionString);
-                }
-                return _version;
-            }
-        }
 
         /// <summary>
         /// List of messages this role can send. If messages are bi-directional, the same information will be present in both the SendMessages and ReceiveMessages

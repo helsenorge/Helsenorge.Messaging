@@ -1,5 +1,14 @@
+/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
 
 namespace Helsenorge.Messaging.Tests.Mocks
@@ -28,11 +37,12 @@ namespace Helsenorge.Messaging.Tests.Mocks
             OtherPartyWithOnlyCpp = new MockCommunicationParty(this, HerIdWithOnlyCpp);
         }
 
-        public void Close()
+        public Task Close()
         {
+            return Task.CompletedTask;
         }
 
-        public IMessagingReceiver CreateMessageReceiver(string id)
+        public IMessagingReceiver CreateMessageReceiver(string id, int credit)
         {
             return new MockReceiver(this, id);
         }
@@ -42,9 +52,9 @@ namespace Helsenorge.Messaging.Tests.Mocks
             return new MockSender(this, id);
         }
 
-        public IMessagingMessage CreteMessage(Stream stream, OutgoingMessage outgoingMessage)
+        public Task<IMessagingMessage> CreateMessage(Stream stream)
         {
-            return new MockMessage(stream);
+            return Task.FromResult<IMessagingMessage>(new MockMessage(stream));
         }
     }
 

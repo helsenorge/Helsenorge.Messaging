@@ -1,4 +1,14 @@
-﻿using System;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using Helsenorge.Messaging.ServiceBus.Receivers;
+using System;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Helsenorge.Messaging.Abstractions
@@ -12,55 +22,56 @@ namespace Helsenorge.Messaging.Abstractions
         /// Called to notify that an asynchronous message is ready for processing
         /// </summary>
         /// <param name="message">Information about the message</param>
-        void NotifyAsynchronousMessageReceived(IncomingMessage message);
+        Task NotifyAsynchronousMessageReceived(IncomingMessage message);
         /// <summary>
         /// Called to notify that we are starting to process an asynchronous message
         /// </summary>
+        /// <param name="listener">Reference to the listener which invoked the callback.</param>
         /// <param name="message">Information about the message</param>
-        void NotifyAsynchronousMessageReceivedStarting(IncomingMessage message);
+        Task NotifyAsynchronousMessageReceivedStarting(MessageListener listener, IncomingMessage message);
         /// <summary>
         /// Called to notify that we are finished processing an asynchronous message
         /// </summary>
         /// <param name="message">Information about the message</param>
-        void NotifyAsynchronousMessageReceivedCompleted(IncomingMessage message);
+        Task NotifyAsynchronousMessageReceivedCompleted(IncomingMessage message);
         /// <summary>
         /// Called to notify that we are ready to process an error message
         /// </summary>
         /// <param name="message"></param>
-        void NotifyErrorMessageReceived(IMessagingMessage message);
+        Task NotifyErrorMessageReceived(IMessagingMessage message);
         /// <summary>
         /// Called to notify that we are starting to process an error message
         /// </summary>
         /// <param name="message">Information about the message</param>
-        void NotifyErrorMessageReceivedStarting(IncomingMessage message);
+        Task NotifyErrorMessageReceivedStarting(IncomingMessage message);
         /// <summary>
         /// Called to notify that a synchronous message is ready for processing
         /// </summary>
         /// <param name="message">Information about the message</param>
-        XDocument NotifySynchronousMessageReceived(IncomingMessage message);
+        Task<XDocument> NotifySynchronousMessageReceived(IncomingMessage message);
         /// <summary>
         /// Called to notify that we are finished to processing a synchronous message
         /// </summary>
         /// <param name="message">Information about the message</param>
-        void NotifySynchronousMessageReceivedCompleted(IncomingMessage message);
+        Task NotifySynchronousMessageReceivedCompleted(IncomingMessage message);
         /// <summary>
         /// Called to notify that we are starting to process a synchronous message
         /// </summary>
         /// <param name="message">Information about the message</param>
-        void NotifySynchronousMessageReceivedStarting(IncomingMessage message);
-
-        /// <summary>
-        /// Called to notifiy that we have a handled exception
-        /// </summary>
-        /// <param name="message">Information about the incoming message</param>
-        /// <param name="ex">The exception</param>
-        void NotifyUnhandledException(IMessagingMessage message, Exception ex);
+        Task NotifySynchronousMessageReceivedStarting(IncomingMessage message);
 
         /// <summary>
         /// Called to notifiy that we have an unhandled exception
         /// </summary>
         /// <param name="message">Information about the incoming message</param>
         /// <param name="ex">The exception</param>
-        void NotifyHandledException(IMessagingMessage message, Exception ex);
+        Task NotifyUnhandledException(IMessagingMessage message, Exception ex);
+
+        /// <summary>
+        /// Called to notifiy that we have a handled exception
+        /// </summary>
+        /// <param name="message">Information about the incoming message</param>
+        /// <param name="ex">The exception</param>
+        Task NotifyHandledException(IMessagingMessage message, Exception ex);
     }
 }

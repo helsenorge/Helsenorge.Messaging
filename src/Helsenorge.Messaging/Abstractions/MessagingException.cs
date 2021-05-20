@@ -1,4 +1,12 @@
-﻿using System;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using Microsoft.Extensions.Logging;
@@ -111,6 +119,10 @@ namespace Helsenorge.Messaging.Abstractions
         /// The Messaging Entity Cache failed to close an entity.
         /// </summary>
         public static EventId MessagingEntityCacheFailedToCloseEntity = new EventId(36, EventIdName);
+        /// <summary>
+        /// Non-successful release of message.
+        /// </summary>
+        public static EventId MessageReleaseFailed = new EventId(37, EventIdName);
 
         /// <summary>
         /// Event Id used for informational purposes when starting/ending the Receive process.

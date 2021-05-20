@@ -1,18 +1,25 @@
-using System;
-using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.ServiceModel;
+/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
 using Helsenorge.Registries.Abstractions;
+using Helsenorge.Registries.Configuration;
 using Helsenorge.Registries.Mocks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.IO;
+using System.Linq;
+using System.ServiceModel;
 
 namespace Helsenorge.Registries.Tests
 {
     [TestClass]
-    [DeploymentItem(@"Files", @"Files")]
     public class CollaborationRegistryTests
     {
         private CollaborationProtocolRegistryMock _registry;
@@ -24,10 +31,11 @@ namespace Helsenorge.Registries.Tests
         {
             var settings = new CollaborationProtocolRegistrySettings()
             {
-                UserName = "username",
-                Password = "password",
-                EndpointName = "BasicHttpBinding_ICommunicationPartyService",
-                WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
+                WcfConfiguration = new WcfConfiguration
+                {
+                    UserName = "username",
+                    Password = "password",
+                },
                 CachingInterval = TimeSpan.FromSeconds(5),
                 MyHerId = 93238 // matches a value in a CPA test file
             };
@@ -44,21 +52,21 @@ namespace Helsenorge.Registries.Tests
             _registry = new CollaborationProtocolRegistryMock(settings, distributedCache, addressRegistry);
             _registry.SetupFindAgreementById(i =>
             {
-                var file = Path.Combine("Files", $"CPA_{i:D}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_{i:D}.xml"));
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
             _registry.SetupFindAgreementForCounterparty(i =>
             {
-                var file = Path.Combine("Files", $"CPA_{i}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_{i}.xml"));
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
             _registry.SetupFindProtocolForCounterparty(i =>
             {
                 if (i < 0)
                 {
-                    throw new FaultException(new FaultReason("Dummy fault from mock"));
+                    throw new FaultException(new FaultReason("Dummy fault from mock"), new FaultCode("Client"), string.Empty);
                 }
-                var file = Path.Combine("Files", $"CPP_{i}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPP_{i}.xml"));
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
         }
@@ -102,10 +110,7 @@ namespace Helsenorge.Registries.Tests
             Assert.IsNotNull(profile.EncryptionCertificate);
 
             var role = profile.Roles[0];
-            Assert.AreEqual("DIALOG_INNBYGGER_DIGITALBRUKERreceiver", role.Name);
             Assert.AreEqual("DIALOG_INNBYGGER_DIGITALBRUKERreceiver", role.RoleName);
-            Assert.AreEqual("1.1", role.VersionString);
-            Assert.AreEqual(new Version(1, 1), role.Version);
             Assert.AreEqual("1.1", role.ProcessSpecification.VersionString);
             Assert.AreEqual(new Version(1, 1), role.ProcessSpecification.Version);
             Assert.AreEqual("Dialog_Innbygger_Digitalbruker", role.ProcessSpecification.Name);
@@ -339,6 +344,29 @@ namespace Helsenorge.Registries.Tests
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNull(profile.FindMessagePartsForSendAppRec("BOB"));
+        }
+
+        [TestMethod]
+        public void Read_CollaborationAgreement_v2_ById()
+        {
+            _registry.SetupFindAgreementById(i =>
+            {
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_v2_{i:D}.xml"));
+                return File.Exists(file) == false ? null : File.ReadAllText(file);
+            });
+
+            var profile = _registry.FindAgreementByIdAsync(_logger, Guid.Parse("51795e2c-9d39-44e0-9168-5bee38f20819")).Result;
+
+            Assert.AreEqual("Digitale innbyggertjenester", profile.Name);
+            Assert.AreEqual(8093240, profile.HerId);
+            Assert.AreEqual(32, profile.Roles.Count);
+            Assert.AreEqual(4, profile.Roles[0].SendMessages.Count);
+            Assert.AreEqual(5, profile.Roles[0].SendMessages[0].Parts.Count());
+            Assert.AreEqual("MsgHead-v1_2.xsd", profile.Roles[0].SendMessages[0].Parts.ToList()[0].XmlSchema);
+
+            Assert.IsNotNull(profile.SignatureCertificate);
+            Assert.IsNotNull(profile.EncryptionCertificate);
+            Assert.IsTrue(profile.FindMessagePartsForReceiveMessage("DIALOG_INNBYGGER_TEST").Any());
         }
     }
 }

@@ -1,7 +1,17 @@
-﻿using Microsoft.Extensions.Logging;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Abstractions
 {
@@ -34,8 +44,13 @@ namespace Helsenorge.Messaging.Abstractions
             /// Entry has ben scheduled for closure
             /// </summary>
             public bool ClosePending { get; set; }
+            /// <summary>
+            /// Entity Path for this entity
+            /// </summary>
+            public string Path { get; set; }
         }
 
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly Dictionary<string, CacheEntry<T>> _entries = new Dictionary<string, CacheEntry<T>>();
         private readonly string _name;
         private bool _shutdownPending;
@@ -65,7 +80,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// <param name="logger"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        protected abstract T CreateEntity(ILogger logger, string id);
+        protected abstract Task<T> CreateEntity(ILogger logger, string id);
 
         /// <summary>
         /// Gets a cached copy. Creates it if it doesn't exist
@@ -73,7 +88,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// <param name="logger"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        public T Create(ILogger logger, string path)
+        public async Task<T> Create(ILogger logger, string path)
         {
             logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "Start-MessagingEntityCache::Create: Create entry for {Path}", path);
 
@@ -81,12 +96,12 @@ namespace Helsenorge.Messaging.Abstractions
             if (_shutdownPending) return null;
 
             CacheEntry<T> entry;
-
-            TrimEntries(logger); // see if we need to trim entries
-
-            // create an entry if it doesn't exist
-            lock (_entries)
+            await TrimEntries(logger).ConfigureAwait(false); // see if we need to trim entries
+            await _semaphore.WaitAsync().ConfigureAwait(false);
+            try
             {
+
+                // create an entry if it doesn't exist
                 if (_entries.ContainsKey(path) == false)
                 {
                     // create a new record for this entity
@@ -95,29 +110,33 @@ namespace Helsenorge.Messaging.Abstractions
                     {
                         ActiveCount = 1,
                         LastUsed = DateTime.Now,
-                        Entity = CreateEntity(logger, path),
-                        ClosePending = false
+                        Entity = await CreateEntity(logger, path).ConfigureAwait(false),
+                        ClosePending = false,
+                        Path = path,
                     };
                     _entries.Add(path, entry);
 
                     logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCacheCreate: Create entry for {Path}", path);
                     return entry.Entity;
                 }
+
                 entry = _entries[path];
-            }
-            // update information for existing item
-            lock (entry)
-            {
+
                 entry.ActiveCount++;
                 entry.LastUsed = DateTime.Now;
-                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCacheCreate: Updating entry for {Path}", path);
+                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, $"MessagingEntityCacheCreate: Updating entry for {path} with ActiveCount {entry.ActiveCount}");
 
                 // if this entity previously was closed, we need to create a new instance
                 if (entry.Entity != null) return entry.Entity;
 
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCacheCreate: Creating new entity for {Path}", path);
-                entry.Entity = CreateEntity(logger, path);
+                entry.Entity = await CreateEntity(logger, path).ConfigureAwait(false);
                 entry.ClosePending = false;
+            }
+            finally
+            {
+                _semaphore.Release();
+                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCacheCreate: Create entry for {Path}", path);
             }
 
             logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCacheCreate: Create entry for {Path}", path);
@@ -129,22 +148,18 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="path"></param>
-        public void Release(ILogger logger, string path)
+        public async Task Release(ILogger logger, string path)
         {
             if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path));
             if (_shutdownPending) return;
 
-            CacheEntry<T> entry;
-
-            lock (_entries)
+            await _semaphore.WaitAsync().ConfigureAwait(false);
+            try
             {
-                if (_entries.TryGetValue(path, out entry) == false)
+                if (_entries.TryGetValue(path, out CacheEntry<T> entry) == false)
                 {
                     return;
                 }
-            }
-            lock (entry)
-            {
                 // under normal conditions, we just decrease the active count
                 entry.ActiveCount--;
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Releasing entry for {Path}", path);
@@ -153,12 +168,16 @@ namespace Helsenorge.Messaging.Abstractions
                 // in those cases we need to close the connection and set respective properties
                 if (entry.ClosePending)
                 {
-                    CloseEntity(logger, entry, path);
+                    await CloseEntity(logger, entry, path).ConfigureAwait(false);
                 }
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 
-        private static void CloseEntity(ILogger logger, CacheEntry<T> entry, string path)
+        private static async Task CloseEntity(ILogger logger, CacheEntry<T> entry, string path)
         {
             logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Closing entity for {Path}", path);
 
@@ -167,11 +186,12 @@ namespace Helsenorge.Messaging.Abstractions
             {
                 try
                 {
-                    entry.Entity.Close();
+                    await entry.Entity.Close().ConfigureAwait(false);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    logger.LogCritical(EventIds.MessagingEntityCacheFailedToCloseEntity, "Failed to close message entity: {Path}", path);
+                    var message = "Failed to close message entity: {Path}. Exception: " + ex.Message + " Stack Trace: " + ex.StackTrace;
+                    logger.LogCritical(EventIds.MessagingEntityCacheFailedToCloseEntity, message, path);
                 }
             }
             entry.Entity = null;
@@ -180,24 +200,29 @@ namespace Helsenorge.Messaging.Abstractions
         /// <summary>
         /// Closes all entities
         /// </summary>
-        public void Shutdown(ILogger logger)
+        public async Task Shutdown(ILogger logger)
         {
             _shutdownPending = true;
-            lock (_entries)
-            {
+            await _semaphore.WaitAsync().ConfigureAwait(false);
+            try {
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "Shutting down: {CacheName}", _name);
 
                 foreach (var key in _entries.Keys)
                 {
                     var entry = _entries[key];
-                    CloseEntity(logger, entry, key);
+                    await CloseEntity(logger, entry, key).ConfigureAwait(false);
                 }
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 
-        private void TrimEntries(ILogger logger)
+        private async Task TrimEntries(ILogger logger)
         {
-            lock (_entries)
+            await _semaphore.WaitAsync().ConfigureAwait(false);
+            try
             {
                 // we haven't reached our max capacity yet
                 if (_entries.Keys.Count < Capacity) return;
@@ -211,18 +236,19 @@ namespace Helsenorge.Messaging.Abstractions
 
                 foreach (var item in removal)
                 {
-                    lock (item) // need to lock each entry so that nobody messes with the reference count and other properties
+                    if (item.ActiveCount == 0)
                     {
-                        if (item.ActiveCount == 0)
-                        {
-                            CloseEntity(logger, item, "");
-                        }
-                        else
-                        {
-                            item.ClosePending = true; // flad it so that the release function will close the connection
-                        }
+                        await CloseEntity(logger, item, item.Path).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        item.ClosePending = true; // flad it so that the release function will close the connection
                     }
                 }
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
     }

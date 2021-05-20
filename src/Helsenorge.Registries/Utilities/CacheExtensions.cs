@@ -1,4 +1,12 @@
-﻿using System;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
@@ -11,9 +19,10 @@ namespace Helsenorge.Registries.Utilities
     {
         public static async Task<T> ReadValueFromCache<T>(ILogger logger, IDistributedCache cache, string key) where T : class
         {
-            var cached = await cache.GetAsync(key).ConfigureAwait(false);
             try
             {
+                var cached = await cache.GetAsync(key).ConfigureAwait(false);
+
                 if (cached is null)
                     return default;
                 

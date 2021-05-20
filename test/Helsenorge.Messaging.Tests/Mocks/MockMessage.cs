@@ -1,15 +1,25 @@
-﻿using System;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
 using System.IO;
 using System.Xml.Linq;
+using System.Globalization;
 
 namespace Helsenorge.Messaging.Tests.Mocks
 {
     class MockMessage : IMessagingMessage
     {
         private Stream _stream;
+        private int _deliveryCount = 0;
 
         public MockMessage(Stream stream)
         {
@@ -43,6 +53,8 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public DateTime ScheduledEnqueueTimeUtc { get; set; }
         public TimeSpan TimeToLive { get; set; }
         public string To { get; set; }
+
+        public Guid LockToken => Guid.Empty;
         public void Complete()
         {
             Queue.Remove(this);
@@ -53,10 +65,49 @@ namespace Helsenorge.Messaging.Tests.Mocks
             Queue.Remove(this);
             return Task.CompletedTask;
         }
+
+
+        public void Release()
+        {
+        }
+
+        public Task RelaseAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public void Reject()
+        {
+        }
+
+        public Task RejectAsync()
+        {
+            return Task.CompletedTask;
+        }
+
         public void DeadLetter()
         {
             Queue.Remove(this);
             DeadLetterQueue.Add(this);
+        }
+
+        public Task DeadLetterAsync()
+        {
+            DeadLetter();
+            return Task.CompletedTask;
+        }
+
+        public void Modify(bool deliveryFailed, bool undeliverableHere = false)
+        {
+            if(deliveryFailed)
+            {
+                _deliveryCount++;
+            }
+        }
+
+        public Task ModifyAsync(bool deliveryFailed, bool undeliverableHere = false)
+        {
+            return Task.CompletedTask;
         }
 
         public List<IMessagingMessage> Queue { get; set; }
@@ -88,7 +139,9 @@ namespace Helsenorge.Messaging.Tests.Mocks
 
         public object OriginalObject { get; }
 
-        public int DeliveryCount => 0;
+        public int DeliveryCount => _deliveryCount;
+
+        public DateTime LockedUntil => DateTime.UtcNow.AddSeconds(60);
 
         public Stream GetBody()
         {
@@ -102,7 +155,11 @@ namespace Helsenorge.Messaging.Tests.Mocks
 
         public void RenewLock()
         {
-            throw new NotImplementedException();
+        }
+
+        public Task RenewLockAsync()
+        {
+            return Task.CompletedTask;
         }
 
         public void Dispose()
@@ -112,6 +169,21 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public void AddDetailsToException(Exception ex)
         {
         
+        }
+
+        public void SetApplicationProperty(string key, string value)
+        {
+            Properties[key] = value;
+        }
+
+        public void SetApplicationProperty(string key, DateTime value)
+        {
+            Properties[key] = value.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo);
+        }
+
+        public void SetApplicationProperty(string key, int value)
+        {
+            Properties[key] = value.ToString(CultureInfo.InvariantCulture);
         }
     }
 }

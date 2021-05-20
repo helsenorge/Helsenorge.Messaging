@@ -1,4 +1,12 @@
-﻿using System;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
@@ -46,7 +54,7 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
             _core = core;
         }
 
-        public Action<IncomingMessage> OnSynchronousReplyMessageReceived { get; set; }
+        public Func<IncomingMessage, Task> OnSynchronousReplyMessageReceived { get; set; }
 
         public async Task<XDocument> SendAsync(ILogger logger, OutgoingMessage message)
         {
@@ -129,10 +137,9 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
                 }
 
                 if (DateTime.UtcNow <= (start + _core.Settings.Synchronous.CallTimeout)) continue;
-                
+
                 // if the request times out, we mark it. That way we can report if the message is received right after a timeout
-                MessageEntry entry;
-                if (_pendingSynchronousRequests.TryGetValue(correlationId, out entry))
+                if (_pendingSynchronousRequests.TryGetValue(correlationId, out MessageEntry entry))
                 {
                     entry.TimedOut = true;
                 }
@@ -150,8 +157,7 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
         }
         private XDocument CheckPendingEntries(string correlationId)
         {
-            MessageEntry entry;
-            if (_pendingSynchronousRequests.TryGetValue(correlationId, out entry) != true) return null;
+            if (_pendingSynchronousRequests.TryGetValue(correlationId, out MessageEntry entry) != true) return null;
             if (entry.Payload == null) return null;
 
             var response = entry.Payload;
@@ -170,9 +176,7 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
 
             foreach (var item in array)
             {
-                MessageEntry entry;
-
-                if (_pendingSynchronousRequests.TryRemove(item, out entry) != true) continue;
+                if (_pendingSynchronousRequests.TryRemove(item, out MessageEntry entry) != true) continue;
                 if (entry.TimedOut != true) continue;
                 
                 // if we never received a reply, we cannot calculate the time it took
@@ -190,55 +194,58 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
             }
         }
 
-        public void NotifyAsynchronousMessageReceived(IncomingMessage message)
+        public Task NotifyAsynchronousMessageReceived(IncomingMessage message)
         {
-
+            return Task.CompletedTask;
         }
 
-        public void NotifyAsynchronousMessageReceivedStarting(IncomingMessage message)
+        public Task NotifyAsynchronousMessageReceivedStarting(MessageListener listener, IncomingMessage message)
         {
-
+            return Task.CompletedTask;
         }
 
-        public void NotifyAsynchronousMessageReceivedCompleted(IncomingMessage message)
+        public Task NotifyAsynchronousMessageReceivedCompleted(IncomingMessage message)
         {
-
+            return Task.CompletedTask;
         }
 
-        public void NotifyErrorMessageReceived(IMessagingMessage message)
+        public Task NotifyErrorMessageReceived(IMessagingMessage message)
         {
-
+            return Task.CompletedTask;
         }
 
-        public void NotifyErrorMessageReceivedStarting(IncomingMessage message)
+        public Task NotifyErrorMessageReceivedStarting(IncomingMessage message)
         {
-
+            return Task.CompletedTask;
         }
 
-        public XDocument NotifySynchronousMessageReceived(IncomingMessage message)
+        public async Task<XDocument> NotifySynchronousMessageReceived(IncomingMessage message)
         {
-            OnSynchronousReplyMessageReceived?.Invoke(message);
+            if (OnSynchronousReplyMessageReceived != null)
+            {
+                await OnSynchronousReplyMessageReceived.Invoke(message).ConfigureAwait(false);
+            }
             return message.Payload;
         }
 
-        public void NotifySynchronousMessageReceivedCompleted(IncomingMessage message)
+        public Task NotifySynchronousMessageReceivedCompleted(IncomingMessage message)
         {
-
+            return Task.CompletedTask;
         }
 
-        public void NotifySynchronousMessageReceivedStarting(IncomingMessage message)
+        public Task NotifySynchronousMessageReceivedStarting(IncomingMessage message)
         {
-
+            return Task.CompletedTask;
         }
 
-        public void NotifyUnhandledException(IMessagingMessage message, Exception ex)
+        public Task NotifyUnhandledException(IMessagingMessage message, Exception ex)
         {
-
+            return Task.CompletedTask;
         }
 
-        public void NotifyHandledException(IMessagingMessage message, Exception ex)
+        public Task NotifyHandledException(IMessagingMessage message, Exception ex)
         {
-
+            return Task.CompletedTask;
         }
     }
 }

@@ -1,4 +1,12 @@
-﻿using System;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -67,6 +75,10 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         DateTime ScheduledEnqueueTimeUtc { get; set; }
         /// <summary>
+        /// Gets a value indicating how long this message will be locked on the server
+        /// </summary>
+        DateTime LockedUntil { get;  }
+        /// <summary>
         /// The amount of time this message should live
         /// </summary>
         TimeSpan TimeToLive { get; set; }
@@ -83,6 +95,34 @@ namespace Helsenorge.Messaging.Abstractions
         /// Completes processing of this message
         /// </summary>
         Task CompleteAsync();
+        /// <summary>
+        /// Released the message
+        /// </summary>
+        void Release();
+        /// <summary>
+        /// Released the message
+        /// </summary>
+        Task RelaseAsync();
+        /// <summary>
+        /// Rejects the message
+        /// </summary>
+        void Reject();
+        /// <summary>
+        /// Rejects the message
+        /// </summary>
+        Task RejectAsync();
+        /// <summary>
+        /// Modifies a message. It sends a modified outcome to the peer.
+        /// </summary>
+        /// <param name="deliveryFailed">If set, the message's delivery-count is incremented.</param>
+        /// <param name="undeliverableHere">Indicates if the message should not be redelivered to this endpoint.</param>
+        void Modify(bool deliveryFailed, bool undeliverableHere = false);
+        /// <summary>
+        /// Modifies a message. It sends a modified outcome to the peer.
+        /// </summary>
+        /// <param name="deliveryFailed">If set, the message's delivery-count is incremented.</param>
+        /// <param name="undeliverableHere">Indicates if the message should not be redelivered to this endpoint.</param>
+        Task ModifyAsync(bool deliveryFailed, bool undeliverableHere = false);
         /// <summary>
         /// Creates a clone of the message
         /// </summary>
@@ -103,16 +143,37 @@ namespace Helsenorge.Messaging.Abstractions
         /// <param name="ex"></param>
         void AddDetailsToException(Exception ex);
         /// <summary>
-        /// Renews the peerlock of the message
+        /// Renews the lock of the message
         /// </summary>
         void RenewLock();
+        /// <summary>
+        /// Renews the lock of the message
+        /// </summary>
+        Task RenewLockAsync();
         /// <summary>
         /// Sends this message to the deadletter queue
         /// </summary>
         void DeadLetter();
         /// <summary>
+        /// Sends this message to the deadletter queue
+        /// </summary>
+        Task DeadLetterAsync();
+        /// <summary>
         /// Gets the number of deliveries.
         /// </summary>
         int DeliveryCount { get; }
+        /// <summary>
+        /// Set additional properties related to the message
+        /// </summary>
+        void SetApplicationProperty(string key, string value);
+        /// <summary>
+        /// Set additional properties related to the message
+        /// </summary>
+        void SetApplicationProperty(string key, DateTime value);
+        /// <summary>
+        /// Set additional properties related to the message
+        /// </summary>
+        void SetApplicationProperty(string key, int value);
+
     }
 }

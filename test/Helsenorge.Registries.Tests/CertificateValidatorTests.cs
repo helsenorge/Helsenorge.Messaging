@@ -1,11 +1,18 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using System.Security.Cryptography.X509Certificates;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Helsenorge.Registries.Tests
 {
     [TestClass]
-    [DeploymentItem(@"Files", @"Files")]
     public class CertificateValidatorTests
     {
         [TestMethod]
@@ -34,6 +41,7 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(CertificateErrors.StartDate, error);
         }
         [TestMethod]
+        [TestCategory("X509Chain"), Ignore]
         public void CertificateValidation_EndDate()
         {
             var validator = new CertificateValidator();
@@ -49,6 +57,13 @@ namespace Helsenorge.Registries.Tests
             var error = validator.Validate(TestCertificates.CounterpartyPublicSignature,
                 X509KeyUsageFlags.DataEncipherment);
             Assert.AreEqual(CertificateErrors.Usage, error);
+        }
+        [TestMethod]
+        [TestCategory("X509Chain")]
+        public void X509Certificate2Extensions_KeyUsage()
+        {
+            Assert.IsTrue(TestCertificates.CounterpartyPublicSignature.HasKeyUsage(X509KeyUsageFlags.NonRepudiation));
+            Assert.IsFalse(TestCertificates.CounterpartyPublicSignature.HasKeyUsage(X509KeyUsageFlags.DataEncipherment));
         }
         // don't have a certificate with multiple errors
         //[TestMethod]

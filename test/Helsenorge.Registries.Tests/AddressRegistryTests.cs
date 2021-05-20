@@ -1,3 +1,11 @@
+/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
 using System;
 using System.Configuration;
 using System.IO;
@@ -8,12 +16,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.ServiceModel;
 using System.Xml.Linq;
+using Helsenorge.Registries.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Helsenorge.Registries.Tests
 {
     [TestClass]
-    [DeploymentItem(@"Files", @"Files")]
     public class AddressRegistryTests
     {
         private AddressRegistryMock _registry;
@@ -24,10 +32,11 @@ namespace Helsenorge.Registries.Tests
         {
             var settings = new AddressRegistrySettings()
             {
-                UserName = "username",
-                Password = "password",
-                EndpointName = "BasicHttpBinding_ICommunicationPartyService",
-                WcfConfiguration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None),
+                WcfConfiguration = new WcfConfiguration
+                {
+                    UserName = "username",
+                    Password = "password",
+                },
                 CachingInterval = TimeSpan.FromSeconds(5)
             };
 
@@ -40,9 +49,9 @@ namespace Helsenorge.Registries.Tests
             {
                 if (i < 0)
                 {
-                    throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."));
+                    throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."), new FaultCode("Client"), string.Empty);
                 }
-                var file = Path.Combine("Files", $"CommunicationDetails_{i}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CommunicationDetails_{i}.xml"));
                 return File.Exists(file) == false ? null : XElement.Load(file);
             });
 
@@ -50,9 +59,9 @@ namespace Helsenorge.Registries.Tests
             {
                 if (i < 0)
                 {
-                    throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."));
+                    throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."), new FaultCode("Client"), string.Empty);
                 }
-                var file = Path.Combine("Files", $"GetCertificateDetailsForEncryption_{i}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"GetCertificateDetailsForEncryption_{i}.xml"));
                 return File.Exists(file) == false ? null : XElement.Load(file);
             });
 
@@ -60,9 +69,9 @@ namespace Helsenorge.Registries.Tests
             {
                 if (i < 0)
                 {
-                    throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."));
+                    throw new FaultException(new FaultReason("Her-ID expected to an integer of positive value."), new FaultCode("Client"), string.Empty);
                 }
-                var file = Path.Combine("Files", $"GetCertificateDetailsForValidatingSignature_{i}.xml");
+                var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"GetCertificateDetailsForValidatingSignature_{i}.xml"));
                 return File.Exists(file) == false ? null : XElement.Load(file);
             });
 

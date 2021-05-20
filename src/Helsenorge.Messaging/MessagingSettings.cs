@@ -1,3 +1,11 @@
+/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,6 +78,10 @@ namespace Helsenorge.Messaging
     /// </summary>
     public class ServiceBusSettings
     {
+        internal const int DefaultMaxLinksPerSession = 64;
+        internal const ushort DefaultMaxSessions = 256;
+        internal const int DefaultLinkCredits = 1;
+
         private readonly MessagingSettings _settings;
 
         /// <summary>
@@ -95,12 +107,23 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// The maximum number of senders to keep open at any time
         /// </summary>
-        public uint MaxSenders { get; set; } = 200;
+        public uint MaxSenders { get; set; } = 5;
         /// <summary>
         /// The maximum number of messaging factories to use
         /// </summary>
-        public uint MaxFactories { get; set; } = 5;
-
+        public uint MaxFactories { get; set; } = 1;
+        /// <summary>
+        /// Get or set the begin-handle-max field (less by one)
+        /// </summary>
+        public int MaxLinksPerSession { get; set; } = DefaultMaxLinksPerSession;
+        /// <summary>
+        /// Get or set the open.channel-max field (less by one)
+        /// </summary>
+        public ushort MaxSessionsPerConnection { get; set; } = DefaultMaxSessions;
+        /// <summary>
+        /// Get or set the link-credit being used by the receiver link. Setting this overrides the default value of 1 credit.
+        /// </summary>
+        public int LinkCredits { get; set; } = DefaultLinkCredits;
 
         /// <summary>
         /// The Her id that we represent
@@ -201,7 +224,7 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Timeout for read operations
         /// </summary>
-        public TimeSpan ReadTimeout { get; set; } = TimeSpan.FromSeconds(1);
+        public TimeSpan ReadTimeout { get; set; } = TimeSpan.FromSeconds(60);
         internal AsynchronousSettings() {}
 
         internal void Validate()
@@ -262,7 +285,9 @@ namespace Helsenorge.Messaging
         /// The location of the certificate store to use
         /// </summary>
         public StoreLocation StoreLocation { get; set; }
-
+        /// <summary>
+        /// Validates the CertificateSettings, ensuring required values has been set
+        /// </summary>
         public void Validate()
         {
             if (string.IsNullOrEmpty(Thumbprint)) throw new ArgumentNullException(nameof(Thumbprint));

@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net46;net471</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <LangVersion>8.0</LangVersion>
     <AssemblyName>Helsenorge.Registries</AssemblyName>
     <RootNamespace>Helsenorge.Registries</RootNamespace>
     <ProjectGuid>{BD2883C9-4806-4216-A577-893B3C4CC174}</ProjectGuid>
@@ -9,6 +10,8 @@
     <Description>Helsenorge messaging registry support</Description>
     <PackageId>Helsenorge.Registries</PackageId>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <SignAssembly>false</SignAssembly>
+    <PackageId>Nhn.Helsenorge.Registries</PackageId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
@@ -21,23 +24,17 @@
     </CodeAnalysisDictionary>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="1.1.2" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net471'">
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.1" />
-  </ItemGroup>
-
   <ItemGroup>
     <None Include="..\..\tools\key.snk" Link="key.snk" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.ServiceModel" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.8" />
+    <PackageReference Include="System.ServiceModel.Http" Version="4.8.0" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.8.0" />
+    <PackageReference Include="System.ServiceModel.Security" Version="4.8.0" />
   </ItemGroup>
 
   <ItemGroup>

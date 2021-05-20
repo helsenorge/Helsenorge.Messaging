@@ -1,4 +1,12 @@
-﻿using Helsenorge.Messaging.Abstractions;
+﻿/* 
+ * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ * 
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using Helsenorge.Messaging.Abstractions;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 
