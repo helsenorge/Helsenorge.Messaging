@@ -141,7 +141,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             Assert.Equal(messageText, await message.GetBodyAsStingAsync());
             var wasLockedUntil = message.LockedUntil;
             await Task.Delay(TimeSpan.FromSeconds(1));
-            message.RenewLock();
+            await message.RenewLockAsync();
             Assert.True(message.LockedUntil > wasLockedUntil);
             Assert.True(message.LockedUntil - wasLockedUntil > TimeSpan.FromSeconds(1));
             await message.CompleteAsync();

@@ -40,12 +40,18 @@ namespace Helsenorge.Messaging.ServiceBus
         public static readonly Symbol PartitionKeySymbol = new Symbol("x-opt-partition-key");
         public static readonly Symbol SequenceNumberSymbol = new Symbol("x-opt-sequence-number");
 
-        public Func<Task> CompleteAction { get; set; }
-        public Func<Task> RejectAction { get; set; }
-        public Func<Task> ReleaseAction { get; set; }
-        public Func<Task> DeadLetterAction { get; set; }
-        public Func<Task<DateTime>> RenewLockAction { get; set; }
-        public Func<bool, bool, Task> ModifyAction { get; set; }
+        public Action CompleteAction { get; set; }
+        public Func<Task> CompleteActionAsync { get; set; }
+        public Action RejectAction { get; set; }
+        public Func<Task> RejectActionAsync { get; set; }
+        public Action ReleaseAction { get; set; }
+        public Func<Task> ReleaseActionAsync { get; set; }
+        public Action DeadLetterAction { get; set; }
+        public Func<Task> DeadLetterActionAsync { get; set; }
+        public Func<DateTime> RenewLockAction { get; set; }
+        public Func<Task<DateTime>> RenewLockActionAsync { get; set; }
+        public Action<bool, bool> ModifyAction { get; set; }
+        public Func<bool, bool, Task> ModifyActionAsync { get; set; }
 
         public ServiceBusMessage(Message implementation)
         {
@@ -260,32 +266,39 @@ namespace Helsenorge.Messaging.ServiceBus
             return new ServiceBusMessage(clone)
             {
                 CompleteAction = CompleteAction,
+                CompleteActionAsync = CompleteActionAsync,
                 RejectAction = RejectAction,
+                RejectActionAsync = RejectActionAsync,
                 ReleaseAction = ReleaseAction,
+                ReleaseActionAsync = ReleaseActionAsync,
                 DeadLetterAction = DeadLetterAction,
-                RenewLockAction = RenewLockAction
+                DeadLetterActionAsync = DeadLetterActionAsync,
+                RenewLockAction = RenewLockAction,
+                RenewLockActionAsync = RenewLockActionAsync,
+                ModifyAction = ModifyAction,
+                ModifyActionAsync = ModifyActionAsync,
             };
         }
 
-        public void Complete() => CompleteAction.Invoke().GetAwaiter().GetResult();
+        public void Complete() => CompleteAction.Invoke();
 
-        public async Task CompleteAsync() => await CompleteAction.Invoke().ConfigureAwait(false);
+        public async Task CompleteAsync() => await CompleteActionAsync.Invoke().ConfigureAwait(false);
 
-        public void Reject() => ReleaseAction.Invoke().GetAwaiter().GetResult();
+        public void Reject() => ReleaseAction.Invoke();
 
-        public async Task RejectAsync() => await ReleaseAction.Invoke().ConfigureAwait(false);
+        public async Task RejectAsync() => await ReleaseActionAsync.Invoke().ConfigureAwait(false);
 
-        public void Release() => ReleaseAction.Invoke().GetAwaiter().GetResult();
+        public void Release() => ReleaseAction.Invoke();
 
-        public async Task RelaseAsync() =>  await ReleaseAction.Invoke().ConfigureAwait(false);
+        public async Task RelaseAsync() =>  await ReleaseActionAsync.Invoke().ConfigureAwait(false);
 
-        public void DeadLetter() => DeadLetterAction.Invoke().GetAwaiter().GetResult();
+        public void DeadLetter() => DeadLetterAction.Invoke();
 
-        public async Task DeadLetterAsync() => await DeadLetterAction.Invoke().ConfigureAwait(false);
+        public async Task DeadLetterAsync() => await DeadLetterActionAsync.Invoke().ConfigureAwait(false);
 
-        public void Modify(bool deliveryFailed, bool undeliverableHere = false) => ModifyAction.Invoke(deliveryFailed, undeliverableHere).GetAwaiter().GetResult();
+        public void Modify(bool deliveryFailed, bool undeliverableHere = false) => ModifyAction.Invoke(deliveryFailed, undeliverableHere);
 
-        public async Task ModifyAsync(bool deliveryFailed, bool undeliverableHere = false) => await ModifyAction.Invoke(deliveryFailed, undeliverableHere).ConfigureAwait(false);
+        public async Task ModifyAsync(bool deliveryFailed, bool undeliverableHere = false) => await ModifyActionAsync.Invoke(deliveryFailed, undeliverableHere).ConfigureAwait(false);
 
         [DebuggerStepThrough]
         public void Dispose() => _implementation.Dispose();
@@ -308,8 +321,13 @@ namespace Helsenorge.Messaging.ServiceBus
 
         public void RenewLock()
         {
-            var task = RenewLockAction.Invoke();
-            var lockedUntilUtc = task?.Result ?? DateTime.MinValue;
+            var lockedUntilUtc = RenewLockAction.Invoke();
+            _implementation.MessageAnnotations[LockedUntilSymbol] = lockedUntilUtc;
+        }
+
+        public async Task RenewLockAsync()
+        {
+            var lockedUntilUtc = await RenewLockActionAsync.Invoke().ConfigureAwait(false);
             _implementation.MessageAnnotations[LockedUntilSymbol] = lockedUntilUtc;
         }
 
