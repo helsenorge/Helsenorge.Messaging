@@ -40,18 +40,18 @@ namespace Helsenorge.Messaging.ServiceBus
         public static readonly Symbol PartitionKeySymbol = new Symbol("x-opt-partition-key");
         public static readonly Symbol SequenceNumberSymbol = new Symbol("x-opt-sequence-number");
 
-        public Action CompleteAction { get; set; }
-        public Func<Task> CompleteActionAsync { get; set; }
-        public Action RejectAction { get; set; }
-        public Func<Task> RejectActionAsync { get; set; }
-        public Action ReleaseAction { get; set; }
-        public Func<Task> ReleaseActionAsync { get; set; }
-        public Action DeadLetterAction { get; set; }
-        public Func<Task> DeadLetterActionAsync { get; set; }
-        public Func<DateTime> RenewLockAction { get; set; }
-        public Func<Task<DateTime>> RenewLockActionAsync { get; set; }
-        public Action<bool, bool> ModifyAction { get; set; }
-        public Func<bool, bool, Task> ModifyActionAsync { get; set; }
+        internal Action CompleteAction { get; set; }
+        internal Func<Task> CompleteActionAsync { get; set; }
+        internal Action RejectAction { get; set; }
+        internal Func<Task> RejectActionAsync { get; set; }
+        internal Action ReleaseAction { get; set; }
+        internal Func<Task> ReleaseActionAsync { get; set; }
+        internal Action DeadLetterAction { get; set; }
+        internal Func<Task> DeadLetterActionAsync { get; set; }
+        internal Func<DateTime> RenewLockAction { get; set; }
+        internal Func<Task<DateTime>> RenewLockActionAsync { get; set; }
+        internal Action<bool, bool> ModifyAction { get; set; }
+        internal Func<bool, bool, Task> ModifyActionAsync { get; set; }
 
         public ServiceBusMessage(Message implementation)
         {
