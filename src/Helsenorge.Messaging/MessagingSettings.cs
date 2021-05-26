@@ -80,7 +80,7 @@ namespace Helsenorge.Messaging
     {
         internal const int DefaultMaxLinksPerSession = 64;
         internal const ushort DefaultMaxSessions = 256;
-        internal const int DefaultLinkCredits = 1;
+        internal const int DefaultLinkCredits = 25;
 
         private readonly MessagingSettings _settings;
 
