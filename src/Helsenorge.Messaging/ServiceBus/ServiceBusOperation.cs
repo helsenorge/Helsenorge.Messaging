@@ -185,6 +185,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 try
                 {
                     _func.Invoke();
+                    return;
                 }
                 catch (Exception e)
                 {
