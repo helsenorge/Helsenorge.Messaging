@@ -60,7 +60,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
             if (!string.IsNullOrEmpty(_address.Path))
             {
-                Namespace = _address.Path.Substring(1);
+                Namespace = _address.Path.Substring(1).TrimEnd('/');
                 _address = new Address(connectionString.Substring(0, connectionString.Length - Namespace.Length));
             }
 
