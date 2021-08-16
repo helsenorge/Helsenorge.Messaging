@@ -153,7 +153,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 
             try
             {
-                if(message.LockedUntil.ToUniversalTime() <= DateTime.UtcNow)
+                if(message.LockedUntil.ToUniversalTime() != DateTime.MinValue && message.LockedUntil.ToUniversalTime() <= DateTime.UtcNow)
                 {
                     Logger.LogInformation($"MessageListener::ReadAndProcessMessage - Ignoring message, lock expired at: {message.LockedUntil.ToUniversalTime()}");
                     return null;
