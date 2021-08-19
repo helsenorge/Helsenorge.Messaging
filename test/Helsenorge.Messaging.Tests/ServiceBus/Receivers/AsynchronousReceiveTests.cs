@@ -312,7 +312,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         public async Task Asynchronous_Receive_LocalCertificateStartDate()
         {
             CertificateValidator.SetError(
-                (c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.StartDate : CertificateErrors.None);
+                (c, u) => (u == X509KeyUsageFlags.KeyEncipherment) ? CertificateErrors.StartDate : CertificateErrors.None);
 
             await RunAsynchronousReceive(
                postValidation: () =>
@@ -333,7 +333,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         public async Task Asynchronous_Receive_LocalCertificateEndDate()
         {
             CertificateValidator.SetError(
-                (c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.EndDate : CertificateErrors.None);
+                (c, u) => (u == X509KeyUsageFlags.KeyEncipherment) ? CertificateErrors.EndDate : CertificateErrors.None);
 
             await RunAsynchronousReceive(
                postValidation: () =>
@@ -354,7 +354,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         public async Task Asynchronous_Receive_LocalCertificateUsage()
         {
             CertificateValidator.SetError(
-                (c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.Usage : CertificateErrors.None);
+                (c, u) => (u == X509KeyUsageFlags.KeyEncipherment) ? CertificateErrors.Usage : CertificateErrors.None);
 
             await RunAsynchronousReceive(
                postValidation: () =>
@@ -375,7 +375,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         public async Task Asynchronous_Receive_LocalCertificateRevoked()
         {
             CertificateValidator.SetError(
-                (c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.Revoked : CertificateErrors.None);
+                (c, u) => (u == X509KeyUsageFlags.KeyEncipherment) ? CertificateErrors.Revoked : CertificateErrors.None);
 
             await RunAsynchronousReceive(
                postValidation: () =>
@@ -396,7 +396,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         public async Task Asynchronous_Receive_LocalCertificateRevokedUnknown()
         {
             CertificateValidator.SetError(
-                (c, u) => (u == X509KeyUsageFlags.DataEncipherment) ? CertificateErrors.RevokedUnknown : CertificateErrors.None);
+                (c, u) => (u == X509KeyUsageFlags.KeyEncipherment) ? CertificateErrors.RevokedUnknown : CertificateErrors.None);
 
             await RunAsynchronousReceive(
                postValidation: () =>
@@ -418,7 +418,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         {
             CertificateValidator.SetError(
                 (c, u) =>
-                    (u == X509KeyUsageFlags.DataEncipherment)
+                    (u == X509KeyUsageFlags.KeyEncipherment)
                         ? CertificateErrors.StartDate | CertificateErrors.EndDate
                         : CertificateErrors.None);
 

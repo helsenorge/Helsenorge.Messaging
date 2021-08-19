@@ -345,7 +345,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 // validate the local encryption certificate and, if present, the local legacy encryption certificate 
                 incomingMessage.DecryptionError = validator == null
                     ? CertificateErrors.None
-                    : validator.Validate(Core.MessageProtection.EncryptionCertificate, X509KeyUsageFlags.DataEncipherment);
+                    : validator.Validate(Core.MessageProtection.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
                 // in earlier versions of Helsenorge.Messaging we removed the message, but we should rather 
                 // want it to be dead lettered since this is a temp issue that should be fixed locally.
                 ReportErrorOnLocalCertificate(originalMessage, Core.MessageProtection.EncryptionCertificate, incomingMessage.DecryptionError);
@@ -354,7 +354,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     // this is optional information that should only be in effect durin a short transition period
                     incomingMessage.LegacyDecryptionError = validator == null
                         ? CertificateErrors.None
-                        : validator.Validate(Core.MessageProtection.LegacyEncryptionCertificate, X509KeyUsageFlags.DataEncipherment);
+                        : validator.Validate(Core.MessageProtection.LegacyEncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
                     // if someone forgets to remove the legacy configuration, we log an error message but don't remove it
                     ReportErrorOnLocalCertificate(originalMessage, Core.MessageProtection.LegacyEncryptionCertificate, incomingMessage.LegacyDecryptionError);
                 }

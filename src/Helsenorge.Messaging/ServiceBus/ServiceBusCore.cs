@@ -122,11 +122,11 @@ namespace Helsenorge.Messaging.ServiceBus
             {
                 var validator = Core.CertificateValidator;
                 // Validate external part's encryption certificate
-                logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, profile.EncryptionCertificate.Subject, "DataEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId);
+                logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, profile.EncryptionCertificate.Subject, "KeyEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId);
                 var encryptionStatus = validator == null
                     ? CertificateErrors.None
-                    : validator.Validate(profile.EncryptionCertificate, X509KeyUsageFlags.DataEncipherment);
-                logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, profile.EncryptionCertificate.Subject, "DataEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId);
+                    : validator.Validate(profile.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
+                logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, profile.EncryptionCertificate.Subject, "KeyEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId);
 
                 logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate.Thumbprint, Core.MessageProtection.SigningCertificate.Subject, "NonRepudiation", Core.Settings.MyHerId, outgoingMessage.MessageId);
                 // Validate "our" own signature certificate
