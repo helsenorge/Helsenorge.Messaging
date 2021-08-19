@@ -80,7 +80,7 @@ namespace Helsenorge.Registries
             if (result != null)
             {
                 var errors = CertificateErrors.None; 
-                errors |= CertificateValidator.Validate(result.EncryptionCertificate, X509KeyUsageFlags.DataEncipherment);
+                errors |= CertificateValidator.Validate(result.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
                 errors |= CertificateValidator.Validate(result.SignatureCertificate, X509KeyUsageFlags.NonRepudiation);
                 // if the certificates are valid, only then do we return a value from the cache
                 if (errors == CertificateErrors.None)
@@ -159,7 +159,7 @@ namespace Helsenorge.Registries
             if (result != null)
             {
                 var errors = CertificateErrors.None;
-                errors |= CertificateValidator.Validate(result.EncryptionCertificate, X509KeyUsageFlags.DataEncipherment);
+                errors |= CertificateValidator.Validate(result.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
                 errors |= CertificateValidator.Validate(result.SignatureCertificate, X509KeyUsageFlags.NonRepudiation);
                 // if the certificates are valid, only then do we return a value from the cache
                 if (errors == CertificateErrors.None)
@@ -235,7 +235,7 @@ namespace Helsenorge.Registries
             if (result != null)
             {
                 var errors = CertificateErrors.None;
-                errors |= CertificateValidator.Validate(result.EncryptionCertificate, X509KeyUsageFlags.DataEncipherment);
+                errors |= CertificateValidator.Validate(result.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
                 errors |= CertificateValidator.Validate(result.SignatureCertificate, X509KeyUsageFlags.NonRepudiation);
                 // if the certificates are valid, only then do we return a value from the cache
                 if (errors == CertificateErrors.None)
