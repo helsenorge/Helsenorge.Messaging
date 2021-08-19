@@ -55,7 +55,7 @@ namespace Helsenorge.Registries.Tests
         {
             var validator = new CertificateValidator();
             var error = validator.Validate(TestCertificates.CounterpartyPublicSignature,
-                X509KeyUsageFlags.DataEncipherment);
+                X509KeyUsageFlags.KeyEncipherment);
             Assert.AreEqual(CertificateErrors.Usage, error);
         }
         [TestMethod]
@@ -71,7 +71,7 @@ namespace Helsenorge.Registries.Tests
         //{
         //	var validator = new CertificateValidator();
         //	var error = validator.Validate(TestCertificates.HelsenorgePublicEncryptionInvalid,
-        //		X509KeyUsageFlags.DataEncipherment);
+        //		X509KeyUsageFlags.KeyEncipherment);
         //	Assert.AreEqual(CertificateErrors.StartDate | CertificateErrors.Usage, error);
         //}
 
