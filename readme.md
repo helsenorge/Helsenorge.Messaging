@@ -1,5 +1,10 @@
 # Helsenorge Messaging
 
+## NuGet
+Pakken er tilgjengelig på NuGet: https://www.nuget.org/packages/Helsenorge.Messaging/
+
+## Dokumentasjon
+
 Dette biblioteket støtter oppunder basisbehovet for en kommunikasjonsløsning ved at den kan pakke, adressere, sende og motta meldinger over AMQP-protokollen, i tillegg til å støtte operasjoner som kryptering og signering av meldinger.
 
 1. [Forutsetninger](Documentation/Forutsetninger.md "Forutsetninger")
