@@ -70,6 +70,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// Renews the lock of the message
         /// </summary>
         public Action RenewLock { get; internal set; }
+        /// <summary>
         /// Renews the lock of the message
         /// </summary>
         public Func<Task> RenewLockAsync { get; internal set; }
