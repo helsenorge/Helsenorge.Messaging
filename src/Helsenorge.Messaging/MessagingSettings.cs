@@ -249,7 +249,7 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Timeout for read operations
         /// </summary>
-        public TimeSpan ReadTimeout { get; set; } = TimeSpan.FromSeconds(1);
+        public TimeSpan ReadTimeout { get; set; } = TimeSpan.FromSeconds(60);
 
         internal ErrorSettings() {}
 
