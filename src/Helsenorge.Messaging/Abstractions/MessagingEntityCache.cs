@@ -116,7 +116,7 @@ namespace Helsenorge.Messaging.Abstractions
                     };
                     _entries.Add(path, entry);
 
-                    logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCacheCreate: Create entry for {Path}", path);
+                    logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCacheCreate: Create entry for {Path}. ActiveCount={ActiveCount} CacheEntryCount={CacheEntryCount}", path, entry.ActiveCount, _entries.Count);
                     return entry.Entity;
                 }
 
@@ -124,7 +124,7 @@ namespace Helsenorge.Messaging.Abstractions
 
                 entry.ActiveCount++;
                 entry.LastUsed = DateTime.Now;
-                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, $"MessagingEntityCacheCreate: Updating entry for {path} with ActiveCount {entry.ActiveCount}");
+                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, $"MessagingEntityCacheCreate: Updating entry for {path} ActiveCount={entry.ActiveCount}");
 
                 // if this entity previously was closed, we need to create a new instance
                 if (entry.Entity != null) return entry.Entity;
@@ -162,7 +162,7 @@ namespace Helsenorge.Messaging.Abstractions
                 }
                 // under normal conditions, we just decrease the active count
                 entry.ActiveCount--;
-                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Releasing entry for {Path}", path);
+                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Releasing entry for {Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
 
                 // under a high volume scenario, this may be the last used entry even if it was just used
                 // in those cases we need to close the connection and set respective properties
@@ -179,7 +179,7 @@ namespace Helsenorge.Messaging.Abstractions
 
         private static async Task CloseEntity(ILogger logger, CacheEntry<T> entry, string path)
         {
-            logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Closing entity for {Path}", path);
+            logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Closing entity for {Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
 
             if (entry.Entity == null) return;
             if (entry.Entity.IsClosed == false)
@@ -190,8 +190,8 @@ namespace Helsenorge.Messaging.Abstractions
                 }
                 catch (Exception ex)
                 {
-                    var message = "Failed to close message entity: {Path}. Exception: " + ex.Message + " Stack Trace: " + ex.StackTrace;
-                    logger.LogCritical(EventIds.MessagingEntityCacheFailedToCloseEntity, message, path);
+                    var message = "Failed to close message entity: {Path} ActiveCount={ActiveCount}. Exception: " + ex.Message + " Stack Trace: " + ex.StackTrace;
+                    logger.LogCritical(EventIds.MessagingEntityCacheFailedToCloseEntity, message, path, entry.ActiveCount);
                 }
             }
             entry.Entity = null;
@@ -224,6 +224,8 @@ namespace Helsenorge.Messaging.Abstractions
             await _semaphore.WaitAsync().ConfigureAwait(false);
             try
             {
+                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Start-TrimEntries CacheCapacity={CacheCapacity} CacheEntryCount={CacheEntryCount}", Capacity, _entries.Keys.Count);
+
                 // we haven't reached our max capacity yet
                 if (_entries.Keys.Count < Capacity) return;
 
@@ -248,6 +250,8 @@ namespace Helsenorge.Messaging.Abstractions
             }
             finally
             {
+                logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Start-TrimEntries CacheCapacity={CacheCapacity} CacheEntryCount={CacheEntryCount}", Capacity, _entries.Keys.Count);
+
                 _semaphore.Release();
             }
         }
