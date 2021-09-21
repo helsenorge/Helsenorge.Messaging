@@ -45,7 +45,10 @@ namespace Helsenorge.Messaging.ServiceBus
 
                 logger.LogDebug($"MessageReleaseThread-AwaitRelease: MessageId: {messageId}. Awaiting {millisecondsDelay} before releasing message.");
 
-                Thread.Sleep(millisecondsDelay);
+                if (millisecondsDelay > 0)
+                {
+                    Thread.Sleep(millisecondsDelay);
+                }
 
                 message.Modify(deliveryFailed: true);
 
