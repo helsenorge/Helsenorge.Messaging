@@ -80,7 +80,9 @@ namespace Helsenorge.Messaging
     {
         internal const int DefaultMaxLinksPerSession = 64;
         internal const ushort DefaultMaxSessions = 256;
-        internal const int DefaultLinkCredits = 25;
+        private const int DefaultLinkCredits = 25;
+        private const ushort DefaultCacheEntryTimeToLive = 120;
+        private const ushort DefaultMaxCacheEntryTrimCount = 24;
 
         private readonly MessagingSettings _settings;
 
@@ -124,6 +126,14 @@ namespace Helsenorge.Messaging
         /// Get or set the link-credit being used by the receiver link. Setting this overrides the default value of 1 credit.
         /// </summary>
         public int LinkCredits { get; set; } = DefaultLinkCredits;
+        /// <summary>
+        /// The time in seconds since the last time a cache entry was used and when we consider it prime for recycling.
+        /// </summary>
+        public ushort CacheEntryTimeToLive { get; set; } = DefaultCacheEntryTimeToLive;
+        /// <summary>
+        /// The max cache entries our recycling process will handle each time it is triggered.
+        /// </summary>
+        public ushort MaxCacheEntryTrimCount { get; set; } = DefaultMaxCacheEntryTrimCount;
 
         /// <summary>
         /// The Her id that we represent

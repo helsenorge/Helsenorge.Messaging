@@ -40,7 +40,7 @@ namespace Helsenorge.Messaging.Tests
 
         private class MockCache : MessagingEntityCache<EntityItem>
         {
-            public MockCache(string name, uint capacity) : base(name, capacity)
+            public MockCache(string name, uint capacity, ushort timeToLiveInSeconds, ushort maxTrimCountPerRecycle) : base(name, capacity, timeToLiveInSeconds, maxTrimCountPerRecycle)
             {
             }
 
@@ -56,7 +56,7 @@ namespace Helsenorge.Messaging.Tests
         [TestInitialize]
         public void Initialize()
         {
-            _cache = new MockCache("MockCache", 5);
+            _cache = new MockCache("MockCache", 5, 0, 24);
         }
 
         [TestCleanup]
@@ -77,7 +77,6 @@ namespace Helsenorge.Messaging.Tests
             var entry = _cache.Entries.First().Value;
 
             Assert.AreEqual(1, entry.ActiveCount, "ActiveCount");
-            Assert.IsFalse(entry.ClosePending, "ClosePending");
             Assert.IsNotNull(entry.Entity, "Entity");
         }
 
@@ -94,13 +93,11 @@ namespace Helsenorge.Messaging.Tests
             var entry = _cache.Entries.First().Value;
 
             Assert.AreEqual(1, entry.ActiveCount, "ActiveCount");
-            Assert.IsFalse(entry.ClosePending, "ClosePending");
             Assert.IsNotNull(entry.Entity, "Entity");
 
             await _cache.Release(Logger, path);
 
             Assert.AreEqual(0, entry.ActiveCount, "ActiveCount");
-            Assert.IsFalse(entry.ClosePending, "ClosePending");
             Assert.IsNotNull(entry.Entity, "Entity");
         }
 
@@ -118,7 +115,6 @@ namespace Helsenorge.Messaging.Tests
             var entry = _cache.Entries.First().Value;
 
             Assert.AreEqual(100, entry.ActiveCount, "ActiveCount");
-            Assert.IsFalse(entry.ClosePending, "ClosePending");
             Assert.IsNotNull(entry.Entity, "Entity");
 
             for (int i = 0; i < 100; i++)
@@ -129,7 +125,6 @@ namespace Helsenorge.Messaging.Tests
             entry = _cache.Entries.First().Value;
 
             Assert.AreEqual(0, entry.ActiveCount, "ActiveCount");
-            Assert.IsFalse(entry.ClosePending, "ClosePending");
             Assert.IsNotNull(entry.Entity, "Entity");
         }
 
@@ -150,9 +145,84 @@ namespace Helsenorge.Messaging.Tests
                 var entry = _cache.Entries["path" + i.ToString()];
 
                 Assert.AreEqual(1, entry.ActiveCount, "ActiveCount");
-                Assert.IsFalse(entry.ClosePending, "ClosePending");
                 Assert.IsNotNull(entry.Entity, "Entity");
             }
+        }
+
+        [TestMethod]
+        public async Task MessageClientEntity_EntityClosesOnlyWhenActiveCountEqualToZero()
+        {
+            for (var i = 1; i < 3001; i++)
+            {
+                var entry = await _cache.Create(Logger, $"path{i}");
+                if ((i+1) % 5 == 0)
+                {
+                    await _cache.Release(Logger, entry.Path);
+                }
+            }
+
+            foreach (var entry in _cache.Entries)
+            {
+                await _cache.Release(Logger, entry.Value.Path);
+            }
+
+            await Task.Delay(4_000);
+
+            for (var i = 3001; i < 3501; i++)
+            {
+                var entry = await _cache.Create(Logger, $"path{i}");
+                if ((i+1) % 5 == 0)
+                {
+                    await _cache.Release(Logger, entry.Path);
+                }
+            }
+
+            await Task.Delay(4_000);
+
+            for (var i = 3501; i < 4001; i++)
+            {
+                var entry = await _cache.Create(Logger, $"path{i}");
+                if ((i+1) % 5 == 0)
+                {
+                    await _cache.Release(Logger, entry.Path);
+                }
+            }
+
+            await Task.Delay(4_000);
+
+            for (var i = 4001; i < 4501; i++)
+            {
+                var entry = await _cache.Create(Logger, $"path{i}");
+                if ((i+1) % 5 == 0)
+                {
+                    await _cache.Release(Logger, entry.Path);
+                }
+            }
+
+            await Task.Delay(10_000);
+
+            for (var i = 4501; i < 5001; i++)
+            {
+                var entry = await _cache.Create(Logger, $"path{i}");
+                if ((i+1) % 5 == 0)
+                {
+                    await _cache.Release(Logger, entry.Path);
+                }
+            }
+
+            var nullEntries = 0;
+            var nonNullEntries = 0;
+            foreach (var entry in _cache.Entries)
+            {
+                nullEntries += entry.Value.Entity == null ? 1 : 0;
+                nonNullEntries += entry.Value.Entity != null ? 1 : 0;
+            }
+
+            Logger.Log(LogLevel.Information, EventIds.MessagingEntityCacheProcessor, $"Null entries: {nullEntries}");
+            Logger.Log(LogLevel.Information, EventIds.MessagingEntityCacheProcessor, $"Non-null entries: {nonNullEntries}");
+
+            Assert.AreEqual(3400, nullEntries);
+            Assert.AreEqual(1600, nonNullEntries);
         }
 
         /// <summary>
@@ -174,7 +244,6 @@ namespace Helsenorge.Messaging.Tests
             await _cache.Create(Logger, "path6");
 
             Assert.AreEqual(1, entry.ActiveCount, "ActiveCount"); // path3 is still active since we haven't release it
-            Assert.IsTrue(entry.ClosePending, "ClosePending");
         }
 
         /// <summary>
@@ -191,15 +260,15 @@ namespace Helsenorge.Messaging.Tests
 
             // path3 will be the one that will be reclaimed
             var entry = _cache.Entries["path3"];
+            await _cache.Release(Logger, "path3"); // we are done with path 3
             entry.LastUsed = DateTime.Now.AddSeconds(-15);
 
             await _cache.Create(Logger, "path6");
-            await _cache.Release(Logger, "path3"); // we are done with path 3
+            await _cache.Create(Logger, "path7");
 
             // entity object for path3 has been reclaimed
             Assert.AreEqual(0, entry.ActiveCount, "ActiveCount is not equal to zero");
             Assert.IsNull(entry.Entity, "Entity is not null");
-            Assert.IsFalse(entry.ClosePending, "ClosePending is not false");
         }
 
         /// <summary>
@@ -222,19 +291,17 @@ namespace Helsenorge.Messaging.Tests
             await _cache.Release(Logger, "path3"); // we are done with path 3
             await _cache.Release(Logger, "path2");
 
-            //we need to use path3 again, so path 2 becomes the one being bumped
-            _cache.Entries["path2"].LastUsed = DateTime.Now.AddSeconds(-10);
+            // path2 will be bumped since it was LastUsed 5 seconds earlier than path3
+            _cache.Entries["path2"].LastUsed = DateTime.Now.AddSeconds(-20);
 
             await _cache.Create(Logger, "path3");
             Assert.AreEqual(1, entry.ActiveCount, "ActiveCount");
             Assert.IsNotNull(entry.Entity, "Entity");
-            Assert.IsFalse(entry.ClosePending, "ClosePending");
 
             //entity object for path2 has been reclaimed
             entry = _cache.Entries["path2"];
             Assert.AreEqual(0, entry.ActiveCount, "ActiveCount");
             Assert.IsNull(entry.Entity, "Entity");
-            Assert.IsFalse(entry.ClosePending, "ClosePending");
         }
 
         /// <summary>
@@ -249,8 +316,6 @@ namespace Helsenorge.Messaging.Tests
             await _cache.Create(Logger, "path4");
             await _cache.Create(Logger, "path5");
 
-            _cache.Entries["path2"].ClosePending = true;
-
             await _cache.Shutdown(Logger);
 
 
@@ -262,7 +327,6 @@ namespace Helsenorge.Messaging.Tests
             {
                 var entry = _cache.Entries[key];
                 Assert.IsNull(entry.Entity, "Entity");
-                Assert.IsFalse(entry.ClosePending, "ClosePending");
             }
         }
     }

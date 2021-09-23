@@ -18,7 +18,7 @@ namespace Helsenorge.Messaging.ServiceBus
         private readonly int _credit;
         
         public ServiceBusReceiverPool(ServiceBusSettings settings, IServiceBusFactoryPool factoryPool) :
-            base("ReceiverPool", settings.MaxReceivers)
+            base("ReceiverPool", settings.MaxReceivers, settings.CacheEntryTimeToLive, settings.MaxCacheEntryTrimCount)
         {
             _factoryPool = factoryPool;
             _credit = settings.LinkCredits;
