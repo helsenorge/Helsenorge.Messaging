@@ -17,7 +17,7 @@ namespace Helsenorge.Messaging.ServiceBus
         private readonly IServiceBusFactoryPool _factoryPool;
         
         public ServiceBusSenderPool(ServiceBusSettings settings,  IServiceBusFactoryPool factoryPool) :
-            base("SenderPool", settings.MaxSenders)
+            base("SenderPool", settings.MaxSenders, settings.CacheEntryTimeToLive, settings.MaxCacheEntryTrimCount)
         {
             _factoryPool = factoryPool;
         }

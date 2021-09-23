@@ -23,7 +23,7 @@ namespace Helsenorge.Messaging.ServiceBus
         private IMessagingFactory _alternateMessagingFactor;
 
         public ServiceBusFactoryPool(ServiceBusSettings settings) :
-            base("FactoryPool", settings.MaxFactories)
+            base("FactoryPool", settings.MaxFactories, settings.CacheEntryTimeToLive, settings.MaxCacheEntryTrimCount)
         {
             _settings = settings;
         }

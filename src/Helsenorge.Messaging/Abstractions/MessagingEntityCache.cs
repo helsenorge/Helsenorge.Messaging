@@ -41,18 +41,19 @@ namespace Helsenorge.Messaging.Abstractions
             /// </summary>
             public int ActiveCount { get; set; }
             /// <summary>
-            /// Entry has ben scheduled for closure
-            /// </summary>
-            public bool ClosePending { get; set; }
-            /// <summary>
             /// Entity Path for this entity
             /// </summary>
             public string Path { get; set; }
         }
 
+        private const ushort MaxTimeToLiveInSeconds = 600;
+        private const ushort MaxTrimCountPerRecycle = 256;
+        
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly Dictionary<string, CacheEntry<T>> _entries = new Dictionary<string, CacheEntry<T>>();
         private readonly string _name;
+        private readonly ushort _timeToLiveInSeconds;
+        private readonly ushort _maxTrimCountPerRecycle;
         private bool _shutdownPending;
         /// <summary>
         /// Gets the maximum number of items the cache can hold
@@ -67,11 +68,20 @@ namespace Helsenorge.Messaging.Abstractions
         /// Constructor
         /// </summary>
         /// <param name="name">Name of the cache</param>
-        /// <param name="capacity">Max number of items the cache should hold</param>
-        protected MessagingEntityCache(string name, uint capacity)
+        /// <param name="capacity">Max number of items the cache will hold before we start recycling process.</param>
+        /// <param name="timeToLiveInSeconds">The time to live since <see cref="CacheEntry{T}.LastUsed"/> before an entry is considered prime to be recycled.</param>
+        /// <param name="maxTrimCountPerRecycle">The max cache entries our recycling process will handle each time it is triggered.</param>
+        protected MessagingEntityCache(string name, uint capacity, ushort timeToLiveInSeconds, ushort maxTrimCountPerRecycle)
         {
+            if (timeToLiveInSeconds > MaxTimeToLiveInSeconds)
+                throw new ArgumentOutOfRangeException(nameof(timeToLiveInSeconds), $"Argument cannot exceed {MaxTimeToLiveInSeconds}.");
+            if (maxTrimCountPerRecycle > MaxTrimCountPerRecycle)
+                throw new ArgumentOutOfRangeException(nameof(maxTrimCountPerRecycle), $"Argument cannot exceed {MaxTrimCountPerRecycle}.");
+            
             _name = name;
-            Capacity = capacity;
+           Capacity = capacity;
+           _timeToLiveInSeconds = timeToLiveInSeconds;
+           _maxTrimCountPerRecycle = maxTrimCountPerRecycle;
         }
 
         /// <summary>
@@ -109,7 +119,6 @@ namespace Helsenorge.Messaging.Abstractions
                         ActiveCount = 1,
                         LastUsed = DateTime.Now,
                         Entity = await CreateEntity(logger, path).ConfigureAwait(false),
-                        ClosePending = false,
                         Path = path,
                     };
                     _entries.Add(path, entry);
@@ -129,7 +138,6 @@ namespace Helsenorge.Messaging.Abstractions
 
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache::Create: Creating new entity for {Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
                 entry.Entity = await CreateEntity(logger, path).ConfigureAwait(false);
-                entry.ClosePending = false;
             }
             finally
             {
@@ -159,15 +167,9 @@ namespace Helsenorge.Messaging.Abstractions
                     return;
                 }
                 // under normal conditions, we just decrease the active count
-                entry.ActiveCount--;
+                if(entry.ActiveCount > 0)
+                    entry.ActiveCount--;
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache::Release: Releasing entry for Path={Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
-
-                // under a high volume scenario, this may be the last used entry even if it was just used
-                // in those cases we need to close the connection and set respective properties
-                if (entry.ClosePending)
-                {
-                    await CloseEntity(logger, entry, path).ConfigureAwait(false);
-                }
             }
             finally
             {
@@ -187,6 +189,8 @@ namespace Helsenorge.Messaging.Abstractions
                     logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "Start-MessagingEntityCache::CloseEntity: Path={Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
 
                     await entry.Entity.Close().ConfigureAwait(false);
+
+                    entry.Entity = null;
                 }
                 catch (Exception ex)
                 {
@@ -198,8 +202,6 @@ namespace Helsenorge.Messaging.Abstractions
                     logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCache::CloseEntity:  Path={Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
                 }
             }
-            entry.Entity = null;
-            entry.ClosePending = false;
         }
         /// <summary>
         /// Closes all entities
@@ -231,27 +233,25 @@ namespace Helsenorge.Messaging.Abstractions
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Start-TrimEntries CacheCapacity={CacheCapacity} CacheEntryCount={CacheEntryCount}", Capacity, _entries.Keys.Count);
 
                 // we haven't reached our max capacity yet
-                if (_entries.Keys.Count < Capacity) return;
+                if (_entries.Keys.Count <= Capacity) return;
 
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Trimming entries");
-                const int count = 10;
+                var count = (int)Math.Min(_entries.Keys.Count - Capacity, _maxTrimCountPerRecycle);
+                
                 // get the oldest n entries
                 var removal = (from v in _entries.Values
-                               orderby v.LastUsed ascending
-                               select v).Take(count);
+                    orderby v.LastUsed ascending
+                    where v.Entity != null
+                          && v.Entity.IsClosed == false
+                          && v.LastUsed < DateTime.Now.AddSeconds(-_timeToLiveInSeconds)
+                          && v.ActiveCount == 0
+                    select v).Take(count).ToList();
 
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Trimming entries ActualRemovalCount={ActualRemovalCount} RemovalCount={ProposedRemovalCount} CacheCapacity={CacheCapacity} CacheEntryCount={CacheEntryCount}", removal.Count(), count, Capacity, _entries.Keys.Count);
                 
                 foreach (var item in removal)
                 {
-                    if (item.ActiveCount == 0)
-                    {
-                        await CloseEntity(logger, item, item.Path).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        item.ClosePending = true; // flad it so that the release function will close the connection
-                    }
+                    await CloseEntity(logger, item, item.Path).ConfigureAwait(false);
                 }
             }
             finally
