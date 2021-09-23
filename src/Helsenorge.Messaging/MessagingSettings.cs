@@ -245,7 +245,7 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Time to live for messages sent
         /// </summary>
-        public TimeSpan TimeToLive { get; set; } = TimeSpan.MaxValue;
+        public TimeSpan TimeToLive { get; set; } = TimeSpan.Zero;
         /// <summary>
         /// Timeout for read operations
         /// </summary>
@@ -256,7 +256,6 @@ namespace Helsenorge.Messaging
         internal void Validate()
         {
             if (ProcessingTasks <= 0) throw new ArgumentOutOfRangeException(nameof(ProcessingTasks));
-            if (TimeToLive == TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(TimeToLive));
             if (ReadTimeout == TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(ReadTimeout));
         }
     }
