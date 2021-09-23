@@ -159,13 +159,6 @@ namespace Helsenorge.Messaging.Tests
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void Error_TimeToLive_NotSet()
-        {
-            Settings.ServiceBus.Error.TimeToLive = TimeSpan.Zero;
-            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
-        }
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Error_ReadTimeout_NotSet()
         {
             Settings.ServiceBus.Error.ReadTimeout = TimeSpan.Zero;
