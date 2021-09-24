@@ -33,6 +33,28 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\nuget-deploy.yml = .github\workflows\nuget-deploy.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{C78E1F1C-6AE6-4E64-8211-90EEC7A5FCAD}"
+ProjectSection(SolutionItems) = preProject
+	readme.md = readme.md
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{D65E8495-DAAD-46D6-8053-8D911A5C24F3}"
+ProjectSection(SolutionItems) = preProject
+	Documentation\Biztalk.md = Documentation\Biztalk.md
+	Documentation\CPPA.md = Documentation\CPPA.md
+	Documentation\Feilkoder.md = Documentation\Feilkoder.md
+	Documentation\FeilOgLogging.md = Documentation\FeilOgLogging.md
+	Documentation\Forutsetninger.md = Documentation\Forutsetninger.md
+	Documentation\Konfigurasjon.md = Documentation\Konfigurasjon.md
+	Documentation\KrypteringOgSignering.md = Documentation\KrypteringOgSignering.md
+	Documentation\MottaMeldinger.md = Documentation\MottaMeldinger.md
+	Documentation\Nuget.md = Documentation\Nuget.md
+	Documentation\ReferanseEksempler.md = Documentation\ReferanseEksempler.md
+	Documentation\Registre.md = Documentation\Registre.md
+	Documentation\SendeMeldinger.md = Documentation\SendeMeldinger.md
+	Documentation\Testmiljøer.md = Documentation\Testmiljøer.md
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +96,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{E5E73A1E-1589-4B95-A894-B27029F5707C} = {5D87F89A-6AF1-438B-B483-F5B5D8778C85}
 		{FB9DDD90-D5A5-4F25-8C81-4E6C9B4A18EE} = {E5E73A1E-1589-4B95-A894-B27029F5707C}
+		{5D87F89A-6AF1-438B-B483-F5B5D8778C85} = {C78E1F1C-6AE6-4E64-8211-90EEC7A5FCAD}
+		{D65E8495-DAAD-46D6-8053-8D911A5C24F3} = {C78E1F1C-6AE6-4E64-8211-90EEC7A5FCAD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {925B24E8-92AC-4D8D-959E-64DE4928A23B}
