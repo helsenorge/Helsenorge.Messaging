@@ -17,8 +17,7 @@ Dette biblioteket støtter oppunder basisbehovet for en kommunikasjonsløsning v
 8. [Konfigurasjon](Documentation/Konfigurasjon.md "Konfigurasjon")
 9. [Nuget](Documentation/Nuget.md "Nuget")
 10. [Referanseeksempler](Documentation/ReferanseEksempler.md "Referanseeksempler")
-11. [Meldingsutveksling over HTTP](Documentation/HTTP.md "Meldingsutveksling over HTTP")
-12. [Biztalk](Documentation/Biztalk.md "Biztalk")
+11. [Biztalk](Documentation/Biztalk.md "Biztalk")
 
 ## Contributing
 We are welcoming contributors!
