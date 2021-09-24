@@ -56,6 +56,10 @@ namespace Helsenorge.Messaging.Abstractions
         private readonly ushort _maxTrimCountPerRecycle;
         private bool _shutdownPending;
         /// <summary>
+        /// Set to false to not increment <see cref="CacheEntry{TE}.ActiveCount"/>
+        /// </summary>
+        protected bool _incrementActiveCount = true;
+        /// <summary>
         /// Gets the maximum number of items the cache can hold
         /// </summary>
         public uint Capacity { get; }
@@ -129,7 +133,8 @@ namespace Helsenorge.Messaging.Abstractions
 
                 entry = _entries[path];
 
-                entry.ActiveCount++;
+                if(_incrementActiveCount)
+                    entry.ActiveCount++;
                 entry.LastUsed = DateTime.Now;
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, $"MessagingEntityCache::Create: Updating entry for {path} ActiveCount={entry.ActiveCount}");
 
