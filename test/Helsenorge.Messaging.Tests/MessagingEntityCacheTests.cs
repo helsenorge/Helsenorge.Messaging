@@ -8,10 +8,12 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.IO;
 using System.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using Helsenorge.Messaging.ServiceBus;
 
 namespace Helsenorge.Messaging.Tests
 {
@@ -50,6 +52,48 @@ namespace Helsenorge.Messaging.Tests
             }
         }
 
+        private class ServiceBusFactoryPoolMock : ServiceBusFactoryPool
+        {
+            public ServiceBusFactoryPoolMock(uint capacity, ushort timeToLiveInSeconds, ushort maxTrimCountPerRecycle) 
+                : base(new ServiceBusSettings(new MessagingSettings())
+                {
+                    MaxFactories = capacity,
+                    CacheEntryTimeToLive = timeToLiveInSeconds,
+                    MaxCacheEntryTrimCount = maxTrimCountPerRecycle
+                })
+            {
+            }
+
+            protected override Task<IMessagingFactory> CreateEntity(ILogger logger, string id)
+            {
+                return Task.FromResult<IMessagingFactory>(new MessagingFactoryMock());
+            }
+        }
+
+        private class MessagingFactoryMock : IMessagingFactory
+        {
+            public bool IsClosed { get; } = false;
+
+            public Task Close()
+            {
+                return Task.CompletedTask;
+            }
+
+            public IMessagingReceiver CreateMessageReceiver(string id, int credit)
+            {
+                return null;
+            }
+
+            public IMessagingSender CreateMessageSender(string id)
+            {
+                return null;
+            }
+
+            public Task<IMessagingMessage> CreateMessage(Stream stream)
+            {
+                return null;
+            }
+        }
 
         MockCache _cache;
 
@@ -63,6 +107,27 @@ namespace Helsenorge.Messaging.Tests
         public void Cleanup()
         {
             _cache = null;
+        }
+
+        [TestMethod]
+        public async Task ServiceBusFactoryPool_DoNotIncrementActiveCountBeyond1()
+        {
+            var serviceBusFactoryPool = new ServiceBusFactoryPoolMock(5, 0, 24);
+            for (int i = 0; i < 5; i++)
+            {
+                await serviceBusFactoryPool.FindNextFactory(Logger);
+            }
+
+            for (int i = 0; i < 5; i++)
+            {
+                // For other pool types, this would result in ActiveCount being incremented, but for
+                // ServiceBusFactoryPool.FindNextFactory makes sure that it won't
+                await serviceBusFactoryPool.FindNextFactory(Logger);
+                var entry = serviceBusFactoryPool.Entries[$"MessagingFactory{i}"];
+                // Even though we have requested the same ServiceBusFactory twice, once in the first loop and a second
+                // time in this loop, ActiveCount should still be 1.
+                Assert.AreEqual(1, entry.ActiveCount);
+            }
         }
 
         /// <summary>

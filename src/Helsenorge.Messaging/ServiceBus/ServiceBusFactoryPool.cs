@@ -55,9 +55,14 @@ namespace Helsenorge.Messaging.ServiceBus
                 if (_index == Capacity)
                 {
                     _index = 0;
+                    // Make sure we do not increment ActiveCount any further after we have created all the needed
+                    // ServiceBusFactory instances.
+                    if(_incrementActiveCount) _incrementActiveCount = false;
                 }
                 var name = string.Format(null, "MessagingFactory{0}", _index);
-                return await Create(logger, name).ConfigureAwait(false);
+                var factory = await Create(logger, name).ConfigureAwait(false);
+
+                return factory;
             }
             finally
             {
