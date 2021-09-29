@@ -16,7 +16,7 @@ Dette biblioteket støtter oppunder basisbehovet for en kommunikasjonsløsning v
 7. [Kryptering og Signering](Documentation/KrypteringOgSignering.md "Kryptering og Signering")
 8. [Konfigurasjon](Documentation/Konfigurasjon.md "Konfigurasjon")
 9. [Nuget](Documentation/Nuget.md "Nuget")
-10. [Referanseeksempler](Documentation/ReferanseEksempler.md "Referanseeksempler")
+10. [Eksempler](Documentation/Eksempler.md "Eksempler")
 11. [Biztalk](Documentation/Biztalk.md "Biztalk")
 
 ## Contributing
