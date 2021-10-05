@@ -49,10 +49,10 @@ ProjectSection(SolutionItems) = preProject
 	Documentation\KrypteringOgSignering.md = Documentation\KrypteringOgSignering.md
 	Documentation\MottaMeldinger.md = Documentation\MottaMeldinger.md
 	Documentation\Nuget.md = Documentation\Nuget.md
-	Documentation\ReferanseEksempler.md = Documentation\ReferanseEksempler.md
 	Documentation\Registre.md = Documentation\Registre.md
 	Documentation\SendeMeldinger.md = Documentation\SendeMeldinger.md
 	Documentation\Testmiljøer.md = Documentation\Testmiljøer.md
+	Documentation\Eksempler.md = Documentation\Eksempler.md
 EndProjectSection
 EndProject
 Global
