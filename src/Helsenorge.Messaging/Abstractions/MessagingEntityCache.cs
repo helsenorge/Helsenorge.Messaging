@@ -139,7 +139,7 @@ namespace Helsenorge.Messaging.Abstractions
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, $"MessagingEntityCache::Create: Updating entry for {path} ActiveCount={entry.ActiveCount}");
 
                 // if this entity previously was closed, we need to create a new instance
-                if (entry.Entity != null) return entry.Entity;
+                if (entry.Entity is { IsClosed: false }) return entry.Entity;
 
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache::Create: Creating new entity for {Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
                 entry.Entity = await CreateEntity(logger, path).ConfigureAwait(false);
@@ -194,8 +194,6 @@ namespace Helsenorge.Messaging.Abstractions
                     logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "Start-MessagingEntityCache::CloseEntity: Path={Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
 
                     await entry.Entity.Close().ConfigureAwait(false);
-
-                    entry.Entity = null;
                 }
                 catch (Exception ex)
                 {
@@ -204,6 +202,9 @@ namespace Helsenorge.Messaging.Abstractions
                 }
                 finally
                 {
+                    // Even if we get an exception when we close the Link or Session we need to null the  entity or we
+                    // will end up in an unsynchronized state where we reuse the entity.
+                    entry.Entity = null;
                     logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCache::CloseEntity:  Path={Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
                 }
             }
