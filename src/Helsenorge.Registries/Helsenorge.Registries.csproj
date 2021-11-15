@@ -14,16 +14,6 @@
     <PackageId>Helsenorge.Registries</PackageId>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <CodeAnalysisRuleSet>..\..\HNCodeAnalysisRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <CodeAnalysisDictionary Include="..\..\CustomDictionary.xml">
-      <Link>Properties\CustomDictionary.xml</Link>
-    </CodeAnalysisDictionary>
-  </ItemGroup>
-
   <ItemGroup>
     <None Include="..\..\tools\key.snk" Link="key.snk" />
   </ItemGroup>
