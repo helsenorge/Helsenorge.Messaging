@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
+using Helsenorge.Messaging.ServiceBus;
 using Helsenorge.Messaging.ServiceBus.Receivers;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -185,9 +186,16 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Start the server
         /// </summary>
-        public Task Start()
+        public async Task Start()
         {
             _logger.LogInformation("Messaging Server starting up");
+
+            if (!await CanAuthenticateAndPingAddressRegistryService())
+                throw new MessagingException("Non-sucessful authentication or connection attempt to the Address Registry Web Service on start-up. This can be caused by incorrect credentials / configuration errors.") { EventId = EventIds.ConnectionToWebServiceFailed };
+            if (!await CanAuthenticateAndPingCppaService())
+                throw new MessagingException("Non-sucessful authentication or connection attempt to the CPPA Web Service on start-up. This can be caused by incorrect credentials / configuration errors.") { EventId = EventIds.ConnectionToWebServiceFailed };
+            if (!await CanAuthenticateAgainstMessageBroker())
+                throw new MessagingException("Non-sucessful authentication or connection attempt to the message broker on start-up. This can be caused by incorrect credentials / configuration errors.") { EventId = EventIds.ConnectionToMessageBrokerFailed };
 
             for (var i = 0; i < Settings.ServiceBus.Asynchronous.ProcessingTasks; i++)
             {
@@ -205,8 +213,6 @@ namespace Helsenorge.Messaging
             {
                 _tasks.Add(Task.Run(async () => await listener.Start(_cancellationTokenSource.Token).ConfigureAwait(false)));
             }
-
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -469,6 +475,62 @@ namespace Helsenorge.Messaging
             {
                 _onUnhandledException.Invoke(message, ex);
             }
+        }
+
+        internal async Task<bool> CanAuthenticateAndPingAddressRegistryService()
+        {
+            try
+            {
+                await AddressRegistry.PingAsync(_logger);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(EventIds.ConnectionToWebServiceFailed, e, "Non-sucessful connection and ping attempt to the AddressRegistry Service. This can be caused by incorrect credentials / configuration errors.");
+
+                return false;
+            }
+
+            return true;
+        }
+
+        internal async Task<bool> CanAuthenticateAndPingCppaService()
+        {
+            try
+            {
+#pragma warning disable CS0618
+                await CollaborationProtocolRegistry.PingAsync(_logger, Settings.MyHerId);
+#pragma warning restore CS0618
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(EventIds.ConnectionToWebServiceFailed, e, "Non-sucessful connection and ping attempt to the CPPA web Service. This can be caused by incorrect credentials / configuration errors.");
+
+                return false;
+            }
+
+            return true;
+        }
+
+        internal async Task<bool> CanAuthenticateAgainstMessageBroker()
+        {
+            ServiceBusConnection connection = null;
+            try
+            {
+                connection = new ServiceBusConnection(Settings.ServiceBus.ConnectionString, _logger);
+                _ = await connection.EnsureConnectionAsync();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(EventIds.ConnectionToWebServiceFailed, e, "Non-sucessful connection and ping attempt to the Message Broker Service. This can be caused by incorrect credentials / configuration errors.");
+
+                return false;
+            }
+            finally
+            {
+                if (connection != null) await connection.CloseAsync();
+            }
+
+            return true;
         }
     }
 }
