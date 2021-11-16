@@ -91,5 +91,10 @@ namespace Helsenorge.Registries.Mocks
             }
             return await Task.FromResult(Utils.Deserialize<CertificateDetails>(xml)).ConfigureAwait(false);
         }
+
+        internal override Task PingAsyncInternal(ILogger logger)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

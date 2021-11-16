@@ -66,5 +66,11 @@ namespace Helsenorge.Registries.Abstractions
         /// <param name="forceUpdate">Set to true to force cache update.</param>
         /// <returns></returns>
         Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(ILogger logger, int herId, bool forceUpdate);
+
+        /// <summary>
+        /// Tries to Ping the AddressRegistry Service to verify a connection.
+        /// </summary>
+        /// <param name="logger">An ILogger object that will be used for logging.</param>
+        Task PingAsync(ILogger logger);
     }
 }

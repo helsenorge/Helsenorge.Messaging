@@ -169,7 +169,11 @@ namespace Helsenorge.Registries
             }
             return certificateDetails == null ? default(Abstractions.CertificateDetails) : MapCertificateDetails(herId, certificateDetails);
         }
-        
+
+        /// <inheritdoc cref="IAddressRegistry.PingAsync"/>
+        public Task PingAsync(ILogger logger)
+            => PingAsyncInternal(logger);
+
         /// <summary>
         /// Makes the actual call to the registry. This is virtual so that it can be mocked by unit tests
         /// </summary>
@@ -199,6 +203,12 @@ namespace Helsenorge.Registries
         [ExcludeFromCodeCoverage]
         internal virtual Task<AddressService.CertificateDetails> GetCertificateDetailsForValidatingSignatureInternal(ILogger logger, int herId)
             => Invoke(logger, x => x.GetCertificateDetailsForValidatingSignatureAsync(herId), "GetCertificateDetailsForValidatingSignatureAsync");
+
+        /// <inheritdoc cref="PingAsync"/>
+        /// <remarks>Makes the acutal call to the registry. It's a virtual method to make it mockable for unit tests.</remarks>
+        [ExcludeFromCodeCoverage]
+        internal virtual Task PingAsyncInternal(ILogger logger)
+            => Invoke(logger, x => x.PingAsync(), "PingAsync");
 
         private static CommunicationPartyDetails MapCommunicationPartyDetails(CommunicationParty communicationParty)
         {
