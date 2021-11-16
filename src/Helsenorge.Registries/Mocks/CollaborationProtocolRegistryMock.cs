@@ -121,5 +121,10 @@ namespace Helsenorge.Registries.Mocks
             };
             return Task.FromResult(details);
         }
+
+        protected override Task PingAsyncInternal(ILogger logger, int herId)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

@@ -278,6 +278,19 @@ namespace Helsenorge.Registries
             await CacheExtensions.WriteValueToCache(logger, _cache, key, result, _settings.CachingInterval).ConfigureAwait(false);
             return result;
         }
+
+        /// <inheritdoc cref="PingAsync"/>
+        [Obsolete("This metod will be replaced in the future.")]
+        public async Task PingAsync(ILogger logger, int herId)
+        {
+            await PingAsyncInternal(logger, herId).ConfigureAwait(false);
+        }
+
+        [ExcludeFromCodeCoverage]
+        protected virtual async Task PingAsyncInternal(ILogger logger, int herId)
+        {
+            _ = await Invoke(logger, service => service.GetCppForCommunicationPartyAsync(herId), "GetCppForCommunicationPartyAsync").ConfigureAwait(false);
+        }
         
         private CollaborationProtocolProfile CreateDummyCollaborationProtocolProfile(int herId, Abstractions.CertificateDetails encryptionCertificate, Abstractions.CertificateDetails signatureCertificate)
         {
