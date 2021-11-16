@@ -82,6 +82,12 @@ Feil som avsender har rapportert. Ting som kommer inn på error køen.
 ### MUG-000035
 Ukjent feil har oppstått.
 
+### MUG-000036
+The Messaging Entity Cache failed to close an entity.
+
+### MUG-000037
+Non-successful release of message.
+
 ### MUG-001001
 Informasjonsformål når mottaksprosessen starter/avslutter
 
