@@ -123,6 +123,14 @@ namespace Helsenorge.Messaging.Abstractions
         /// Non-successful release of message.
         /// </summary>
         public static EventId MessageReleaseFailed = new EventId(37, EventIdName);
+        /// <summary>
+        /// Non-sucessful authentication or connection attempt to one ore more of the web services on start-up.
+        /// </summary>
+        public static EventId ConnectionToWebServiceFailed = new EventId(38, EventIdName);
+        /// <summary>
+        /// Non-sucessful authentication or connection attempt to the message broker.
+        /// </summary>
+        public static EventId ConnectionToMessageBrokerFailed = new EventId(39, EventIdName);
 
         /// <summary>
         /// Event Id used for informational purposes when starting/ending the Receive process.
