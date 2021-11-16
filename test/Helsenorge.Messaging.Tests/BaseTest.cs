@@ -35,7 +35,7 @@ namespace Helsenorge.Messaging.Tests
         internal ILogger Logger { get; private set; }
 
         protected MessagingClient Client { get; set; }
-        protected MessagingServer Server { get; set; }
+        protected MockMessagingServer Server { get; set; }
         protected MessagingSettings Settings { get; set; }
         internal MockFactory MockFactory { get; set; }
 
@@ -165,7 +165,7 @@ namespace Helsenorge.Messaging.Tests
             ); ;
             Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
-            Server = new MessagingServer(
+            Server = new MockMessagingServer(
                 Settings, 
                 LoggerFactory, 
                 CollaborationRegistry, 

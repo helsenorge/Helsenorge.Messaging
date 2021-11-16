@@ -23,7 +23,7 @@ namespace Helsenorge.Messaging
     /// Default implementation for <see cref="IMessagingServer"/>
     /// This must be hosted as a singleton in order to leverage connection pooling against the message bus
     /// </summary>
-    public sealed class MessagingServer : MessagingCore, IMessagingServer, IMessagingNotification
+    public class MessagingServer : MessagingCore, IMessagingServer, IMessagingNotification
     {
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
@@ -477,7 +477,7 @@ namespace Helsenorge.Messaging
             }
         }
 
-        internal async Task<bool> CanAuthenticateAndPingAddressRegistryService()
+        internal virtual async Task<bool> CanAuthenticateAndPingAddressRegistryService()
         {
             try
             {
@@ -493,7 +493,7 @@ namespace Helsenorge.Messaging
             return true;
         }
 
-        internal async Task<bool> CanAuthenticateAndPingCppaService()
+        internal virtual async Task<bool> CanAuthenticateAndPingCppaService()
         {
             try
             {
@@ -511,7 +511,7 @@ namespace Helsenorge.Messaging
             return true;
         }
 
-        internal async Task<bool> CanAuthenticateAgainstMessageBroker()
+        internal virtual async Task<bool> CanAuthenticateAgainstMessageBroker()
         {
             ServiceBusConnection connection = null;
             try
