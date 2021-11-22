@@ -31,7 +31,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
         public async Task Should_Create_New_Connection_On_First_Access()
         {
             var connection = _fixture.Connection;
-            var conn = await connection.GetConnectionAsync();
+            var conn = await connection.GetInternalConnectionAsync();
             Assert.False(conn.IsClosed);
             Assert.False(connection.IsClosedOrClosing);
             await connection.CloseAsync();
@@ -43,11 +43,11 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
         public async Task Should_Not_Create_New_Connection_When_Underlying_Object_Is_Not_Closed()
         {
             var connection = _fixture.Connection;
-            var conn = await connection.GetConnectionAsync();
+            var conn = await connection.GetInternalConnectionAsync();
             Assert.False(conn.IsClosed);
             Assert.False(connection.IsClosedOrClosing);
             Assert.False(await connection.EnsureConnectionAsync());
-            var conn2 = await connection.GetConnectionAsync();
+            var conn2 = await connection.GetInternalConnectionAsync();
             Assert.Same(conn, conn2);
             Assert.False(conn.IsClosed);
         }
@@ -56,14 +56,14 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
         public async Task Should_Create_New_Connection_When_Underlying_Object_Is_Closed()
         {
             var connection = _fixture.Connection;
-            var conn = await connection.GetConnectionAsync();
+            var conn = await connection.GetInternalConnectionAsync();
             Assert.False(conn.IsClosed);
             Assert.False(connection.IsClosedOrClosing);
             Assert.False(await connection.EnsureConnectionAsync());
             conn.Close();
             Assert.True(conn.IsClosed);
             Assert.False(connection.IsClosedOrClosing);
-            var conn2 = await connection.GetConnectionAsync();
+            var conn2 = await connection.GetInternalConnectionAsync();
             Assert.NotSame(conn, conn2);
             Assert.False(conn2.IsClosed);
         }
@@ -72,7 +72,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
         public async Task Should_Not_Allow_To_Access_Connection_When_Closed()
         {
             var connection = _fixture.Connection;
-            var conn = await connection.GetConnectionAsync();
+            var conn = await connection.GetInternalConnectionAsync();
             Assert.False(conn.IsClosed);
             Assert.False(connection.IsClosedOrClosing);
             Assert.False(await connection.EnsureConnectionAsync());
@@ -80,7 +80,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             Assert.True(conn.IsClosed);
             Assert.True(connection.IsClosedOrClosing);
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await connection.EnsureConnectionAsync());
-            await Assert.ThrowsAsync<ObjectDisposedException>(async () => await connection.GetConnectionAsync());
+            await Assert.ThrowsAsync<ObjectDisposedException>(async () => await connection.GetInternalConnectionAsync());
         }
 
         [Fact, Trait("Category", "IntegrationTest")]

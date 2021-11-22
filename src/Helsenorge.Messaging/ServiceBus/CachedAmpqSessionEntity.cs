@@ -74,7 +74,7 @@ namespace Helsenorge.Messaging.ServiceBus
                         _session.Close();
                     }
 
-                    _session = CreateSession(Connection.GetConnection());
+                    _session = CreateSession(Connection.GetInternalConnection());
                     _link = CreateLink(_session);
                 }
             }
@@ -98,7 +98,7 @@ namespace Helsenorge.Messaging.ServiceBus
                         await _session.CloseAsync().ConfigureAwait(false);
                     }
 
-                    _session = CreateSession(await Connection.GetConnectionAsync().ConfigureAwait(false));
+                    _session = CreateSession(await Connection.GetInternalConnectionAsync().ConfigureAwait(false));
                     _link = CreateLink(_session);
                 }
             }

@@ -49,7 +49,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
         public async Task Should_Recreate_Link_When_Underlying_Connection_Is_Closed()
         {
             Assert.False(_sender.IsClosed);
-            var connection = await _fixture.Connection.GetConnectionAsync();
+            var connection = await _fixture.Connection.GetInternalConnectionAsync();
             await connection.CloseAsync();
             await SendTestMessageAsync();
             Assert.False(_sender.IsClosed);
