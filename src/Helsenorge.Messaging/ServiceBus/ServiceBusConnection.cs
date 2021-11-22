@@ -13,13 +13,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.ServiceBus
 {
-    internal class ServiceBusConnection
+    public class ServiceBusConnection
     {
         private ConnectionFactory _connectionFactory;
         private readonly Address _address;
-        
 
-        public ServiceBusHttpClient HttpClient { get; }
+
+        internal ServiceBusHttpClient HttpClient { get; }
 
         private IConnection _connection;
 
