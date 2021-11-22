@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.29709.97
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Messaging", "src\Helsenorge.Messaging\Helsenorge.Messaging.csproj", "{A0BA02E7-C2EA-496B-85ED-10ACD42B4DE8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Messaging.Client", "src\Helsenorge.Messaging.Client\Helsenorge.Messaging.Client.csproj", "{FE928A0E-5B57-4893-8010-DDC54DC1B752}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Messaging.Tests", "test\Helsenorge.Messaging.Tests\Helsenorge.Messaging.Tests.csproj", "{EE03ABE5-4B8D-48BB-AA52-0DC9D442634D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Registries", "src\Helsenorge.Registries\Helsenorge.Registries.csproj", "{BD2883C9-4806-4216-A577-893B3C4CC174}"
@@ -60,6 +58,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleReceiver", "Examples\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging.Server", "Examples\Helsenorge.Messaging.Server\Helsenorge.Messaging.Server.csproj", "{F8228F1E-51B0-4643-B4B2-CE59491853E2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging.Client", "Examples\Helsenorge.Messaging.Client\Helsenorge.Messaging.Client.csproj", "{FE928A0E-5B57-4893-8010-DDC54DC1B752}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,10 +70,6 @@ Global
 		{A0BA02E7-C2EA-496B-85ED-10ACD42B4DE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0BA02E7-C2EA-496B-85ED-10ACD42B4DE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0BA02E7-C2EA-496B-85ED-10ACD42B4DE8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FE928A0E-5B57-4893-8010-DDC54DC1B752}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FE928A0E-5B57-4893-8010-DDC54DC1B752}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FE928A0E-5B57-4893-8010-DDC54DC1B752}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FE928A0E-5B57-4893-8010-DDC54DC1B752}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EE03ABE5-4B8D-48BB-AA52-0DC9D442634D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EE03ABE5-4B8D-48BB-AA52-0DC9D442634D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE03ABE5-4B8D-48BB-AA52-0DC9D442634D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -102,6 +98,10 @@ Global
 		{F8228F1E-51B0-4643-B4B2-CE59491853E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8228F1E-51B0-4643-B4B2-CE59491853E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8228F1E-51B0-4643-B4B2-CE59491853E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE928A0E-5B57-4893-8010-DDC54DC1B752}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE928A0E-5B57-4893-8010-DDC54DC1B752}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE928A0E-5B57-4893-8010-DDC54DC1B752}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE928A0E-5B57-4893-8010-DDC54DC1B752}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -114,6 +114,7 @@ Global
 		{D86E01D4-983C-4F30-A69D-8C80A927D16E} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
 		{413014B4-E40D-4D41-8068-8509995F3814} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
 		{F8228F1E-51B0-4643-B4B2-CE59491853E2} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
+		{FE928A0E-5B57-4893-8010-DDC54DC1B752} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {925B24E8-92AC-4D8D-959E-64DE4928A23B}
