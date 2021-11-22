@@ -31,6 +31,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         private IMessagingReceiver _messageReceiver;
         private bool _listenerEstablishedConfirmed = false;
 
+        /// <summary>
+        /// A helper method to set the Correlation Id from the callee code.
+        /// </summary>
         public Action<string> SetCorrelationIdAction { get; set; }
 
         /// <summary>

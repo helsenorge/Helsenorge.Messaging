@@ -286,6 +286,7 @@ namespace Helsenorge.Registries
             await PingAsyncInternal(logger, herId).ConfigureAwait(false);
         }
 
+        /// <inheritdoc cref="PingAsync"/>
         [ExcludeFromCodeCoverage]
         protected virtual async Task PingAsyncInternal(ILogger logger, int herId)
         {

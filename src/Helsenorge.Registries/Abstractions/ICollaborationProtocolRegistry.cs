@@ -63,6 +63,7 @@ namespace Helsenorge.Registries.Abstractions
         /// Tries to Ping the AddressRegistry Service to verify a connection.
         /// </summary>
         /// <param name="logger">An ILogger object that will be used for logging.</param>
+        /// <param name="herId">Needs to be a known HER-id</param>
         [Obsolete("This metod will be replaced in the future.")]
         Task PingAsync(ILogger logger, int herId);
     }

@@ -13,36 +13,31 @@ using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.ServiceBus
 {
+    /// <summary>
+    /// Represents the connection to a Message Broker.
+    /// </summary>
     public class ServiceBusConnection
     {
         private ConnectionFactory _connectionFactory;
         private readonly Address _address;
-
-
-        internal ServiceBusHttpClient HttpClient { get; }
-
         private IConnection _connection;
 
-        public string Namespace { get; }
-
-        public IConnection GetConnection()
-        {
-            EnsureConnection();
-            return _connection;
-        }
-
-        public async Task<IConnection> GetConnectionAsync()
-        {
-            await EnsureConnectionAsync().ConfigureAwait(false);
-            return _connection;
-        }
-
+        /// <summary>Initializes a new instance of the <see cref="ServiceBusConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
+        /// <param name="connectionString">The connection used to connect to Message Broker.</param>
+        /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
         public ServiceBusConnection(string connectionString, ILogger logger)
             : this(connectionString, ServiceBusSettings.DefaultMaxLinksPerSession, ServiceBusSettings.DefaultMaxSessions, logger)
         {
 
         }
 
+        /// <summary>Initializes a new instance of the <see cref="ServiceBusConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
+        /// <param name="connectionString">The connection used to connect to Message Broker.</param>
+        /// <param name="maxLinksPerSession">The max links that will be allowed per session.</param>
+        /// <param name="maxSessionsPerConnection">The max sessions that will be allowed per connection.</param>
+        /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="ArgumentNullException" />
         public ServiceBusConnection(string connectionString, int maxLinksPerSession, ushort maxSessionsPerConnection, ILogger logger)
         {
             if (string.IsNullOrEmpty(connectionString))
@@ -76,9 +71,30 @@ namespace Helsenorge.Messaging.ServiceBus
         }
 
         /// <summary>
-        /// Auto-reconnects until Close() is not called explicitly.
+        /// Returns the NameSpace part of the connection string.
         /// </summary>
-        /// <returns>Whether it's reconnected</returns>
+        /// <remarks>This only works properly for Microsoft Service Bus.</remarks>
+        public string Namespace { get; }
+
+        internal ServiceBusHttpClient HttpClient { get; }
+
+        internal IConnection GetConnection()
+        {
+            EnsureConnection();
+            return _connection;
+        }
+
+        internal async Task<IConnection> GetConnectionAsync()
+        {
+            await EnsureConnectionAsync().ConfigureAwait(false);
+            return _connection;
+        }
+
+        /// <summary>
+        /// Ensures we are connected and will reconnect if we have been disconnected for externally reasons.
+        /// Will auto-reconnect until Close() is called explicitly.
+        /// </summary>
+        /// <returns>Returns true if it is connected or has reconnected, otherwise returns false.</returns>
         public bool EnsureConnection()
         {
             if (IsClosedOrClosing)
@@ -94,9 +110,10 @@ namespace Helsenorge.Messaging.ServiceBus
         }
 
         /// <summary>
-        /// Auto-reconnects until Close() is not called explicitly.
+        /// Ensures we are connected and will reconnect if we have been disconnected for externally reasons.
+        /// Will auto-reconnect until Close() is called explicitly.
         /// </summary>
-        /// <returns>Whether it's reconnected</returns>
+        /// <returns>Returns true if it is connected or has reconnected, otherwise returns false.</returns>
         public async Task<bool> EnsureConnectionAsync()
         {
             if (IsClosedOrClosing)
@@ -111,8 +128,14 @@ namespace Helsenorge.Messaging.ServiceBus
             return false;
         }
 
+        /// <summary>
+        /// Returns true if the connection is closing or has been closed, otherwise false.
+        /// </summary>
         public bool IsClosedOrClosing { get; private set; }
 
+        /// <summary>
+        /// Closes the connection to the Message Broker. This is the preferred method of closing any open connection.
+        /// </summary>
         public async Task CloseAsync()
         {
             if (IsClosedOrClosing)
@@ -126,7 +149,7 @@ namespace Helsenorge.Messaging.ServiceBus
             }
         }
 
-        public string GetEntityName(string id)
+        internal string GetEntityName(string id)
         {
             return GetEntityName(id, Namespace);
         }
