@@ -74,17 +74,22 @@ namespace Helsenorge.Messaging.ServiceBus
         /// Returns the NameSpace part of the connection string.
         /// </summary>
         /// <remarks>This only works properly for Microsoft Service Bus.</remarks>
-        public string Namespace { get; }
+        internal string Namespace { get; }
 
+        [Obsolete("This will be removed in the future. It can be used to communicate with the Microsoft Service Bus specific operations.")]
         internal ServiceBusHttpClient HttpClient { get; }
 
-        internal IConnection GetConnection()
+        /// <summary>Let's you get access to the internal <see cref="IConnection"/>.</summary>
+        /// <returns>Returns a <see cref="IConnection"/>.</returns>
+        internal IConnection GetInternalConnection()
         {
             EnsureConnection();
             return _connection;
         }
 
-        internal async Task<IConnection> GetConnectionAsync()
+        /// <summary>Let's you get access to the internal <see cref="IConnection"/>.</summary>
+        /// <returns>Returns a <see cref="IConnection"/>.</returns>
+        internal async Task<IConnection> GetInternalConnectionAsync()
         {
             await EnsureConnectionAsync().ConfigureAwait(false);
             return _connection;
