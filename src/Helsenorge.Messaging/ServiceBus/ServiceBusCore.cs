@@ -315,7 +315,7 @@ namespace Helsenorge.Messaging.ServiceBus
                     clonedMessage.SetApplicationProperty(ErrorConditionDataHeaderKey, additionDataValue);
                 }
             }
-            logger.LogWarning("Reporting error to sender. ErrorCode: {0} ErrorDescription: {1} AdditionalData: {2}", errorCode, errorDescription, additionDataValue);
+            logger.LogWarning("Reporting error to sender. FromHerId: {0} ToHerId: {1} ErrorCode: {2} ErrorDescription: {3} AdditionalData: {4}",  originalMessage.FromHerId, originalMessage.ToHerId, errorCode, errorDescription, additionDataValue);
             await Send(logger, clonedMessage).ConfigureAwait(false);
         }
         /// <summary>
