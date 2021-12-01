@@ -18,6 +18,7 @@ Dette biblioteket støtter oppunder basisbehovet for en kommunikasjonsløsning v
 9. [Nuget](Documentation/Nuget.md "Nuget")
 10. [Eksempler](Documentation/Eksempler.md "Eksempler")
 11. [Biztalk](Documentation/Biztalk.md "Biztalk")
+12. [Migrere fra 3.0 til 4.0](Documentation/MigrateFrom3To4.md)
 
 ## Contributing
 We are welcoming contributors!
