@@ -23,7 +23,7 @@ namespace SimpleSender
         //private static readonly string _connectionString = "amqps://[username]:[password]@127.0.0.1:5671";
 
         // amqp can be used in your local test environment.
-        private static readonly string _connectionString = "amqp://[username]:[password]@127.0.0.1:5672";
+        private static readonly string _connectionString = "amqp://guest:guest@127.0.0.1:5672";
         private static readonly string _queue = "/amq/queue/test-queue";
 
         static async Task Main(string[] args)
