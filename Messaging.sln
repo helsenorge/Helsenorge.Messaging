@@ -60,6 +60,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging.Server
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging.Client", "Examples\Helsenorge.Messaging.Client\Helsenorge.Messaging.Client.csproj", "{FE928A0E-5B57-4893-8010-DDC54DC1B752}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PooledSender", "Examples\PooledSender\PooledSender.csproj", "{7633D728-A132-4BF7-B440-E7E0E8521740}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,6 +104,10 @@ Global
 		{FE928A0E-5B57-4893-8010-DDC54DC1B752}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE928A0E-5B57-4893-8010-DDC54DC1B752}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE928A0E-5B57-4893-8010-DDC54DC1B752}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7633D728-A132-4BF7-B440-E7E0E8521740}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7633D728-A132-4BF7-B440-E7E0E8521740}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7633D728-A132-4BF7-B440-E7E0E8521740}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7633D728-A132-4BF7-B440-E7E0E8521740}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -115,6 +121,7 @@ Global
 		{413014B4-E40D-4D41-8068-8509995F3814} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
 		{F8228F1E-51B0-4643-B4B2-CE59491853E2} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
 		{FE928A0E-5B57-4893-8010-DDC54DC1B752} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
+		{7633D728-A132-4BF7-B440-E7E0E8521740} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {925B24E8-92AC-4D8D-959E-64DE4928A23B}
