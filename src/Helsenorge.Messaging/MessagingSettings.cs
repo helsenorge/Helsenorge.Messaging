@@ -86,6 +86,18 @@ namespace Helsenorge.Messaging
 
         private readonly MessagingSettings _settings;
 
+        /// <summary>Initializes a new instance of the <see cref="ServiceBusSettings" /> class.</summary>
+        public ServiceBusSettings()
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="ServiceBusSettings" /> class with a <see cref="MessagingSettings"/>.</summary>
+        /// <param name="settings">A <see cref="MessagingSettings"/> instance that contains additional settings.</param>
+        public ServiceBusSettings(MessagingSettings settings)
+        {
+            _settings = settings;
+        }
+
         /// <summary>
         /// Gets or sets the connection string
         /// </summary>
@@ -151,11 +163,6 @@ namespace Helsenorge.Messaging
         /// The old certificate used for decryption when we have moved over to a new one.
         /// </summary>
         public CertificateSettings LegacyDecryptionCertificate => _settings.LegacyDecryptionCertificate;
-        
-        internal ServiceBusSettings(MessagingSettings settings)
-        {
-            _settings = settings;
-        }
 
         internal void Validate()
         {
