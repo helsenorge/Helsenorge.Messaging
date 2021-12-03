@@ -40,6 +40,9 @@ namespace Helsenorge.Messaging.Tests.Mocks
                 case TestCertificates.CounterpartyEncryptionThumbprint:
                     certificate = TestCertificates.CounterpartyPrivateEncryption;
                     break;
+                case TestCertificates.CounterpartySigntatureThumbprint:
+                    certificate = TestCertificates.CounterpartyPrivateSigntature;
+                    break;
             }
 
             return certificate;

@@ -34,8 +34,8 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public const string CounterpartyEncryptionThumbprint = "b1fae38326a6cefa72708f7633541262e8633b2c";
         public static X509Certificate2 CounterpartyPrivateEncryption => new X509Certificate2(TestFileUtility.GetFullPathToFile($"Files{Path.DirectorySeparatorChar}Counterparty_Encryption.p12"), CounterpartyCertificatePassword.ToSecureString());
 
+        public const string CounterpartySigntatureThumbprint = "76b0195ba41374d5f372f4b70f907e7f9725fc02";
         public static X509Certificate2 CounterpartyPrivateSigntature => new X509Certificate2(TestFileUtility.GetFullPathToFile($"Files{Path.DirectorySeparatorChar}Counterparty_Signature.p12"), CounterpartyCertificatePassword.ToSecureString());
-
 
         public static X509Certificate2 HelsenorgePublicEncryption => new X509Certificate2(TestFileUtility.GetFullPathToFile($"Files{Path.DirectorySeparatorChar}Helsenorge_Encryption.cer"));
 
