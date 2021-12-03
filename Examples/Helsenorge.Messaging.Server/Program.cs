@@ -37,7 +37,7 @@ namespace Helsenorge.Messaging.Server
             app.HelpOption("-?|-h|--help");
 
             var profileArgument = app.Argument("[profile]", "The name of the json profile file to use (excluded file extension)");
-            app.OnExecute(() =>
+            app.OnExecuteAsync(async (cancellationToken) =>
             {
                 if (string.IsNullOrEmpty(profileArgument.Value))
                 {
@@ -47,7 +47,7 @@ namespace Helsenorge.Messaging.Server
 
                 Configure(profileArgument.Value);
 
-                _messagingServer.Start();
+                await _messagingServer.Start();
 
                 string input;
                 do
@@ -57,7 +57,7 @@ namespace Helsenorge.Messaging.Server
                 }
                 while (input != "q");
 
-                _messagingServer.Stop(TimeSpan.FromSeconds(10));
+                await _messagingServer.Stop(TimeSpan.FromSeconds(10));
                 return 0;
             });
 
@@ -126,8 +126,8 @@ namespace Helsenorge.Messaging.Server
                     Directory.CreateDirectory(path);
                 }
                 var fileName = Path.Combine(path, m.MessageId + ".xml");
-                
-                using var sw = File.CreateText(fileName);
+
+                await using var sw = File.CreateText(fileName);
                 await m.Payload.SaveAsync(sw, SaveOptions.None, CancellationToken.None);
             });
             _messagingServer.RegisterAsynchronousMessageReceivedCompletedCallbackAsync((m) =>
@@ -149,7 +149,7 @@ namespace Helsenorge.Messaging.Server
                     Directory.CreateDirectory(path);
                 }
                 var fileName = Path.Combine(path, m.MessageId + ".xml");
-                using (var sw = File.CreateText(fileName))
+                await using (var sw = File.CreateText(fileName))
                 {
                     await m.Payload.SaveAsync(sw, SaveOptions.None, CancellationToken.None);
                 }
