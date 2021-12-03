@@ -31,7 +31,7 @@ namespace SimpleSender
             var loggerFactory = new LoggerFactory();
             var connection = new ServiceBusConnection(_connectionString, loggerFactory.CreateLogger<ServiceBusConnection>());
             IMessagingSender sender = null;
-            var messageCount = 20000;
+            var messageCount = 20;
             try
             {
                 var linkFactory = new LinkFactory(connection, loggerFactory.CreateLogger<LinkFactory>());
