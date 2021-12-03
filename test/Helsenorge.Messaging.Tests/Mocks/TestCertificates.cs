@@ -9,13 +9,14 @@
 using System.IO;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
+using Helsenorge.Messaging.Abstractions;
 
 namespace Helsenorge.Messaging.Tests.Mocks
 {
     /// <summary>
     /// THese certificates are not use, they have only been generated for test purposes
     /// </summary>
-    internal static class TestCertificates
+    public static class TestCertificates
     {
         private const string HelsenorgeCertificatePassword = "drQhrTUSKyQCHYoY";
         private const string CounterpartyCertificatePassword = "XVNQ2QEL1PrREwVD";

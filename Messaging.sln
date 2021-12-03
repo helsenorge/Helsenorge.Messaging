@@ -64,6 +64,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PooledSender", "Examples\Po
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PooledReceiver", "Examples\PooledReceiver\PooledReceiver.csproj", "{1288380E-F454-4DBF-ABFE-4BFB7ADFB29C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignEncryptAndSend", "Examples\SignEncryptAndSend\SignEncryptAndSend.csproj", "{F44A0630-B04A-4DDA-9536-E7AA3C80708A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +116,10 @@ Global
 		{1288380E-F454-4DBF-ABFE-4BFB7ADFB29C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1288380E-F454-4DBF-ABFE-4BFB7ADFB29C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1288380E-F454-4DBF-ABFE-4BFB7ADFB29C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F44A0630-B04A-4DDA-9536-E7AA3C80708A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F44A0630-B04A-4DDA-9536-E7AA3C80708A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F44A0630-B04A-4DDA-9536-E7AA3C80708A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F44A0630-B04A-4DDA-9536-E7AA3C80708A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -129,6 +135,7 @@ Global
 		{FE928A0E-5B57-4893-8010-DDC54DC1B752} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
 		{7633D728-A132-4BF7-B440-E7E0E8521740} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
 		{1288380E-F454-4DBF-ABFE-4BFB7ADFB29C} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
+		{F44A0630-B04A-4DDA-9536-E7AA3C80708A} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {925B24E8-92AC-4D8D-959E-64DE4928A23B}
