@@ -57,7 +57,7 @@ namespace PooledSender
             }
             finally
             {
-                linkFactoryPool.ReleaseCachedMessageReceiver(_queue);
+                await linkFactoryPool.ReleaseCachedMessageReceiver(_queue);
             }
         }
     }
