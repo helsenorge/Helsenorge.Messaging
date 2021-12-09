@@ -41,7 +41,27 @@ namespace Helsenorge.Messaging.ServiceBus
             return session.CreateSender(Name, Connection.GetEntityName(_id)) as SenderLink;
         }
 
-        public async Task SendAsync(IMessagingMessage message)
+        public void Send(IMessagingMessage message)
+            => Send(message, TimeSpan.FromMilliseconds(ServiceBusSettings.DefaultTimeoutInMilliseconds));
+
+        public void Send(IMessagingMessage message, TimeSpan serverWaitTime)
+        {
+            if (message == null)
+                throw new ArgumentNullException(nameof(message));
+            if (!(message.OriginalObject is Message originalMessage))
+                throw new InvalidOperationException("OriginalObject is not a Message");
+
+            new ServiceBusOperationBuilder(_logger, "Send").Build(() =>
+            {
+                EnsureOpen();
+                _link.Send(originalMessage, serverWaitTime);
+            }).Perform();
+        }
+
+        public Task SendAsync(IMessagingMessage message)
+            => SendAsync(message, TimeSpan.FromMilliseconds(ServiceBusSettings.DefaultTimeoutInMilliseconds));
+
+        public async Task SendAsync(IMessagingMessage message, TimeSpan serverWaitTime)
         {
             if (message == null)
             {
@@ -53,7 +73,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 throw new InvalidOperationException("OriginalObject is not a Message");
             }
 
-            await new ServiceBusOperationBuilder(_logger, "Send").Build(async () =>
+            await new ServiceBusOperationBuilder(_logger, "SendAsync").Build(async () =>
             {
                 await EnsureOpenAsync().ConfigureAwait(false);
                 await _link.SendAsync(originalMessage).ConfigureAwait(false);
