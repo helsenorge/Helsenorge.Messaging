@@ -6,6 +6,7 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using System;
 using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Abstractions
@@ -15,11 +16,21 @@ namespace Helsenorge.Messaging.Abstractions
     /// </summary>
     public interface IMessagingSender : ICachedMessagingEntity
     {
-        /// <summary>
-        /// Sends the message
-        /// </summary>
-        /// <param name="message">The messag to send</param>
+        /// <summary>Sends the message</summary>
+        /// <param name="message">The message to send</param>
+        void Send(IMessagingMessage message);
+        /// <summary>Sends the message</summary>
+        /// <param name="message">The message to send</param>
+        /// <param name="serverWaitTime">Timeout applied to send operation</param>
+        void Send(IMessagingMessage message, TimeSpan serverWaitTime);
+        /// <summary>Sends the message</summary>
+        /// <param name="message">The message to send</param>
         /// <returns></returns>
         Task SendAsync(IMessagingMessage message);
+        /// <summary>Sends the message</summary>
+        /// <param name="message">The message to send</param>
+        /// <param name="serverWaitTime">Timeout applied to send operation</param>
+        /// <returns></returns>
+        Task SendAsync(IMessagingMessage message, TimeSpan serverWaitTime);
     }
 }
