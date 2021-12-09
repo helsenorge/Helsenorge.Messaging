@@ -83,6 +83,7 @@ namespace Helsenorge.Messaging
         private const int DefaultLinkCredits = 25;
         private const ushort DefaultCacheEntryTimeToLive = 120;
         private const ushort DefaultMaxCacheEntryTrimCount = 24;
+        internal const int DefaultTimeoutInMilliseconds = 60000;
 
         private readonly MessagingSettings _settings;
 

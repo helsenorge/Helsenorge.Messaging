@@ -16,15 +16,16 @@ namespace Helsenorge.Messaging.Abstractions
     /// </summary>
     public interface IMessagingReceiver : ICachedMessagingEntity
     {
-        /// <summary>
-        /// Receives a message
-        /// </summary>
+        /// <summary>Receives a message</summary>
+        IMessagingMessage Receive();
+        /// <summary>Receives a message</summary>
         /// <param name="serverWaitTime">Timeout applied to receive operation</param>
         /// <returns></returns>
         IMessagingMessage Receive(TimeSpan serverWaitTime);
-        /// <summary>
-        /// Receives a message
-        /// </summary>
+        /// <summary>Receives a message</summary>
+        /// <returns></returns>
+        Task<IMessagingMessage> ReceiveAsync();
+        /// <summary>Receives a message</summary>
         /// <param name="serverWaitTime">Timeout applied to receive operation</param>
         /// <returns></returns>
         Task<IMessagingMessage> ReceiveAsync(TimeSpan serverWaitTime);
