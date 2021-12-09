@@ -93,6 +93,7 @@ namespace Helsenorge.Messaging.ServiceBus
             };
         }
 
+        /// <inheritdoc />
         public async ValueTask DisposeAsync()
         {
             await _receiverPool.Shutdown(_logger).ConfigureAwait(false);
