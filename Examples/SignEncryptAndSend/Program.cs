@@ -29,7 +29,7 @@ namespace SignEncryptAndSend
             var logger = loggerFactory.CreateLogger<Program>();
             var connection = new ServiceBusConnection(_connectionString, loggerFactory.CreateLogger<ServiceBusConnection>());
             IMessagingSender sender = null;
-            var messageCount = 2000;
+            var messageCount = 20;
             try
             {
                 var certificateStore = new MockCertificateStore();
@@ -52,7 +52,7 @@ namespace SignEncryptAndSend
 
                     var bodyPlainString = $"Hello world! - {i + 1}";
                     var payloadStream = new MemoryStream(Encoding.UTF8.GetBytes(bodyPlainString));
-                    var publicEncryptionCertificate = await addressRegistry.GetCertificateDetailsForEncryptionAsync(logger, 123);
+                    var publicEncryptionCertificate = await addressRegistry.GetCertificateDetailsForEncryptionAsync(logger, 456);
                     var encryptedPayloadStream = messageProtection.Protect(payloadStream, publicEncryptionCertificate.Certificate);
 
                     var message = await linkFactory.CreateMessageAsync(123, outgoingMessage, encryptedPayloadStream);

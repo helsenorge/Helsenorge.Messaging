@@ -40,7 +40,8 @@ namespace SimpleSender
                 {
                     var outgoingMessage = new OutgoingMessage
                     {
-                        MessageId = Guid.NewGuid().ToString("N")
+                        MessageId = Guid.NewGuid().ToString("N"),
+                        ToHerId = 456
                     };
                     var bodyString = $"Hello world! - {i + 1}";
                     var body = new MemoryStream(Encoding.UTF8.GetBytes(bodyString));

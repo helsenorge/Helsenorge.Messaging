@@ -44,7 +44,7 @@ namespace PooledReceiver
                     if (stream != null)
                     {
                         var outputStream = new StreamReader(stream);
-                        var body = outputStream.ReadToEnd();
+                        var body = await outputStream.ReadToEndAsync();
 
                         Console.WriteLine($"Message Body: {body}");
                     }
