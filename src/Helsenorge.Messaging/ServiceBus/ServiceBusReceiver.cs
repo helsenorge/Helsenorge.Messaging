@@ -135,7 +135,9 @@ namespace Helsenorge.Messaging.ServiceBus
                     {
                         EnsureOpen();
                         var lockTimeout = TimeSpan.FromMinutes(1);
+#pragma warning disable CS0618
                         Connection.HttpClient.RenewLockAsync(_id, amqpMessage.GetSequenceNumber(), amqpMessage.GetLockToken(), lockTimeout, serverWaitTime).GetAwaiter().GetResult();
+#pragma warning restore CS0618
                         return DateTime.UtcNow + lockTimeout;
                     }).Perform();
                 message.RenewLockActionAsync = () => new ServiceBusOperationBuilder(_logger, "RenewLockAsync")
@@ -143,7 +145,9 @@ namespace Helsenorge.Messaging.ServiceBus
                     {
                         await EnsureOpenAsync().ConfigureAwait(false);
                         var lockTimeout = TimeSpan.FromMinutes(1);
+#pragma warning disable CS0618
                         await Connection.HttpClient.RenewLockAsync(_id, amqpMessage.GetSequenceNumber(), amqpMessage.GetLockToken(), lockTimeout, serverWaitTime).ConfigureAwait(false);
+#pragma warning restore CS0618
                         return DateTime.UtcNow + lockTimeout;
                     }).PerformAsync();
 

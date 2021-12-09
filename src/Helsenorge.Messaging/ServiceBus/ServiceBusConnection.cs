@@ -51,7 +51,9 @@ namespace Helsenorge.Messaging.ServiceBus
             }
 
             _address = new Address(connectionString);
+#pragma warning disable CS0618
             HttpClient = new ServiceBusHttpClient(_address, logger);
+#pragma warning restore CS0618
 
             if (!string.IsNullOrEmpty(_address.Path))
             {
