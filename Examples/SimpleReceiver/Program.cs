@@ -32,7 +32,7 @@ namespace SimpleReceiver
                 int i = 0;
                 while (true)
                 {
-                    var message = await receiver.ReceiveAsync(TimeSpan.FromSeconds(5));
+                    var message = await receiver.ReceiveAsync();
                     if (message == null) break;
 
                     Console.WriteLine($"Message Id: {message.MessageId}");

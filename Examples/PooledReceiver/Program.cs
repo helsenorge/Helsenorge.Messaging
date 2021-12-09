@@ -35,7 +35,7 @@ namespace PooledReceiver
                 int i = 0;
                 while (true)
                 {
-                    var message = await receiver.ReceiveAsync(TimeSpan.FromSeconds(60));
+                    var message = await receiver.ReceiveAsync();
                     if(message == null) break;
 
                     Console.WriteLine($"Message Id: {message.MessageId}");
