@@ -8,6 +8,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 using Amqp;
 using Helsenorge.Messaging.Abstractions;
@@ -44,6 +45,9 @@ namespace Helsenorge.Messaging.ServiceBus
             return receiver;
         }
 
+        public IMessagingMessage Receive()
+            => Receive(TimeSpan.FromMilliseconds(ServiceBusSettings.DefaultTimeoutInMilliseconds));
+
         public IMessagingMessage Receive(TimeSpan serverWaitTime)
         {
             var message = new ServiceBusOperationBuilder(_logger, "Receive").Build(() =>
@@ -57,6 +61,9 @@ namespace Helsenorge.Messaging.ServiceBus
 
             return message;
         }
+
+        public Task<IMessagingMessage> ReceiveAsync()
+            => ReceiveAsync(TimeSpan.FromMilliseconds(ServiceBusSettings.DefaultTimeoutInMilliseconds));
 
         public async Task<IMessagingMessage> ReceiveAsync(TimeSpan serverWaitTime)
         {

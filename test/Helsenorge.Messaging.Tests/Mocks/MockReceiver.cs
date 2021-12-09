@@ -27,6 +27,9 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public bool IsClosed => false;
         public Task Close() { return Task.CompletedTask; }
 
+        public IMessagingMessage Receive()
+            => Receive(TimeSpan.FromMilliseconds(ServiceBusSettings.DefaultTimeoutInMilliseconds));
+
         public IMessagingMessage Receive(TimeSpan serverWaitTime)
         {
             if (_factory.Qeueues.ContainsKey(_id))
@@ -40,6 +43,9 @@ namespace Helsenorge.Messaging.Tests.Mocks
 
             return null;
         }
+
+        public Task<IMessagingMessage> ReceiveAsync()
+            => ReceiveAsync(TimeSpan.FromMilliseconds(ServiceBusSettings.DefaultTimeoutInMilliseconds));
 
         public async Task<IMessagingMessage> ReceiveAsync(TimeSpan serverWaitTime)
         {
