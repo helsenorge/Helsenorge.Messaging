@@ -38,7 +38,7 @@ namespace ReceiveDecryptAndValidate
                 var addressRegistry = new MockAddressRegistry();
 
                 var linkFactory = new LinkFactory(connection, loggerFactory.CreateLogger<LinkFactory>());
-                receiver = linkFactory.CreateReceiver(_queue, linkCredit:25);
+                receiver = linkFactory.CreateReceiver(_queue);
                 int i = 0;
                 while (true)
                 {

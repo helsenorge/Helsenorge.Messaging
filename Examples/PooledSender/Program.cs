@@ -33,13 +33,14 @@ namespace PooledSender
             await using var linkFactoryPool = new LinkFactoryPool(settings, loggerFactory.CreateLogger<LinkFactoryPool>());
             try
             {
-                var messageCount = 20000;
+                var messageCount = 20;
                 var sender = await linkFactoryPool.CreateCachedMessageSender(_queue);
                 for (int i = 0; i < messageCount; i++)
                 {
                     var outgoingMessage = new OutgoingMessage
                     {
-                        MessageId = Guid.NewGuid().ToString("N")
+                        MessageId = Guid.NewGuid().ToString("N"),
+                        ToHerId = 456,
                     };
                     var bodyString = $"Hello world! - {i + 1}";
                     var body = new MemoryStream(Encoding.UTF8.GetBytes(bodyString));
