@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2021, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -74,7 +74,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             var connection = new ServiceBusConnection(GetConnectionString(), _logger);
             var rawConnection = await connection.GetInternalConnectionAsync();
             var session = rawConnection.CreateSession();
-            var receiverLink = session.CreateReceiver($"test-receiver-link-{Guid.NewGuid()}", connection.GetEntityName(queueName));
+            var receiverLink = session.CreateReceiver($"test-receiver-link-{Guid.NewGuid()}", connection.GetEntityName(queueName, LinkRole.Receiver));
             Message message;
             while ((message = await receiverLink.ReceiveAsync(ServiceBusTestingConstants.DefaultReadTimeout)) != null)
             {
@@ -98,7 +98,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             var connection = new ServiceBusConnection(GetConnectionString(), _logger);
             var rawConnection = await connection.GetInternalConnectionAsync();
             var session = rawConnection.CreateSession();
-            var senderLink = session.CreateSender($"test-sender-link-{Guid.NewGuid()}", connection.GetEntityName(queueName));
+            var senderLink = session.CreateSender($"test-sender-link-{Guid.NewGuid()}", connection.GetEntityName(queueName, LinkRole.Sender));
             await senderLink.SendAsync(new Message
             {
                 BodySection = new Data
@@ -117,7 +117,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             var connection = new ServiceBusConnection(GetConnectionString(), _logger);
             var rawConnection = await connection.GetInternalConnectionAsync();
             var session = rawConnection.CreateSession();
-            var receiverLink = session.CreateReceiver($"test-receiver-link-{Guid.NewGuid()}", connection.GetEntityName(queueName));
+            var receiverLink = session.CreateReceiver($"test-receiver-link-{Guid.NewGuid()}", connection.GetEntityName(queueName, LinkRole.Receiver));
             var message = await receiverLink.ReceiveAsync(ServiceBusTestingConstants.DefaultReadTimeout);
             Assert.NotNull(message);
             receiverLink.Accept(message);

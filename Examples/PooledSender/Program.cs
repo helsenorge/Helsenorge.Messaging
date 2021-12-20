@@ -19,8 +19,8 @@ namespace PooledSender
 {
     class Program
     {
-        private static readonly string _connectionString = "amqp://guest:guest@127.0.0.1:5672";
-        private static readonly string _queue = "/amq/queue/test-queue";
+        private static readonly string _connectionString = "amqp://guest:guest@127.0.0.1:5672/NHNTESTServiceBus";
+        private static readonly string _queue = "test-queue";
 
         static async Task Main(string[] args)
         {
@@ -28,6 +28,7 @@ namespace PooledSender
             var settings = new ServiceBusSettings
             {
                 ConnectionString = _connectionString,
+                MessageBrokerDialect = MessageBrokerDialect.RabbitMQ,
             };
 
             await using var linkFactoryPool = new LinkFactoryPool(settings, loggerFactory.CreateLogger<LinkFactoryPool>());

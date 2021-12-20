@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2021, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -26,19 +26,28 @@ namespace Helsenorge.Messaging.ServiceBus
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
         /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
         public ServiceBusConnection(string connectionString, ILogger logger)
-            : this(connectionString, ServiceBusSettings.DefaultMaxLinksPerSession, ServiceBusSettings.DefaultMaxSessions, logger)
+            : this(connectionString, MessageBrokerDialect.ServiceBus, ServiceBusSettings.DefaultMaxLinksPerSession, ServiceBusSettings.DefaultMaxSessions, logger)
         {
-
         }
 
         /// <summary>Initializes a new instance of the <see cref="ServiceBusConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
+        /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells ServiceBusConnection what kind of Message Broker we are communicating with.</param>
+        /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
+        public ServiceBusConnection(string connectionString, MessageBrokerDialect messageBrokerDialect, ILogger logger)
+            : this(connectionString, messageBrokerDialect, ServiceBusSettings.DefaultMaxLinksPerSession, ServiceBusSettings.DefaultMaxSessions, logger)
+        {
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="ServiceBusConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
+        /// <param name="connectionString">The connection used to connect to Message Broker.</param>
+        /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells ServiceBusConnection what kind of Message Broker we are communicating with.</param>
         /// <param name="maxLinksPerSession">The max links that will be allowed per session.</param>
         /// <param name="maxSessionsPerConnection">The max sessions that will be allowed per connection.</param>
         /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
         /// <exception cref="ArgumentException" />
         /// <exception cref="ArgumentNullException" />
-        public ServiceBusConnection(string connectionString, int maxLinksPerSession, ushort maxSessionsPerConnection, ILogger logger)
+        public ServiceBusConnection(string connectionString, MessageBrokerDialect messageBrokerDialect, int maxLinksPerSession, ushort maxSessionsPerConnection, ILogger logger)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -51,6 +60,7 @@ namespace Helsenorge.Messaging.ServiceBus
             }
 
             _address = new Address(connectionString);
+            MessageBrokerDialect = messageBrokerDialect;
 #pragma warning disable CS0618
             HttpClient = new ServiceBusHttpClient(_address, logger);
 #pragma warning restore CS0618
@@ -77,6 +87,11 @@ namespace Helsenorge.Messaging.ServiceBus
         /// </summary>
         /// <remarks>This only works properly for Microsoft Service Bus.</remarks>
         internal string Namespace { get; }
+
+        /// <summary>
+        /// Returns what kind of Message Broker Dialect we should use.
+        /// </summary>
+        public MessageBrokerDialect MessageBrokerDialect { get; protected set; }
 
         [Obsolete("This will be removed in the future. It can be used to communicate with the Microsoft Service Bus specific operations.")]
         internal ServiceBusHttpClient HttpClient { get; }
@@ -156,14 +171,29 @@ namespace Helsenorge.Messaging.ServiceBus
             }
         }
 
-        internal string GetEntityName(string id)
+        internal string GetEntityName(string id, LinkRole role)
         {
-            return GetEntityName(id, Namespace);
+            return GetEntityName(id, Namespace, role);
         }
 
-        internal static string GetEntityName(string id, string ns)
+        private string GetEntityName(string id, string ns, LinkRole role)
         {
-            return !string.IsNullOrEmpty(ns) ? $"{ns}/{id}" : id;
+            string entityPath;
+            if (MessageBrokerDialect == MessageBrokerDialect.RabbitMQ)
+            {
+                // For more information on Routing and Addressing in RabbitMQ see:
+                // https://github.com/rabbitmq/rabbitmq-server/tree/master/deps/rabbitmq_amqp1_0#routing-and-addressing
+                if (string.IsNullOrEmpty(ns))
+                    entityPath = $"{id}";
+                else
+                    entityPath = role == LinkRole.Sender ? $"/exchange/{ns}/{id}" : $"/amq/queue/{id}";
+            }
+            else
+            {
+                entityPath = string.IsNullOrEmpty(ns) ? id : $"{ns}/{id}";
+            }
+
+            return entityPath;
         }
     }
 }

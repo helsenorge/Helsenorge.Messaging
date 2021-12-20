@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2021, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -38,7 +38,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
         protected override SenderLink CreateLink(ISession session)
         {
-            return session.CreateSender(Name, Connection.GetEntityName(_id)) as SenderLink;
+            return session.CreateSender(Name, Connection.GetEntityName(_id, LinkRole.Sender)) as SenderLink;
         }
 
         public void Send(IMessagingMessage message)
