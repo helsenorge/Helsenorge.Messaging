@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2021, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -37,7 +37,7 @@ namespace Helsenorge.Messaging.ServiceBus
         protected override Task<IMessagingFactory> CreateEntity(ILogger logger, string id)
         {
             if (_alternateMessagingFactor != null) return Task.FromResult(_alternateMessagingFactor);
-            var connection = new ServiceBusConnection(_settings.ConnectionString, _settings.MaxLinksPerSession, _settings.MaxSessionsPerConnection, logger);
+            var connection = new ServiceBusConnection(_settings.ConnectionString, _settings.MessageBrokerDialect, _settings.MaxLinksPerSession, _settings.MaxSessionsPerConnection, logger);
             return Task.FromResult<IMessagingFactory>(new ServiceBusFactory(connection, logger));
         }
         public async Task<IMessagingMessage> CreateMessage(ILogger logger, Stream stream)

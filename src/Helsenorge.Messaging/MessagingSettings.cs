@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2021, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using Helsenorge.Messaging.ServiceBus;
 
 namespace Helsenorge.Messaging
 {
@@ -98,6 +99,11 @@ namespace Helsenorge.Messaging
         {
             _settings = settings;
         }
+
+        /// <summary>
+        /// Gets or set the Type of Message Broker we are using
+        /// </summary>
+        public MessageBrokerDialect MessageBrokerDialect { get; set; } = MessageBrokerDialect.ServiceBus;
 
         /// <summary>
         /// Gets or sets the connection string

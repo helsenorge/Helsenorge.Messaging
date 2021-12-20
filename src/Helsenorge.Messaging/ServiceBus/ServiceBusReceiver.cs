@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2021, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -40,7 +40,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
         protected override ReceiverLink CreateLink(ISession session)
         {
-            var receiver = session.CreateReceiver(Name, Connection.GetEntityName(_id)) as ReceiverLink;
+            var receiver = session.CreateReceiver(Name, Connection.GetEntityName(_id, LinkRole.Receiver)) as ReceiverLink;
             receiver.SetCredit(_credit);
             return receiver;
         }
