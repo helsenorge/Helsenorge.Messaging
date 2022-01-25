@@ -90,7 +90,7 @@ Dette miljøet er kun tilgjengelig på helsenettet. NHN må involveres for å bl
 
 ##### Versjon 4.x og nyere
 ```
-amqps://<username>:<password>@sb.nhn.no:5671/NHNTestServiceBus
+amqps://<username>:<password>@sb.nhn.no:5671/NHNPRODServiceBus
 ```
 
 ##### Versjon 3.x og tidligere
