@@ -59,7 +59,7 @@ namespace PooledSender
             }
             finally
             {
-                await linkFactoryPool.ReleaseCachedMessageReceiver(_queue);
+                await linkFactoryPool.ReleaseCachedMessageSender(_queue);
             }
         }
     }
