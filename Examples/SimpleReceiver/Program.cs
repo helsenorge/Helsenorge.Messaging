@@ -18,7 +18,7 @@ namespace SimpleReceiver
     class Program
     {
         private static readonly string _connectionString = "amqp://guest:guest@127.0.0.1:5672";
-        private static readonly string _queue = "/amq/queue/kenneth-test-queue";
+        private static readonly string _queue = "/amq/queue/test-queue";
 
         static async Task Main(string[] args)
         {
