@@ -192,8 +192,6 @@ namespace Helsenorge.Messaging
 
             if (!await CanAuthenticateAndPingAddressRegistryService())
                 throw new MessagingException("Non-sucessful authentication or connection attempt to the Address Registry Web Service on start-up. This can be caused by incorrect credentials / configuration errors.") { EventId = EventIds.ConnectionToWebServiceFailed };
-            if (!await CanAuthenticateAndPingCppaService())
-                throw new MessagingException("Non-sucessful authentication or connection attempt to the CPPA Web Service on start-up. This can be caused by incorrect credentials / configuration errors.") { EventId = EventIds.ConnectionToWebServiceFailed };
             if (!await CanAuthenticateAgainstMessageBroker())
                 throw new MessagingException("Non-sucessful authentication or connection attempt to the message broker on start-up. This can be caused by incorrect credentials / configuration errors.") { EventId = EventIds.ConnectionToMessageBrokerFailed };
 
