@@ -39,6 +39,16 @@ namespace Helsenorge.Messaging.ServiceBus
         {
         }
 
+
+        /// <summary>Initializes a new instance of the <see cref="ServiceBusConnection" /> class using the properties in <see cref="ServiceBusSettings"/> settings and a <see cref="ILogger"/> object.</summary>
+        /// <param name="settings"></param>
+        /// <param name="logger"></param>
+        public ServiceBusConnection(ServiceBusSettings settings, ILogger logger)
+        :this(settings.ConnectionString, settings.MessageBrokerDialect, settings.MaxLinksPerSession, settings.MaxSessionsPerConnection, logger)
+        {
+            this.SystemIdent = settings.SystemIdentifier;
+        }
+
         /// <summary>Initializes a new instance of the <see cref="ServiceBusConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
         /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells ServiceBusConnection what kind of Message Broker we are communicating with.</param>
@@ -87,6 +97,8 @@ namespace Helsenorge.Messaging.ServiceBus
         /// </summary>
         /// <remarks>This only works properly for Microsoft Service Bus.</remarks>
         internal string Namespace { get; }
+
+        public string SystemIdent { get; }
 
         /// <summary>
         /// Returns what kind of Message Broker Dialect we should use.

@@ -53,6 +53,11 @@ namespace Helsenorge.Messaging
         public bool LogPayload { get; set; }
 
         /// <summary>
+        /// Gets or sets a named identifier for the system running the application
+        /// </summary>
+        public string SystemIdentifier { get; set; }
+
+        /// <summary>
         /// Default contructor
         /// </summary>
         public MessagingSettings()
@@ -104,6 +109,11 @@ namespace Helsenorge.Messaging
         /// Gets or set the Type of Message Broker we are using
         /// </summary>
         public MessageBrokerDialect MessageBrokerDialect { get; set; } = MessageBrokerDialect.ServiceBus;
+
+        /// <summary>
+        /// Gets or sets a named identifier for the system running the application
+        /// </summary>
+        public string SystemIdentifier => _settings.SystemIdentifier;
 
         /// <summary>
         /// Gets or sets the connection string

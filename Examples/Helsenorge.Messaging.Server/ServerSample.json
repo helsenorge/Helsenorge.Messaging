@@ -13,6 +13,7 @@
         "MyHerId": "6789"
     },
     "MessagingSettings": {
+        "SystemIdentifier" : "Shortname for my application",
         "MyHerId": "6789",
         "ServiceBus": {
             "ConnectionString": "???"

@@ -22,6 +22,7 @@ Dette er et eksempel på hvordan en slik fil kan se ut.
     },
     "MessagingSettings": {
         "MyHerId": "1234",
+        "SystemIdentifier" : "My HN Integrator 13.37",
         "IgnoreCertificateErrorOnSend": "false",
         "ServiceBus": {
             "ConnectionString": "",

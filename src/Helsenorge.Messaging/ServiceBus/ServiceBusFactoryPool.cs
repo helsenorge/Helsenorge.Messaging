@@ -37,7 +37,7 @@ namespace Helsenorge.Messaging.ServiceBus
         protected override Task<IMessagingFactory> CreateEntity(ILogger logger, string id)
         {
             if (_alternateMessagingFactor != null) return Task.FromResult(_alternateMessagingFactor);
-            var connection = new ServiceBusConnection(_settings.ConnectionString, _settings.MessageBrokerDialect, _settings.MaxLinksPerSession, _settings.MaxSessionsPerConnection, logger);
+            var connection = new ServiceBusConnection(_settings, logger);
             return Task.FromResult<IMessagingFactory>(new ServiceBusFactory(connection, logger));
         }
         public async Task<IMessagingMessage> CreateMessage(ILogger logger, Stream stream)

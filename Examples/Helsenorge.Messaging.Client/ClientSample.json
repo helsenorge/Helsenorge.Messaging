@@ -13,6 +13,7 @@
     "MyHerId": "1234"
   },
   "MessagingSettings": {
+    "SystemIdentifier" : "",
     "MyHerId": "1234",
     "ServiceBus": {
       "ConnectionString": "???",

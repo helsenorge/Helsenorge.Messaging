@@ -1,16 +1,19 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2021, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
+using System.Net;
+using System.Reflection;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Amqp;
+using Amqp.Framing;
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
 
@@ -54,6 +57,7 @@ namespace Helsenorge.Messaging.ServiceBus
             new ServiceBusOperationBuilder(_logger, "Send").Build(() =>
             {
                 EnsureOpen();
+                AddSystemHeaders(originalMessage.ApplicationProperties);
                 _link.Send(originalMessage, serverWaitTime);
             }).Perform();
         }
@@ -76,8 +80,30 @@ namespace Helsenorge.Messaging.ServiceBus
             await new ServiceBusOperationBuilder(_logger, "SendAsync").Build(async () =>
             {
                 await EnsureOpenAsync().ConfigureAwait(false);
+                AddSystemHeaders(originalMessage.ApplicationProperties);
                 await _link.SendAsync(originalMessage).ConfigureAwait(false);
             }).PerformAsync().ConfigureAwait(false);
+        }
+
+        private static void AddSystemHeaders(ApplicationProperties applicationProperties)
+        {
+            try
+            {
+                var assemblyName = Assembly.GetExecutingAssembly().GetName();
+                applicationProperties["x-system-assembly"] = assemblyName;
+                applicationProperties["x-system-assembly-version"] = assemblyName.Version.ToString();
+
+                var frameworkName = Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName;
+                applicationProperties["x-system-framework"] = frameworkName;
+
+                var hostname = Dns.GetHostName();
+                applicationProperties["x-system-hostname"] = hostname;
+
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
     }
 }
