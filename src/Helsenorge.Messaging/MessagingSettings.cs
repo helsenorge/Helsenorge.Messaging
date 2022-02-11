@@ -57,6 +57,12 @@ namespace Helsenorge.Messaging
         /// </summary>
         public string SystemIdentifier { get; set; }
 
+
+        /// <summary>
+        /// Log messages not encrypted and enveloped as Warning
+        /// </summary>
+        public bool LogMessagesNotSignedAndEnvelopedAsWarning { get; set; } = true;
+
         /// <summary>
         /// Default contructor
         /// </summary>
@@ -114,6 +120,11 @@ namespace Helsenorge.Messaging
         /// Gets or sets a named identifier for the system running the application
         /// </summary>
         public string SystemIdentifier => _settings.SystemIdentifier;
+
+        /// <summary>
+        /// Log messages not encrypted and enveloped as Warning
+        /// </summary>
+        public bool LogMessagesNotSignedAndEnvelopedAsWarning => _settings.LogMessagesNotSignedAndEnvelopedAsWarning;
 
         /// <summary>
         /// Gets or sets the connection string

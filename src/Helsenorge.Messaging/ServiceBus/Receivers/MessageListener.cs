@@ -322,8 +322,16 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         {
             XDocument payload;
 
-            if (contentType.Equals(ContentType.Text, StringComparison.OrdinalIgnoreCase) ||
-                contentType.Equals(ContentType.Soap, StringComparison.OrdinalIgnoreCase))
+            var isPlainText = contentType.Equals(ContentType.Text, StringComparison.OrdinalIgnoreCase);
+            var isSoap = contentType.Equals(ContentType.Text, StringComparison.OrdinalIgnoreCase);
+            var isSignedAndEnveloped = contentType.Equals(ContentType.SignedAndEnveloped, StringComparison.OrdinalIgnoreCase);
+
+            if (!isSoap && !isSignedAndEnveloped)
+            {
+                Logger.LogWarning($"ContentType of message is not according to standard. Expected:{ContentType.SignedAndEnveloped} Actual:{contentType} ");
+            }
+
+            if (isPlainText || isSoap)
             {
                 contentWasSigned = false;
                 // no certificates to validate
