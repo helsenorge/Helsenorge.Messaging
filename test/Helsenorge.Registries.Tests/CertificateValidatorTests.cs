@@ -63,7 +63,7 @@ namespace Helsenorge.Registries.Tests
         public void X509Certificate2Extensions_KeyUsage()
         {
             Assert.IsTrue(TestCertificates.CounterpartyPublicSignature.HasKeyUsage(X509KeyUsageFlags.NonRepudiation));
-            Assert.IsFalse(TestCertificates.CounterpartyPublicSignature.HasKeyUsage(X509KeyUsageFlags.DataEncipherment));
+            Assert.IsFalse(TestCertificates.CounterpartyPublicSignature.HasKeyUsage(X509KeyUsageFlags.KeyEncipherment));
         }
         // don't have a certificate with multiple errors
         //[TestMethod]
