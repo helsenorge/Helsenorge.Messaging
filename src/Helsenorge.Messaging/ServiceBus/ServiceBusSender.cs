@@ -7,6 +7,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Reflection;
@@ -25,6 +26,7 @@ namespace Helsenorge.Messaging.ServiceBus
         private readonly string _id;
         private readonly ILogger _logger;
         private readonly string _name;
+        private readonly Dictionary<string,string> _systemInfoProperties;
 
         public ServiceBusSender(ServiceBusConnection connection, string id, ILogger logger) : base(connection)
         {
@@ -35,6 +37,7 @@ namespace Helsenorge.Messaging.ServiceBus
             _id = id;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _name = $"sender-link-{Guid.NewGuid()}";
+            _systemInfoProperties = GetSystemInfoProperties(connection);
         }
 
         public string Name => _name;
@@ -85,25 +88,37 @@ namespace Helsenorge.Messaging.ServiceBus
             }).PerformAsync().ConfigureAwait(false);
         }
 
-        private static void AddSystemHeaders(ApplicationProperties applicationProperties)
+        private void AddSystemHeaders(ApplicationProperties applicationProperties)
         {
+            foreach (var systemInfoProperty in _systemInfoProperties)
+            {
+                applicationProperties[systemInfoProperty.Key] = systemInfoProperty.Value;
+            }
+        }
+
+        private static Dictionary<string, string> GetSystemInfoProperties(ServiceBusConnection connection)
+        {
+            var systemInfoProperties = new Dictionary<string, string>();
             try
             {
+                systemInfoProperties.Add("x-system-identifier", connection.SystemIdent);
+
                 var assemblyName = Assembly.GetExecutingAssembly().GetName();
-                applicationProperties["x-system-assembly"] = assemblyName;
-                applicationProperties["x-system-assembly-version"] = assemblyName.Version.ToString();
+                systemInfoProperties.Add("x-system-assembly", assemblyName.ToString());
+                systemInfoProperties.Add("x-system-assembly-version", assemblyName.Version.ToString());
 
                 var frameworkName = Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName;
-                applicationProperties["x-system-framework"] = frameworkName;
+                systemInfoProperties.Add("x-system-framework", frameworkName);
 
                 var hostname = Dns.GetHostName();
-                applicationProperties["x-system-hostname"] = hostname;
-
+                systemInfoProperties["x-system-hostname"] = hostname;
             }
             catch (Exception)
             {
-                // ignored
+                // ignored, properties are not yet required
             }
+
+            return systemInfoProperties;
         }
     }
 }
