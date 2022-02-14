@@ -161,7 +161,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             Settings.IgnoreCertificateErrorOnSend = false;
             CertificateValidator.SetError((c, u) => {
-                if (u != X509KeyUsageFlags.DataEncipherment) return CertificateErrors.None;
+                if (u != X509KeyUsageFlags.KeyEncipherment) return CertificateErrors.None;
 
                 return CertificateErrors.Revoked | CertificateErrors.EndDate;
                 });

@@ -345,7 +345,7 @@ namespace Helsenorge.Registries
                 var base64 = certificateElement.Descendants(xmlSig + "X509Certificate").First().Value;
                 var certificate = new X509Certificate2(Convert.FromBase64String(base64));
 
-                if (certificate.HasKeyUsage(X509KeyUsageFlags.DataEncipherment))
+                if (certificate.HasKeyUsage(X509KeyUsageFlags.KeyEncipherment))
                 {
                     cpa.EncryptionCertificate = certificate;
                 }
