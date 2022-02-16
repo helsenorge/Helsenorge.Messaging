@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -7,6 +7,10 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Reflection;
+using System.Runtime.Versioning;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Security;
 using Helsenorge.Messaging.ServiceBus;
@@ -32,6 +36,7 @@ namespace Helsenorge.Messaging
             MessagingSettings settings,
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
             IAddressRegistry addressRegistry)
+            : this(settings)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             CollaborationProtocolRegistry = collaborationProtocolRegistry ?? throw new ArgumentNullException(nameof(collaborationProtocolRegistry));
@@ -62,6 +67,7 @@ namespace Helsenorge.Messaging
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
             IAddressRegistry addressRegistry,
             ICertificateStore certificateStore)
+            : this(settings)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             CollaborationProtocolRegistry = collaborationProtocolRegistry ?? throw new ArgumentNullException(nameof(collaborationProtocolRegistry));
@@ -103,6 +109,7 @@ namespace Helsenorge.Messaging
             ICertificateStore certificateStore,
             ICertificateValidator certificateValidator,
             IMessageProtection messageProtection)
+            : this(settings)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             CollaborationProtocolRegistry = collaborationProtocolRegistry ?? throw new ArgumentNullException(nameof(collaborationProtocolRegistry));
@@ -114,6 +121,19 @@ namespace Helsenorge.Messaging
             CertificateStore = certificateStore;
             CertificateValidator = certificateValidator;
             MessageProtection = messageProtection ?? throw new ArgumentNullException(nameof(messageProtection));
+        }
+
+        private MessagingCore(MessagingSettings settings)
+        {
+            if(settings?.ApplicationProperties == null) return;
+
+            // Populate MessagingSettings.ApplicationProperties with additional System Information.
+            var systemInformationProperties = GetSystemInformation();
+            foreach (var property in systemInformationProperties)
+            {
+                if (!settings.ApplicationProperties.ContainsKey(property.Key))
+                    settings.ApplicationProperties.Add(property);
+            }
         }
 
         /// <summary>
@@ -178,6 +198,31 @@ namespace Helsenorge.Messaging
         internal ICertificateValidator GetDefaultCertificateValidator()
         {
             return new CertificateValidator(Settings.UseOnlineRevocationCheck);
+        }
+
+        private static IDictionary<string, object> GetSystemInformation()
+        {
+            var systemInformation = new Dictionary<string, object>();
+            try
+            {
+                var assemblyName = Assembly.GetExecutingAssembly().GetName();
+                systemInformation.Add("X-ExecutingAssembly", assemblyName.FullName);
+                systemInformation.Add("X-ExecutingAssemblyVersion", assemblyName.Version.ToString());
+
+                var targetFramework = Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName;
+                if(!string.IsNullOrWhiteSpace(targetFramework))
+                    systemInformation.Add("X-TargetFramework", targetFramework);
+
+                var hostName = Dns.GetHostName();
+                if(!string.IsNullOrWhiteSpace(hostName))
+                    systemInformation.Add("X-SystemHostName", hostName);
+            }
+            catch
+            {
+                // Ignore any errors, we don't want to fail on this step.
+            }
+
+            return systemInformation;
         }
     }
 }
