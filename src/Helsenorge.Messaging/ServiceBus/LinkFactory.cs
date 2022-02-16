@@ -1,11 +1,12 @@
 ﻿/*
- * Copyright (c) 2021, Norsk Helsenett SF and contributors
+ * Copyright (c) 2021-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Amqp;
@@ -22,14 +23,17 @@ namespace Helsenorge.Messaging.ServiceBus
     {
         private readonly ServiceBusConnection _connection;
         private readonly ILogger<LinkFactory> _logger;
+        private readonly IDictionary<string, object> _applicationProperties;
 
         /// <summary>Initializes a new instance of the <see cref="LinkFactory" /> class with a <see cref="ServiceBusConnection"/> and a <see cref="ILogger{LinkFactory}"/>.</summary>
         /// <param name="connection">A <see cref="ServiceBusConnection"/> that represents the connection to ServiecBus.</param>
         /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
-        public LinkFactory(ServiceBusConnection connection, ILogger<LinkFactory> logger)
+        /// <param name="applicationProperties">A Dictionary with additional application properties which will be added to <see cref="Amqp.Message"/>.</param>
+        public LinkFactory(ServiceBusConnection connection, ILogger<LinkFactory> logger, IDictionary<string, object> applicationProperties = null)
         {
             _connection = connection;
             _logger = logger;
+            _applicationProperties = applicationProperties;
         }
 
         /// <summary>Creates a Receiver Link of type <see cref="IMessagingReceiver"/>.</summary>
@@ -43,7 +47,7 @@ namespace Helsenorge.Messaging.ServiceBus
         /// <param name="queue">The path to the queue you want to receive messages from.</param>
         /// <returns>A <see cref="IMessagingSender"/></returns>
         public IMessagingSender CreateSender(string queue)
-            => new ServiceBusSender(_connection, queue, _logger);
+            => new ServiceBusSender(_logger, _connection, queue, _applicationProperties);
 
         /// <summary>Creates a <see cref="IMessagingMessage"/>.</summary>
         /// <param name="fromHerId">The HER-id which is the receipient of the message</param>

@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2021, Norsk Helsenett SF and contributors
+ * Copyright (c) 2021-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  *
  * This file is licensed under the MIT license
@@ -7,6 +7,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Amqp;
@@ -21,8 +22,9 @@ namespace Helsenorge.Messaging.ServiceBus
     /// </summary>
     public class LinkFactoryPool : IAsyncDisposable
     {
-        private readonly ServiceBusSettings _settings;
         private readonly ILogger _logger;
+        private readonly ServiceBusSettings _settings;
+        private readonly IDictionary<string, object> _applicationProperties;
         private readonly ServiceBusFactoryPool _factoryPool;
         private readonly ServiceBusReceiverPool _receiverPool;
         private readonly ServiceBusSenderPool _senderPool;
@@ -30,12 +32,14 @@ namespace Helsenorge.Messaging.ServiceBus
         /// <summary>Initializes a new instance of the <see cref="LinkFactoryPool" /> class with a <see cref="ServiceBusSettings"/> and a <see cref="ILogger"/>.</summary>
         /// <param name="settings">A <see cref="ServiceBusSettings"/> instance that contains the settings.</param>
         /// <param name="logger">An <see cref="ILogger"/> instance which will be used to log errors and information.</param>
-        public LinkFactoryPool(ServiceBusSettings settings, ILogger logger)
+        /// <param name="applicationProperties">A Dictionary with additional application properties which will be added to <see cref="Amqp.Message"/>.</param>
+        public LinkFactoryPool(ILogger logger, ServiceBusSettings settings, IDictionary<string, object> applicationProperties = null)
         {
-            _settings = settings;
             _logger = logger;
+            _settings = settings;
+            _applicationProperties = applicationProperties;
 
-            _factoryPool = new ServiceBusFactoryPool(_settings);
+            _factoryPool = new ServiceBusFactoryPool(_settings, _applicationProperties);
             _receiverPool = new ServiceBusReceiverPool(_settings, _factoryPool);
             _senderPool = new ServiceBusSenderPool(_settings, _factoryPool);
         }

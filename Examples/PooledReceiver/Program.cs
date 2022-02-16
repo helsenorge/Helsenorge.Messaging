@@ -29,7 +29,7 @@ namespace PooledReceiver
                 MessageBrokerDialect = MessageBrokerDialect.RabbitMQ,
             };
 
-            await using var linkFactoryPool = new LinkFactoryPool(settings, loggerFactory.CreateLogger<LinkFactoryPool>());
+            await using var linkFactoryPool = new LinkFactoryPool(loggerFactory.CreateLogger<LinkFactoryPool>(), settings);
             try
             {
                 var receiver = await linkFactoryPool.CreateCachedMessageReceiver(_queue);

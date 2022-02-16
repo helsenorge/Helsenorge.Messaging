@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020-2021, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -7,8 +7,8 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
 using System.Threading.Tasks;
 using Amqp;
 using Helsenorge.Messaging.Abstractions;
@@ -19,18 +19,21 @@ namespace Helsenorge.Messaging.ServiceBus
     [ExcludeFromCodeCoverage]
     internal class ServiceBusSender : CachedAmpqSessionEntity<SenderLink>, IMessagingSender
     {
-        private readonly string _id;
         private readonly ILogger _logger;
+        private readonly string _id;
+        private readonly IDictionary<string, object> _applicationProperties;
         private readonly string _name;
 
-        public ServiceBusSender(ServiceBusConnection connection, string id, ILogger logger) : base(connection)
+        public ServiceBusSender(ILogger logger, ServiceBusConnection connection, string id, IDictionary<string, object> applicationProperties = null) : base(connection)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             if (string.IsNullOrEmpty(id))
             {
                 throw new ArgumentException(nameof(id));
             }
             _id = id;
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _applicationProperties = applicationProperties;
+
             _name = $"sender-link-{Guid.NewGuid()}";
         }
 
@@ -76,6 +79,7 @@ namespace Helsenorge.Messaging.ServiceBus
             await new ServiceBusOperationBuilder(_logger, "SendAsync").Build(async () =>
             {
                 await EnsureOpenAsync().ConfigureAwait(false);
+                originalMessage.ApplicationProperties.AddApplicationProperties(_applicationProperties);
                 await _link.SendAsync(originalMessage).ConfigureAwait(false);
             }).PerformAsync().ConfigureAwait(false);
         }

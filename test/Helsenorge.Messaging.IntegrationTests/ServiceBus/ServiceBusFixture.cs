@@ -65,7 +65,7 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
 
         public ServiceBusSender CreateSender(string queueName)
         {
-            return new ServiceBusSender(Connection, queueName, _logger);
+            return new ServiceBusSender(_logger, Connection, queueName);
         }
 
         public async Task<List<Message>> ReadAllMessagesAsync(string queueName, bool accept = false)
