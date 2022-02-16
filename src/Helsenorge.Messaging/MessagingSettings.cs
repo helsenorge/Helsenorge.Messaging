@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2020-2021, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -51,6 +51,11 @@ namespace Helsenorge.Messaging
         /// Indicates if the payload should be logged. This is false by default since the payload can contain sensitive information
         /// </summary>
         public bool LogPayload { get; set; }
+
+        /// <summary>
+        /// A Dictionary with additional application properties which will be added to <see cref="Amqp.Message"/>.
+        /// </summary>
+        public IDictionary<string, object> ApplicationProperties { get; } = new Dictionary<string, object>();
 
         /// <summary>
         /// Default contructor

@@ -1,11 +1,12 @@
 ﻿/* 
- * Copyright (c) 2020-2021, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -19,13 +20,15 @@ namespace Helsenorge.Messaging.ServiceBus
     {
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly ServiceBusSettings _settings;
+        private readonly IDictionary<string, object> _applicationProperties;
         private int _index;
         private IMessagingFactory _alternateMessagingFactor;
 
-        public ServiceBusFactoryPool(ServiceBusSettings settings) :
+        public ServiceBusFactoryPool(ServiceBusSettings settings, IDictionary<string, object> applicationProperties = null) :
             base("FactoryPool", settings.MaxFactories, settings.CacheEntryTimeToLive, settings.MaxCacheEntryTrimCount)
         {
             _settings = settings;
+            _applicationProperties = applicationProperties;
         }
 
         public void RegisterAlternateMessagingFactory(IMessagingFactory alternateMessagingFactory)
@@ -38,7 +41,7 @@ namespace Helsenorge.Messaging.ServiceBus
         {
             if (_alternateMessagingFactor != null) return Task.FromResult(_alternateMessagingFactor);
             var connection = new ServiceBusConnection(_settings.ConnectionString, _settings.MessageBrokerDialect, _settings.MaxLinksPerSession, _settings.MaxSessionsPerConnection, logger);
-            return Task.FromResult<IMessagingFactory>(new ServiceBusFactory(connection, logger));
+            return Task.FromResult<IMessagingFactory>(new ServiceBusFactory(logger, connection, _applicationProperties));
         }
         public async Task<IMessagingMessage> CreateMessage(ILogger logger, Stream stream)
         {

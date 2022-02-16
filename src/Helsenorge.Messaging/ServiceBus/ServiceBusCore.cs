@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -84,7 +84,7 @@ namespace Helsenorge.Messaging.ServiceBus
             }
             else
             {
-                FactoryPool = new ServiceBusFactoryPool(core.Settings.ServiceBus);
+                FactoryPool = new ServiceBusFactoryPool(core.Settings.ServiceBus, core.Settings.ApplicationProperties);
             }
             
             SenderPool = new ServiceBusSenderPool(core.Settings.ServiceBus, FactoryPool);

@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -7,6 +7,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
@@ -20,13 +21,15 @@ namespace Helsenorge.Messaging.ServiceBus
     [ExcludeFromCodeCoverage]
     internal class ServiceBusFactory : IMessagingFactory
     {
-        private readonly ServiceBusConnection _connection;
         private readonly ILogger _logger;
+        private readonly ServiceBusConnection _connection;
+        private readonly IDictionary<string, object> _applicationProperties;
 
-        public ServiceBusFactory(ServiceBusConnection connection, ILogger logger)
+        public ServiceBusFactory(ILogger logger, ServiceBusConnection connection, IDictionary<string, object> applicationProperties)
         {
-            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
+            _applicationProperties = applicationProperties;
         }
 
         public IMessagingReceiver CreateMessageReceiver(string id, int credit)
@@ -36,7 +39,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
         public IMessagingSender CreateMessageSender(string id)
         {
-            return new ServiceBusSender(_connection, id, _logger);
+            return new ServiceBusSender(_logger, _connection, id, _applicationProperties);
         }
 
         public bool IsClosed => _connection.IsClosedOrClosing;
