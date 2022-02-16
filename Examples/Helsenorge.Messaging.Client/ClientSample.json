@@ -14,6 +14,9 @@
   },
   "MessagingSettings": {
     "MyHerId": "1234",
+    "ApplicationProperties": {
+      "X-SystemIdentifier": "SomeSystemIdentifier"
+    },
     "ServiceBus": {
       "ConnectionString": "???",
       "Synchronous": {
