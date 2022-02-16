@@ -25,13 +25,17 @@ namespace PooledSender
         static async Task Main(string[] args)
         {
             var loggerFactory = new LoggerFactory();
-            var settings = new ServiceBusSettings
+            var settings = new MessagingSettings
             {
-                ConnectionString = _connectionString,
-                MessageBrokerDialect = MessageBrokerDialect.RabbitMQ,
+                ApplicationProperties = {{ "X-SystemIdentifier", "ExampleSystemIdentifier" }},
+                ServiceBus =
+                {
+                    ConnectionString = _connectionString,
+                    MessageBrokerDialect = MessageBrokerDialect.RabbitMQ,
+                }
             };
 
-            await using var linkFactoryPool = new LinkFactoryPool(loggerFactory.CreateLogger<LinkFactoryPool>(), settings);
+            await using var linkFactoryPool = new LinkFactoryPool(loggerFactory.CreateLogger<LinkFactoryPool>(), settings.ServiceBus, settings.ApplicationProperties);
             try
             {
                 var messageCount = 20;
