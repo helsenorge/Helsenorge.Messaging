@@ -4,8 +4,8 @@ Klienten sender xml-filer som ligger på disk, og serveren skriver mottatte meld
 
 Dette er to veldig enkle eksempler, de må ikke benyttes direkte i produksjon.
 
-Følg retningslinjene beskrevet i [Sending av meldinger](Documentation/SendeMeldinger.md "Sending av meldinger")
-og [Mottak av meldinger](Documentation/MottaMeldinger.md "Mottak av meldinger").
+Følg retningslinjene beskrevet i [Sending av meldinger](SendeMeldinger.md)
+og [Mottak av meldinger](MottaMeldinger.md).
 
 - Helsenorge.Messaging.Client
 - Helsenorge.Messaging.Server
