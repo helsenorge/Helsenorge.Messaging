@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -141,7 +141,9 @@ namespace Helsenorge.Messaging.IntegrationTests.ServiceBus
             Assert.Equal(messageText, await message.GetBodyAsStingAsync());
             var wasLockedUntil = message.LockedUntil;
             await Task.Delay(TimeSpan.FromSeconds(1));
+#pragma warning disable CS0618
             await message.RenewLockAsync();
+#pragma warning restore CS0618
             Assert.True(message.LockedUntil > wasLockedUntil);
             Assert.True(message.LockedUntil - wasLockedUntil > TimeSpan.FromSeconds(1));
             await message.CompleteAsync();

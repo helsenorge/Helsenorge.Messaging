@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -19,6 +19,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.ServiceBus
 {
+    [Obsolete("The class 'ServiceBusHttpClient' is a Microsoft ServiceBus specific class and will be removed in the future.")]
     internal class ServiceBusHttpClient
     {
         private readonly ILogger _logger;

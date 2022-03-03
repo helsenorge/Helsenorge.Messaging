@@ -1,7 +1,7 @@
-﻿/* 
- * Copyright (c) 2020-2021, Norsk Helsenett SF and contributors
+﻿/*
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
@@ -127,12 +127,18 @@ namespace Helsenorge.Messaging.ServiceBus
                 message.DeadLetterAction = () => new ServiceBusOperationBuilder(_logger, "DeadLetter")
                     .Build(() =>
                     {
+                        if (Connection.MessageBrokerDialect == MessageBrokerDialect.RabbitMQ)
+                            throw new NotImplementedException("The method 'DeadLetter()' is not supported by RabbitMQ. Use 'Reject()' or 'RejectAsync' instead.");
+
                         EnsureOpen();
                         _link.Reject(amqpMessage);
                     }).Perform();
                 message.DeadLetterActionAsync = () => new ServiceBusOperationBuilder(_logger, "DeadLetterAsync")
                     .Build(async () =>
                     {
+                        if (Connection.MessageBrokerDialect == MessageBrokerDialect.RabbitMQ)
+                            throw new NotImplementedException("The method 'DeadLetterAsync()' is not supported by RabbitMQ. Use 'RejectAsync()' or 'Reject()'' instead.");
+
                         await EnsureOpenAsync().ConfigureAwait(false);
                         _link.Reject(amqpMessage);
                     }).PerformAsync();
@@ -140,6 +146,9 @@ namespace Helsenorge.Messaging.ServiceBus
                 message.RenewLockAction = () => new ServiceBusOperationBuilder(_logger, "RenewLock")
                     .Build(() =>
                     {
+                        if (Connection.MessageBrokerDialect == MessageBrokerDialect.RabbitMQ)
+                            throw new NotImplementedException("The method 'RenewLock()' is not supported by RabbitMQ.");
+
                         EnsureOpen();
                         var lockTimeout = TimeSpan.FromMinutes(1);
 #pragma warning disable CS0618
@@ -150,6 +159,9 @@ namespace Helsenorge.Messaging.ServiceBus
                 message.RenewLockActionAsync = () => new ServiceBusOperationBuilder(_logger, "RenewLockAsync")
                     .Build(async () =>
                     {
+                        if (Connection.MessageBrokerDialect == MessageBrokerDialect.RabbitMQ)
+                            throw new NotImplementedException("The method 'RenewLockAsync()' is not supported by RabbitMQ.");
+
                         await EnsureOpenAsync().ConfigureAwait(false);
                         var lockTimeout = TimeSpan.FromMinutes(1);
 #pragma warning disable CS0618
