@@ -1,7 +1,7 @@
-﻿/* 
- * Copyright (c) 2020-2021, Norsk Helsenett SF and contributors
+﻿/*
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
@@ -61,9 +61,13 @@ namespace Helsenorge.Messaging.ServiceBus
 
             _address = new Address(connectionString);
             MessageBrokerDialect = messageBrokerDialect;
+            // 'ServicBusHttpClient' is only relevant for Microsoft ServiceBus. It is used to communicate with Microsoft ServiceBus specific operations.
+            if (messageBrokerDialect == MessageBrokerDialect.ServiceBus)
+            {
 #pragma warning disable CS0618
-            HttpClient = new ServiceBusHttpClient(_address, logger);
+                HttpClient = new ServiceBusHttpClient(_address, logger);
 #pragma warning restore CS0618
+            }
 
             if (!string.IsNullOrEmpty(_address.Path))
             {
@@ -93,7 +97,7 @@ namespace Helsenorge.Messaging.ServiceBus
         /// </summary>
         public MessageBrokerDialect MessageBrokerDialect { get; protected set; }
 
-        [Obsolete("This will be removed in the future. It can be used to communicate with the Microsoft Service Bus specific operations.")]
+        [Obsolete("The property 'HttpClient' will be removed in the future. It can only be used to communicate with Microsoft ServiceBus specific operations.")]
         internal ServiceBusHttpClient HttpClient { get; }
 
         /// <summary>Let's you get access to the internal <see cref="IConnection"/>.</summary>

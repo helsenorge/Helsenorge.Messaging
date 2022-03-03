@@ -1,7 +1,7 @@
-﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+﻿/*
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
@@ -292,8 +292,10 @@ namespace Helsenorge.Messaging.ServiceBus
 
         public async Task RelaseAsync() =>  await ReleaseActionAsync.Invoke().ConfigureAwait(false);
 
+        [Obsolete("The method 'DeadLetter()' is deprecated and will be removed in future releases.")]
         public void DeadLetter() => DeadLetterAction.Invoke();
 
+        [Obsolete("The method 'DeadLetterAsync()' is deprecated and will be removed in future releases.")]
         public async Task DeadLetterAsync() => await DeadLetterActionAsync.Invoke().ConfigureAwait(false);
 
         public void Modify(bool deliveryFailed, bool undeliverableHere = false) => ModifyAction.Invoke(deliveryFailed, undeliverableHere);
@@ -319,12 +321,14 @@ namespace Helsenorge.Messaging.ServiceBus
         public DateTime LockedUntil => (DateTime?)_implementation.MessageAnnotations?[LockedUntilSymbol]
                                        ?? DateTime.MinValue;
 
+        [Obsolete("The method 'RenewLock()' is deprecated and will be removed in future releases.")]
         public void RenewLock()
         {
             var lockedUntilUtc = RenewLockAction.Invoke();
             _implementation.MessageAnnotations[LockedUntilSymbol] = lockedUntilUtc;
         }
 
+        [Obsolete("The method 'RenewLockAsync()' is deprecated and will be removed in future releases.")]
         public async Task RenewLockAsync()
         {
             var lockedUntilUtc = await RenewLockActionAsync.Invoke().ConfigureAwait(false);
@@ -370,7 +374,7 @@ namespace Helsenorge.Messaging.ServiceBus
         private DateTime GetValue(string key, DateTime value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
             ? DateTime.Parse(GetApplicationProperties()[key].ToString(), CultureInfo.InvariantCulture)
             : value;
-        
+
         static object ValidateIdentifier(object id)
         {
             if (id != null && !(id is string || id is Guid))
