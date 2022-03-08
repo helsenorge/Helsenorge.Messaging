@@ -102,7 +102,7 @@ namespace Helsenorge.Registries
             catch (FaultException<CPAService.GenericFault> ex)
             {
                 // if this happens, we fall back to the dummy profile further down
-                logger.LogWarning($"Error resolving protocol for counterparty. ErrorCode: {ex.Detail.ErrorCode} Message: {ex.Detail.Message}");
+                logger.LogWarning($"Could not find or resolve protocol for counterparty when using HerId {counterpartyHerId}. ErrorCode: {ex.Detail.ErrorCode} Message: {ex.Detail.Message}");
             }
             catch (Exception ex)
             {
