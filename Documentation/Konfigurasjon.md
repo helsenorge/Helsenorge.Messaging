@@ -22,6 +22,9 @@ Dette er et eksempel på hvordan en slik fil kan se ut.
     },
     "MessagingSettings": {
         "MyHerId": "1234",
+        "ApplicationProperties": {
+            "X-SystemIdentifier": "SomeSystemIdentifier"
+        },
         "IgnoreCertificateErrorOnSend": "false",
         "ServiceBus": {
             "ConnectionString": "",
