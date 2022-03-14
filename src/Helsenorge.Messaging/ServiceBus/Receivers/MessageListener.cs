@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -322,12 +322,17 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         {
             XDocument payload;
 
-            if (contentType.Equals(ContentType.Text, StringComparison.OrdinalIgnoreCase) ||
-                contentType.Equals(ContentType.Soap, StringComparison.OrdinalIgnoreCase))
+            bool isPlainText;
+            if ((isPlainText = contentType.Equals(ContentType.Text, StringComparison.OrdinalIgnoreCase))
+                            || contentType.Equals(ContentType.Soap, StringComparison.OrdinalIgnoreCase))
             {
                 contentWasSigned = false;
                 // no certificates to validate
                 payload = new NoMessageProtection().Unprotect(bodyStream, null)?.ToXDocument();
+
+                // Log a warning if the message is in plain text.
+                if (Core.Settings.LogMessagesNotSignedAndEnvelopedAsWarning && isPlainText)
+                    Logger.LogWarning($"ContentType of message is '{contentType}'.");
             }
             else
             {
