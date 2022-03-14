@@ -158,6 +158,10 @@ namespace Helsenorge.Messaging
         /// The max cache entries our recycling process will handle each time it is triggered.
         /// </summary>
         public ushort MaxCacheEntryTrimCount { get; set; } = DefaultMaxCacheEntryTrimCount;
+        /// <summary>
+        /// Log messages not encrypted and enveloped as Warning
+        /// </summary>
+        public bool LogMessagesNotSignedAndEnvelopedAsWarning { get; set; } = true;
 
         /// <summary>
         /// The Her id that we represent
