@@ -3,6 +3,9 @@
 ### Nytt ConnectionString format
 Formatet på ConnectionString er endret til: `amqps://<username>:<password>@sb.test.nhn.no:5671/NHNTestServiceBus`.
 
+### Introduksjon av MessageBrokerDialect
+Helsenorge.Messaging 4.x er kompatibel med både Microsoft ServiceBus og RabbitMQ. Det er derfor introdusert et nytt konfigurasjonsattributt `MessagingSettings.ServiceBus.MessageBrokerDialect`. Attributtet har to gyldige verdier `ServiceBus` og `RabbitMQ`. Verdien `ServiceBus` er standardverdien. For å kommunisere med RabbitMQ, og benytte tilhørende dialekt, må man verdien eksplisitt settes til `RabbitMQ`.
+
 ### Endringer i SOAP-konfigurasjon
 SOAP-konfigurasjonen er flyttet fra klassisk .NET Framework SOAP konfigurasjon til en ny og enklere struktur.
 
