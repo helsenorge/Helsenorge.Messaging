@@ -61,27 +61,23 @@ namespace Helsenorge.Registries.Utilities
             if (value.GetType() == typeof(byte[])) return value as byte[];
 
             var formatter = new BinaryFormatter();
-            using (var memoryStream = new MemoryStream())
-            {
+            using var memoryStream = new MemoryStream();
 #pragma warning disable CS0618
-                formatter.Serialize(memoryStream, value);
+            formatter.Serialize(memoryStream, value);
 #pragma warning restore CS0618
-                return memoryStream.ToArray();
-            }
+            return memoryStream.ToArray();
         }
         private static async Task<T> ByteArrayToObject<T>(byte[] value) where T : class
         {
             if (typeof(T) == typeof(byte[])) return value as T;
 
-            using (var memoryStream = new MemoryStream())
-            {
-                var formatter = new BinaryFormatter();
-                await memoryStream.WriteAsync(value, 0, value.Length).ConfigureAwait(false);
-                memoryStream.Seek(0, SeekOrigin.Begin);
+            using var memoryStream = new MemoryStream();
+            var formatter = new BinaryFormatter();
+            await memoryStream.WriteAsync(value, 0, value.Length).ConfigureAwait(false);
+            memoryStream.Seek(0, SeekOrigin.Begin);
 #pragma warning disable CS0618
-                return formatter.Deserialize(memoryStream) as T;
+            return formatter.Deserialize(memoryStream) as T;
 #pragma warning restore CS0618
-            }
         }
     }
 }
