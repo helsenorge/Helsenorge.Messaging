@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -350,27 +351,44 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 // with the decrypted content, they may have a chance to figure out who sent it
 
                 var validator = Core.CertificateValidator;
+                var stopwatch = new Stopwatch();
+                Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, Core.MessageProtection.EncryptionCertificate.Thumbprint, Core.MessageProtection.EncryptionCertificate.Subject, "KeyEncipherment", Core.Settings.MyHerId, originalMessage.MessageId);
+                stopwatch.Start();
                 // validate the local encryption certificate and, if present, the local legacy encryption certificate 
                 incomingMessage.DecryptionError = validator == null
                     ? CertificateErrors.None
                     : validator.Validate(Core.MessageProtection.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
-                // in earlier versions of Helsenorge.Messaging we removed the message, but we should rather 
+                stopwatch.Stop();
+                Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, Core.MessageProtection.EncryptionCertificate.Thumbprint, "KeyEncipherment", Core.Settings.MyHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+                // in earlier versions of Helsenorge.Messaging we removed the message, but we should rather
                 // want it to be dead lettered since this is a temp issue that should be fixed locally.
                 ReportErrorOnLocalCertificate(originalMessage, Core.MessageProtection.EncryptionCertificate, incomingMessage.DecryptionError);
+
                 if(Core.MessageProtection.LegacyEncryptionCertificate != null)
                 {
+                    Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, Core.MessageProtection.LegacyEncryptionCertificate.Thumbprint, Core.MessageProtection.LegacyEncryptionCertificate.Subject, "KeyEncipherment", Core.Settings.MyHerId, originalMessage.MessageId);
+                    stopwatch.Restart();
                     // this is optional information that should only be in effect durin a short transition period
                     incomingMessage.LegacyDecryptionError = validator == null
                         ? CertificateErrors.None
                         : validator.Validate(Core.MessageProtection.LegacyEncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
+                    stopwatch.Stop();
+                    Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, Core.MessageProtection.LegacyEncryptionCertificate.Thumbprint, "KeyEncipherment", Core.Settings.MyHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+
                     // if someone forgets to remove the legacy configuration, we log an error message but don't remove it
                     ReportErrorOnLocalCertificate(originalMessage, Core.MessageProtection.LegacyEncryptionCertificate, incomingMessage.LegacyDecryptionError);
                 }
-                // validate remote signature certificate
+
                 var signature = incomingMessage.CollaborationAgreement?.SignatureCertificate;
+                Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, signature?.Thumbprint, signature?.Subject, "NonRepudiation", originalMessage.ToHerId, originalMessage.MessageId);
+                stopwatch.Restart();
+                // validate remote signature certificate
                 incomingMessage.SignatureError = validator == null
                     ? CertificateErrors.None
                     : validator.Validate(signature, X509KeyUsageFlags.NonRepudiation);
+                stopwatch.Stop();
+                Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, signature?.Thumbprint, "NonRepudiation", originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+
                 ReportErrorOnRemoteCertificate(originalMessage, signature, incomingMessage.SignatureError);
 
                 // decrypt the message and validate the signatureS

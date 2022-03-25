@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -65,7 +65,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
             Assert.AreEqual(1, logProcessedMessage.Count());
 
             var logEntry = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Information
-                       && l.Message.Contains("ResponseTime")
+                       && l.Message.StartsWith("ResponseTime")
                        && l.Message.EndsWith(" ms"));
             Assert.AreEqual(1, logEntry.Count());
             // make sure the content is what we expect

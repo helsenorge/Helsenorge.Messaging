@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -26,7 +26,7 @@ namespace Helsenorge.Messaging.ServiceBus
         private static readonly Action<ILogger, string, string, int, int, string, Exception> AfterNotificationHandler;
 
         private static readonly Action<ILogger, string, string, string, string, int, string, Exception> BeforeValidatingCertificate;
-        private static readonly Action<ILogger, string, string, string, string, int, string, Exception> AfterValidatingCertificate;
+        private static readonly Action<ILogger, string, string, string, int, string, string, Exception> AfterValidatingCertificate;
 
         private static readonly Action<ILogger, string, string, string, int, int, string, Exception> BeforeEncryptingPayload;
         private static readonly Action<ILogger, string, string, string, int, int, string, Exception> AfterEncryptingPayload;
@@ -78,9 +78,9 @@ namespace Helsenorge.Messaging.ServiceBus
         {
             BeforeValidatingCertificate(logger, messageFunction, thumbprint, subject, keyUsage, ownerHerId, messageId, null);
         }
-        public static void LogAfterValidatingCertificate(this ILogger logger, string messageFunction, string thumbprint, string subject, string keyUsage, int ownerHerId, string messageId)
+        public static void LogAfterValidatingCertificate(this ILogger logger, string messageFunction, string thumbprint, string keyUsage, int ownerHerId, string messageId, string responseTimeMs)
         {
-            AfterValidatingCertificate(logger, messageFunction, thumbprint, subject, keyUsage, ownerHerId, messageId, null);
+            AfterValidatingCertificate(logger, messageFunction, thumbprint, keyUsage, ownerHerId, messageId, responseTimeMs, null);
         }
 
         public static void LogBeforeEncryptingPayload(this ILogger logger, string messageFunction, string thumbprint, string subject, int fromHerId, int toHerId, string messageId)
@@ -181,10 +181,10 @@ namespace Helsenorge.Messaging.ServiceBus
                 LogLevel.Information,
                 EventIds.CertificateValidation,
                 "Before-CertificateValidation: {MessageFunction} Thumbprint: {Thumbprint} Subject: {Subject} Key Usage: {KeyUsage} Owner HerId: {OwnerHerId} MessageId: {MessageId}");
-            AfterValidatingCertificate = LoggerMessage.Define<string, string, string, string, int, string>(
+            AfterValidatingCertificate = LoggerMessage.Define<string, string, string, int, string, string>(
                 LogLevel.Information,
                 EventIds.CertificateValidation,
-                "After-CertificateValidation: {MessageFunction} Thumbprint: {Thumbprint} Subject: {Subject} Key Usage: {KeyUsage} Owner HerId: {OwnerHerId} MessageId: {MessageId}");
+                "After-CertificateValidation: {MessageFunction} Thumbprint: {Thumbprint} Key Usage: {KeyUsage} Owner HerId: {OwnerHerId} MessageId: {MessageId} ResponseTime: {ResponseTimeMs} ms");
 
             BeforeEncryptingPayload = LoggerMessage.Define<string, string, string, int, int, string>(
                 LogLevel.Information,

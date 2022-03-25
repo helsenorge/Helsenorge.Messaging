@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -120,20 +121,25 @@ namespace Helsenorge.Messaging.ServiceBus
             var contentType = Core.MessageProtection.ContentType;
             if (contentType.Equals(ContentType.SignedAndEnveloped, StringComparison.OrdinalIgnoreCase))
             {
+                var stopwatch = new Stopwatch();
                 var validator = Core.CertificateValidator;
-                // Validate external part's encryption certificate
                 logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, profile.EncryptionCertificate.Subject, "KeyEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId);
+                stopwatch.Start();
+                // Validate external part's encryption certificate
                 var encryptionStatus = validator == null
                     ? CertificateErrors.None
                     : validator.Validate(profile.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
-                logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, profile.EncryptionCertificate.Subject, "KeyEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId);
+                stopwatch.Stop();
+                logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, "KeyEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
                 logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate.Thumbprint, Core.MessageProtection.SigningCertificate.Subject, "NonRepudiation", Core.Settings.MyHerId, outgoingMessage.MessageId);
+                stopwatch.Restart();
                 // Validate "our" own signature certificate
                 var signatureStatus = validator == null
                     ? CertificateErrors.None
                     : validator.Validate(Core.MessageProtection.SigningCertificate, X509KeyUsageFlags.NonRepudiation);
-                logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate.Thumbprint, Core.MessageProtection.SigningCertificate.Subject, "NonRepudiation", Core.Settings.MyHerId, outgoingMessage.MessageId);
+                stopwatch.Stop();
+                logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate.Thumbprint, "NonRepudiation", Core.Settings.MyHerId, outgoingMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
                 // this is the other parties certificate that may be out of date, not something we can fix
                 if (encryptionStatus != CertificateErrors.None)
