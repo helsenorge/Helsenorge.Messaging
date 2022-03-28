@@ -391,8 +391,12 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 
                 ReportErrorOnRemoteCertificate(originalMessage, signature, incomingMessage.SignatureError);
 
+                Logger.LogBeforeDecryptingPayload(originalMessage.MessageFunction, signature?.Thumbprint, Core.MessageProtection.EncryptionCertificate.Thumbprint, originalMessage.FromHerId, originalMessage.ToHerId, originalMessage.MessageId);
+                stopwatch.Restart();
                 // decrypt the message and validate the signatureS
                 payload = Core.MessageProtection.Unprotect(bodyStream, signature)?.ToXDocument();
+                Logger.LogAfterDecryptingPayload(originalMessage.MessageFunction, originalMessage.FromHerId, originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+                stopwatch.Stop();
             }
             return payload;
         }
