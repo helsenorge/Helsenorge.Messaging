@@ -117,11 +117,11 @@ namespace Helsenorge.Messaging.ServiceBus
                 hasAgreement = false; // if we don't have an agreement, we try to find the specific profile
                 profile = await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, outgoingMessage.ToHerId).ConfigureAwait(false);
             }
-            
+
+            var stopwatch = new Stopwatch();
             var contentType = Core.MessageProtection.ContentType;
             if (contentType.Equals(ContentType.SignedAndEnveloped, StringComparison.OrdinalIgnoreCase))
             {
-                var stopwatch = new Stopwatch();
                 var validator = Core.CertificateValidator;
                 logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, profile.EncryptionCertificate.Subject, "KeyEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId);
                 stopwatch.Start();
@@ -180,10 +180,12 @@ namespace Helsenorge.Messaging.ServiceBus
                     }
                 }
             }
-            logger.LogBeforeEncryptingPayload(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, profile.EncryptionCertificate.Subject, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            logger.LogBeforeEncryptingPayload(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate.Thumbprint, profile?.EncryptionCertificate.Thumbprint, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            stopwatch.Restart();
             // Encrypt the payload
-            var stream = Core.MessageProtection.Protect(outgoingMessage.Payload?.ToStream(), profile.EncryptionCertificate);
-            logger.LogAfterEncryptingPayload(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, profile.EncryptionCertificate.Subject, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            var stream = Core.MessageProtection.Protect(outgoingMessage.Payload?.ToStream(), profile?.EncryptionCertificate);
+            stopwatch.Stop();
+            logger.LogAfterEncryptingPayload(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
             logger.LogBeforeFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
             // Create an empty message

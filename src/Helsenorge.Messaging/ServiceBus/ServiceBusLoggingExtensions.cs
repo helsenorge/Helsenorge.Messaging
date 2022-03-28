@@ -29,7 +29,10 @@ namespace Helsenorge.Messaging.ServiceBus
         private static readonly Action<ILogger, string, string, string, int, string, string, Exception> AfterValidatingCertificate;
 
         private static readonly Action<ILogger, string, string, string, int, int, string, Exception> BeforeEncryptingPayload;
-        private static readonly Action<ILogger, string, string, string, int, int, string, Exception> AfterEncryptingPayload;
+        private static readonly Action<ILogger, string, int, int, string, string, Exception> AfterEncryptingPayload;
+
+        private static readonly Action<ILogger, string, string, string, int, int, string, Exception> BeforeDecryptingPayload;
+        private static readonly Action<ILogger, string, int, int, string, string, Exception> AfterDecryptingPayload;
 
         private static readonly Action<ILogger, string, int, int, string, Exception> BeforeFactoryPoolCreateMessage;
         private static readonly Action<ILogger, string, int, int, string, Exception> AfterFactoryPoolCreateMessage;
@@ -83,13 +86,22 @@ namespace Helsenorge.Messaging.ServiceBus
             AfterValidatingCertificate(logger, messageFunction, thumbprint, keyUsage, ownerHerId, messageId, responseTimeMs, null);
         }
 
-        public static void LogBeforeEncryptingPayload(this ILogger logger, string messageFunction, string thumbprint, string subject, int fromHerId, int toHerId, string messageId)
+        public static void LogBeforeEncryptingPayload(this ILogger logger, string messageFunction, string signingThumbprint, string encryptionThumbprint, int fromHerId, int toHerId, string messageId)
         {
-            BeforeEncryptingPayload(logger, messageFunction, thumbprint, subject, fromHerId, toHerId, messageId, null);
+            BeforeEncryptingPayload(logger, messageFunction, signingThumbprint, encryptionThumbprint, fromHerId, toHerId, messageId, null);
         }
-        public static void LogAfterEncryptingPayload(this ILogger logger, string messageFunction, string thumbprint, string subject, int fromHerId, int toHerId, string messageId)
+        public static void LogAfterEncryptingPayload(this ILogger logger, string messageFunction, int fromHerId, int toHerId, string messageId, string responseTimeMs)
         {
-            AfterEncryptingPayload(logger, messageFunction, thumbprint, subject, fromHerId, toHerId, messageId, null);
+            AfterEncryptingPayload(logger, messageFunction, fromHerId, toHerId, messageId, responseTimeMs, null);
+        }
+
+        public static void LogBeforeDecryptingPayload(this ILogger logger, string messageFunction, string signingThumbprint, string encryptionThumbprint, int fromHerId, int toHerId, string messageId)
+        {
+            BeforeDecryptingPayload(logger, messageFunction, signingThumbprint, encryptionThumbprint, fromHerId, toHerId, messageId, null);
+        }
+        public static void LogAfterDecryptingPayload(this ILogger logger, string messageFunction, int fromHerId, int toHerId, string messageId, string responseTimeMs)
+        {
+            AfterDecryptingPayload(logger, messageFunction, fromHerId, toHerId, messageId, responseTimeMs, null);
         }
 
         public static void LogBeforeFactoryPoolCreateMessage(this ILogger logger, string messageFunction, int fromHerId, int toHerId, string messageId)
@@ -189,11 +201,20 @@ namespace Helsenorge.Messaging.ServiceBus
             BeforeEncryptingPayload = LoggerMessage.Define<string, string, string, int, int, string>(
                 LogLevel.Information,
                 EventIds.EncryptPayload,
-                "Before-EncryptingPayload: {MessageFunction} Thumbprint: {Thumbprint} Subject: {Subject} FromHerId: {FromHerId} ToHerId: {ToHerId}  MessageId: {MessageId}");
-            AfterEncryptingPayload = LoggerMessage.Define<string, string, string, int, int, string>(
+                "Before-EncryptingPayload: {MessageFunction} SigningThumbprint: {SigningThumbprint} EncryptionThumbprint: {EncryptionThumbprint} FromHerId: {FromHerId} ToHerId: {ToHerId}  MessageId: {MessageId}");
+            AfterEncryptingPayload = LoggerMessage.Define<string, int, int, string, string>(
                 LogLevel.Information,
                 EventIds.EncryptPayload,
-                "After-EncryptingPayload: {MessageFunction} Thumbprint: {Thumbprint} Subject: {Subject} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId}");
+                "After-EncryptingPayload: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} Responsetime {ResponseTime} ms");
+
+            BeforeDecryptingPayload = LoggerMessage.Define<string, string, string, int, int, string>(
+                LogLevel.Information,
+                EventIds.EncryptPayload,
+                "Before-DecryptingPayload: {MessageFunction} SigningThumbprint: {SigningThumbprint} EncryptionThumbprint: {EncryptionThumbprint} FromHerId: {FromHerId} ToHerId: {ToHerId}  MessageId: {MessageId}");
+            AfterDecryptingPayload = LoggerMessage.Define<string, int, int, string, string>(
+                LogLevel.Information,
+                EventIds.EncryptPayload,
+                "After-DecryptingPayload: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} Responsetime {ResponseTime} ms");
 
             BeforeFactoryPoolCreateMessage = LoggerMessage.Define<string, int, int, string>(
                 LogLevel.Information,
