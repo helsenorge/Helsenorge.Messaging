@@ -20,12 +20,13 @@ namespace Helsenorge.Messaging
     /// <summary>
     /// Default implementation of <see cref="IMessagingClient"/>. This must act as a singleton, otherwise syncronous messaging will not work
     /// </summary>
-    public sealed class MessagingClient : MessagingCore, IMessagingClient
+    public sealed class MessagingClient : MessagingCore, IMessagingClient, IAsyncDisposable
     {
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly AsynchronousSender _asynchronousServiceBusSender;
         private readonly SynchronousSender _synchronousServiceBusSender;
+        private bool _disposed = false;
 
         /// <summary>
         /// Constructor
@@ -285,5 +286,25 @@ namespace Helsenorge.Messaging
             return profile;
         }
 
+        /// <inheritdoc />
+        public async Task Close()
+        {
+            // when all the listeners have shut down, close down the messaging infrastructure
+            await ServiceBus.SenderPool.Shutdown(_logger).ConfigureAwait(false);
+            await ServiceBus.ReceiverPool.Shutdown(_logger).ConfigureAwait(false);
+            await ServiceBus.FactoryPool.Shutdown(_logger).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
+        public async ValueTask DisposeAsync()
+        {
+            if (_disposed) return;
+
+            _loggerFactory?.Dispose();
+
+            await Close().ConfigureAwait(false);
+
+            _disposed = true;
+        }
     }
 }
