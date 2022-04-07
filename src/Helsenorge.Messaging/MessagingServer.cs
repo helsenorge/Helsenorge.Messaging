@@ -23,13 +23,14 @@ namespace Helsenorge.Messaging
     /// Default implementation for <see cref="IMessagingServer"/>
     /// This must be hosted as a singleton in order to leverage connection pooling against the message bus
     /// </summary>
-    public class MessagingServer : MessagingCore, IMessagingServer, IMessagingNotification
+    public class MessagingServer : MessagingCore, IMessagingServer, IMessagingNotification, IAsyncDisposable
     {
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ConcurrentBag<MessageListener> _listeners = new ConcurrentBag<MessageListener>();
         private readonly ConcurrentBag<Task> _tasks = new ConcurrentBag<Task>();
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private bool _disposed = false;
 
         private Action<IncomingMessage> _onAsynchronousMessageReceived;
         private Action<MessageListener, IncomingMessage> _onAsynchronousMessageReceivedStarting;
@@ -529,6 +530,16 @@ namespace Helsenorge.Messaging
             }
 
             return true;
+        }
+
+        /// <inheritdoc />
+        public async ValueTask DisposeAsync()
+        {
+            if (_disposed) return;
+
+            await Stop(TimeSpan.Zero).ConfigureAwait(false);
+
+            _disposed = true;
         }
     }
 }
