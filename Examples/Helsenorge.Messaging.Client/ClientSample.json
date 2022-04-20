@@ -21,7 +21,7 @@
       "ConnectionString": "???",
       "Synchronous": {
         "ReplyQueueMapping": {
-          "kemyh01": "1234_sync"
+          "MACHINE-NAME": "1111_syncreply"
         }
       }
     },
