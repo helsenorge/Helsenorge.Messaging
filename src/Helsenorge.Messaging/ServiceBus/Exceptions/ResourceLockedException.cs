@@ -10,7 +10,7 @@ using System;
 
 namespace Helsenorge.Messaging.ServiceBus.Exceptions
 {
-    internal class ResourceLockedException : ServiceBusException
+    public class ResourceLockedException : ServiceBusException
     {
         public ResourceLockedException(string message)
             : this(message, null)

@@ -10,7 +10,7 @@ using System;
 
 namespace Helsenorge.Messaging.ServiceBus.Exceptions
 {
-    internal class FrameSizeTooSmallException : ServiceBusException
+    public class FrameSizeTooSmallException : ServiceBusException
     {
         public FrameSizeTooSmallException(string message)
             : this(message, null)

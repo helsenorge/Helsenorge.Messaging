@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
     /// <summary>
     /// The exception that is thrown when message transfers exceeds the limit currently allowed on the link
     /// </summary>
-    internal class TransferLimitExceededException : ServiceBusException
+    public class TransferLimitExceededException : ServiceBusException
     {
         public TransferLimitExceededException(string message)
             : this(message, null)

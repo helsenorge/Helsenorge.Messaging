@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
     /// <summary>
     /// The exception that is thrown when the requested message is not found.
     /// </summary>
-    internal sealed class MessageNotFoundException : ServiceBusException
+    public sealed class MessageNotFoundException : ServiceBusException
     {
         public MessageNotFoundException(string message)
             : this(message, null)

@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
     /// <summary>
     /// The exception that is thrown when user doesn't have access to the entity.
     /// </summary>
-    internal sealed class UnauthorizedException : ServiceBusException
+    public sealed class UnauthorizedException : ServiceBusException
     {
         public UnauthorizedException(string message)
             : this(message, null)
