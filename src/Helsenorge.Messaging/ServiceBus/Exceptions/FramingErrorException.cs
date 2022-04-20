@@ -10,7 +10,7 @@ using System;
 
 namespace Helsenorge.Messaging.ServiceBus.Exceptions
 {
-    internal class FramingErrorException : ServiceBusException
+    public class FramingErrorException : ServiceBusException
     {
         public FramingErrorException(string message)
             : this(message, null)

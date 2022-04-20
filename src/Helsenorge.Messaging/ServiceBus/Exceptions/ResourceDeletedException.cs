@@ -10,7 +10,7 @@ using System;
 
 namespace Helsenorge.Messaging.ServiceBus.Exceptions
 {
-    internal class ResourceDeletedException : ServiceBusException
+    public class ResourceDeletedException : ServiceBusException
     {
         public ResourceDeletedException(string message)
             : this(message, null)

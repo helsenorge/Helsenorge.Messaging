@@ -10,7 +10,7 @@ using System;
 
 namespace Helsenorge.Messaging.ServiceBus.Exceptions
 {
-    class InvalidFieldException : ServiceBusException
+    public class InvalidFieldException : ServiceBusException
     {
         public InvalidFieldException(string message)
             : this(message, null)

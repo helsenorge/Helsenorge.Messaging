@@ -10,7 +10,7 @@ using System;
 
 namespace Helsenorge.Messaging.ServiceBus.Exceptions
 {
-    internal abstract class ServiceBusException : Exception
+    public abstract class ServiceBusException : Exception
     {
         public abstract bool CanRetry { get; }
 

@@ -10,7 +10,7 @@ using System;
 
 namespace Helsenorge.Messaging.ServiceBus.Exceptions
 {
-    internal sealed class UncategorizedServiceBusException : ServiceBusException
+    public sealed class UncategorizedServiceBusException : ServiceBusException
     {
         public UncategorizedServiceBusException(string message) : base(message)
         {

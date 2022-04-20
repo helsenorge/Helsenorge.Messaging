@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
     /// <summary>
     /// The exception that is thrown when the message size exceeds the limit.
     /// </summary>
-    internal sealed class MessageSizeExceededException : ServiceBusException
+    public sealed class MessageSizeExceededException : ServiceBusException
     {
         public MessageSizeExceededException(string message)
             : this(message, null)
