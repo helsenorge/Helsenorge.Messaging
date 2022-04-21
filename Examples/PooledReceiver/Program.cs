@@ -27,6 +27,7 @@ namespace PooledReceiver
             {
                 ConnectionString = _connectionString,
                 MessageBrokerDialect = MessageBrokerDialect.RabbitMQ,
+                LinkCredits = 25,
             };
 
             await using var linkFactoryPool = new LinkFactoryPool(loggerFactory.CreateLogger<LinkFactoryPool>(), settings);
