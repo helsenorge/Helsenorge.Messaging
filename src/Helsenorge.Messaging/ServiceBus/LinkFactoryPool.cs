@@ -37,7 +37,7 @@ namespace Helsenorge.Messaging.ServiceBus
         {
             _logger = logger;
             _settings = settings;
-            _applicationProperties = applicationProperties;
+            _applicationProperties = applicationProperties ?? new Dictionary<string, object>();
 
             _factoryPool = new ServiceBusFactoryPool(_settings, _applicationProperties);
             _receiverPool = new ServiceBusReceiverPool(_settings, _factoryPool);

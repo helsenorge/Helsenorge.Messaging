@@ -33,7 +33,7 @@ namespace Helsenorge.Messaging.ServiceBus
         {
             _connection = connection;
             _logger = logger;
-            _applicationProperties = applicationProperties;
+            _applicationProperties = applicationProperties ?? new Dictionary<string, object>();
         }
 
         /// <summary>Creates a Receiver Link of type <see cref="IMessagingReceiver"/>.</summary>
