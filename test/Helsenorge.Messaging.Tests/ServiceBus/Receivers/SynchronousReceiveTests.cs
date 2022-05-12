@@ -57,7 +57,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 messageModification: (m) => { });
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public async Task Synchronous_Receive_InvalidReplyToQueue_SendToErrorQueue()
         {
             await RunReceive(
