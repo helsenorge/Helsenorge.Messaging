@@ -257,8 +257,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             }
             catch (AggregateException ex) when (ex.InnerException is MessagingException && ((MessagingException)ex.InnerException).EventId.Id == EventIds.Send.Id)
             {
-                Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:invalid-field-value", "Invalid value in field: 'ReplyTo'", null, ex);
-                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
+                Logger.LogError(EventIds.Send, ex, $"Send operation failed when processing message with MessageId: {message.MessageId} MessageFunction: {message.MessageFunction}");
+                await MessagingNotification.NotifyUnhandledException(message, ex);
             }
             catch (UnsupportedMessageException ex)  // reportable error from message handler (application)
             {
