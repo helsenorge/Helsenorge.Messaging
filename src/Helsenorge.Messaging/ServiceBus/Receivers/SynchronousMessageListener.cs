@@ -74,7 +74,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 MessageFunction = message.MessageFunction,
                 MessageId = Guid.NewGuid().ToString()
             };
-            Task.WaitAll(Core.Send(Logger, outgoingMessage, QueueType.SynchronousReply, rawMessage.ReplyTo, rawMessage.CorrelationId));
+            await Core.Send(Logger, outgoingMessage, QueueType.SynchronousReply, rawMessage.ReplyTo, rawMessage.CorrelationId).ConfigureAwait(false);
         }
         /// <summary>
         /// Called when message processing is complete
