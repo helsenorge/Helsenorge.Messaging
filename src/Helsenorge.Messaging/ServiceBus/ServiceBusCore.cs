@@ -375,7 +375,7 @@ namespace Helsenorge.Messaging.ServiceBus
         /// <param name="description"></param>
         /// <param name="additionalData"></param>
         /// <param name="ex"></param>
-        internal void ReportErrorToExternalSender(
+        internal async Task ReportErrorToExternalSender(
             ILogger logger,
             EventId id,
             IMessagingMessage originalMessage,
@@ -385,7 +385,7 @@ namespace Helsenorge.Messaging.ServiceBus
             Exception ex = null)
         {
             logger.LogWarning(id, ex, description);
-            Task.WaitAll(SendError(logger, originalMessage, errorCode, description, additionalData));
+            await SendError(logger, originalMessage, errorCode, description, additionalData).ConfigureAwait(false);
             RemoveMessageFromQueueAfterError(logger, originalMessage);
         }
 

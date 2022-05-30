@@ -217,42 +217,42 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                   $"FromHerId: {message.FromHerId} ToHerId: {message.ToHerId} CpaId: {message.CpaId} " +
                   $"CorrelationId: {message.CorrelationId} Certificate thumbprint: {ex.AdditionalInformation}");
 
-                Core.ReportErrorToExternalSender(Logger, ex.EventId, message, ex.ErrorCode, ex.Description, ex.AdditionalInformation);
+                await Core.ReportErrorToExternalSender(Logger, ex.EventId, message, ex.ErrorCode, ex.Description, ex.AdditionalInformation).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (SecurityException ex)
             {
-                Core.ReportErrorToExternalSender(Logger, EventIds.RemoteCertificate, message, "transport:invalid-certificate", ex.Message, null, ex);
+                await Core.ReportErrorToExternalSender(Logger, EventIds.RemoteCertificate, message, "transport:invalid-certificate", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (HeaderValidationException ex)
             {
-                Core.ReportErrorToExternalSender(Logger, EventIds.MissingField, message, "transport:invalid-field-value", ex.Message, ex.Fields);
+                await Core.ReportErrorToExternalSender(Logger, EventIds.MissingField, message, "transport:invalid-field-value", ex.Message, ex.Fields).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (XmlSchemaValidationException ex) // reportable error from message handler (application)
             {
-                Core.ReportErrorToExternalSender(Logger, EventIds.NotXml, message, "transport:not-well-formed-xml", ex.Message, null, ex);
+                await Core.ReportErrorToExternalSender(Logger, EventIds.NotXml, message, "transport:not-well-formed-xml", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (ReceivedDataMismatchException ex) // reportable error from message handler (application)
             {
-                Core.ReportErrorToExternalSender(Logger, EventIds.DataMismatch, message, "transport:invalid-field-value", ex.Message, new[] { ex.ExpectedValue, ex.ReceivedValue }, ex);
+                await Core.ReportErrorToExternalSender(Logger, EventIds.DataMismatch, message, "transport:invalid-field-value", ex.Message, new[] { ex.ExpectedValue, ex.ReceivedValue }, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (NotifySenderException ex) // reportable error from message handler (application)
             {
-                Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:internal-error", ex.Message, null, ex);
+                await Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:internal-error", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (SenderHerIdMismatchException ex) // reportable error from message handler (application)
             {
-                Core.ReportErrorToExternalSender(Logger, EventIds.DataMismatch, message, "abuse:spoofing-attack", ex.Message, null, ex);
+                await Core.ReportErrorToExternalSender(Logger, EventIds.DataMismatch, message, "abuse:spoofing-attack", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (PayloadDeserializationException ex) // from parsing to XML, reportable exception
             {
-                Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:not-well-formed-xml", ex.Message, null, ex);
+                await Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:not-well-formed-xml", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (AggregateException ex) when (ex.InnerException is MessagingException && ((MessagingException)ex.InnerException).EventId.Id == EventIds.Send.Id)
@@ -262,7 +262,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             }
             catch (UnsupportedMessageException ex)  // reportable error from message handler (application)
             {
-                Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:unsupported-message", ex.Message, null, ex);
+                await Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:unsupported-message", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (Exception ex) // unknown error
