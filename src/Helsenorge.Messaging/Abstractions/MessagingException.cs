@@ -124,11 +124,11 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         public static EventId MessageReleaseFailed = new EventId(37, EventIdName);
         /// <summary>
-        /// Non-sucessful authentication or connection attempt to one ore more of the web services on start-up.
+        /// Non-successful authentication or connection attempt to one ore more of the web services on start-up.
         /// </summary>
         public static EventId ConnectionToWebServiceFailed = new EventId(38, EventIdName);
         /// <summary>
-        /// Non-sucessful authentication or connection attempt to the message broker.
+        /// Non-successful authentication or connection attempt to the message broker.
         /// </summary>
         public static EventId ConnectionToMessageBrokerFailed = new EventId(39, EventIdName);
 

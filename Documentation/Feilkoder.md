@@ -89,10 +89,10 @@ The Messaging Entity Cache failed to close an entity.
 Non-successful release of message.
 
 ### MUG-000038
-Non-sucessful authentication or connection attempt to one ore more of the web services on start-up.
+Non-successful authentication or connection attempt to one ore more of the web services on start-up.
 
 ### MUG-000039
-Non-sucessful authentication or connection attempt to the message broker.
+Non-successful authentication or connection attempt to the message broker.
 
 ### MUG-001001
 Informasjonsformål når mottaksprosessen starter/avslutter

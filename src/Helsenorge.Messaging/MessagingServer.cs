@@ -192,9 +192,9 @@ namespace Helsenorge.Messaging
             _logger.LogInformation("Messaging Server starting up");
 
             if (!await CanAuthenticateAndPingAddressRegistryService())
-                throw new MessagingException("Non-sucessful authentication or connection attempt to the Address Registry Web Service on start-up. This can be caused by incorrect credentials / configuration errors.") { EventId = EventIds.ConnectionToWebServiceFailed };
+                throw new MessagingException("Non-successful authentication or connection attempt to the Address Registry Web Service on start-up. This can be caused by incorrect credentials / configuration errors.") { EventId = EventIds.ConnectionToWebServiceFailed };
             if (!await CanAuthenticateAgainstMessageBroker())
-                throw new MessagingException("Non-sucessful authentication or connection attempt to the message broker on start-up. This can be caused by incorrect credentials / configuration errors.") { EventId = EventIds.ConnectionToMessageBrokerFailed };
+                throw new MessagingException("Non-successful authentication or connection attempt to the message broker on start-up. This can be caused by incorrect credentials / configuration errors.") { EventId = EventIds.ConnectionToMessageBrokerFailed };
 
             for (var i = 0; i < Settings.ServiceBus.Asynchronous.ProcessingTasks; i++)
             {
@@ -484,7 +484,7 @@ namespace Helsenorge.Messaging
             }
             catch (Exception e)
             {
-                _logger.LogError(EventIds.ConnectionToWebServiceFailed, e, "Non-sucessful connection and ping attempt to the AddressRegistry Service. This can be caused by incorrect credentials / configuration errors.");
+                _logger.LogError(EventIds.ConnectionToWebServiceFailed, e, "Non-successful connection and ping attempt to the AddressRegistry Service. This can be caused by incorrect credentials / configuration errors.");
 
                 return false;
             }
@@ -502,7 +502,7 @@ namespace Helsenorge.Messaging
             }
             catch (Exception e)
             {
-                _logger.LogError(EventIds.ConnectionToWebServiceFailed, e, "Non-sucessful connection and ping attempt to the CPPA web Service. This can be caused by incorrect credentials / configuration errors.");
+                _logger.LogError(EventIds.ConnectionToWebServiceFailed, e, "Non-successful connection and ping attempt to the CPPA web Service. This can be caused by incorrect credentials / configuration errors.");
 
                 return false;
             }
@@ -520,7 +520,7 @@ namespace Helsenorge.Messaging
             }
             catch (Exception e)
             {
-                _logger.LogError(EventIds.ConnectionToWebServiceFailed, e, "Non-sucessful connection and ping attempt to the Message Broker Service. This can be caused by incorrect credentials / configuration errors.");
+                _logger.LogError(EventIds.ConnectionToWebServiceFailed, e, "Non-successful connection and ping attempt to the Message Broker Service. This can be caused by incorrect credentials / configuration errors.");
 
                 return false;
             }
