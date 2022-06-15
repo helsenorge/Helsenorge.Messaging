@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -76,6 +76,55 @@ namespace Helsenorge.Registries.Utilities
             }
             return response;
         }
+
+        [ExcludeFromCodeCoverage] // requires wire communication
+        public async Task Execute<TContract>(ILogger logger, Func<TContract, Task> action, string operationName)
+        {
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (action == null) throw new ArgumentNullException(nameof(action));
+            if (string.IsNullOrEmpty(operationName)) throw new ArgumentNullException(nameof(operationName));
+
+            ChannelFactory<TContract> factory = null;
+            var channel = default(TContract);
+
+            try
+            {
+                factory = GetChannelFactory<TContract>();
+                channel = factory.CreateChannel();
+
+                logger.LogInformation("Start-ServiceCall: {OperationName} {Address}",
+                    operationName, factory.Endpoint.Address.Uri.AbsoluteUri);
+
+                await action(channel).ConfigureAwait(false);
+
+                logger.LogInformation("End-ServiceCall: {OperationName} {Address}",
+                    operationName, factory.Endpoint.Address.Uri.AbsoluteUri);
+
+                var communicatonObject = (channel as ICommunicationObject);
+                communicatonObject?.Close();
+
+                channel = default(TContract);
+            }
+            catch (FaultException ex)
+            {
+                if (factory == null) throw;
+
+                ex.Data.Add("Endpoint-Name", factory.Endpoint.Name);
+                var address = factory.Endpoint.Address.Uri.AbsoluteUri;
+                ex.Data.Add("Endpoint-Address", address);
+                ex.Data.Add("Endpoint-Operation", operationName);
+                throw;
+            }
+            finally
+            {
+                if (!Equals(channel, default(TContract)))
+                {
+                    var communicatonObject = (channel as ICommunicationObject);
+                    communicatonObject?.Abort();
+                }
+            }
+        }
+
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         [ExcludeFromCodeCoverage] // requires wire communication
         internal ChannelFactory<TContract> GetChannelFactory<TContract>()
