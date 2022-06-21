@@ -8,7 +8,6 @@
 
 using Helsenorge.Registries.Abstractions;
 using Helsenorge.Registries.Configuration;
-using Helsenorge.Registries.Mocks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,6 +15,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.ServiceModel;
+using Helsenorge.Registries.Tests.Mocks;
 
 namespace Helsenorge.Registries.Tests
 {
