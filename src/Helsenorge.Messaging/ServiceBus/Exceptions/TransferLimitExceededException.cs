@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -11,20 +11,30 @@ using System;
 namespace Helsenorge.Messaging.ServiceBus.Exceptions
 {
     /// <summary>
-    /// The exception that is thrown when message transfers exceeds the limit currently allowed on the link
+    /// The exception that is thrown when message transfers exceeds the limit currently allowed on the link.
     /// </summary>
     public class TransferLimitExceededException : ServiceBusException
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TransferLimitExceededException"/> class.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for this exception.</param>
         public TransferLimitExceededException(string message)
             : this(message, null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TransferLimitExceededException"/> class.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for this exception.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
         public TransferLimitExceededException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
 
+        /// <inheritdoc cref="ServiceBusException"/>
         public override bool CanRetry => false;
     }
 }
