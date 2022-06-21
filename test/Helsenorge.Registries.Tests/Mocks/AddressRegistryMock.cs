@@ -13,7 +13,7 @@ using Helsenorge.Registries.AddressService;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
-namespace Helsenorge.Registries.Mocks
+namespace Helsenorge.Registries.Tests.Mocks
 {
     /// <summary>
     /// Provides a mock implementation of AddressRegistry.

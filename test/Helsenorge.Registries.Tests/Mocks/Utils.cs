@@ -10,7 +10,7 @@ using System;
 using System.Runtime.Serialization;
 using System.Xml.Linq;
 
-namespace Helsenorge.Registries.Mocks
+namespace Helsenorge.Registries.Tests.Mocks
 {
     internal static class Utils
     {

@@ -10,13 +10,13 @@ using System;
 using System.Configuration;
 using System.IO;
 using System.Threading.Tasks;
-using Helsenorge.Registries.Mocks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.ServiceModel;
 using System.Xml.Linq;
 using Helsenorge.Registries.Configuration;
+using Helsenorge.Registries.Tests.Mocks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Helsenorge.Registries.Tests

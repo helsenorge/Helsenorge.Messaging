@@ -10,12 +10,12 @@ using System;
 using System.IO;
 using System.ServiceModel;
 using System.Threading.Tasks;
+using Helsenorge.Registries.Abstractions;
 using Helsenorge.Registries.CPAService;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using Helsenorge.Registries.Abstractions;
 
-namespace Helsenorge.Registries.Mocks
+namespace Helsenorge.Registries.Tests.Mocks
 {
     /// <summary>
     /// Provides a mock implementation of CollaborationProtocolRegistry.
