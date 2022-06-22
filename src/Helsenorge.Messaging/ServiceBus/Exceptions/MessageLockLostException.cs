@@ -33,7 +33,7 @@ namespace Helsenorge.Messaging.ServiceBus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException"/>
+        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }
