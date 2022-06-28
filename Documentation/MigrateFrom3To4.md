@@ -4,7 +4,7 @@
 Formatet på ConnectionString er endret til: `amqps://<username>:<password>@sb.test.nhn.no:5671/NHNTestServiceBus`.
 
 ### Introduksjon av MessageBrokerDialect
-Helsenorge.Messaging 4.x er kompatibel med både Microsoft ServiceBus og RabbitMQ. Det er derfor introdusert et nytt konfigurasjonsattributt `MessagingSettings.ServiceBus.MessageBrokerDialect`. Attributtet har to gyldige verdier `ServiceBus` og `RabbitMQ`. Verdien `ServiceBus` er standardverdien. For å kommunisere med RabbitMQ, og benytte tilhørende dialekt, må man verdien eksplisitt settes til `RabbitMQ`.
+Helsenorge.Messaging 4.x er kompatibel med både Microsoft ServiceBus og RabbitMQ. Det er derfor introdusert et nytt konfigurasjonsattributt `MessagingSettings.ServiceBus.MessageBrokerDialect`. Attributtet har to gyldige verdier `ServiceBus` og `RabbitMQ`. Verdien `ServiceBus` er standardverdien. For å kommunisere med RabbitMQ, og benytte tilhørende dialekt for kø-routing og -adressering, må verdien eksplisitt settes til `RabbitMQ`.
 
 ### Endringer i SOAP-konfigurasjon
 SOAP-konfigurasjonen er flyttet fra klassisk .NET Framework SOAP konfigurasjon til en ny og enklere struktur.
@@ -26,7 +26,7 @@ Eksempel på SOAP-konfigurasjon:
 Eksempel på SOAP-konfigurasjon i våre eksempel-applikasjoner, se [her](https://github.com/helsenorge/Helsenorge.Messaging/blob/56870226c20d83467df8eb78e1ccd72e165f663a/Examples/Helsenorge.Messaging.Server/appsettings.json#L11).
 
 #### Konfigurasjon klasse
-Dette er klassen som benyttes internt av Helsenorge.Messaging, den kan også benyttes direkte i egen kode dersom man ønsker å sette konfigurasjonen i kode.
+Dette er klassen som benyttes internt av Helsenorge.Messaging. Den kan også benyttes direkte i egen kode dersom man ønsker å sette konfigurasjonen i kode.
 
 ```csharp
 public class WcfConfiguration
