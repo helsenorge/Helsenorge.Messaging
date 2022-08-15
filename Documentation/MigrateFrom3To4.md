@@ -3,9 +3,9 @@
 ### Nytt ConnectionString format
 Formatet på ConnectionString er endret til: `amqps://<username>:<password>@sb.test.nhn.no:5671/NHNTESTServiceBus`.
 
-Exchange/namespace er case-sensitive.
-Exchange Test: NHNTESTServiceBus
-Exchange Produksjon: NHNProdServiceBus
+Exchange/namespace er case-sensitive:
+- Test: NHNTESTServiceBus
+- Produksjon: NHNProdServiceBus
 
 Se også mer utfyllende informasjon om URL, IP-adresser og porter på [Meldingsutveksling med Helsenorge](https://helsenorge.atlassian.net/wiki/spaces/HELSENORGE/pages/690913297/Meldingsutveksling+med+Helsenorge)
 
