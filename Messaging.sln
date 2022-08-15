@@ -68,6 +68,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignEncryptAndSend", "Examp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReceiveDecryptAndValidate", "Examples\ReceiveDecryptAndValidate\ReceiveDecryptAndValidate.csproj", "{DFF66B90-787E-4FAD-B830-9236ADC21983}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubscriptionExample", "Examples\SubscriptionExample\SubscriptionExample.csproj", "{D49E63C8-DF43-45A9-804B-9B71E1DF5314}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -126,6 +128,10 @@ Global
 		{DFF66B90-787E-4FAD-B830-9236ADC21983}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFF66B90-787E-4FAD-B830-9236ADC21983}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFF66B90-787E-4FAD-B830-9236ADC21983}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D49E63C8-DF43-45A9-804B-9B71E1DF5314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D49E63C8-DF43-45A9-804B-9B71E1DF5314}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D49E63C8-DF43-45A9-804B-9B71E1DF5314}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D49E63C8-DF43-45A9-804B-9B71E1DF5314}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -143,6 +149,7 @@ Global
 		{1288380E-F454-4DBF-ABFE-4BFB7ADFB29C} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
 		{F44A0630-B04A-4DDA-9536-E7AA3C80708A} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
 		{DFF66B90-787E-4FAD-B830-9236ADC21983} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
+		{D49E63C8-DF43-45A9-804B-9B71E1DF5314} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {925B24E8-92AC-4D8D-959E-64DE4928A23B}
