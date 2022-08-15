@@ -32,9 +32,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
                 case IOException _:
                     if (exception.InnerException is SocketException socketException)
-                    {
                         stringBuilder.AppendFormat(CultureInfo.InvariantCulture, $" ErrorCode: {socketException.SocketErrorCode}");
-                    }
                     return new ServiceBusCommunicationException(stringBuilder.ToString(), exception);
 
                 case AmqpException amqpException:
