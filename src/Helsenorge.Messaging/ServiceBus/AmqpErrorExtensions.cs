@@ -24,20 +24,18 @@ namespace Helsenorge.Messaging.ServiceBus
             var stringBuilder = new StringBuilder();
             stringBuilder.Append(exception.Message);
 
-            var message = stringBuilder.ToString();
-
             switch (exception)
             {
                 case SocketException e:
-                    message = stringBuilder.AppendFormat(CultureInfo.InvariantCulture, $" ErrorCode: {e.SocketErrorCode}").ToString();
-                    return new ServiceBusCommunicationException(message, exception);
+                    stringBuilder.AppendFormat(CultureInfo.InvariantCulture, $" ErrorCode: {e.SocketErrorCode}");
+                    return new ServiceBusCommunicationException(stringBuilder.ToString(), exception);
 
                 case IOException _:
                     if (exception.InnerException is SocketException socketException)
                     {
-                        message = stringBuilder.AppendFormat(CultureInfo.InvariantCulture, $" ErrorCode: {socketException.SocketErrorCode}").ToString();
+                        stringBuilder.AppendFormat(CultureInfo.InvariantCulture, $" ErrorCode: {socketException.SocketErrorCode}");
                     }
-                    return new ServiceBusCommunicationException(message, exception);
+                    return new ServiceBusCommunicationException(stringBuilder.ToString(), exception);
 
                 case AmqpException amqpException:
                     return amqpException.Error.ToServiceBusException(amqpException);
@@ -46,10 +44,10 @@ namespace Helsenorge.Messaging.ServiceBus
                     return amqpException.Error.ToServiceBusException(operationCanceledException);
 
                 case OperationCanceledException _:
-                    return new RecoverableServiceBusException(message, exception);
+                    return new RecoverableServiceBusException(stringBuilder.ToString(), exception);
 
                 case TimeoutException _:
-                    return new ServiceBusTimeoutException(message, exception);
+                    return new ServiceBusTimeoutException(stringBuilder.ToString(), exception);
             }
 
             return exception;
