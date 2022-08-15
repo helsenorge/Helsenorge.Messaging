@@ -22,7 +22,7 @@ namespace Helsenorge.Messaging.ServiceBus
         public static Exception ToServiceBusException(this Exception exception)
         {
             var stringBuilder = new StringBuilder();
-            stringBuilder.AppendFormat(CultureInfo.InvariantCulture, exception.Message);
+            stringBuilder.Append(exception.Message);
 
             var message = stringBuilder.ToString();
 
