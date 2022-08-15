@@ -11,7 +11,6 @@ namespace Helsenorge.Messaging.Abstractions
 {
     /// <summary>
     /// Interface for items in <see cref="MessagingEntityCache{T}"/>
-    /// Since those operations are thread safe (locking) we don't support async methods
     /// </summary>
     public interface ICachedMessagingEntity
     {
