@@ -1,7 +1,13 @@
 ## Migrere fra 3.0 til 4.0
 
 ### Nytt ConnectionString format
-Formatet på ConnectionString er endret til: `amqps://<username>:<password>@sb.test.nhn.no:5671/NHNTestServiceBus`.
+Formatet på ConnectionString er endret til: `amqps://<username>:<password>@sb.test.nhn.no:5671/NHNTESTServiceBus`.
+
+Exchange/namespace er case-sensitive.
+Exchange Test: NHNTESTServiceBus
+Exchange Produksjon: NHNProdServiceBus
+
+Se også mer utfyllende informasjon om URL, IP-adresser og porter på [Meldingsutveksling med Helsenorge](https://helsenorge.atlassian.net/wiki/spaces/HELSENORGE/pages/690913297/Meldingsutveksling+med+Helsenorge)
 
 ### Introduksjon av MessageBrokerDialect
 Helsenorge.Messaging 4.x er kompatibel med både Microsoft ServiceBus og RabbitMQ. Det er derfor introdusert et nytt konfigurasjonsattributt `MessagingSettings.ServiceBus.MessageBrokerDialect`. Attributtet har to gyldige verdier `ServiceBus` og `RabbitMQ`. Verdien `ServiceBus` er standardverdien. For å kommunisere med RabbitMQ, og benytte tilhørende dialekt for kø-routing og -adressering, må verdien eksplisitt settes til `RabbitMQ`.
