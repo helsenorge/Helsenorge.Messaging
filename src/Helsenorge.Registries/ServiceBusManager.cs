@@ -47,7 +47,7 @@ namespace Helsenorge.Registries.Utilities
 
         /// <inheritdoc cref="IServiceBusManager.SubscribeAsync"/>
         public Task<EventSubscription> SubscribeAsync(SubscriptionEventSource eventSource, string systemIdentificator, string eventName = null)
-            => SubscribeAsyncInternal(eventSource, eventName ?? string.Empty, systemIdentificator);
+            => SubscribeAsyncInternal(eventSource, systemIdentificator, eventName ?? string.Empty);
 
         /// <inheritdoc cref="IServiceBusManager.UnsubscribeAsync"/>
         public Task UnsubscribeAsync(string queueName)
