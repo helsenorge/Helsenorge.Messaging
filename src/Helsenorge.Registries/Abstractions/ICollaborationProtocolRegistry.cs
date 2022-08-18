@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -66,5 +66,14 @@ namespace Helsenorge.Registries.Abstractions
         /// <param name="herId">Needs to be a known HER-id</param>
         [Obsolete("This metod will be replaced in the future.")]
         Task PingAsync(ILogger logger, int herId);
+
+        /// <summary>
+        /// Returns the Collaboration Protocol Profile matching the id argument.
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="id"></param>
+        /// <param name="forceUpdate"></param>
+        /// <returns></returns>
+        Task<CollaborationProtocolProfile> GetCollaborationProtocolProfileAsync(ILogger logger, Guid id, bool forceUpdate = false);
     }
 }

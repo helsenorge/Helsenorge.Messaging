@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -292,6 +292,55 @@ namespace Helsenorge.Registries
         {
             _ = await Invoke(logger, service => service.GetCppForCommunicationPartyAsync(herId), "GetCppForCommunicationPartyAsync").ConfigureAwait(false);
         }
+
+        /// <inheritdoc cref="GetCollaborationProtocolProfileAsync"/>
+        public async Task<CollaborationProtocolProfile> GetCollaborationProtocolProfileAsync(ILogger logger, Guid id, bool forceUpdate = false)
+        {
+            var key = $"CPA_GetCollaborationProtocolProfileAsync_{id}";
+            var result = forceUpdate ? null : await CacheExtensions.ReadValueFromCache<CollaborationProtocolProfile>(logger, _cache, key, _settings.CachingFormatter).ConfigureAwait(false);
+
+            if (result != null)
+            {
+                var errors = CertificateErrors.None;
+                errors |= CertificateValidator.Validate(result.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
+                errors |= CertificateValidator.Validate(result.SignatureCertificate, X509KeyUsageFlags.NonRepudiation);
+                // If the certificates are valid, only then do we return a value from the cache
+                if (errors == CertificateErrors.None)
+                {
+                    return result;
+                }
+            }
+
+            string collaborationProtocolProfileXml;
+            try
+            {
+                collaborationProtocolProfileXml = await GetCollaborationProtocolProfileAsXmlAsyncInternal(logger, id).ConfigureAwait(false);
+            }
+            catch (FaultException ex)
+            {
+                // if there are error getting a proper CPP, we have only the option to log that.
+                logger.LogError($"Could not find or resolve protocol for counterparty when retrieving by id: '{id}'.  ErrorCode: {ex.Code} Message: {ex.Message}");
+                throw new RegistriesException(ex.Message, ex)
+                {
+                    EventId = EventIds.CollaborationProfile,
+                    Data = { { "CppId", id } }
+                };
+            }
+
+            if (string.IsNullOrEmpty(collaborationProtocolProfileXml))
+                return null;
+
+            var document = XDocument.Parse(collaborationProtocolProfileXml);
+            result = document.Root == null ? null : MapFrompartyInfo(document.Root.Element(_ns + "PartyInfo"));
+            if (result != null)
+                result.CppId = id;
+
+            await CacheExtensions.WriteValueToCache(logger, _cache, key, result, _settings.CachingInterval, _settings.CachingFormatter).ConfigureAwait(false);
+            return result;
+        }
+
+        protected virtual Task<string> GetCollaborationProtocolProfileAsXmlAsyncInternal(ILogger logger, Guid id)
+            => Invoke(logger, x => x.GetCppXmlAsync(id), "GetCppXmlAsync");
         
         private CollaborationProtocolProfile CreateDummyCollaborationProtocolProfile(int herId, Abstractions.CertificateDetails encryptionCertificate, Abstractions.CertificateDetails signatureCertificate)
         {
