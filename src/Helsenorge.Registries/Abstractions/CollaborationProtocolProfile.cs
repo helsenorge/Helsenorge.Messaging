@@ -75,6 +75,10 @@ namespace Helsenorge.Registries.Abstractions
         /// </summary>
         public Guid CpaId { get; set; }
         /// <summary>
+        /// Get or set the Id for the Collaboration Protocol Profile (CPP).
+        /// </summary>
+        public Guid CppId { get; set; }
+        /// <summary>
         /// A list of roles that the other party provides. This can also be thougth of as services. 
         /// In practice it means what message types they support. The messaging system can support a vast array of different message types, but only a fraction may be 
         /// supported by any given counterparty
