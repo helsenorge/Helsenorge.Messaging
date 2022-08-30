@@ -6,16 +6,17 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
-using Helsenorge.Registries.Abstractions;
-using Helsenorge.Registries.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
 using System.Linq;
 using System.ServiceModel;
+using Helsenorge.Registries.Abstractions;
+using Helsenorge.Registries.Configuration;
 using Helsenorge.Registries.Tests.Mocks;
+using Helsenorge.Registries.Utilities;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Helsenorge.Registries.Tests
 {
@@ -368,5 +369,16 @@ namespace Helsenorge.Registries.Tests
             Assert.IsNotNull(profile.EncryptionCertificate);
             Assert.IsTrue(profile.FindMessagePartsForReceiveMessage("DIALOG_INNBYGGER_TEST").Any());
         }
+
+        [TestMethod]
+        public void Serialize_CollaborationProtocolProfile()
+        {
+            var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
+            var serialized = XmlCacheFormatter.Serialize(profile);
+            var deserialized = XmlCacheFormatter.DeserializeAsync<CollaborationProtocolProfile>(serialized).Result;
+            Assert.AreEqual(profile.CpaId, profile.CpaId);
+            Assert.AreEqual(profile.EncryptionCertificate.Thumbprint, deserialized.EncryptionCertificate.Thumbprint);
+        }
+
     }
 }

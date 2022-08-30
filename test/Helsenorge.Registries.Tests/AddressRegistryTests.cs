@@ -7,17 +7,19 @@
  */
 
 using System;
-using System.Configuration;
 using System.IO;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using Helsenorge.Registries.Configuration;
 using Helsenorge.Registries.Tests.Mocks;
+using Helsenorge.Registries.Utilities;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Helsenorge.Registries.Tests
 {
@@ -198,5 +200,42 @@ namespace Helsenorge.Registries.Tests
                 Assert.IsInstanceOfType(ex.InnerException, typeof(RegistriesException));
             }
         }
-    } 
+
+        [TestMethod]
+        public void Serialize_AddressService_CommunicationParty()
+        {
+            var item = new AddressService.CommunicationParty
+            {
+                Active = true,
+                HerId = 1234,
+                ParentHerId = 4321,
+            };
+
+            var serialized = XmlCacheFormatter.Serialize(item);
+            var deserialized = XmlCacheFormatter.DeserializeAsync<AddressService.CommunicationParty>(serialized).Result;
+            Assert.AreEqual(item.Active, deserialized.Active);
+            Assert.AreEqual(item.HerId, deserialized.HerId);
+            Assert.AreEqual(item.ParentHerId, deserialized.ParentHerId);
+        }
+
+        [TestMethod]
+        public void Serialize_AddressService_CertificateDetails()
+        {
+            var keys = ECDsa.Create();
+            var request = new CertificateRequest("CN=foo", keys, HashAlgorithmName.SHA256);
+            var cert = request.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
+
+            var serviceDetails = new AddressService.CertificateDetails
+            {
+                Certificate = cert.GetRawCertData(),
+                LdapUrl = "ldap://CN=foo",
+            };
+
+            var serialized = XmlCacheFormatter.Serialize(serviceDetails);
+            var deserialized = XmlCacheFormatter.DeserializeAsync<AddressService.CertificateDetails>(serialized).Result;
+            var deserializedCert = new X509Certificate2(deserialized.Certificate);
+            Assert.AreEqual(serviceDetails.LdapUrl, deserialized.LdapUrl);
+            Assert.AreEqual(cert.Thumbprint, deserializedCert.Thumbprint);
+        }
+    }
 }
