@@ -20,14 +20,23 @@ namespace Helsenorge.Registries
         /// The configuration containing WCF settings
         /// </summary>
         public WcfConfiguration WcfConfiguration { get; set; }
+
         /// <summary>
         /// The amount of time values should be cached
         /// </summary>
         public TimeSpan CachingInterval { get; set; } = new TimeSpan(1, 0, 0);
+
+        /// <summary>
+        /// Gets or sets the type of formatter to use when caching.
+        /// </summary>
+        public Utilities.CacheFormatterType CachingFormatter { get; set; } =
+            Utilities.CacheFormatterType.BinaryFormatter;
+
         /// <summary>
         /// The HerId that belongs to me. In CPA operations, two communication parties may be returned, need to know which one is us
         /// </summary>
         public int MyHerId { get; set; }
+
         /// <summary>
         /// Use online certificate revocation list (CRL) check. Default true.
         /// </summary>

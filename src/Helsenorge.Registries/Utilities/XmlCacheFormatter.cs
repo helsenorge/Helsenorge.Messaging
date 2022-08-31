@@ -16,10 +16,9 @@ namespace Helsenorge.Registries.Utilities
 {
     internal static class XmlCacheFormatter
     {
-        public static byte[] Serialize<T>(T value)
-            where T : class
+        public static byte[] Serialize(object value)
         {
-            var serializer = new DataContractSerializer(typeof(T));
+            var serializer = new DataContractSerializer(value.GetType());
             using var stream = new MemoryStream();
             var settings = new XmlWriterSettings
             {
