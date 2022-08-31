@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -9,7 +9,10 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
+using System.Text;
 using Helsenorge.Registries.Abstractions;
 using Helsenorge.Registries.Configuration;
 using Helsenorge.Registries.Tests.Mocks;
@@ -380,5 +383,23 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(profile.EncryptionCertificate.Thumbprint, deserialized.EncryptionCertificate.Thumbprint);
         }
 
+        [TestMethod]
+        public void Use_Cached_CertificateDetails()
+        {
+            var key = Guid.NewGuid().ToString();
+            var distributedCache = DistributedCacheFactory.Create();
+            var data = Encoding.UTF8.GetBytes("Hello, World!");
+
+            var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
+            CacheExtensions.WriteValueToCache(_logger, distributedCache, key, profile, TimeSpan.FromDays(1)).Wait();
+            var cached = CacheExtensions.ReadValueFromCache<Abstractions.CollaborationProtocolProfile>(_logger, distributedCache, key).Result;
+            Assert.IsNotNull(cached);
+            using (var rsa = cached.EncryptionCertificate.GetRSAPublicKey())
+            {
+                var encrypted = rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA1);
+                Assert.IsNotNull(encrypted);
+                Assert.IsTrue(encrypted.Length > 0);
+            }
+        }
     }
 }

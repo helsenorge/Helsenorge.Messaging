@@ -42,10 +42,10 @@ namespace Helsenorge.Registries.Abstractions
         {
             _encryptionCertificateBase64String = EncryptionCertificate == null 
                 ? null 
-                : Convert.ToBase64String(EncryptionCertificate.Export(X509ContentType.SerializedCert));
+                : Convert.ToBase64String(EncryptionCertificate.Export(X509ContentType.Cert));
             _signatureCertificateBase64String = SignatureCertificate == null 
                 ? null 
-                : Convert.ToBase64String(SignatureCertificate.Export(X509ContentType.SerializedCert));
+                : Convert.ToBase64String(SignatureCertificate.Export(X509ContentType.Cert));
         }
 
         /// <summary>
