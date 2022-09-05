@@ -191,8 +191,6 @@ namespace Helsenorge.Messaging
         {
             _logger.LogInformation("Messaging Server starting up");
 
-            if (!await CanAuthenticateAndPingAddressRegistryService())
-                throw new MessagingException("Non-successful authentication or connection attempt to the Address Registry Web Service on start-up. This can be caused by incorrect credentials / configuration errors.") { EventId = EventIds.ConnectionToWebServiceFailed };
             if (!await CanAuthenticateAgainstMessageBroker())
                 throw new MessagingException("Non-successful authentication or connection attempt to the message broker on start-up. This can be caused by incorrect credentials / configuration errors.") { EventId = EventIds.ConnectionToMessageBrokerFailed };
 
@@ -474,40 +472,6 @@ namespace Helsenorge.Messaging
             {
                 _onUnhandledException.Invoke(message, ex);
             }
-        }
-
-        internal virtual async Task<bool> CanAuthenticateAndPingAddressRegistryService()
-        {
-            try
-            {
-                await AddressRegistry.PingAsync(_logger);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(EventIds.ConnectionToWebServiceFailed, e, "Non-successful connection and ping attempt to the AddressRegistry Service. This can be caused by incorrect credentials / configuration errors.");
-
-                return false;
-            }
-
-            return true;
-        }
-
-        internal virtual async Task<bool> CanAuthenticateAndPingCppaService()
-        {
-            try
-            {
-#pragma warning disable CS0618
-                await CollaborationProtocolRegistry.PingAsync(_logger, Settings.MyHerId);
-#pragma warning restore CS0618
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(EventIds.ConnectionToWebServiceFailed, e, "Non-successful connection and ping attempt to the CPPA web Service. This can be caused by incorrect credentials / configuration errors.");
-
-                return false;
-            }
-
-            return true;
         }
 
         internal virtual async Task<bool> CanAuthenticateAgainstMessageBroker()
