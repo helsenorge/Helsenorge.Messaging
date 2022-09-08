@@ -101,9 +101,9 @@ namespace Helsenorge.Registries.Utilities
         {
             var formatter = new BinaryFormatter();
             using var memoryStream = new MemoryStream();
-#pragma warning disable CS0618
+#pragma warning disable SYSLIB0011
             formatter.Serialize(memoryStream, value);
-#pragma warning restore CS0618
+#pragma warning restore SYSLIB0011
             return memoryStream.ToArray();
         }
 
@@ -113,9 +113,9 @@ namespace Helsenorge.Registries.Utilities
             var formatter = new BinaryFormatter();
             await memoryStream.WriteAsync(value, 0, value.Length).ConfigureAwait(false);
             memoryStream.Seek(0, SeekOrigin.Begin);
-#pragma warning disable CS0618
+#pragma warning disable SYSLIB0011
             return formatter.Deserialize(memoryStream) as T;
-#pragma warning restore CS0618
+#pragma warning restore SYSLIB0011
         }
     }
 }
