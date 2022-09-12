@@ -41,6 +41,8 @@ namespace Helsenorge.Messaging.ServiceBus
         private static readonly Action<ILogger, string, int, string, string, Exception> RemoveMessageFromQueueNormal;
         private static readonly Action<ILogger, string, Exception> RemoveMessageFromQueueError;
 
+        private static readonly Action<ILogger, string, Exception> RetryOperationInProgress;
+
         public static void LogStartReceive(this ILogger logger, QueueType queueType, IncomingMessage message)
         {
             StartReceive(logger, queueType, message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId, null);
@@ -130,6 +132,11 @@ namespace Helsenorge.Messaging.ServiceBus
         public static void LogTimeoutError(this ILogger logger, string messageFunction, string messageId, int toHerId)
         {
             LogTimeout(logger, messageFunction, messageId, toHerId, null);
+        }
+
+        public static void LogRetryOperationInProgress(this ILogger logger, string message)
+        {
+            RetryOperationInProgress(logger, message, null);
         }
 
         static ServiceBusLoggingExtensions()
@@ -224,6 +231,11 @@ namespace Helsenorge.Messaging.ServiceBus
                 LogLevel.Information,
                 EventIds.FactoryPoolCreateEmptyMessage,
                 "After-FactoryPoolCreateMessage: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId}");
+
+            RetryOperationInProgress = LoggerMessage.Define<string>(
+                LogLevel.Warning,
+                EventIds.RetryOperation,
+                "ServiceBusOperation-Retry: {Message}");
         }
 
         public static void LogException(this ILogger logger, string message, Exception ex)
