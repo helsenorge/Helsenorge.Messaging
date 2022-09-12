@@ -125,7 +125,13 @@ namespace Helsenorge.Messaging.ServiceBus
             if (string.IsNullOrEmpty(outgoingMessage.MessageId)) throw new ArgumentNullException(nameof(outgoingMessage.MessageId));
             if (outgoingMessage.Payload == null) throw new ArgumentNullException(nameof(outgoingMessage.Payload));
 
-            logger.LogStartSend(queueType, outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, outgoingMessage.Payload);
+            // when we are replying to a synchronous message, we need to use the replyto of the original message
+            var queueName =
+                (queueType == QueueType.SynchronousReply) ?
+                    replyTo :
+                    await ConstructQueueName(logger, outgoingMessage.ToHerId, queueType).ConfigureAwait(false);
+
+            logger.LogStartSend(queueType, outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, $"Sending message using host and queue: '{HostnameAndPath}/{queueName}'", outgoingMessage.Payload);
 
             var hasAgreement = true;
             // first we try and find an agreement
@@ -211,17 +217,10 @@ namespace Helsenorge.Messaging.ServiceBus
             logger.LogAfterFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
 
             if (queueType != QueueType.SynchronousReply)
-            {
-                messagingMessage.ReplyTo = 
-                    replyTo ?? await ConstructQueueName(logger, Core.Settings.MyHerId, queueType).ConfigureAwait(false);
-            }
+                messagingMessage.ReplyTo = queueName;
             messagingMessage.ContentType = Core.MessageProtection.ContentType;
             messagingMessage.MessageId = outgoingMessage.MessageId;
-            // when we are replying to a synchronous message, we need to use the replyto of the original message
-            messagingMessage.To = 
-                (queueType == QueueType.SynchronousReply) ? 
-                replyTo : 
-                await ConstructQueueName(logger, outgoingMessage.ToHerId, queueType).ConfigureAwait(false);
+            messagingMessage.To = queueName;
             messagingMessage.MessageFunction = outgoingMessage.MessageFunction;
             messagingMessage.CorrelationId = correlationId ?? outgoingMessage.MessageId;
             messagingMessage.TimeToLive = (queueType == QueueType.Asynchronous)
