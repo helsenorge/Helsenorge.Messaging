@@ -117,3 +117,6 @@ Informasjonsformål ved kryptering av payload
 
 ### MUG-001008
 Informasjonsformål ved interaksjon mot Factory Pool cache og opprettelse av tom melding, skjer rett før sending av melding til ServiceBus
+
+### MUG-001009
+Informasjonsformål ved pågående retry operasjoner mot ServiceBus.
