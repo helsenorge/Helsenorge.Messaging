@@ -39,7 +39,7 @@ Dette er et eksempel på hvordan en slik fil kan se ut.
             "Synchronous": {
                 "ProcessingTasks": 1,
                 "TimeToLive": "00:00:15",
-                "ReadTimeout": "00:01:00",
+                "ReadTimeout": "00:00:05",
                 "ReplyQueue": "",
                 "CallTimeout": "00:00:15",
                 "ReplyQueueMapping": {
