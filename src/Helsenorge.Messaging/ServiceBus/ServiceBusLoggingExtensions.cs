@@ -17,7 +17,7 @@ namespace Helsenorge.Messaging.ServiceBus
     {
         private static readonly Action<ILogger, QueueType, string, int, int, string, Exception> StartReceive;
         private static readonly Action<ILogger, QueueType, string, int, int, string, Exception> EndReceive;
-        private static readonly Action<ILogger, QueueType, string, int, int, string, Exception> StartSend;
+        private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> StartSend;
         private static readonly Action<ILogger, QueueType, string, int, int, string, Exception> EndSend;
         private static readonly Action<ILogger, string, int, int, string, string, Exception> ResponseTime;
         private static readonly Action<ILogger, string, string, int, Exception> LogTimeout;
@@ -52,9 +52,9 @@ namespace Helsenorge.Messaging.ServiceBus
             EndReceive(logger, queueType, message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId, null);
         }
 
-        public static void LogStartSend(this ILogger logger, QueueType queueType, string function, int fromHerId, int toHerId, string messageId, XDocument xml)
+        public static void LogStartSend(this ILogger logger, QueueType queueType, string function, int fromHerId, int toHerId, string messageId, string additionalData, XDocument xml)
         {
-            StartSend(logger, queueType, function, fromHerId, toHerId, messageId,  null);
+            StartSend(logger, queueType, function, fromHerId, toHerId, messageId, additionalData,  null);
             if (xml != null)
             {
                 logger.LogDebug(xml.ToString());
@@ -151,10 +151,10 @@ namespace Helsenorge.Messaging.ServiceBus
                 EventIds.ServiceBusReceive,
                 "End-ServiceBusReceive{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId}");
 
-            StartSend = LoggerMessage.Define<QueueType, string, int, int, string>(
+            StartSend = LoggerMessage.Define<QueueType, string, int, int, string, string>(
                 LogLevel.Information,
                 EventIds.ServiceBusSend,
-                "Start-ServiceBusSend{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId}");
+                "Start-ServiceBusSend{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} Additional Data: {AdditionalData}");
 
             EndSend = LoggerMessage.Define<QueueType, string, int, int, string>(
                 LogLevel.Information,
