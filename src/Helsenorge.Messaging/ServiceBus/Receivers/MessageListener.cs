@@ -118,7 +118,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 }
                 catch (Exception ex) // protect the main message pump
                 {
-                    Logger.LogException("Generic service bus error", ex);
+                    Logger.LogException($"Generic service bus error at '{Core.HostnameAndPath}/{QueueName}'", ex);
                     // if there are problems with the message bus, we don't get interval of the ReadTimeout
                     // pause a bit so that we don't take over the whole system
                     await Task.Delay(5000, cancellation).ConfigureAwait(false);
