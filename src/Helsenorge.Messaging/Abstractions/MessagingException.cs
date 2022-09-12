@@ -167,6 +167,10 @@ namespace Helsenorge.Messaging.Abstractions
         /// from the pool and creating an empty message.
         /// </summary>
         public static EventId FactoryPoolCreateEmptyMessage = new EventId(1008, EventIdName);
+        /// <summary>
+        /// Event Id used for informational purposes when a retry operation is in progress.
+        /// </summary>
+        public static EventId RetryOperation = new EventId(1009, EventIdName);
     }
 
     /// <summary>
