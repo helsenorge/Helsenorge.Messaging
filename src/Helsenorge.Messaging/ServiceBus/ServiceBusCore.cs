@@ -50,7 +50,8 @@ namespace Helsenorge.Messaging.ServiceBus
         private const string ErrorConditionHeaderKey = "errorCondition";
         private const string ErrorDescriptionHeaderKey = "errorDescription";
         private const string ErrorConditionDataHeaderKey = "errorConditionData";
-        
+
+        private string _hostnameAndPath;
 
         //convencience properties
         internal ServiceBusSettings Settings => Core.Settings.ServiceBus;
@@ -60,6 +61,23 @@ namespace Helsenorge.Messaging.ServiceBus
         internal IMessageProtection MessageProtection => Core.MessageProtection;
         internal bool LogPayload => Core.Settings.LogPayload;
         internal ICertificateStore CertificateStore => Core.CertificateStore;
+
+        internal string HostnameAndPath
+        {
+            get
+            {
+                if (_hostnameAndPath == null)
+                {
+                    var connectionString = Core?.Settings?.ServiceBus?.ConnectionString ?? string.Empty;
+                    var startIndex = connectionString.IndexOf("@", StringComparison.InvariantCulture);
+                    if (startIndex > -1)
+                        _hostnameAndPath = connectionString.Substring(startIndex + 1);
+                }
+
+                return _hostnameAndPath;
+            }
+        }
+
         /// <summary>
         /// Reference to the core messaging system
         /// </summary>
