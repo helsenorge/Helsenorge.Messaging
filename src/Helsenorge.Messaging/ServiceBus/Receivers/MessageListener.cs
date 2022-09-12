@@ -185,7 +185,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 await NotifyMessageProcessingStarted(this, incomingMessage).ConfigureAwait(false);
                 
                 SetCorrelationIdAction?.Invoke(incomingMessage.MessageId);
-                Logger.LogStartReceive(QueueType, incomingMessage);
+
+                Logger.LogStartReceive(QueueType, incomingMessage, $"Message received from host and queue: {Core.HostnameAndPath}/{QueueName}");
 
                 // we cannot dispose of the stream before we have potentially cloned the message for error use
                 bodyStream = message.GetBody();

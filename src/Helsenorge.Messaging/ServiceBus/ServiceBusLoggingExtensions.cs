@@ -15,7 +15,7 @@ namespace Helsenorge.Messaging.ServiceBus
 {
     internal static class ServiceBusLoggingExtensions
     {
-        private static readonly Action<ILogger, QueueType, string, int, int, string, Exception> StartReceive;
+        private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> StartReceive;
         private static readonly Action<ILogger, QueueType, string, int, int, string, Exception> EndReceive;
         private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> StartSend;
         private static readonly Action<ILogger, QueueType, string, int, int, string, Exception> EndSend;
@@ -43,9 +43,9 @@ namespace Helsenorge.Messaging.ServiceBus
 
         private static readonly Action<ILogger, string, Exception> RetryOperationInProgress;
 
-        public static void LogStartReceive(this ILogger logger, QueueType queueType, IncomingMessage message)
+        public static void LogStartReceive(this ILogger logger, QueueType queueType, IncomingMessage message, string additionalData)
         {
-            StartReceive(logger, queueType, message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId, null);
+            StartReceive(logger, queueType, message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId, additionalData, null);
         }
         public static void LogEndReceive(this ILogger logger, QueueType queueType, IncomingMessage message)
         {
@@ -141,10 +141,10 @@ namespace Helsenorge.Messaging.ServiceBus
 
         static ServiceBusLoggingExtensions()
         {
-            StartReceive = LoggerMessage.Define<QueueType, string, int, int, string>(
+            StartReceive = LoggerMessage.Define<QueueType, string, int, int, string, string>(
                 LogLevel.Information,
                 EventIds.ServiceBusReceive,
-                "Start-ServiceBusReceive{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId}");
+                "Start-ServiceBusReceive{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} Additional Data: {AdditionalData}");
 
             EndReceive = LoggerMessage.Define<QueueType, string, int, int, string>(
                 LogLevel.Information,
