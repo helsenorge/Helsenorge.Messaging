@@ -103,28 +103,28 @@ namespace Helsenorge.Messaging.Tests
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void Syncrhonous_TimeToLive_NotSet()
+        public void Synchronous_TimeToLive_NotSet()
         {
             Settings.ServiceBus.Synchronous.TimeToLive = TimeSpan.Zero;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void Syncrhonous_ReadTimeout_NotSet()
+        public void Synchronous_ReadTimeout_NotSet()
         {
             Settings.ServiceBus.Synchronous.ReadTimeout = TimeSpan.Zero;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void Syncrhonous_CallTimeout_NotSet()
+        public void Synchronous_CallTimeout_NotSet()
         {
             Settings.ServiceBus.Synchronous.CallTimeout = TimeSpan.Zero;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
         }
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void Syncrhonous_ReplyQueue_NotSet()
+        public void Synchronous_ReplyQueue_NotSet()
         {
             Settings.ServiceBus.Synchronous.ReplyQueueMapping = new Dictionary<string, string>();
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
