@@ -183,9 +183,12 @@ namespace Helsenorge.Messaging
         internal void Validate()
         {
             if (string.IsNullOrEmpty(ConnectionString)) throw new ArgumentNullException(nameof(ConnectionString));
-            Asynchronous.Validate();
-            Synchronous.Validate();
-            Error.Validate();
+            if (Asynchronous.ProcessingTasks > 0)
+                Asynchronous.Validate();
+            if (Synchronous.ProcessingTasks > 0)
+                Synchronous.Validate();
+            if (Error.ProcessingTasks > 0)
+                Error.Validate();
         }
     }
     /// <summary>
@@ -218,7 +221,6 @@ namespace Helsenorge.Messaging
 
         internal void Validate()
         {
-            if (ProcessingTasks < 0) throw new ArgumentOutOfRangeException(nameof(ProcessingTasks));
             if (TimeToLive == TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(TimeToLive));
             if (ReadTimeout == TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(ReadTimeout));
             if (CallTimeout == TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(CallTimeout));
@@ -262,7 +264,6 @@ namespace Helsenorge.Messaging
 
         internal void Validate()
         {
-            if (ProcessingTasks <= 0) throw new ArgumentOutOfRangeException(nameof(ProcessingTasks));
             if (ReadTimeout == TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(ReadTimeout));
         }
     }
@@ -288,7 +289,6 @@ namespace Helsenorge.Messaging
 
         internal void Validate()
         {
-            if (ProcessingTasks <= 0) throw new ArgumentOutOfRangeException(nameof(ProcessingTasks));
             if (ReadTimeout == TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(ReadTimeout));
         }
     }
