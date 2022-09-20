@@ -179,6 +179,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     ReleaseAsync = message.RelaseAsync,
                     Deadletter = message.DeadLetter,
                     DeadletterAsync = message.DeadLetterAsync,
+                    // FIXME: This will be moved to the interface IMessagingMessage in version 5.0
+                    FirstAquirer = (message as ServiceBusMessage)?.FirstAcquirer ?? false,
                     DeliveryCount = message.DeliveryCount,
                     LockedUntil = message.LockedUntil,
                 };

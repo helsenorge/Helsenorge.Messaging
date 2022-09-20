@@ -99,6 +99,10 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         public Func<Task> DeadletterAsync { get; internal set; }
         /// <summary>
+        /// Returns true if this is the first time the message is aquried.
+        /// </summary>
+        public bool FirstAquirer { get; internal set; }
+        /// <summary>
         /// Gets the number of deliveries.
         /// </summary>
         public int DeliveryCount { get ; internal set; }
