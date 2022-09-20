@@ -225,6 +225,12 @@ namespace Helsenorge.Messaging.ServiceBus
             set => GetMessageProperties().To = value;
         }
 
+        public bool FirstAcquirer
+        {
+            [DebuggerStepThrough]
+            get => _implementation.Header == null ? false : _implementation.Header.FirstAcquirer;
+        }
+
         public int DeliveryCount
         {
             [DebuggerStepThrough]
