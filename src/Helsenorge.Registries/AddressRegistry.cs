@@ -259,7 +259,13 @@ namespace Helsenorge.Registries
                         };
                     }
 
-                    await CacheExtensions.WriteValueToCache(logger, _cache, key, details, _settings.CachingInterval, _settings.CachingFormatter).ConfigureAwait(false);
+                    await CacheExtensions.WriteValueToCache(
+                        logger,
+                        _cache,
+                        key,
+                        details,
+                        _settings.CachingInterval,
+                        _settings.CachingFormatter).ConfigureAwait(false);
                 }
 
                 return details;
