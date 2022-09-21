@@ -65,6 +65,46 @@ namespace Helsenorge.Registries
         public async Task<CommunicationPartyDetails> FindCommunicationPartyDetailsAsync(ILogger logger, int herId, bool forceUpdate)
         {
             var key = $"AR_FindCommunicationPartyDetailsAsync_{herId}";
+
+            // FIXME: Next major release, the code inside this clause should be used with both formatter types.
+            if (this._settings.CachingFormatter == CacheFormatterType.XmlFormatter)
+            {
+                var partyDetails = forceUpdate
+                    ? null
+                    : await CacheExtensions.ReadValueFromCache<CommunicationPartyDetails>(
+                        logger,
+                        _cache,
+                        key,
+                        _settings.CachingFormatter).ConfigureAwait(false);
+
+                if (partyDetails == null)
+                {
+                    try
+                    {
+                        var registryData = await FindCommunicationPartyDetails(logger, herId).ConfigureAwait(false);
+                        partyDetails = MapCommunicationPartyDetails(registryData);
+                    }
+                    catch (FaultException ex)
+                    {
+                        throw new RegistriesException(ex.Message, ex)
+                        {
+                            EventId = EventIds.CommunicationPartyDetails,
+                            Data = { { "HerId", herId } }
+                        };
+                    }
+
+                    await CacheExtensions.WriteValueToCache(
+                        logger,
+                        _cache,
+                        key,
+                        partyDetails,
+                        _settings.CachingInterval,
+                        _settings.CachingFormatter).ConfigureAwait(false);
+                }
+
+                return partyDetails ?? default(CommunicationPartyDetails);
+            }
+
             var party = forceUpdate ? null : await CacheExtensions.ReadValueFromCache<CommunicationParty>(logger, _cache, key, _settings.CachingFormatter).ConfigureAwait(false);
 
             if (party == null)
@@ -107,6 +147,40 @@ namespace Helsenorge.Registries
         public async Task<Abstractions.CertificateDetails> GetCertificateDetailsForEncryptionAsync(ILogger logger, int herId, bool forceUpdate)
         {
             var key = $"AR_GetCertificateDetailsForEncryption{herId}";
+
+            // FIXME: Next major release, the code inside this clause should be used with both formatter types.
+            if (this._settings.CachingFormatter == CacheFormatterType.XmlFormatter)
+            {
+                var details = forceUpdate
+                    ? null
+                    : await CacheExtensions.ReadValueFromCache<Abstractions.CertificateDetails>(
+                        logger,
+                        _cache,
+                        key,
+                        _settings.CachingFormatter).ConfigureAwait(false);
+
+                if (details == null)
+                {
+                    try
+                    {
+                        var registryData = await GetCertificateDetailsForEncryptionInternal(logger, herId)
+                            .ConfigureAwait(false);
+                        details = MapCertificateDetails(herId, registryData);
+                    }
+                    catch (FaultException ex)
+                    {
+                        throw new RegistriesException(ex.Message, ex)
+                        {
+                            EventId = EventIds.CerificateDetails,
+                            Data = { { "HerId", herId } }
+                        };
+                    }
+                    await CacheExtensions.WriteValueToCache(logger, _cache, key, details, _settings.CachingInterval, _settings.CachingFormatter).ConfigureAwait(false);
+                }
+
+                return details;
+            }
+
             var certificateDetails = forceUpdate ? null : await CacheExtensions.ReadValueFromCache<AddressService.CertificateDetails>(logger, _cache, key, _settings.CachingFormatter).ConfigureAwait(false);
 
             if(certificateDetails == null)
@@ -149,6 +223,41 @@ namespace Helsenorge.Registries
         public async Task<Abstractions.CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(ILogger logger, int herId, bool forceUpdate)
         {
             var key = $"AR_GetCertificateDetailsForValidationSignature{herId}";
+
+            // FIXME: Next major release, the code inside this clause should be used with both formatter types.
+            if (this._settings.CachingFormatter == CacheFormatterType.XmlFormatter)
+            {
+                var details = forceUpdate
+                    ? null
+                    : await CacheExtensions.ReadValueFromCache<Abstractions.CertificateDetails>(
+                        logger,
+                        _cache,
+                        key,
+                        _settings.CachingFormatter).ConfigureAwait(false);
+
+                if (details == null)
+                {
+                    try
+                    {
+                        var registryData = await GetCertificateDetailsForValidatingSignatureInternal(logger, herId)
+                            .ConfigureAwait(false);
+                        details = MapCertificateDetails(herId, registryData);
+                    }
+                    catch (FaultException ex)
+                    {
+                        throw new RegistriesException(ex.Message, ex)
+                        {
+                            EventId = EventIds.CerificateDetails,
+                            Data = { { "HerId", herId } }
+                        };
+                    }
+
+                    await CacheExtensions.WriteValueToCache(logger, _cache, key, details, _settings.CachingInterval, _settings.CachingFormatter).ConfigureAwait(false);
+                }
+
+                return details;
+            }
+
             var certificateDetails = forceUpdate ? null : await CacheExtensions.ReadValueFromCache<AddressService.CertificateDetails>(logger, _cache, key, _settings.CachingFormatter).ConfigureAwait(false);
 
             if (certificateDetails == null)
