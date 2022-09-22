@@ -217,7 +217,10 @@ namespace Helsenorge.Messaging.ServiceBus
             logger.LogAfterFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
 
             if (queueType != QueueType.SynchronousReply)
-                messagingMessage.ReplyTo = replyTo ?? queueName;
+            {
+                messagingMessage.ReplyTo =
+                    replyTo ?? await ConstructQueueName(logger, Core.Settings.MyHerId, queueType).ConfigureAwait(false);
+            }
             messagingMessage.ContentType = Core.MessageProtection.ContentType;
             messagingMessage.MessageId = outgoingMessage.MessageId;
             messagingMessage.To = queueName;
