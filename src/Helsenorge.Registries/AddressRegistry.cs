@@ -151,55 +151,32 @@ namespace Helsenorge.Registries
         {
             var key = $"AR_GetCertificateDetailsForEncryption{herId}";
 
-            // FIXME: Next major release, the code inside this clause should be used with both formatter types.
-            if (this._settings.CachingFormatter == CacheFormatterType.XmlFormatter)
+            Abstractions.CertificateDetails certificateDetails = null;
+            // FIXME: Next major release, simplify the code which juggles cache reads depending on CacheFormatterType
+            //        being .XmlFormatter or .BinaryFormatter.
+            if (!forceUpdate)
             {
-                var details = forceUpdate
-                    ? null
-                    : await CacheExtensions.ReadValueFromCache<Abstractions.CertificateDetails>(
+                certificateDetails = _settings.CachingFormatter == CacheFormatterType.XmlFormatter
+                    ? await CacheExtensions.ReadValueFromCache<Abstractions.CertificateDetails>(
                         logger,
                         _cache,
                         key,
-                        _settings.CachingFormatter).ConfigureAwait(false);
-
-                if (details == null)
-                {
-                    try
-                    {
-                        var registryData = await GetCertificateDetailsForEncryptionInternal(logger, herId)
-                            .ConfigureAwait(false);
-                        details = MapCertificateDetails(herId, registryData);
-                    }
-                    catch (FaultException ex)
-                    {
-                        throw new RegistriesException(ex.Message, ex)
-                        {
-                            EventId = EventIds.CerificateDetails,
-                            Data = { { "HerId", herId } }
-                        };
-                    }
-
-                    await CacheExtensions.WriteValueToCache(
+                        _settings.CachingFormatter).ConfigureAwait(false)
+                    : MapCertificateDetails(herId, await CacheExtensions.ReadValueFromCache<AddressService.CertificateDetails>(
                         logger,
                         _cache,
                         key,
-                        details,
-                        _settings.CachingInterval,
-                        _settings.CachingFormatter).ConfigureAwait(false);
-                }
-
-                return details;
+                        _settings.CachingFormatter).ConfigureAwait(false));
             }
 
-            var certificateDetails = forceUpdate ? null : await CacheExtensions.ReadValueFromCache<AddressService.CertificateDetails>(logger, _cache, key, _settings.CachingFormatter).ConfigureAwait(false);
-
-            if(certificateDetails == null)
+            if (certificateDetails == null)
             {
+                AddressService.CertificateDetails certificateDetailsRegistry = null;
                 try
                 {
-                    certificateDetails = await GetCertificateDetailsForEncryptionInternal(logger, herId).ConfigureAwait(false);
+                    certificateDetailsRegistry = await GetCertificateDetailsForEncryptionInternal(logger, herId).ConfigureAwait(false);
                 }
-                catch(FaultException ex)
+                catch (FaultException ex)
                 {
                     throw new RegistriesException(ex.Message, ex)
                     {
@@ -207,9 +184,34 @@ namespace Helsenorge.Registries
                         Data = { { "HerId", herId } }
                     };
                 }
-                await CacheExtensions.WriteValueToCache(logger, _cache, key, certificateDetails, _settings.CachingInterval, _settings.CachingFormatter).ConfigureAwait(false);
+
+                certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
+
+                // FIXME: Next major release, simplify the code which juggles cache writes depending on CacheFormatterType
+                //        being .XmlFormatter or .BinaryFormatter.
+                if (_settings.CachingFormatter == CacheFormatterType.XmlFormatter)
+                {
+                    await CacheExtensions.WriteValueToCache(
+                        logger,
+                        _cache,
+                        key,
+                        certificateDetails,
+                        _settings.CachingInterval,
+                        _settings.CachingFormatter).ConfigureAwait(false);
+                }
+                else
+                {
+                    await CacheExtensions.WriteValueToCache(
+                        logger,
+                        _cache,
+                        key,
+                        certificateDetailsRegistry,
+                        _settings.CachingInterval,
+                        _settings.CachingFormatter).ConfigureAwait(false);
+                }
             }
-            return certificateDetails == null ? default(Abstractions.CertificateDetails) : MapCertificateDetails(herId, certificateDetails);
+
+            return certificateDetails;
         }
 
         /// <summary>
@@ -368,6 +370,9 @@ namespace Helsenorge.Registries
 
         private static Abstractions.CertificateDetails MapCertificateDetails(int herId, AddressService.CertificateDetails certificateDetails)
         {
+            if (certificateDetails == null)
+                return null;
+
             return new Abstractions.CertificateDetails
             {
                 HerId = herId,
