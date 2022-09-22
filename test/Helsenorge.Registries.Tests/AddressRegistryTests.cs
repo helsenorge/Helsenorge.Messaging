@@ -219,6 +219,32 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
+        public void Serialize_AddressService_CommunicationPartyDetails()
+        {
+            var item = new Abstractions.CommunicationPartyDetails
+            {
+                Name = "Name",
+                HerId = 1234,
+                ParentHerId = 4321,
+                ParentName = "Parent Name",
+                SynchronousQueueName = "1234_sync",
+                AsynchronousQueueName = "1234_async",
+                ErrorQueueName = "1234_error",
+            };
+
+            var serialized = XmlCacheFormatter.Serialize(item);
+            var deserialized =
+                XmlCacheFormatter.DeserializeAsync<Abstractions.CommunicationPartyDetails>(serialized).Result;
+            Assert.AreEqual(item.Name, deserialized.Name);
+            Assert.AreEqual(item.HerId, deserialized.HerId);
+            Assert.AreEqual(item.ParentHerId, deserialized.ParentHerId);
+            Assert.AreEqual(item.ParentName, deserialized.ParentName);
+            Assert.AreEqual(item.SynchronousQueueName, deserialized.SynchronousQueueName);
+            Assert.AreEqual(item.AsynchronousQueueName, deserialized.AsynchronousQueueName);
+            Assert.AreEqual(item.ErrorQueueName, deserialized.ErrorQueueName);
+        }
+
+        [TestMethod]
         public void Serialize_AddressService_CertificateDetails()
         {
             var keys = ECDsa.Create();
