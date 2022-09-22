@@ -66,52 +66,30 @@ namespace Helsenorge.Registries
         {
             var key = $"AR_FindCommunicationPartyDetailsAsync_{herId}";
 
-            // FIXME: Next major release, the code inside this clause should be used with both formatter types.
-            if (this._settings.CachingFormatter == CacheFormatterType.XmlFormatter)
+            CommunicationPartyDetails communicationPartyDetails = null;
+            // FIXME: Next major release, simplify the code which juggles cache reads depending on CacheFormatterType
+            //        being .XmlFormatter or .BinaryFormatter.
+            if (!forceUpdate)
             {
-                var partyDetails = forceUpdate
-                    ? null
-                    : await CacheExtensions.ReadValueFromCache<CommunicationPartyDetails>(
+                communicationPartyDetails = _settings.CachingFormatter == CacheFormatterType.XmlFormatter
+                    ? await CacheExtensions.ReadValueFromCache<CommunicationPartyDetails>(
                         logger,
                         _cache,
                         key,
-                        _settings.CachingFormatter).ConfigureAwait(false);
-
-                if (partyDetails == null)
-                {
-                    try
-                    {
-                        var registryData = await FindCommunicationPartyDetails(logger, herId).ConfigureAwait(false);
-                        partyDetails = MapCommunicationPartyDetails(registryData);
-                    }
-                    catch (FaultException ex)
-                    {
-                        throw new RegistriesException(ex.Message, ex)
-                        {
-                            EventId = EventIds.CommunicationPartyDetails,
-                            Data = { { "HerId", herId } }
-                        };
-                    }
-
-                    await CacheExtensions.WriteValueToCache(
+                        _settings.CachingFormatter).ConfigureAwait(false)
+                    : MapCommunicationPartyDetails(await CacheExtensions.ReadValueFromCache<CommunicationParty>(
                         logger,
                         _cache,
                         key,
-                        partyDetails,
-                        _settings.CachingInterval,
-                        _settings.CachingFormatter).ConfigureAwait(false);
-                }
-
-                return partyDetails ?? default(CommunicationPartyDetails);
+                        _settings.CachingFormatter).ConfigureAwait(false));
             }
 
-            var party = forceUpdate ? null : await CacheExtensions.ReadValueFromCache<CommunicationParty>(logger, _cache, key, _settings.CachingFormatter).ConfigureAwait(false);
-
-            if (party == null)
+            if (communicationPartyDetails == null)
             {
+                CommunicationParty communicationParty = null;
                 try
                 {
-                    party = await FindCommunicationPartyDetails(logger, herId).ConfigureAwait(false);
+                    communicationParty = await FindCommunicationPartyDetails(logger, herId).ConfigureAwait(false);
                 }
                 catch (FaultException ex)
                 {
@@ -121,9 +99,34 @@ namespace Helsenorge.Registries
                         Data = { { "HerId", herId } }
                     };
                 }
-                await CacheExtensions.WriteValueToCache(logger, _cache, key, party, _settings.CachingInterval, _settings.CachingFormatter).ConfigureAwait(false);
+
+                communicationPartyDetails = MapCommunicationPartyDetails(communicationParty);
+                // FIXME: Next major release, simplify the code which juggles cache writes depending on CacheFormatterType
+                //        being .XmlFormatter or .BinaryFormatter.
+                if (_settings.CachingFormatter == CacheFormatterType.XmlFormatter)
+                {
+                    // Store the mapped CommunicationPartyDetails if we are using the XmlFormatter
+                    await CacheExtensions.WriteValueToCache(
+                        logger,
+                        _cache,
+                        key,
+                        communicationPartyDetails,
+                        _settings.CachingInterval,
+                        _settings.CachingFormatter).ConfigureAwait(false);
+                }
+                else
+                {
+                    await CacheExtensions.WriteValueToCache(
+                        logger,
+                        _cache,
+                        key,
+                        communicationParty,
+                        _settings.CachingInterval,
+                        _settings.CachingFormatter).ConfigureAwait(false);
+                }
             }
-            return party == null ? default(CommunicationPartyDetails) : MapCommunicationPartyDetails(party);
+
+            return communicationPartyDetails;
         }
 
         /// <summary>
@@ -334,6 +337,9 @@ namespace Helsenorge.Registries
 
         private static CommunicationPartyDetails MapCommunicationPartyDetails(CommunicationParty communicationParty)
         {
+            if (communicationParty == null)
+                return null;
+
             var details = new CommunicationPartyDetails
             {
                 Name = !string.IsNullOrEmpty(communicationParty.DisplayName) ? communicationParty.DisplayName : communicationParty.Name,
