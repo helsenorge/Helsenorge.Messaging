@@ -102,7 +102,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <param name="cancellation">Cancellation token that signals when we should stop</param>
         public async Task Start(CancellationToken cancellation)
         {
-            Logger.LogInformation("Starting listener on queue {0}", QueueName);
+            Logger.LogInformation($"Starting listener on host and queue '{Core.HostnameAndPath}/{QueueName}'");
 
             while (cancellation.IsCancellationRequested == false)
             {
@@ -112,7 +112,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 
                     if (!_listenerEstablishedConfirmed)
                     {
-                        Logger.LogInformation("Listener established on queue {0}", QueueName);
+                        Logger.LogInformation($"Listener established on host and queue '{Core.HostnameAndPath}/{QueueName}'");
                         _listenerEstablishedConfirmed = true;
                     }
                 }
