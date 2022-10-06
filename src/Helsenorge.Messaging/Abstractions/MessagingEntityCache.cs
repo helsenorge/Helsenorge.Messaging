@@ -197,8 +197,7 @@ namespace Helsenorge.Messaging.Abstractions
                 }
                 catch (Exception ex)
                 {
-                    var message = "Failed to close message entity: {Path} ActiveCount={ActiveCount}. Exception: " + ex.Message + " Stack Trace: " + ex.StackTrace;
-                    logger.LogCritical(EventIds.MessagingEntityCacheFailedToCloseEntity, message, path, entry.ActiveCount);
+                    logger.LogCritical(EventIds.MessagingEntityCacheFailedToCloseEntity, ex, "Failed to close message entity: {Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
                 }
                 finally
                 {
