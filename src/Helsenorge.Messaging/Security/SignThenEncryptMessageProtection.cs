@@ -22,15 +22,25 @@ namespace Helsenorge.Messaging.Security
     /// </summary>
     public class SignThenEncryptMessageProtection : MessageProtection
     {
+        private readonly X509IncludeOption? _includeOption;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SignThenEncryptMessageProtection"/> class with the required certificates for signing and encrypting data.
         /// </summary>
         /// <param name="signingCertificate">Certificcate that will be used to sign data</param>
         /// <param name="encryptionCertificate">Certificate that will be used to encrypt data</param>
         /// <param name="legacyEncryptionCertificate">A legacy certificate that can be used when swapping certificates.</param>
-        public SignThenEncryptMessageProtection(X509Certificate2 signingCertificate, X509Certificate2 encryptionCertificate, X509Certificate2 legacyEncryptionCertificate = null)
+        /// <param name="includeOption">Controls how much of the signer certificate's certificate chain should be
+        /// embedded in the signed message. If not specified, the default <see cref="X509IncludeOption.ExcludeRoot"/>
+        /// is used.</param>
+        public SignThenEncryptMessageProtection(
+            X509Certificate2 signingCertificate,
+            X509Certificate2 encryptionCertificate,
+            X509Certificate2 legacyEncryptionCertificate = null,
+            X509IncludeOption? includeOption = default)
             : base (signingCertificate, encryptionCertificate, legacyEncryptionCertificate)
         {
+            _includeOption = includeOption;
         }
 
         /// <summary>
@@ -91,8 +101,14 @@ namespace Helsenorge.Messaging.Security
         private byte[] Protect(byte[] data, X509Certificate2 encryptionCertificate)
         {
             // first we sign the message
-            SignedCms signedCms = new SignedCms(new ContentInfo(data));
-            signedCms.ComputeSignature(new CmsSigner(SigningCertificate));
+            var signedCms = new SignedCms(new ContentInfo(data));
+            var signer = new CmsSigner(SigningCertificate);
+            if (_includeOption.HasValue)
+            {
+                signer.IncludeOption = _includeOption.Value;
+            }
+
+            signedCms.ComputeSignature(signer);
             byte[] signedData = signedCms.Encode();
 
             // then we encrypt it
