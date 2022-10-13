@@ -114,9 +114,14 @@ namespace Helsenorge.Registries
             }
             if (string.IsNullOrEmpty(xmlString))
             {
+                // HACK: This whole thing is a hack and should be removed.
+                var communicationParty = await _adressRegistry.FindCommunicationPartyDetailsAsync(logger, counterpartyHerId).ConfigureAwait(false);
+                // HACK: We are assuming that we should return the asynchronous queue name as the delivery channel.
+                var deliveryChannel = communicationParty.AsynchronousQueueName;
                 result = CreateDummyCollaborationProtocolProfile(counterpartyHerId,
                     await _adressRegistry.GetCertificateDetailsForEncryptionAsync(logger, counterpartyHerId).ConfigureAwait(false),
-                    await _adressRegistry.GetCertificateDetailsForValidatingSignatureAsync(logger, counterpartyHerId).ConfigureAwait(false));
+                    await _adressRegistry.GetCertificateDetailsForValidatingSignatureAsync(logger, counterpartyHerId).ConfigureAwait(false),
+                    deliveryChannel);
             }
             else
             {
@@ -293,11 +298,35 @@ namespace Helsenorge.Registries
             _ = await Invoke(logger, service => service.GetCppForCommunicationPartyAsync(herId), "GetCppForCommunicationPartyAsync").ConfigureAwait(false);
         }
         
-        private CollaborationProtocolProfile CreateDummyCollaborationProtocolProfile(int herId, Abstractions.CertificateDetails encryptionCertificate, Abstractions.CertificateDetails signatureCertificate)
+        // HACK: This is a hack used for when interns and substitues which do not have CPP send a message on behalf of the GP.
+        private CollaborationProtocolProfile CreateDummyCollaborationProtocolProfile(int herId, Abstractions.CertificateDetails encryptionCertificate, Abstractions.CertificateDetails signatureCertificate, string deliveryChannel)
         {
             return new CollaborationProtocolProfile
             {
-                Roles = new List<CollaborationProtocolRole>(),
+                Roles = new List<CollaborationProtocolRole>
+                {
+                    new CollaborationProtocolRole
+                    {
+                        ReceiveMessages = new List<CollaborationProtocolMessage>
+                        {
+                            new CollaborationProtocolMessage
+                            {
+                                Name = "APPREC",
+                                DeliveryProtocol = DeliveryProtocol.Amqp,
+                                DeliveryChannel = deliveryChannel
+                            }
+                        },
+                        SendMessages = new List<CollaborationProtocolMessage>
+                        {
+                            new CollaborationProtocolMessage
+                            {
+                                Name = "APPREC",
+                                DeliveryProtocol = DeliveryProtocol.Amqp,
+                                DeliveryChannel = deliveryChannel
+                            }
+                        }
+                    }
+                },
                 HerId = herId,
                 Name = DummyPartyName,
                 EncryptionCertificate = encryptionCertificate?.Certificate,
