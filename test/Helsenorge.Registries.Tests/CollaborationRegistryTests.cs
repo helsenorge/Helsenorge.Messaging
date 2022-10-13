@@ -133,7 +133,7 @@ namespace Helsenorge.Registries.Tests
         [TestMethod]
         public void Read_CollaborationProfile_NotFound()
         {
-            var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 1234).Result;
+            var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93252).Result;
             Assert.IsNotNull(profile);
             Assert.AreEqual("DummyCollaborationProtocolProfile", profile.Name);
         }
