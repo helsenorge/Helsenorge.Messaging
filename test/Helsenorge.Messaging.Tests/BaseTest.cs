@@ -24,6 +24,15 @@ namespace Helsenorge.Messaging.Tests
     [TestClass]
     public class BaseTest
     {
+        public BaseTest()
+        {
+            helseNorgeEncryptionCertificate = TestCertificates.GenerateX509Certificate2(X509KeyUsageFlags.KeyEncipherment, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
+            helseNorgeSignatureCertificate = TestCertificates.GenerateX509Certificate2(X509KeyUsageFlags.NonRepudiation, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
+
+        }
+        private X509Certificate2 helseNorgeEncryptionCertificate;
+        private X509Certificate2 helseNorgeSignatureCertificate;
+
         //public const int MyHerId = 93238;
         ///public const int OhterHerId = 93252;
         public Guid CpaId = new Guid("49391409-e528-4919-b4a3-9ccdab72c8c1");
@@ -130,13 +139,13 @@ namespace Helsenorge.Messaging.Tests
                 {
                     StoreName = StoreName.My,
                     StoreLocation = StoreLocation.LocalMachine,
-                    Thumbprint = TestCertificates.HelsenorgeSigntatureThumbprint
+                    Thumbprint = helseNorgeSignatureCertificate.Thumbprint
                 },
                 DecryptionCertificate = new CertificateSettings()
                 {
                     StoreName = StoreName.My,
                     StoreLocation = StoreLocation.LocalMachine,
-                    Thumbprint = TestCertificates.HelsenorgeEncryptionThumbprint
+                    Thumbprint = helseNorgeEncryptionCertificate.Thumbprint
                 }
             };
             
@@ -150,8 +159,8 @@ namespace Helsenorge.Messaging.Tests
             MockFactory = new MockFactory(otherHerId);
             CertificateValidator = new MockCertificateValidator();
             CertificateStore = new MockCertificateStore();
-            var signingCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeSigntatureThumbprint);
-            var encryptionCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint);
+            var signingCertificate = helseNorgeSignatureCertificate;
+            var encryptionCertificate = helseNorgeEncryptionCertificate;
             MessageProtection = new MockMessageProtection(signingCertificate, encryptionCertificate);
 
             Client = new MessagingClient(

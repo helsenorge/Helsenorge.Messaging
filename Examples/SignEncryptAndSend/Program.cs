@@ -32,9 +32,8 @@ namespace SignEncryptAndSend
             var messageCount = 20;
             try
             {
-                var certificateStore = new MockCertificateStore();
-                var signatureCertificate = certificateStore.GetCertificate(TestCertificates.HelsenorgeSigntatureThumbprint);
-                var encryptionCertificate = certificateStore.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint);
+                var signatureCertificate = TestCertificates.GenerateX509Certificate2(System.Security.Cryptography.X509Certificates.X509KeyUsageFlags.NonRepudiation, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
+                var encryptionCertificate = TestCertificates.GenerateX509Certificate2(System.Security.Cryptography.X509Certificates.X509KeyUsageFlags.KeyEncipherment, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1)); ;
                 var messageProtection = new SignThenEncryptMessageProtection(signatureCertificate, encryptionCertificate);
 
                 var addressRegistry = new MockAddressRegistry();

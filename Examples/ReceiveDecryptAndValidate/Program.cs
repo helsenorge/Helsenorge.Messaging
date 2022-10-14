@@ -30,9 +30,9 @@ namespace ReceiveDecryptAndValidate
             IMessagingReceiver receiver = null;
             try
             {
-                var certificateStore = new MockCertificateStore();
-                var signatureCertificate = certificateStore.GetCertificate(TestCertificates.CounterpartySigntatureThumbprint);
-                var encryptionCertificate = certificateStore.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint);
+
+                var signatureCertificate = TestCertificates.GenerateX509Certificate2(System.Security.Cryptography.X509Certificates.X509KeyUsageFlags.NonRepudiation,DateTimeOffset.Now.AddDays(-1),DateTimeOffset.Now.AddMonths(1));
+                var encryptionCertificate = TestCertificates.GenerateX509Certificate2(System.Security.Cryptography.X509Certificates.X509KeyUsageFlags.KeyEncipherment, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
                 var messageProtection = new SignThenEncryptMessageProtection(signatureCertificate, encryptionCertificate);
 
                 var addressRegistry = new MockAddressRegistry();

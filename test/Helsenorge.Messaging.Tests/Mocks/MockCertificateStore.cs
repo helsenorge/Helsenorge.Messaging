@@ -22,28 +22,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
             string tp = thumbprint.ToString();
             if (string.IsNullOrWhiteSpace(tp)) throw new ArgumentException($"Argument '{nameof(thumbprint)}' must contain a value.", nameof(thumbprint));
 
-            X509Certificate2 certificate = null;
-            switch (tp)
-            {
-                case TestCertificates.HelsenorgeEncryptionInvalidStartThumbPrint:
-                    certificate = TestCertificates.HelsenorgePrivateEncryptionInvalidStart;
-                    break;
-                case TestCertificates.HelsenorgeEncryptionInvalidEndThumbprint:
-                    certificate = TestCertificates.HelsenorgePrivateEncryptionInvalidEnd;
-                    break;
-                case TestCertificates.HelsenorgeEncryptionThumbprint:
-                    certificate = TestCertificates.HelsenorgePrivateEncryption;
-                    break;
-                case TestCertificates.HelsenorgeSigntatureThumbprint:
-                    certificate = TestCertificates.HelsenorgePrivateSigntature;
-                    break;
-                case TestCertificates.CounterpartyEncryptionThumbprint:
-                    certificate = TestCertificates.CounterpartyPrivateEncryption;
-                    break;
-                case TestCertificates.CounterpartySigntatureThumbprint:
-                    certificate = TestCertificates.CounterpartyPrivateSigntature;
-                    break;
-            }
+            X509Certificate2 certificate = TestCertificates.GenerateX509Certificate2(X509KeyUsageFlags.None,DateTimeOffset.Now.AddDays(-1),DateTimeOffset.Now.AddMonths(1));
 
             return certificate;
         }
