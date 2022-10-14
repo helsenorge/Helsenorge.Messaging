@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -36,6 +37,11 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// A helper method to set the Correlation Id from the callee code.
         /// </summary>
         public Action<string> SetCorrelationIdAction { get; set; }
+
+        /// <summary>
+        /// Returns the Last Read Time from the queue in UTC format.
+        /// </summary>
+        public DateTime LastReadTimeUtc { get; private set; }
 
         /// <summary>
         /// The timeout used for reading messages from queue
@@ -115,6 +121,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                         Logger.LogInformation($"Listener established on host and queue '{Core.HostnameAndPath}/{QueueName}'");
                         _listenerEstablishedConfirmed = true;
                     }
+
+                    LastReadTimeUtc = DateTime.UtcNow;
                 }
                 catch (Exception ex) // protect the main message pump
                 {
@@ -122,6 +130,10 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     // if there are problems with the message bus, we don't get interval of the ReadTimeout
                     // pause a bit so that we don't take over the whole system
                     await Task.Delay(5000, cancellation).ConfigureAwait(false);
+                }
+                finally
+                {
+                    Logger.LogInformation($"Last Read Time UTC: '{LastReadTimeUtc.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo)}' on host and queue: '{Core.HostnameAndPath}/{QueueName}'");
                 }
             }
         }

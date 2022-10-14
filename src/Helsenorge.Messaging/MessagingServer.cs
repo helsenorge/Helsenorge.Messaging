@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -183,6 +184,28 @@ namespace Helsenorge.Messaging
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _logger = _loggerFactory.CreateLogger(nameof(MessagingServer));
         }
+
+        /// <summary>
+        /// Returns the Last Read Time from the asynchronous queue in UTC format.
+        /// </summary>
+        public DateTime? AsynchronousQueueLastReadTimeUtc =>
+            _listeners.Where(listener => listener is AsynchronousMessageListener)
+                .OrderByDescending(listener => listener.LastReadTimeUtc)
+                .FirstOrDefault()?.LastReadTimeUtc;
+        /// <summary>
+        /// Returns the Last Read Time from the synchronous queue in UTC format.
+        /// </summary>
+        public DateTime? SynchronousQueueLastReadTimeUtc =>
+            _listeners.Where(listener => listener is SynchronousMessageListener)
+                .OrderByDescending(listener => listener.LastReadTimeUtc)
+                .FirstOrDefault()?.LastReadTimeUtc;
+        /// <summary>
+        /// Returns the Last Read Time from the error queue in UTC format.
+        /// </summary>
+        public DateTime? ErrorQueueLastReadTimeUtc =>
+            _listeners.Where(listener => listener is ErrorMessageListener)
+                .OrderByDescending(listener => listener.LastReadTimeUtc)
+                .FirstOrDefault()?.LastReadTimeUtc;
 
         /// <summary>
         /// Start the server
