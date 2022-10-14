@@ -38,6 +38,11 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         public Action<string> SetCorrelationIdAction { get; set; }
 
         /// <summary>
+        /// Returns the Last Read Time from the queue in UTC format.
+        /// </summary>
+        public DateTime LastReadTimeUtc { get; private set; }
+
+        /// <summary>
         /// The timeout used for reading messages from queue
         /// </summary>
         protected TimeSpan ReadTimeout { get; set; }
@@ -115,6 +120,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                         Logger.LogInformation($"Listener established on host and queue '{Core.HostnameAndPath}/{QueueName}'");
                         _listenerEstablishedConfirmed = true;
                     }
+
+                    LastReadTimeUtc = DateTime.UtcNow;
                 }
                 catch (Exception ex) // protect the main message pump
                 {
