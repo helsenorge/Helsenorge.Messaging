@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -129,6 +130,10 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     // if there are problems with the message bus, we don't get interval of the ReadTimeout
                     // pause a bit so that we don't take over the whole system
                     await Task.Delay(5000, cancellation).ConfigureAwait(false);
+                }
+                finally
+                {
+                    Logger.LogInformation($"Last Read Time UTC: '{LastReadTimeUtc.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo)}' on host and queue: '{Core.HostnameAndPath}/{QueueName}'");
                 }
             }
         }
