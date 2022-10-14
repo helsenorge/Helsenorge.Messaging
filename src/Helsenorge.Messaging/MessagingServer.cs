@@ -186,6 +186,28 @@ namespace Helsenorge.Messaging
         }
 
         /// <summary>
+        /// Returns the Last Read Time from the asynchronous queue in UTC format.
+        /// </summary>
+        public DateTime? AsynchronousQueueLastReadTimeUtc =>
+            _listeners.Where(listener => listener is AsynchronousMessageListener)
+                .OrderByDescending(listener => listener.LastReadTimeUtc)
+                .FirstOrDefault()?.LastReadTimeUtc;
+        /// <summary>
+        /// Returns the Last Read Time from the synchronous queue in UTC format.
+        /// </summary>
+        public DateTime? SynchronousQueueLastReadTimeUtc =>
+            _listeners.Where(listener => listener is SynchronousMessageListener)
+                .OrderByDescending(listener => listener.LastReadTimeUtc)
+                .FirstOrDefault()?.LastReadTimeUtc;
+        /// <summary>
+        /// Returns the Last Read Time from the error queue in UTC format.
+        /// </summary>
+        public DateTime? ErrorQueueLastReadTimeUtc =>
+            _listeners.Where(listener => listener is ErrorMessageListener)
+                .OrderByDescending(listener => listener.LastReadTimeUtc)
+                .FirstOrDefault()?.LastReadTimeUtc;
+
+        /// <summary>
         /// Start the server
         /// </summary>
         public async Task Start()
