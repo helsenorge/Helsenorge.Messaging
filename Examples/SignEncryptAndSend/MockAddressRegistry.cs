@@ -21,7 +21,7 @@ namespace SignEncryptAndSend
         {
             return Task.FromResult(new CertificateDetails
             {
-                Certificate = TestCertificates.GenerateX509Certificate2(System.Security.Cryptography.X509Certificates.X509KeyUsageFlags.KeyEncipherment,System.DateTimeOffset.Now.AddDays(-1),System.DateTimeOffset.Now.AddMonths(1)),
+                Certificate = TestCertificates.GenerateSelfSignedCertificate(System.Security.Cryptography.X509Certificates.X509KeyUsageFlags.KeyEncipherment,System.DateTimeOffset.Now.AddDays(-1),System.DateTimeOffset.Now.AddMonths(1)),
                 HerId = herId,
             });
         }

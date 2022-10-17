@@ -38,10 +38,10 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
 
         public AsynchronousReceiveTests()
         {
-            partyASignatureCertificate = TestCertificates.GenerateX509Certificate2(X509KeyUsageFlags.NonRepudiation, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
-            partyAEncryptionCertificate = TestCertificates.GenerateX509Certificate2(X509KeyUsageFlags.KeyEncipherment, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
-            helseNorgeEncryptionCertificate = TestCertificates.GenerateX509Certificate2(X509KeyUsageFlags.KeyEncipherment, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
-            helseNorgeSignatureCertificate = TestCertificates.GenerateX509Certificate2(X509KeyUsageFlags.NonRepudiation, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
+            partyASignatureCertificate = TestCertificates.GenerateSelfSignedCertificate(X509KeyUsageFlags.NonRepudiation, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
+            partyAEncryptionCertificate = TestCertificates.GenerateSelfSignedCertificate(X509KeyUsageFlags.KeyEncipherment, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
+            helseNorgeEncryptionCertificate = TestCertificates.GenerateSelfSignedCertificate(X509KeyUsageFlags.KeyEncipherment, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
+            helseNorgeSignatureCertificate = TestCertificates.GenerateSelfSignedCertificate(X509KeyUsageFlags.NonRepudiation, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
 
         }
         private XDocument _content;

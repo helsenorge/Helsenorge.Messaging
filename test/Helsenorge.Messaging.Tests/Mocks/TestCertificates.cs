@@ -21,13 +21,13 @@ namespace Helsenorge.Messaging.Tests.Mocks
     public static class TestCertificates
     {
 
-        public static X509Certificate2 GenerateX509Certificate2 (X509KeyUsageFlags x509KeyUsage,DateTimeOffset notBefore, DateTimeOffset notAfter)
+        public static X509Certificate2 GenerateSelfSignedCertificate (X509KeyUsageFlags x509KeyUsage,DateTimeOffset notBefore, DateTimeOffset notAfter)
         {
             using RSA rsa = RSA.Create(2048);
-            var req = new CertificateRequest("cn=HelseNorge", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-            req.CertificateExtensions.Add(new X509KeyUsageExtension(x509KeyUsage, true));
-            var cert = req.CreateSelfSigned(notBefore, notAfter);
-            return cert;
+            var certificateRequest = new CertificateRequest("cn=HelseNorge", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+            certificateRequest.CertificateExtensions.Add(new X509KeyUsageExtension(x509KeyUsage, true));
+            var selfSignedCertificate = certificateRequest.CreateSelfSigned(notBefore, notAfter);
+            return selfSignedCertificate;
         }
 
     }

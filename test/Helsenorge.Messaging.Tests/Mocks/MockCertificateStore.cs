@@ -22,7 +22,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
             string tp = thumbprint.ToString();
             if (string.IsNullOrWhiteSpace(tp)) throw new ArgumentException($"Argument '{nameof(thumbprint)}' must contain a value.", nameof(thumbprint));
 
-            X509Certificate2 certificate = TestCertificates.GenerateX509Certificate2(X509KeyUsageFlags.None,DateTimeOffset.Now.AddDays(-1),DateTimeOffset.Now.AddMonths(1));
+            X509Certificate2 certificate = TestCertificates.GenerateSelfSignedCertificate(X509KeyUsageFlags.None,DateTimeOffset.Now.AddDays(-1),DateTimeOffset.Now.AddMonths(1));
 
             return certificate;
         }
