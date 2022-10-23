@@ -33,13 +33,9 @@ namespace Helsenorge.Registries.Abstractions
     public class CollaborationProtocolMessage
     {
         /// <summary>
-        /// Name of message function. i.e. DIALOG_INNBYGGER_KOORDINATOR
+        /// Name of message. i.e. DIALOG_INNBYGGER_KOORDINATOR
         /// </summary>
         public string Name { get; set; }
-        /// <summary>
-        /// Name of action. i.e. SvarLedigeTimer or APPREC
-        /// </summary>
-        public string Action { get; set; }
         /// <summary>
         /// The delivery channel that should be used. This will be the full queue name
         /// </summary>

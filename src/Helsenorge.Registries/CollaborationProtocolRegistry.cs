@@ -472,11 +472,11 @@ namespace Helsenorge.Registries
 
             foreach (var item in serviceBinding.Elements(_ns + "CanSend"))
             {
-                role.SendMessages.Add(CreateFromThisPartyActionBinding(item.Element(_ns + "ThisPartyActionBinding"), partyInfo, processSpecification.Name));
+                role.SendMessages.Add(CreateFromThisPartyActionBinding(item.Element(_ns + "ThisPartyActionBinding"), partyInfo));
             }
             foreach (var item in serviceBinding.Elements(_ns + "CanReceive"))
             {
-                role.ReceiveMessages.Add(CreateFromThisPartyActionBinding(item.Element(_ns + "ThisPartyActionBinding"), partyInfo, processSpecification.Name));
+                role.ReceiveMessages.Add(CreateFromThisPartyActionBinding(item.Element(_ns + "ThisPartyActionBinding"), partyInfo));
             }
             return role;
         }
@@ -494,7 +494,7 @@ namespace Helsenorge.Registries
         ///		</tns:ThisPartyActionBinding>
         /// ]]>
         /// </example>
-        private CollaborationProtocolMessage CreateFromThisPartyActionBinding(XElement thisPartyActionBinding, XContainer partyInfo, string messageFunction)
+        private CollaborationProtocolMessage CreateFromThisPartyActionBinding(XElement thisPartyActionBinding, XContainer partyInfo)
         {
             if (thisPartyActionBinding == null) throw new ArgumentNullException(nameof(thisPartyActionBinding));
             if (partyInfo == null) throw new ArgumentNullException(nameof(partyInfo));
@@ -534,8 +534,7 @@ namespace Helsenorge.Registries
 
             var message = new CollaborationProtocolMessage
             {
-                Name = messageFunction.ToUpper(),
-                Action = thisPartyActionBinding.Attribute(_ns + "action").Value,
+                Name = thisPartyActionBinding.Attribute(_ns + "action").Value,
                 DeliveryChannel = transportReceiverNode.Element(_ns + "Endpoint")?.Attribute(_ns + "uri")?.Value,
                 DeliveryProtocol = ParseDeliveryProtocol(transportReceiverNode.Element(_ns + "TransportProtocol")?.Value),
                 Parts = FindMessageParts(packageId, partyInfo)
