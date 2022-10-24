@@ -37,7 +37,7 @@ namespace Helsenorge.Registries.Abstractions
         {
             get
             {
-                if (_version == null)
+                if (_version == null && !string.IsNullOrWhiteSpace(VersionString))
                 {
                     _version = new Version(this.VersionString);
                 }
