@@ -344,6 +344,7 @@ namespace Helsenorge.Registries
             return result;
         }
 
+        /// <inheritdoc cref="GetCollaborationProtocolProfileAsync"/>
         protected virtual Task<string> GetCollaborationProtocolProfileAsXmlAsyncInternal(ILogger logger, Guid id)
             => Invoke(logger, x => x.GetCppXmlAsync(id), "GetCppXmlAsync");
         
