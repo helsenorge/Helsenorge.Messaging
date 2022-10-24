@@ -147,7 +147,7 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
                 logger.LogTimeoutError(message.MessageFunction, message.MessageId, message.ToHerId);
                 // logs the response time before throwing exception
                 stopwatch.Stop();
-                logger.LogResponseTime(message.MessageFunction, message.ToHerId, 0, message.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+                logger.LogResponseTime(message.MessageFunction, message.ToHerId, _core.Settings.MyHerId, message.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
                 throw new MessagingException(error)
                 {
