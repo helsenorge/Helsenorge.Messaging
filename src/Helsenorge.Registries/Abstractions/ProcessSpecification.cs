@@ -21,7 +21,7 @@ namespace Helsenorge.Registries.Abstractions
     [Serializable]
     public class ProcessSpecification
     {
-        Version _version;
+        private Version _version;
         /// <summary>
         /// Name of process specification
         /// </summary>
@@ -39,7 +39,7 @@ namespace Helsenorge.Registries.Abstractions
             {
                 if (_version == null && !string.IsNullOrWhiteSpace(VersionString))
                 {
-                    _version = new Version(this.VersionString);
+                    _version = new Version(VersionString);
                 }
                 return _version;
             }
