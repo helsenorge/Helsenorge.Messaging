@@ -304,9 +304,11 @@ namespace Helsenorge.Messaging.ServiceBus
             // update some properties on the cloned message
             clonedMessage.To = await ConstructQueueName(logger, originalMessage.FromHerId, QueueType.Error).ConfigureAwait(false); // change target 
             clonedMessage.TimeToLive = Settings.Error.TimeToLive;
-            clonedMessage.FromHerId = originalMessage.ToHerId;
-            clonedMessage.ToHerId = originalMessage.FromHerId;
-            
+            var fromHerId = originalMessage.FromHerId;
+            var toHerId = originalMessage.ToHerId;
+            clonedMessage.FromHerId = fromHerId;
+            clonedMessage.ToHerId = toHerId;
+
             if (clonedMessage.Properties.ContainsKey(OriginalMessageIdHeaderKey) == false)
             {
                 clonedMessage.SetApplicationProperty(OriginalMessageIdHeaderKey, originalMessage.MessageId);

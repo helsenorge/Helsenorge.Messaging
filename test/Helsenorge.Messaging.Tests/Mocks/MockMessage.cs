@@ -13,10 +13,8 @@ using Helsenorge.Messaging.Abstractions;
 using System.IO;
 using System.Xml.Linq;
 using System.Globalization;
-
 namespace Helsenorge.Messaging.Tests.Mocks
-{
-    class MockMessage : IMessagingMessage
+{    class MockMessage : IMessagingMessage
     {
         private Stream _stream;
         private int _deliveryCount = 0;
@@ -36,9 +34,34 @@ namespace Helsenorge.Messaging.Tests.Mocks
             _stream = ms;
             Properties = new Dictionary<string, object>();
         }
+       
+        private Header MockHeader { get; set; }
+        public int FromHerId
+        {
+            get
+            {
+                return MockHeader.FromHerId;
+            }
 
-        public int FromHerId { get; set; }
-        public int ToHerId { get; set; }
+            set
+            {
+                if (MockHeader is null) MockHeader = new Header();
+                MockHeader.FromHerId = value;
+            }
+        }
+        public int ToHerId
+        {
+            get
+            {
+                return MockHeader.ToHerId;
+            }
+
+            set
+            {
+                if (MockHeader is null) MockHeader = new Header();
+                MockHeader.ToHerId = value;
+            }
+        }
         public DateTime ApplicationTimestamp { get; set; }
         public string CpaId { get; set; }
         public DateTime EnqueuedTimeUtc { get; } = DateTime.Now;
@@ -121,7 +144,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
             {
                 MessageFunction = MessageFunction,
                 MessageId =  MessageId,
-                ToHerId = ToHerId,
+                MockHeader = MockHeader,
                 ContentType =  ContentType,
                 ReplyTo = ReplyTo,
                 CorrelationId = CorrelationId,
@@ -129,7 +152,6 @@ namespace Helsenorge.Messaging.Tests.Mocks
                 DeadLetterQueue = DeadLetterQueue,
                 ApplicationTimestamp = ApplicationTimestamp,
                 CpaId = CpaId,
-                FromHerId = FromHerId,
                 Properties = Properties,
                 ScheduledEnqueueTimeUtc = ScheduledEnqueueTimeUtc,
                 TimeToLive = TimeToLive,
@@ -185,5 +207,10 @@ namespace Helsenorge.Messaging.Tests.Mocks
         {
             Properties[key] = value.ToString(CultureInfo.InvariantCulture);
         }
+}
+    class Header
+    {
+        public int FromHerId { get; set; }
+        public int ToHerId { get; set; }
     }
 }
