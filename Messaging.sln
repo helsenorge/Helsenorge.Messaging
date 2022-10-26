@@ -70,6 +70,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReceiveDecryptAndValidate",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubscriptionExample", "Examples\SubscriptionExample\SubscriptionExample.csproj", "{D49E63C8-DF43-45A9-804B-9B71E1DF5314}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging.AdminLib", "src\Helsenorge.Messaging.AdminLib\Helsenorge.Messaging.AdminLib.csproj", "{7FC8311D-C4CE-4947-AC16-5E5C40FE9919}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -132,6 +134,10 @@ Global
 		{D49E63C8-DF43-45A9-804B-9B71E1DF5314}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D49E63C8-DF43-45A9-804B-9B71E1DF5314}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D49E63C8-DF43-45A9-804B-9B71E1DF5314}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FC8311D-C4CE-4947-AC16-5E5C40FE9919}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FC8311D-C4CE-4947-AC16-5E5C40FE9919}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FC8311D-C4CE-4947-AC16-5E5C40FE9919}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FC8311D-C4CE-4947-AC16-5E5C40FE9919}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
