@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -28,6 +28,10 @@ namespace Helsenorge.Messaging.ServiceBus
         /// <summary>
         /// Queue used for synchronous reply messages
         /// </summary>
-        SynchronousReply
+        SynchronousReply,
+        /// <summary>
+        /// Queue where deadlettered messages are stored
+        /// </summary>
+        DeadLetter,
     }
 }
