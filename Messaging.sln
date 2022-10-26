@@ -72,6 +72,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubscriptionExample", "Exam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging.AdminLib", "src\Helsenorge.Messaging.AdminLib\Helsenorge.Messaging.AdminLib.csproj", "{7FC8311D-C4CE-4947-AC16-5E5C40FE9919}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging.AdminLib.Tests", "test\Helsenorge.Messaging.AdminLib.Tests\Helsenorge.Messaging.AdminLib.Tests.csproj", "{C6DD033F-80EF-4961-A07A-F35496C39821}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -138,6 +140,10 @@ Global
 		{7FC8311D-C4CE-4947-AC16-5E5C40FE9919}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FC8311D-C4CE-4947-AC16-5E5C40FE9919}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FC8311D-C4CE-4947-AC16-5E5C40FE9919}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6DD033F-80EF-4961-A07A-F35496C39821}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6DD033F-80EF-4961-A07A-F35496C39821}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6DD033F-80EF-4961-A07A-F35496C39821}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6DD033F-80EF-4961-A07A-F35496C39821}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
