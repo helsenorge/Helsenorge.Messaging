@@ -9,6 +9,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Helsenorge.Messaging.ServiceBus;
 using RabbitMQ.Client;
 
 namespace Helsenorge.Messaging.AdminLib.RabbitMQ;
@@ -61,5 +62,27 @@ public class QueueClient : IDisposable, IAsyncDisposable
     {
         Dispose();
         return ValueTask.CompletedTask;
+    }
+
+    /// <summary>
+    /// A method to retrieve the number of messages currently on the queue by specifiying the HER-id and the queue type.
+    /// </summary>
+    /// <param name="herId">The HER-id of the queue.</param>
+    /// <param name="queueType">The type of queue.</param>
+    /// <returns>The number of messages currently on the queue.</returns>
+    public uint GetMessageCount(int herId, QueueType queueType)
+    {
+        var queue = QueueUtilities.ConstructQueueName(herId, queueType);
+        return GetMessageCount(queue);
+    }
+
+    /// <summary>
+    /// A method to retrieve the number of messages currently on the queue by explicitly naming the queue.
+    /// </summary>
+    /// <param name="queue">The name of the queue.</param>
+    /// <returns>The number of messages currently on the queue.</returns>
+    public uint GetMessageCount(string queue)
+    {
+        return Channel.MessageCount(queue);
     }
 }
