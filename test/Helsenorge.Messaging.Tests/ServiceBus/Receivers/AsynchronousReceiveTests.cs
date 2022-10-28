@@ -291,8 +291,8 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 Assert.IsNotNull(logEntry);
                 Assert.IsTrue(logEntry.LogLevel == LogLevel.Warning);
                 logEntry = MockLoggerProvider.Entries.FirstOrDefault(e => e.Message.Contains("Reporting error to sender"));
-                Assert.IsTrue(logEntry.Message.Contains("FromHerId: " + MockFactory.OtherHerId.ToString()), "Invalid FromHerId");
-                Assert.IsTrue(logEntry.Message.Contains("ToHerId: " + MockFactory.HelsenorgeHerId.ToString()), "Invalid ToHerId");
+                Assert.IsTrue(logEntry.Message.Contains("FromHerId: " + MockFactory.HelsenorgeHerId.ToString()), "Invalid FromHerId");
+                Assert.IsTrue(logEntry.Message.Contains("ToHerId: " + MockFactory.OtherHerId.ToString()), "Invalid ToHerId");
             },
             wait: () => _handledExceptionCalled,
             received: (m) => { throw new NotifySenderException("NotifySender"); },

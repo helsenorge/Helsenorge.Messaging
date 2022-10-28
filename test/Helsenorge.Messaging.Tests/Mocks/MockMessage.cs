@@ -14,7 +14,8 @@ using System.IO;
 using System.Xml.Linq;
 using System.Globalization;
 namespace Helsenorge.Messaging.Tests.Mocks
-{    class MockMessage : IMessagingMessage
+{
+    class MockMessage : IMessagingMessage
     {
         private Stream _stream;
         private int _deliveryCount = 0;
