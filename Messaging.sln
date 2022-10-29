@@ -74,6 +74,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging.AdminL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging.AdminLib.Tests", "test\Helsenorge.Messaging.AdminLib.Tests\Helsenorge.Messaging.AdminLib.Tests.csproj", "{C6DD033F-80EF-4961-A07A-F35496C39821}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepublishExample", "Examples\RepublishExample\RepublishExample.csproj", "{A59DE6F3-4F4B-4CB5-95CD-AFA81A5A31CF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -144,6 +146,10 @@ Global
 		{C6DD033F-80EF-4961-A07A-F35496C39821}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6DD033F-80EF-4961-A07A-F35496C39821}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6DD033F-80EF-4961-A07A-F35496C39821}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A59DE6F3-4F4B-4CB5-95CD-AFA81A5A31CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A59DE6F3-4F4B-4CB5-95CD-AFA81A5A31CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A59DE6F3-4F4B-4CB5-95CD-AFA81A5A31CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A59DE6F3-4F4B-4CB5-95CD-AFA81A5A31CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -162,6 +168,7 @@ Global
 		{F44A0630-B04A-4DDA-9536-E7AA3C80708A} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
 		{DFF66B90-787E-4FAD-B830-9236ADC21983} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
 		{D49E63C8-DF43-45A9-804B-9B71E1DF5314} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
+		{A59DE6F3-4F4B-4CB5-95CD-AFA81A5A31CF} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {925B24E8-92AC-4D8D-959E-64DE4928A23B}
