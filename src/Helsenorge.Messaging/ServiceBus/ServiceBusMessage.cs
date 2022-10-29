@@ -240,15 +240,67 @@ namespace Helsenorge.Messaging.ServiceBus
         [DebuggerStepThrough]
         public IMessagingMessage Clone(bool includePayload = true)
         {
-            var clone = new Message
+            var clone = new Message();
+
+            if (_implementation.Header != null)
             {
-                Header = _implementation.Header,
-                DeliveryAnnotations = _implementation.DeliveryAnnotations,
-                MessageAnnotations = _implementation.MessageAnnotations,
-                Properties = _implementation.Properties,
-                ApplicationProperties = _implementation.ApplicationProperties,
-                Footer = _implementation.Footer
-            };
+                clone.Header = new Header
+                {
+                    DeliveryCount = _implementation.Header.DeliveryCount,
+                    Durable = _implementation.Header.Durable,
+                    FirstAcquirer = _implementation.Header.FirstAcquirer,
+                    Priority = _implementation.Header.Priority,
+                    Ttl = _implementation.Header.Ttl,
+                };
+            }
+
+            if (_implementation.DeliveryAnnotations != null)
+            {
+                clone.DeliveryAnnotations = new DeliveryAnnotations();
+                foreach (var key in _implementation.DeliveryAnnotations.Map.Keys)
+                    clone.DeliveryAnnotations.Map.Add(key, _implementation.DeliveryAnnotations.Map[key]);
+            }
+
+            if (_implementation.MessageAnnotations != null)
+            {
+                clone.MessageAnnotations = new MessageAnnotations();
+                foreach (var key in _implementation.MessageAnnotations.Map.Keys)
+                    clone.MessageAnnotations.Map.Add(key, _implementation.MessageAnnotations.Map[key]);
+            }
+
+            if (_implementation.Properties != null)
+            {
+                clone.Properties = new Properties
+                {
+                    Subject = _implementation.Properties.Subject,
+                    To = _implementation.Properties.To,
+                    ContentEncoding = _implementation.Properties.ContentEncoding,
+                    ContentType = _implementation.Properties.ContentType,
+                    CorrelationId = _implementation.Properties.CorrelationId,
+                    CreationTime = _implementation.Properties.CreationTime,
+                    GroupId = _implementation.Properties.GroupId,
+                    GroupSequence = _implementation.Properties.GroupSequence,
+                    MessageId = _implementation.Properties.MessageId,
+                    ReplyTo = _implementation.Properties.ReplyTo,
+                    UserId = _implementation.Properties.UserId,
+                    AbsoluteExpiryTime = _implementation.Properties.AbsoluteExpiryTime,
+                    ReplyToGroupId = _implementation.Properties.ReplyToGroupId,
+                };
+            }
+
+            if (_implementation.ApplicationProperties != null)
+            {
+                clone.ApplicationProperties = new ApplicationProperties();
+                foreach (var key in _implementation.ApplicationProperties.Map.Keys)
+                    clone.ApplicationProperties.Map.Add(key, _implementation.ApplicationProperties.Map[key]);
+            }
+
+            if (_implementation.Footer != null)
+            {
+                clone.Footer = new Footer();
+                foreach (var key in _implementation.Footer.Map.Keys)
+                    clone.Footer.Map.Add(key, _implementation.Footer.Map[key]);
+            }
 
             if (includePayload && _implementation.Body is byte[])
             {
