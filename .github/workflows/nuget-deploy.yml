@@ -21,6 +21,7 @@ jobs:
         run: |
           dotnet pack "./src/Helsenorge.Messaging/Helsenorge.Messaging.csproj" -c Release
           dotnet pack "./src/Helsenorge.Registries/Helsenorge.Registries.csproj" -c Release
+          dotnet pack "./src/Helsenorge.Messaging.AdminLib/Helsenorge.Messaging.AdminLib.csproj" -c Release
       - name: Deploy Nuget Packages
         run: dotnet nuget push .\src\**\*.nupkg
           --api-key ${{ secrets.NUGET_API_KEY }}
