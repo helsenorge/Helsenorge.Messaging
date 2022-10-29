@@ -22,6 +22,8 @@ public class QueueClient : IDisposable, IAsyncDisposable
     private IConnection _connection;
     private IModel _channel;
 
+    private const ushort NoRoute = 312;
+
     public QueueClient(ConnectionString connectionString, ILogger logger)
     {
         _connectionString = connectionString;
@@ -64,6 +66,29 @@ public class QueueClient : IDisposable, IAsyncDisposable
         return ValueTask.CompletedTask;
     }
 
+    private void PublishMessageAndAckIfSuccessful(BasicGetResult message, string exchange, string destinationQueue, bool mandatory = true, bool waitForConfirm = true)
+    {
+        if (message == null)
+            throw new ArgumentNullException(nameof(message));
+        if (exchange == null)
+            throw new ArgumentNullException(nameof(exchange));
+        if (string.IsNullOrWhiteSpace(destinationQueue))
+            throw new ArgumentException("Argument must contain the queue name.", nameof(destinationQueue));
+
+        // Publish message to destination queue.
+        Channel.BasicPublish(exchange, destinationQueue, mandatory, message.BasicProperties, message.Body);
+        if (waitForConfirm && Channel.WaitForConfirms(TimeSpan.FromSeconds(60)))
+        {
+            // The message was confirmed published to the exchange so positively acknowledge that the message has been processed.
+            Channel.BasicAck(message.DeliveryTag, multiple: false);
+        }
+        else
+        {
+            // The message was not confirmed published to the exchange so negatively acknowledge that the message should be re-queued.
+            Channel.BasicNack(message.DeliveryTag, multiple: false, requeue: true);
+        }
+    }
+
     /// <summary>
     /// A method to retrieve the number of messages currently on the queue by specifiying the HER-id and the queue type.
     /// </summary>
@@ -84,5 +109,71 @@ public class QueueClient : IDisposable, IAsyncDisposable
     public uint GetMessageCount(string queue)
     {
         return Channel.MessageCount(queue);
+    }
+
+    /// <summary>
+    /// Publishes messages on the dead letter queue to the specified HER-id and Queue Type.
+    /// </summary>
+    /// <param name="herId">The HER-id of dead letter and source queue.</param>
+    /// <param name="queueType">The queue type we want to move the dead lettered messages to.</param>
+    /// <param name="numberOfMessagesToMove">The number of message to move, -1 means move all messages</param>
+    public void PublishMessagesFromDeadLetterTo(int herId, QueueType queueType = QueueType.Asynchronous, int numberOfMessagesToMove = -1)
+    {
+        if (herId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(herId), herId, "Argument must be a value greater than zero.");
+
+        var sourceQueue = QueueUtilities.ConstructQueueName(herId, QueueType.DeadLetter);
+        var destinationQueue = QueueUtilities.ConstructQueueName(herId, queueType);
+
+        MoveMessages(sourceQueue, destinationQueue, numberOfMessagesToMove);
+    }
+
+    /// <summary>
+    /// Move message from source to destination queue.
+    /// </summary>
+    /// <param name="sourceQueue">The source queue messages will be moved from.</param>
+    /// <param name="destinationQueue">The destination queue messages will be moved to.</param>
+    /// <param name="numberOfMessagesToMove">The number of message to move, -1 means move all messages.</param>
+    public void MoveMessages(string sourceQueue, string destinationQueue, int numberOfMessagesToMove = -1)
+    {
+        if (string.IsNullOrWhiteSpace(sourceQueue))
+            throw new ArgumentNullException(nameof(sourceQueue));
+        if (string.IsNullOrWhiteSpace(destinationQueue))
+            throw new ArgumentNullException(nameof(destinationQueue));
+        if (sourceQueue.Equals(destinationQueue, StringComparison.InvariantCultureIgnoreCase))
+            throw new SourceAndDestinationIdenticalException(sourceQueue, destinationQueue);
+        
+        // Just return if number of messages is set to zero.
+        if (numberOfMessagesToMove == 0)
+            return;
+
+        // Enable publisher acknowledgements.
+        Channel.ConfirmSelect();
+
+        Channel.BasicReturn += (_, args) =>
+        {
+            if (args.ReplyCode == NoRoute)
+                _logger.LogError($"MoveMessages-BasicReturn - Message is un-routable: MessageId: '{args.BasicProperties.MessageId}', CorrelationId: '{args.BasicProperties.CorrelationId}', Exchange: '{args.Exchange}', RoutingKey: '{args.RoutingKey}', ReplyCode: '{args.ReplyCode}', ReplyText: '{args.ReplyText}'");
+            else
+                _logger.LogInformation($"MoveMessages-BasicReturn - MessageId: '{args.BasicProperties.MessageId}', CorrelationId: '{args.BasicProperties.CorrelationId}', Exchange: '{args.Exchange}', RoutingKey: '{args.RoutingKey}', ReplyCode: '{args.ReplyCode}', ReplyText: '{args.ReplyText}'");
+        };
+
+        var messageCount = 0;
+        var result = Channel.BasicGet(sourceQueue, autoAck: false);
+        while (result != null)
+        {
+            PublishMessageAndAckIfSuccessful(result, _connectionString.Exchange, destinationQueue);
+
+            messageCount++;
+            if (numberOfMessagesToMove < 0 || numberOfMessagesToMove > messageCount)
+            {
+                result = Channel.BasicGet(sourceQueue, autoAck: false);
+            }
+            else
+            {
+                // At this point we have moved the specified number of messages we were asked to so let's break out of the loop.
+                break;
+            }
+        }
     }
 }
