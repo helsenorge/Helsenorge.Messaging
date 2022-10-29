@@ -27,3 +27,4 @@ jobs:
       run: |
         dotnet test "./test/Helsenorge.Messaging.Tests/Helsenorge.Messaging.Tests.csproj"
         dotnet test "./test/Helsenorge.Registries.Tests/Helsenorge.Registries.Tests.csproj"
+        dotnet test "./test/Helsenorge.Messaging.AdminLib.Tests/Helsenorge.Messaging.AdminLib.Tests.csproj"
