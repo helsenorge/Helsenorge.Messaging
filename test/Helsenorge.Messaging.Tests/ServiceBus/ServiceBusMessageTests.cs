@@ -285,5 +285,28 @@ namespace Helsenorge.Messaging.Tests.ServiceBus
                 Assert.IsNull(((Message)clonedMessage.OriginalObject).Body);
             }
         }
+
+        [TestMethod]
+        public void Modifications_On_Cloned_Message_Should_Not_Affect_Original_Message()
+        {
+            var toHerId = 123;
+            var fromHerId = 456;
+
+            using var originalMessage = new ServiceBusMessage(new Message());
+            originalMessage.ToHerId = toHerId;
+            originalMessage.FromHerId = fromHerId;
+
+            var clonedMessage = originalMessage.Clone(includePayload: false);
+
+            clonedMessage.FromHerId = originalMessage.ToHerId;
+            clonedMessage.ToHerId = originalMessage.FromHerId;
+
+            // Assert that clonedMessage has its ToHerId and FromHerId switched.
+            Assert.AreEqual(toHerId, clonedMessage.FromHerId);
+            Assert.AreEqual(fromHerId, clonedMessage.ToHerId);
+            // Assert that originalMessage has ToHerId and FromHerId set as it was originally.
+            Assert.AreEqual(toHerId, originalMessage.ToHerId);
+            Assert.AreEqual(fromHerId, originalMessage.FromHerId);
+        }
     }
 }
