@@ -24,6 +24,9 @@ public class QueueClient : IDisposable, IAsyncDisposable
 
     private const ushort NoRoute = 312;
 
+    private const string FirstDeathExchangeHeaderName = "x-first-death-exchange";
+    private const string FirstDeathQueueHeaderName = "x-first-death-queue";
+
     public QueueClient(ConnectionString connectionString, ILogger logger)
     {
         _connectionString = connectionString;
@@ -109,6 +112,55 @@ public class QueueClient : IDisposable, IAsyncDisposable
     public uint GetMessageCount(string queue)
     {
         return Channel.MessageCount(queue);
+    }
+
+        /// <summary>
+    /// Republishes messages on the dead letter queue back to the origin queue.
+    /// </summary>
+    /// <param name="herId">The HER-id of dead letter and source queue.</param>
+    /// <param name="numberOfMessagesToMove">The number of message to move, -1 means move all messages</param>
+    public void RepublishMessageFromDeadLetterToOriginQueue(int herId, int numberOfMessagesToMove = -1)
+    {
+        if (herId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(herId), herId, "Argument must be a value greater than zero.");
+
+        // Just return if number of messages is set to zero.
+        if (numberOfMessagesToMove == 0)
+            return;
+
+        var sourceQueue = QueueUtilities.ConstructQueueName(herId, QueueType.DeadLetter);
+
+        // Enable publisher acknowledgements.
+        Channel.ConfirmSelect();
+
+        Channel.BasicReturn += (_, args) =>
+        {
+            if (args.ReplyCode == NoRoute)
+                _logger.LogError($"MoveMessages-BasicReturn - Message is un-routable: MessageId: '{args.BasicProperties.MessageId}', CorrelationId: '{args.BasicProperties.CorrelationId}', Exchange: '{args.Exchange}', RoutingKey: '{args.RoutingKey}', ReplyCode: '{args.ReplyCode}', ReplyText: '{args.ReplyText}'");
+            else
+                _logger.LogInformation($"MoveMessages-BasicReturn - MessageId: '{args.BasicProperties.MessageId}', CorrelationId: '{args.BasicProperties.CorrelationId}', Exchange: '{args.Exchange}', RoutingKey: '{args.RoutingKey}', ReplyCode: '{args.ReplyCode}', ReplyText: '{args.ReplyText}'");
+        };
+
+        var messageCount = 0;
+        var result = Channel.BasicGet(sourceQueue, autoAck: false);
+        while (result != null)
+        {
+            var exchange = QueueUtilities.GetByteHeaderAsString(result.BasicProperties.Headers, FirstDeathExchangeHeaderName);
+            var destinationQueue = QueueUtilities.GetByteHeaderAsString(result.BasicProperties.Headers, FirstDeathQueueHeaderName);
+
+            PublishMessageAndAckIfSuccessful(result, exchange, destinationQueue);
+
+            messageCount++;
+            if (numberOfMessagesToMove < 0 || numberOfMessagesToMove > messageCount)
+            {
+                result = Channel.BasicGet(sourceQueue, autoAck: false);
+            }
+            else
+            {
+                // At this point we have moved the specified number of messages we were asked to so let's break out of the loop.
+                break;
+            }
+        }
     }
 
     /// <summary>
