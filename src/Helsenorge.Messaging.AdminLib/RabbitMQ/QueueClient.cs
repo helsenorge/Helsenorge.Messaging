@@ -78,18 +78,26 @@ public class QueueClient : IDisposable, IAsyncDisposable
         if (string.IsNullOrWhiteSpace(destinationQueue))
             throw new ArgumentException("Argument must contain the queue name.", nameof(destinationQueue));
 
+        _logger.LogInformation($"Start-PublishMessageAndAckIfSuccessful - Moving message with delivery tag '{message.DeliveryTag}' to '{destinationQueue}'.");
+
         // Publish message to destination queue.
         Channel.BasicPublish(exchange, destinationQueue, mandatory, message.BasicProperties, message.Body);
         if (waitForConfirm && Channel.WaitForConfirms(TimeSpan.FromSeconds(60)))
         {
             // The message was confirmed published to the exchange so positively acknowledge that the message has been processed.
             Channel.BasicAck(message.DeliveryTag, multiple: false);
+
+            _logger.LogInformation($"PublishMessageAndAckIfSuccessful - Message with delivery tag '{message.DeliveryTag}' was ACKed because it was successfully moved to '{destinationQueue}'.");
         }
         else
         {
             // The message was not confirmed published to the exchange so negatively acknowledge that the message should be re-queued.
             Channel.BasicNack(message.DeliveryTag, multiple: false, requeue: true);
+
+            _logger.LogInformation($"PublishMessageAndAckIfSuccessful - Message with delivery tag '{message.DeliveryTag}' was NACKed because it was unsuccessfully moved to '{destinationQueue}'.");
         }
+
+        _logger.LogInformation($"End-PublishMessageAndAckIfSuccessful - Message with delivery tag '{message.DeliveryTag}' was moved to '{destinationQueue}'.");
     }
 
     /// <summary>
@@ -194,10 +202,12 @@ public class QueueClient : IDisposable, IAsyncDisposable
             throw new ArgumentNullException(nameof(destinationQueue));
         if (sourceQueue.Equals(destinationQueue, StringComparison.InvariantCultureIgnoreCase))
             throw new SourceAndDestinationIdenticalException(sourceQueue, destinationQueue);
-        
+
         // Just return if number of messages is set to zero.
         if (numberOfMessagesToMove == 0)
             return;
+
+        _logger.LogInformation($"Start-MoveMessages - Moving messages from '{sourceQueue}' to '{destinationQueue}'. Number of messages to move {(numberOfMessagesToMove == -1 ? int.MaxValue : numberOfMessagesToMove)}.");
 
         // Enable publisher acknowledgements.
         Channel.ConfirmSelect();
@@ -227,5 +237,7 @@ public class QueueClient : IDisposable, IAsyncDisposable
                 break;
             }
         }
+
+        _logger.LogInformation($"End-MoveMessages - Successfully moved {messageCount} messages from '{sourceQueue}' to '{destinationQueue}'.");
     }
 }
