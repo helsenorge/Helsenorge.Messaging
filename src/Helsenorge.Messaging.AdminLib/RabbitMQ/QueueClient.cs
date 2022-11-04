@@ -144,7 +144,7 @@ public class QueueClient : IDisposable, IAsyncDisposable
         Channel.BasicReturn += (_, args) =>
         {
             if (args.ReplyCode == NoRoute)
-                _logger.LogError($"MoveMessages-BasicReturn - Message is un-routable: MessageId: '{args.BasicProperties.MessageId}', CorrelationId: '{args.BasicProperties.CorrelationId}', Exchange: '{args.Exchange}', RoutingKey: '{args.RoutingKey}', ReplyCode: '{args.ReplyCode}', ReplyText: '{args.ReplyText}'");
+                _logger.LogError($"MoveMessages-BasicReturn - The Queue '{sourceQueue} does not exist or is not bound correctly. Message is un-routable: MessageId: '{args.BasicProperties.MessageId}', CorrelationId: '{args.BasicProperties.CorrelationId}', Exchange: '{args.Exchange}', RoutingKey: '{args.RoutingKey}', ReplyCode: '{args.ReplyCode}', ReplyText: '{args.ReplyText}'");
             else
                 _logger.LogInformation($"MoveMessages-BasicReturn - MessageId: '{args.BasicProperties.MessageId}', CorrelationId: '{args.BasicProperties.CorrelationId}', Exchange: '{args.Exchange}', RoutingKey: '{args.RoutingKey}', ReplyCode: '{args.ReplyCode}', ReplyText: '{args.ReplyText}'");
         };
