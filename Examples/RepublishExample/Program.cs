@@ -9,6 +9,7 @@
 using Helsenorge.Messaging.AdminLib;
 using Helsenorge.Messaging.AdminLib.RabbitMQ;
 using Helsenorge.Messaging.ServiceBus;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace RepublishExample;
@@ -25,8 +26,23 @@ internal static class Program
 
     private static void Main()
     {
-        var loggerFactory = new LoggerFactory();
-        var connectionString = new ConnectionString
+        var connectionString = GetConnectionParameters();
+        var logger = CreateLogger();
+
+        using var client = new QueueClient(connectionString, logger);
+
+        var msgCountDlBefore = client.GetMessageCount(SourceHerId, QueueType.DeadLetter);
+        logger.LogDebug($"MessageCount in DeadLetter for HerId '{SourceHerId}' before republish: {msgCountDlBefore}");
+
+        client.RepublishMessageFromDeadLetterToOriginQueue(SourceHerId);
+
+        var msgCountDlAfter= client.GetMessageCount(SourceHerId, QueueType.DeadLetter);
+        logger.LogDebug($"MessageCount in DeadLetter for HerId '{SourceHerId}' after republish: {msgCountDlAfter}");
+    }
+
+    private static ConnectionString GetConnectionParameters()
+    {
+        return new ConnectionString
         {
             HostName = HostName,
             Port = Port,
@@ -34,9 +50,20 @@ internal static class Program
             Password = Password,
             Exchange = Exchange,
         };
+    }
 
-        var client = new QueueClient(connectionString, loggerFactory.CreateLogger<QueueType>());
-
-        client.RepublishMessageFromDeadLetterToOriginQueue(SourceHerId);
+    static ILogger CreateLogger()
+    {
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging(loggerConfiguration =>
+        {
+            loggerConfiguration.AddConsole();
+            loggerConfiguration.AddDebug();
+            loggerConfiguration.SetMinimumLevel(LogLevel.Debug);
+        });
+        var provider = serviceCollection.BuildServiceProvider();
+        var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+        var logger = loggerFactory.CreateLogger<QueueType>();
+        return logger;
     }
 }
