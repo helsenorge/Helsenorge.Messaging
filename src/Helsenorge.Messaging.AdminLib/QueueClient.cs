@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using Helsenorge.Messaging.ServiceBus;
 using RabbitMQ.Client;
 
-namespace Helsenorge.Messaging.AdminLib.RabbitMQ;
+namespace Helsenorge.Messaging.AdminLib;
 
 public class QueueClient : IDisposable, IAsyncDisposable
 {

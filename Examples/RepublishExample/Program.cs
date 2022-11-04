@@ -7,7 +7,6 @@
  */
 
 using Helsenorge.Messaging.AdminLib;
-using Helsenorge.Messaging.AdminLib.RabbitMQ;
 using Helsenorge.Messaging.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
