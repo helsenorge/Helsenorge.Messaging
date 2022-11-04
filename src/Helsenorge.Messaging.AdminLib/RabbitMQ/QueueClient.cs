@@ -39,7 +39,7 @@ public class QueueClient : IDisposable, IAsyncDisposable
         {
             return _connectionFactory ??= new ConnectionFactory
             {
-                Uri = new Uri($"amqps://{_connectionString.HostName}"),
+                Uri = new Uri($"{(_connectionString.UseTls ? "amqps": "amqp")}://{_connectionString.HostName}"),
                 UserName = _connectionString.UserName,
                 Password = _connectionString.Password,
                 VirtualHost = string.IsNullOrWhiteSpace(_connectionString.VirtualHost) ? "/" : _connectionString.VirtualHost,
