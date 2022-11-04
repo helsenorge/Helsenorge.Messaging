@@ -19,4 +19,5 @@ public class ConnectionString
     public string Password { get; set; }
     public string Exchange { get; set; }
     public string ClientProvidedName { get; set; }
+    public bool UseTls { get; set; } = true;
 }
