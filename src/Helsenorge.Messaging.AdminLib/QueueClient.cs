@@ -80,9 +80,24 @@ public class QueueClient : IDisposable, IAsyncDisposable
 
         _logger.LogInformation($"Start-PublishMessageAndAckIfSuccessful - Moving message with delivery tag '{message.DeliveryTag}' to '{destinationQueue}'. MessageId:{message.BasicProperties.MessageId}");
 
+        var confirmed = true;
+        if (waitForConfirm)
+        {
+            // Enable publisher acknowledgements.
+            Channel.ConfirmSelect();
+            Channel.BasicReturn += (_, args) =>
+            {
+                if (args.ReplyCode == NoRoute)
+                {
+                    confirmed = false;
+                    _logger.LogError($"PublishMessageAndAckIfSuccessful-BasicReturn - Message is with MessageId: '{args.BasicProperties.MessageId}' un-routable. Exchange: '{args.Exchange}', DestinationQueue: '{args.RoutingKey}', ReplyCode: '{args.ReplyCode}', ReplyText: '{args.ReplyText}'");
+                }
+            };
+        }
+
         // Publish message to destination queue.
         Channel.BasicPublish(exchange, destinationQueue, mandatory, message.BasicProperties, message.Body);
-        if (waitForConfirm && Channel.WaitForConfirms(TimeSpan.FromSeconds(60)))
+        if (waitForConfirm && Channel.WaitForConfirms(TimeSpan.FromSeconds(60)) && confirmed)
         {
             // The message was confirmed published to the exchange so positively acknowledge that the message has been processed.
             Channel.BasicAck(message.DeliveryTag, multiple: false);
@@ -137,17 +152,6 @@ public class QueueClient : IDisposable, IAsyncDisposable
             return;
 
         var sourceQueue = QueueUtilities.ConstructQueueName(herId, QueueType.DeadLetter);
-
-        // Enable publisher acknowledgements.
-        Channel.ConfirmSelect();
-
-        Channel.BasicReturn += (_, args) =>
-        {
-            if (args.ReplyCode == NoRoute)
-                _logger.LogError($"MoveMessages-BasicReturn - The Queue '{sourceQueue} does not exist or is not bound correctly. Message is un-routable: MessageId: '{args.BasicProperties.MessageId}', CorrelationId: '{args.BasicProperties.CorrelationId}', Exchange: '{args.Exchange}', RoutingKey: '{args.RoutingKey}', ReplyCode: '{args.ReplyCode}', ReplyText: '{args.ReplyText}'");
-            else
-                _logger.LogInformation($"MoveMessages-BasicReturn - MessageId: '{args.BasicProperties.MessageId}', CorrelationId: '{args.BasicProperties.CorrelationId}', Exchange: '{args.Exchange}', RoutingKey: '{args.RoutingKey}', ReplyCode: '{args.ReplyCode}', ReplyText: '{args.ReplyText}'");
-        };
 
         var messageCount = 0;
         var result = Channel.BasicGet(sourceQueue, autoAck: false);
@@ -208,17 +212,6 @@ public class QueueClient : IDisposable, IAsyncDisposable
             return;
 
         _logger.LogInformation($"Start-MoveMessages - Moving messages from '{sourceQueue}' to '{destinationQueue}'. Number of messages to move {(numberOfMessagesToMove == -1 ? int.MaxValue : numberOfMessagesToMove)}.");
-
-        // Enable publisher acknowledgements.
-        Channel.ConfirmSelect();
-
-        Channel.BasicReturn += (_, args) =>
-        {
-            if (args.ReplyCode == NoRoute)
-                _logger.LogError($"MoveMessages-BasicReturn - Message is un-routable: MessageId: '{args.BasicProperties.MessageId}', CorrelationId: '{args.BasicProperties.CorrelationId}', Exchange: '{args.Exchange}', RoutingKey: '{args.RoutingKey}', ReplyCode: '{args.ReplyCode}', ReplyText: '{args.ReplyText}'");
-            else
-                _logger.LogInformation($"MoveMessages-BasicReturn - MessageId: '{args.BasicProperties.MessageId}', CorrelationId: '{args.BasicProperties.CorrelationId}', Exchange: '{args.Exchange}', RoutingKey: '{args.RoutingKey}', ReplyCode: '{args.ReplyCode}', ReplyText: '{args.ReplyText}'");
-        };
 
         var messageCount = 0;
         var result = Channel.BasicGet(sourceQueue, autoAck: false);
