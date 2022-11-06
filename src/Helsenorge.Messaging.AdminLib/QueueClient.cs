@@ -78,7 +78,7 @@ public class QueueClient : IDisposable, IAsyncDisposable
         if (string.IsNullOrWhiteSpace(destinationQueue))
             throw new ArgumentException("Argument must contain the queue name.", nameof(destinationQueue));
 
-        _logger.LogInformation($"Start-PublishMessageAndAckIfSuccessful - Moving message with delivery tag '{message.DeliveryTag}' to '{destinationQueue}'. MessageId:{message.BasicProperties.MessageId}");
+        _logger.LogInformation($"Start-PublishMessageAndAckIfSuccessful - Starting publish process of message with MessageId: {message.BasicProperties.MessageId} to DestinationQueue: '{destinationQueue}'.");
 
         var confirmed = true;
         if (waitForConfirm)
@@ -102,17 +102,17 @@ public class QueueClient : IDisposable, IAsyncDisposable
             // The message was confirmed published to the exchange so positively acknowledge that the message has been processed.
             Channel.BasicAck(message.DeliveryTag, multiple: false);
 
-            _logger.LogInformation($"PublishMessageAndAckIfSuccessful - Message with delivery tag '{message.DeliveryTag}' was ACKed because it was successfully moved to '{destinationQueue}' MessageId:{message.BasicProperties.MessageId}.");
+            _logger.LogInformation($"PublishMessageAndAckIfSuccessful - Message with MessageId: '{message.BasicProperties.MessageId}' was ACKed because publish to DestinationQueue: '{destinationQueue}' was successful.");
         }
         else
         {
             // The message was not confirmed published to the exchange so negatively acknowledge that the message should be re-queued.
             Channel.BasicNack(message.DeliveryTag, multiple: false, requeue: true);
 
-            _logger.LogInformation($"PublishMessageAndAckIfSuccessful - Message with delivery tag '{message.DeliveryTag}' was NACKed because it was unsuccessfully moved to '{destinationQueue}' MessageId:{message.BasicProperties.MessageId}.");
+            _logger.LogInformation($"PublishMessageAndAckIfSuccessful - Message with MessageId: '{message.BasicProperties.MessageId}' was NACKed because publish to DestinationQueue: '{destinationQueue}' was unsuccessful.");
         }
 
-        _logger.LogInformation($"End-PublishMessageAndAckIfSuccessful - Message with delivery tag '{message.DeliveryTag}' was moved to '{destinationQueue}'. MessageId:{message.BasicProperties.MessageId}");
+        _logger.LogInformation($"End-PublishMessageAndAckIfSuccessful - Message with MessageId: '{message.BasicProperties.MessageId}' and DeliveryTag '{message.DeliveryTag}' was published to DestinationQueue: '{destinationQueue}'.");
     }
 
     /// <summary>
