@@ -69,6 +69,14 @@ public class QueueClient : IDisposable, IAsyncDisposable
         return ValueTask.CompletedTask;
     }
 
+    /// <summary>
+    /// Publishes a message in form of a BasicGetResult using the specified exchange and destination queue.
+    /// </summary>
+    /// <param name="message">The message in form of a BasicGetResult.</param>
+    /// <param name="exchange">The exchange to publish the message to.</param>
+    /// <param name="destinationQueue">The destination queue we want to message to be routed to.</param>
+    /// <param name="mandatory">If this flag is true we fail if no ACK is received after message is published.</param>
+    /// <param name="waitForConfirm">If this flag is true we wait for ACK to be confirmed before we ACK or NACK the delivery tag of the BasicGetResult.</param>
     private void PublishMessageAndAckIfSuccessful(BasicGetResult message, string exchange, string destinationQueue, bool mandatory = true, bool waitForConfirm = true)
     {
         if (message == null)
