@@ -1,20 +1,21 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using System;
 using System.IO;
 using System.Security;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using Helsenorge.Messaging.Abstractions;
 
 namespace Helsenorge.Messaging.Tests.Mocks
 {
     /// <summary>
-    /// THese certificates are not use, they have only been generated for test purposes
+    /// These certificates are not in test or production use, they have only been generated for test purposes.
     /// </summary>
     public static class TestCertificates
     {
@@ -68,6 +69,15 @@ namespace Helsenorge.Messaging.Tests.Mocks
                     result.AppendChar(c);
                 return result;
             }
+        }
+
+        public static X509Certificate2 GenerateSelfSignedCertificate(string commonName, X509KeyUsageFlags keyUsage, DateTimeOffset notBefore, DateTimeOffset notAfter)
+        {
+            using var rsa = RSA.Create(2048);
+            var certificateRequest = new CertificateRequest($"CN={commonName}", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+            certificateRequest.CertificateExtensions.Add(new X509KeyUsageExtension(keyUsage, true));
+            var selfSignedCertificate = certificateRequest.CreateSelfSigned(notBefore, notAfter);
+            return selfSignedCertificate;
         }
     }
 }
