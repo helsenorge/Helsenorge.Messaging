@@ -482,10 +482,11 @@ namespace Helsenorge.Registries
             return role;
         }
         /// <summary>
-        /// 
+        /// Returns a <see cref="CollaborationProtocolMessage"/> from a ThisPartyActionBinding XML element.
         /// </summary>
-        /// <param name="thisPartyActionBinding"></param>
-        /// <param name="partyInfo"></param>
+        /// <param name="thisPartyActionBinding">The ThisPartyActionBinding XML element.</param>
+        /// <param name="partyInfo">The PartyInfo XML node.</param>
+        /// <param name="messageFunction">The message function this <see cref="CollaborationProtocolMessage"/> represents.</param>
         /// <returns></returns>
         /// <example>
         /// <![CDATA[
