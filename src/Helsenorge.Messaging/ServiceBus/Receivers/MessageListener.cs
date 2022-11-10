@@ -19,6 +19,7 @@ using System.Xml.Linq;
 using System.Xml.Schema;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Security;
+using Helsenorge.Registries;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
 
@@ -278,6 +279,11 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             catch (UnsupportedMessageException ex)  // reportable error from message handler (application)
             {
                 await Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:unsupported-message", ex.Message, null, ex).ConfigureAwait(false);
+                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
+            }
+            catch (InvalidHerIdException ex)
+            {
+                await Core.ReportErrorToExternalSender(Logger, EventIds.InvalidHerId, message, "transport:invalid-field-value", ex.Message, new [] { "FromHerId", $"{ex.HerId}" }, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (Exception ex) // unknown error

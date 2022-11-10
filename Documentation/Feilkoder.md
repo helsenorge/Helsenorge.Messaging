@@ -94,6 +94,9 @@ Non-successful authentication or connection attempt to one ore more of the web s
 ### MUG-000039
 Non-successful authentication or connection attempt to the message broker.
 
+### MUG-000040
+Invalid HER-id.
+
 ### MUG-001001
 Informasjonsformål når mottaksprosessen starter/avslutter
 
