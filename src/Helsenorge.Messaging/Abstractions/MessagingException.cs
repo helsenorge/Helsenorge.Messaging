@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -131,6 +131,10 @@ namespace Helsenorge.Messaging.Abstractions
         /// Non-successful authentication or connection attempt to the message broker.
         /// </summary>
         public static EventId ConnectionToMessageBrokerFailed = new EventId(39, EventIdName);
+        /// <summary>
+        /// Invalid HER-id.
+        /// </summary>
+        public static EventId InvalidHerId = new EventId(40, EventIdName);
 
         /// <summary>
         /// Event Id used for informational purposes when starting/ending the Receive process.
