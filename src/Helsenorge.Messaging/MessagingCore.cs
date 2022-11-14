@@ -212,10 +212,6 @@ namespace Helsenorge.Messaging
                 var targetFramework = Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName;
                 if(!string.IsNullOrWhiteSpace(targetFramework))
                     systemInformation.Add("X-TargetFramework", targetFramework);
-
-                var hostName = Dns.GetHostName();
-                if(!string.IsNullOrWhiteSpace(hostName))
-                    systemInformation.Add("X-SystemHostName", hostName);
             }
             catch
             {
