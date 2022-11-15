@@ -241,4 +241,40 @@ public class QueueClient : IDisposable, IAsyncDisposable
 
         _logger.LogInformation($"End-MoveMessages - Successfully moved {messageCount} messages from '{sourceQueue}' to '{destinationQueue}'.");
     }
+
+    public void Purge(int herId, QueueType queueType, int numberOfMessagesToPurge = -1)
+    {
+        if (herId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(herId), herId, "Argument must be a value greater than zero.");
+
+        Purge(QueueUtilities.ConstructQueueName(herId, queueType));
+    }
+
+    public void Purge(string queue, int numberOfMessagesToPurge = -1)
+    {
+        if (string.IsNullOrEmpty(queue))
+            throw new ArgumentNullException(nameof(queue));
+
+        // Just return if number of messages to purge is set to zero.
+        if (numberOfMessagesToPurge == 0)
+            return;
+
+        var messageCount = 0;
+        var result = Channel.BasicGet(queue, autoAck: false);
+        while (result != null)
+        {
+            Channel.BasicAck(result.DeliveryTag, multiple: false);
+
+            messageCount++;
+            if (numberOfMessagesToPurge < 0 || numberOfMessagesToPurge > messageCount)
+            {
+                result = Channel.BasicGet(queue, autoAck: false);
+            }
+            else
+            {
+                // At this point we have moved the specified number of messages we were asked to so let's break out of the loop.
+                break;
+            }
+        }
+    }
 }
