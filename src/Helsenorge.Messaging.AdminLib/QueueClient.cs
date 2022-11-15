@@ -7,6 +7,8 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Helsenorge.Messaging.ServiceBus;
@@ -276,5 +278,59 @@ public class QueueClient : IDisposable, IAsyncDisposable
                 break;
             }
         }
+    }
+
+    public IEnumerable<Message> GetMessages(int herId, QueueType queueType, int numberOfMessages = -1)
+    {
+        if (herId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(herId), herId, "Argument must be a value greater than zero.");
+
+        return GetMessages(QueueUtilities.ConstructQueueName(herId, queueType));
+    }
+
+    public IEnumerable<Message> GetMessages(string queue, int numberOfMessages = -1)
+    {
+        if (string.IsNullOrEmpty(queue))
+            throw new ArgumentNullException(nameof(queue));
+
+        var messages = new List<Message>();
+
+        // Just return if number of messages is set to zero.
+        if (numberOfMessages == 0)
+            return Enumerable.Empty<Message>();
+
+        var messageCount = 0;
+        var result = Channel.BasicGet(queue, autoAck: false);
+        while (result != null)
+        {
+            messages.Add(new Message
+            {
+                MessageId = result.BasicProperties.MessageId,
+                CorrelationId = result.BasicProperties.CorrelationId,
+                DeliveryTag = result.DeliveryTag,
+                Exchange = result.Exchange,
+                RoutingKey = result.RoutingKey,
+                Redelivered = result.Redelivered,
+                FirstDeathExchangeHeaderName = QueueUtilities.GetByteHeaderAsString(result.BasicProperties.Headers, FirstDeathExchangeHeaderName),
+                FirstDeathQueueHeaderName = QueueUtilities.GetByteHeaderAsString(result.BasicProperties.Headers, FirstDeathQueueHeaderName),
+            });
+
+            messageCount++;
+            if (numberOfMessages < 0 || numberOfMessages > messageCount)
+            {
+                result = Channel.BasicGet(queue, autoAck: false);
+            }
+            else
+            {
+                // At this point we have moved the specified number of messages we were asked to so let's break out of the loop.
+                break;
+            }
+        }
+
+        // Re-queue messages.
+        foreach (var message in messages)
+            Channel.BasicReject(message.DeliveryTag, requeue: true);
+
+        return messages;
     }
 }
