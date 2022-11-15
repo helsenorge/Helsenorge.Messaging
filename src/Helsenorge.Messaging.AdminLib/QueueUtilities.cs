@@ -31,7 +31,7 @@ internal static class QueueUtilities
     internal static string GetByteHeaderAsString(IDictionary<string, object> headers, string name)
     {
         if (!headers.ContainsKey(name))
-            throw new MissingHeaderException(name);
+            return string.Empty;
 
         var bytes = headers[name] as byte[];
         if (bytes == null)
