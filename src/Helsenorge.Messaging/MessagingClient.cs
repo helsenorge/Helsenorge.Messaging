@@ -167,7 +167,8 @@ namespace Helsenorge.Messaging
                     return;
                 case DeliveryProtocol.Unknown:
                 default:
-                    throw new MessagingException("Invalid delivery protocol: " + message.MessageFunction)
+                    var profile = await FindProfile(logger, message).ConfigureAwait(false);
+                    throw new MessagingException($"Invalid delivery protocol. Message Function {message.MessageFunction} might be missing from either CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}.")
                     {
                         EventId = EventIds.InvalidMessageFunction
                     };
@@ -191,7 +192,8 @@ namespace Helsenorge.Messaging
                     return await _synchronousServiceBusSender.SendAsync(logger, message).ConfigureAwait(false);
                 case DeliveryProtocol.Unknown:
                 default:
-                    throw new MessagingException("Invalid delivery protocol: " + message.MessageFunction)
+                    var profile = await FindProfile(logger, message).ConfigureAwait(false);
+                    throw new MessagingException($"Invalid delivery protocol. Message Function {message.MessageFunction} might be missing from either CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}.")
                     {
                         EventId = EventIds.InvalidMessageFunction
                     };
@@ -274,7 +276,7 @@ namespace Helsenorge.Messaging
             }
             else if (collaborationProtocolMessage == null)
             {
-                throw new MessagingException("Invalid delivery protocol: " + message.MessageFunction)
+                throw new MessagingException($"Invalid delivery protocol. Message Function {message.MessageFunction} might be missing from either CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}.")
                 {
                     EventId = EventIds.InvalidMessageFunction
                 };
