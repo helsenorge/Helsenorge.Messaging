@@ -280,30 +280,30 @@ public class QueueClient : IDisposable, IAsyncDisposable
         }
     }
 
-    public IEnumerable<Message> GetMessages(int herId, QueueType queueType, int numberOfMessages = -1)
+    public IEnumerable<MessageMetadata> GetMessageMetadataAndRequeue(int herId, QueueType queueType, int numberOfMessages = -1)
     {
         if (herId <= 0)
             throw new ArgumentOutOfRangeException(nameof(herId), herId, "Argument must be a value greater than zero.");
 
-        return GetMessages(QueueUtilities.ConstructQueueName(herId, queueType));
+        return GetMessageMetadataAndRequeue(QueueUtilities.ConstructQueueName(herId, queueType));
     }
 
-    public IEnumerable<Message> GetMessages(string queue, int numberOfMessages = -1)
+    public IEnumerable<MessageMetadata> GetMessageMetadataAndRequeue(string queue, int numberOfMessages = -1)
     {
         if (string.IsNullOrEmpty(queue))
             throw new ArgumentNullException(nameof(queue));
 
-        var messages = new List<Message>();
+        var messages = new List<MessageMetadata>();
 
         // Just return if number of messages is set to zero.
         if (numberOfMessages == 0)
-            return Enumerable.Empty<Message>();
+            return Enumerable.Empty<MessageMetadata>();
 
         var messageCount = 0;
         var result = Channel.BasicGet(queue, autoAck: false);
         while (result != null)
         {
-            messages.Add(new Message
+            messages.Add(new MessageMetadata
             {
                 MessageId = result.BasicProperties.MessageId,
                 CorrelationId = result.BasicProperties.CorrelationId,

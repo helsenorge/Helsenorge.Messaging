@@ -8,7 +8,7 @@
 
 namespace Helsenorge.Messaging.AdminLib;
 
-public record Message
+public record MessageMetadata
 {
     public string MessageId { get; set; }
     public string CorrelationId { get; set; }
