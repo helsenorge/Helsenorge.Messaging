@@ -134,7 +134,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 }
                 finally
                 {
-                    Logger.LogInformation($"Last Read Time UTC: '{LastReadTimeUtc.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo)}' on host and queue: '{Core.HostnameAndPath}/{QueueName}'");
+                    if (Core.Settings.LogReadTime)
+                        Logger.LogInformation($"Last Read Time UTC: '{LastReadTimeUtc.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo)}' on host and queue: '{Core.HostnameAndPath}/{QueueName}'");
                 }
             }
         }

@@ -162,6 +162,10 @@ namespace Helsenorge.Messaging
         /// Log messages not encrypted and enveloped as Warning
         /// </summary>
         public bool LogMessagesNotSignedAndEnvelopedAsWarning { get; set; } = true;
+        /// <summary>
+        /// If true logs every the MessageListener has finished a read call to the broker.
+        /// </summary>
+        public bool LogReadTime { get; set; } = false;
 
         /// <summary>
         /// The Her id that we represent
