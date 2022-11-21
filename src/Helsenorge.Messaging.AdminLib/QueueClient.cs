@@ -147,7 +147,7 @@ public class QueueClient : IDisposable, IAsyncDisposable
         return Channel.MessageCount(queue);
     }
 
-        /// <summary>
+    /// <summary>
     /// Republishes messages on the dead letter queue back to the origin queue.
     /// </summary>
     /// <param name="herId">The HER-id of dead letter and source queue.</param>
