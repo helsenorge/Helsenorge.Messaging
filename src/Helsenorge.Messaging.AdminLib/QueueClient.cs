@@ -333,4 +333,48 @@ public class QueueClient : IDisposable, IAsyncDisposable
 
         return messages;
     }
+
+    /// <summary>
+    /// Republishes messages on the dead letter queue back to the origin queue.
+    /// </summary>
+    /// <param name="herId">The HER-id of dead letter and source queue.</param>
+    /// <param name="messageId">A list of the Message Ids to republish.</param>
+    public void RepublishMessageFromDeadLetterToOriginQueue(int herId, params string[] messageId)
+    {
+        if (herId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(herId), herId, "Argument must be a value greater than zero.");
+        if (messageId.Length == 0)
+            throw new ArgumentException("At least one messageId must be specified.", nameof(messageId));
+
+        var sourceQueue = QueueUtilities.ConstructQueueName(herId, QueueType.DeadLetter);
+
+        var delieryTagsToRequeue = new List<ulong>();
+
+        var messageCount = 0;
+        var result = Channel.BasicGet(sourceQueue, autoAck: false);
+        while (result != null)
+        {
+            var exchange = QueueUtilities.GetByteHeaderAsString(result.BasicProperties.Headers, FirstDeathExchangeHeaderName);
+            var destinationQueue = QueueUtilities.GetByteHeaderAsString(result.BasicProperties.Headers, FirstDeathQueueHeaderName);
+            if (messageId.Contains(result.BasicProperties.MessageId))
+            {
+                PublishMessageAndAckIfSuccessful(result, exchange, destinationQueue);
+                messageCount += 1;
+            }
+            else
+            {
+                delieryTagsToRequeue.Add(result.DeliveryTag);
+            }
+
+            // If all messages have been republished, then break out of this loop.
+            if (messageCount == messageId.Length)
+                break;
+
+            result = Channel.BasicGet(sourceQueue, autoAck: false);
+        }
+
+        // Re-queue messages.
+        foreach (var deliveryTag in delieryTagsToRequeue)
+            Channel.BasicReject(deliveryTag, requeue: true);
+    }
 }
