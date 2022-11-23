@@ -5,7 +5,7 @@ Pakken støtter kryptering, dekryptering, signering, og signaturvalidering.
 Public-sertifikatene som brukes, hentes fra adresseregisteret. Private sertifikater må installeres lokalt på maskinen. 
 
 - Signeringsertifikatet må ha NonRepudiation satt som usage.
-- Kryperingsertifikatet må ha DataEncipherment satt som usage. 
+- Kryperingsertifikatet må ha KeyEncipherment satt som usage. 
 
 Det er mulig å gjenbruke det samme sertifikatet for både kryptering og signering, men i koden vår antar vi at dette er to forskjellige sertifikater. Dersom man bruker det samme, så er det bare å spesifisere samme thumbprint i konfigurasjonen.
 
