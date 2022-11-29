@@ -24,8 +24,9 @@ namespace Helsenorge.Messaging.Tests
     [TestClass]
     public class BaseTest
     {
-        //public const int MyHerId = 93238;
-        ///public const int OhterHerId = 93252;
+        private X509Certificate2 _encryptionCertificate;
+        private X509Certificate2 _signatureCertificate;
+
         public Guid CpaId = new Guid("49391409-e528-4919-b4a3-9ccdab72c8c1");
         public const int DefaultOtherHerId = 93252;
 
@@ -53,10 +54,12 @@ namespace Helsenorge.Messaging.Tests
 
         protected XDocument SoapFault => XDocument.Load(File.OpenRead(TestFileUtility.GetFullPathToFile($"Files{Path.DirectorySeparatorChar}SoapFault.xml")));
 
-
         [TestInitialize]
         public virtual void Setup()
         {
+            _encryptionCertificate = TestCertificates.GetCertificate(TestCertificates.HelsenorgeLegacyEncryptionThumbprint); //TestCertificates.GenerateSelfSignedCertificate("ActorA", X509KeyUsageFlags.KeyEncipherment, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
+            _signatureCertificate = TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint); //TestCertificates.GenerateSelfSignedCertificate("ActorA", X509KeyUsageFlags.NonRepudiation, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
+
             SetupInternal(DefaultOtherHerId);
         }
 
@@ -130,13 +133,13 @@ namespace Helsenorge.Messaging.Tests
                 {
                     StoreName = StoreName.My,
                     StoreLocation = StoreLocation.LocalMachine,
-                    Thumbprint = TestCertificates.HelsenorgeSigntatureThumbprint
+                    Thumbprint = TestCertificates.HelsenorgeSignatureThumbprint,
                 },
                 DecryptionCertificate = new CertificateSettings()
                 {
                     StoreName = StoreName.My,
                     StoreLocation = StoreLocation.LocalMachine,
-                    Thumbprint = TestCertificates.HelsenorgeEncryptionThumbprint
+                    Thumbprint = TestCertificates.HelsenorgeEncryptionThumbprint,
                 }
             };
             
@@ -150,9 +153,7 @@ namespace Helsenorge.Messaging.Tests
             MockFactory = new MockFactory(otherHerId);
             CertificateValidator = new MockCertificateValidator();
             CertificateStore = new MockCertificateStore();
-            var signingCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeSigntatureThumbprint);
-            var encryptionCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint);
-            MessageProtection = new MockMessageProtection(signingCertificate, encryptionCertificate);
+            MessageProtection = new MockMessageProtection(_signatureCertificate, _encryptionCertificate);
 
             Client = new MessagingClient(
                 Settings,

@@ -33,7 +33,7 @@ namespace SignEncryptAndSend
             try
             {
                 var certificateStore = new MockCertificateStore();
-                var signatureCertificate = certificateStore.GetCertificate(TestCertificates.HelsenorgeSigntatureThumbprint);
+                var signatureCertificate = certificateStore.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint);
                 var encryptionCertificate = certificateStore.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint);
                 var messageProtection = new SignThenEncryptMessageProtection(signatureCertificate, encryptionCertificate);
 

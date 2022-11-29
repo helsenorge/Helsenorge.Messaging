@@ -76,11 +76,11 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         {
             Exception receiveException = null;
 
-            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.CounterpartyPrivateSigntature, TestCertificates.CounterpartyPrivateEncryption);
+            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint));
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyAProtection);
             Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
-            var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.HelsenorgePrivateSigntature, TestCertificates.HelsenorgePrivateEncryption);
+            var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint));
             Server = new MockMessagingServer(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyBProtection);
             Server.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
 
@@ -90,6 +90,8 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
 
+            var signatureCertificate = TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint);
+
             await RunAsynchronousReceive(
                 postValidation: () => {
                     Assert.IsTrue(_startingCalled);
@@ -97,9 +99,9 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
                     Assert.IsTrue(_completedCalled);
                     var error = MockLoggerProvider.FindEntry(EventIds.RemoteCertificate);
                     Assert.IsTrue(error.Message
-                        .Contains($"{TestCertificates.HelsenorgePrivateSigntature.Thumbprint}"));
+                        .Contains($"{signatureCertificate.Thumbprint}"));
                     Assert.IsTrue(error.Message
-                        .Contains($"{TestCertificates.HelsenorgePrivateSigntature.NotBefore}"));
+                        .Contains($"{signatureCertificate.NotBefore}"));
                     var signingException = receiveException as CertificateMessagePayloadException;
                     Assert.IsNotNull(signingException);
                     Assert.IsNotNull(signingException.Payload);
@@ -610,7 +612,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         [TestMethod]
         public async Task Asynchronous_Receive_SecurityException()
         {
-            var signatureCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeSigntatureThumbprint);
+            var signatureCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint);
             var encryptionCertificate = CertificateStore.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint);
             Server.MessageProtection = new SecurityExceptionMessageProtection(signatureCertificate, encryptionCertificate);
 
@@ -801,12 +803,11 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
         
         private MockMessage CreateAsynchronousMessageProtected()
         {
-            var certificateStore = new MockCertificateStore();
-            var messageProtection = new SignThenEncryptMessageProtection(TestCertificates.HelsenorgePrivateSigntature, TestCertificates.HelsenorgePrivateEncryption);
+            var messageProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint));
             var messageId = Guid.NewGuid().ToString("D");
             var path = Path.Combine("Files", "Helsenorge_Message.xml");
             var file = File.Exists(path) ? new XDocument(XElement.Load(path)) : null;
-            var protect = messageProtection.Protect(file == null ? GenericMessage.ToStream() : file.ToStream(), TestCertificates.HelsenorgePublicEncryption); 
+            var protect = messageProtection.Protect(file == null ? GenericMessage.ToStream() : file.ToStream(), TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint));
             return new MockMessage(protect)
             {
                 MessageFunction = "DIALOG_INNBYGGER_EKONTAKT",
