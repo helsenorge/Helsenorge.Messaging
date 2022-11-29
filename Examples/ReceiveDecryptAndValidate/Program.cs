@@ -31,7 +31,7 @@ namespace ReceiveDecryptAndValidate
             try
             {
                 var certificateStore = new MockCertificateStore();
-                var signatureCertificate = certificateStore.GetCertificate(TestCertificates.CounterpartySigntatureThumbprint);
+                var signatureCertificate = certificateStore.GetCertificate(TestCertificates.CounterpartySignatureThumbprint);
                 var encryptionCertificate = certificateStore.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint);
                 var messageProtection = new SignThenEncryptMessageProtection(signatureCertificate, encryptionCertificate);
 

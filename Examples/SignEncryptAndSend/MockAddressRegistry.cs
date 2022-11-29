@@ -21,7 +21,7 @@ namespace SignEncryptAndSend
         {
             return Task.FromResult(new CertificateDetails
             {
-                Certificate = TestCertificates.CounterpartyPublicEncryption,
+                Certificate = TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint),
                 HerId = herId,
             });
         }
