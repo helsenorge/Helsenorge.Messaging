@@ -2,7 +2,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <LangVersion>8.0</LangVersion>
         <AssemblyName>Helsenorge.Messaging.Tests</AssemblyName>
         <RootNamespace>Helsenorge.Messaging.Tests</RootNamespace>
         <ProjectGuid>{EE03ABE5-4B8D-48BB-AA52-0DC9D442634D}</ProjectGuid>
