@@ -110,7 +110,7 @@ namespace Helsenorge.Messaging.Server
 
             _messagingServer.RegisterAsynchronousMessageReceivedStartingCallbackAsync((listener, message) =>
             {
-                MappedDiagnosticsLogicalContext.Set("correlationId", message.MessageId);
+                ScopeContext.PushProperty("correlationId", message.MessageId);
                 return Task.CompletedTask;
             });
             _messagingServer.RegisterAsynchronousMessageReceivedCallbackAsync(async (m) =>
@@ -132,13 +132,13 @@ namespace Helsenorge.Messaging.Server
             });
             _messagingServer.RegisterAsynchronousMessageReceivedCompletedCallbackAsync((m) =>
             {
-                MappedDiagnosticsLogicalContext.Set("correlationId", m.MessageId);
+                ScopeContext.PushProperty("correlationId", m.MessageId);
                 return Task.CompletedTask;
             });
 
             _messagingServer.RegisterSynchronousMessageReceivedStartingCallbackAsync((m) =>
             {
-                MappedDiagnosticsLogicalContext.Set("correlationId", string.Empty);// reset correlation id
+                ScopeContext.PushProperty("correlationId", string.Empty);// reset correlation id
                 return Task.CompletedTask;
             });
             _messagingServer.RegisterSynchronousMessageReceivedCallbackAsync(async (m) =>
@@ -157,7 +157,7 @@ namespace Helsenorge.Messaging.Server
             });
             _messagingServer.RegisterSynchronousMessageReceivedCompletedCallbackAsync((m) =>
             {
-                MappedDiagnosticsLogicalContext.Set("correlationId", string.Empty); // reset correlation id
+                ScopeContext.PushProperty("correlationId", string.Empty); // reset correlation id
                 return Task.CompletedTask;
             });
         }
