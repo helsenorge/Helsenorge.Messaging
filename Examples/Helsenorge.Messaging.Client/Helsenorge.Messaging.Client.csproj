@@ -2,7 +2,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>8.0</LangVersion>
     <AssemblyName>Helsenorge.Messaging.Client</AssemblyName>
     <RootNamespace>Helsenorge.Messaging.Client</RootNamespace>
     <ProjectGuid>{FE928A0E-5B57-4893-8010-DDC54DC1B752}</ProjectGuid>

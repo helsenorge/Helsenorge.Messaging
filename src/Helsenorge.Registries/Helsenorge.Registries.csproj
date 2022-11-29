@@ -2,7 +2,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>8.0</LangVersion>
     <AssemblyName>Helsenorge.Registries</AssemblyName>
     <RootNamespace>Helsenorge.Registries</RootNamespace>
     <ProjectGuid>{BD2883C9-4806-4216-A577-893B3C4CC174}</ProjectGuid>
