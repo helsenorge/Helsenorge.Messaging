@@ -8,6 +8,9 @@
 
 namespace Helsenorge.Messaging
 {
+    /// <summary>
+    /// Enum used for setting messaging encryption type 
+    /// </summary>
     public enum MessagingEncryptionType
     {
         /// <summary>
