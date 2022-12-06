@@ -35,6 +35,7 @@ namespace Helsenorge.Messaging.Security
         /// <param name="includeOption">Controls how much of the signer certificate's certificate chain should be
         /// embedded in the signed message. If not specified, the default <see cref="X509IncludeOption.ExcludeRoot"/>
         /// is used.</param>
+        /// <param name="messagingEncryptionType">Controls which encryption type the Protect methods use.</param>
         public SignThenEncryptMessageProtection(
             X509Certificate2 signingCertificate,
             X509Certificate2 encryptionCertificate,
