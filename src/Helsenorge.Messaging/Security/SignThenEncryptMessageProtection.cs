@@ -14,6 +14,7 @@ using System.Xml.Linq;
 using System.Security.Cryptography.Pkcs;
 using System.Text;
 using Helsenorge.Messaging.Abstractions;
+using System.Security.Cryptography;
 
 namespace Helsenorge.Messaging.Security
 {
@@ -23,6 +24,7 @@ namespace Helsenorge.Messaging.Security
     public class SignThenEncryptMessageProtection : MessageProtection
     {
         private readonly X509IncludeOption? _includeOption;
+        private readonly MessagingEncryptionType _messagingEncryptionType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SignThenEncryptMessageProtection"/> class with the required certificates for signing and encrypting data.
@@ -37,10 +39,12 @@ namespace Helsenorge.Messaging.Security
             X509Certificate2 signingCertificate,
             X509Certificate2 encryptionCertificate,
             X509Certificate2 legacyEncryptionCertificate = null,
-            X509IncludeOption? includeOption = default)
+            X509IncludeOption? includeOption = default,
+            MessagingEncryptionType messagingEncryptionType = MessagingEncryptionType.AES256)
             : base (signingCertificate, encryptionCertificate, legacyEncryptionCertificate)
         {
             _includeOption = includeOption;
+            _messagingEncryptionType = messagingEncryptionType;
         }
 
         /// <summary>
@@ -72,7 +76,7 @@ namespace Helsenorge.Messaging.Security
 
             // then we encrypt it
             var recipient = new CmsRecipient(SubjectIdentifierType.IssuerAndSerialNumber, encryptionCertificate);
-            var envelope = new EnvelopedCms(new ContentInfo(raw));
+            var envelope = GetEnvelope(raw);
 
             envelope.Encrypt(recipient);
             raw = envelope.Encode();
@@ -113,7 +117,7 @@ namespace Helsenorge.Messaging.Security
 
             // then we encrypt it
             CmsRecipient cmsRecipient = new CmsRecipient(SubjectIdentifierType.IssuerAndSerialNumber, encryptionCertificate);
-            EnvelopedCms envelopedCms = new EnvelopedCms(new ContentInfo(signedData));
+            EnvelopedCms envelopedCms = GetEnvelope(signedData);
             envelopedCms.Encrypt(cmsRecipient);
 
             return envelopedCms.Encode();
@@ -260,6 +264,21 @@ namespace Helsenorge.Messaging.Security
             }
             // Return the raw content (without a signature).
             return signedCms.ContentInfo.Content;
+        }
+        
+        private EnvelopedCms GetEnvelope(byte[] rawContent)
+        {
+            if (_messagingEncryptionType == MessagingEncryptionType.AES256)
+            {
+                return new EnvelopedCms(new ContentInfo(rawContent));
+            }
+
+            else if (_messagingEncryptionType == MessagingEncryptionType.TripleDES)
+            {
+                return new EnvelopedCms(new ContentInfo(rawContent), new AlgorithmIdentifier(new Oid("1.2.840.113549.3.7")));
+            }
+
+            return null;
         }
     }
 }
