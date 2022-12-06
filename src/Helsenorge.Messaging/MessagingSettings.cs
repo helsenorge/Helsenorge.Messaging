@@ -58,6 +58,12 @@ namespace Helsenorge.Messaging
         public IDictionary<string, object> ApplicationProperties { get; } = new Dictionary<string, object>();
 
         /// <summary>
+        /// Specifies the encryption type used in messaging
+        /// </summary>
+        [Obsolete("SHOULD NOT BE USED BY ANYONE EXCEPT HELSENORGE. Temporary config to allow for TripleDES encryption")]
+        public MessagingEncryptionType MessagingEncryptionType { get; } = MessagingEncryptionType.AES256;
+
+        /// <summary>
         /// Default contructor
         /// </summary>
         public MessagingSettings()

@@ -192,7 +192,7 @@ namespace Helsenorge.Messaging
             var encryptionCertificate = CertificateStore.GetCertificate(Settings.DecryptionCertificate?.Thumbprint);
             var legacyEncryptionCertificate = Settings.LegacyDecryptionCertificate == null ? null : CertificateStore.GetCertificate(Settings.LegacyDecryptionCertificate.Thumbprint);
 
-            return new SignThenEncryptMessageProtection(signingCertificate, encryptionCertificate, legacyEncryptionCertificate);
+            return new SignThenEncryptMessageProtection(signingCertificate, encryptionCertificate, legacyEncryptionCertificate, messagingEncryptionType: Settings.MessagingEncryptionType);
         }
 
         internal ICertificateValidator GetDefaultCertificateValidator()
