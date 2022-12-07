@@ -181,7 +181,7 @@ namespace Helsenorge.Messaging.Security
                 {
                     var actualSignedCertificate = signed.Certificates.Count > 0
                         ? signed.Certificates[signed.Certificates.Count - 1] : null;
-                    
+
                     // it looks like that last certificate in the collection is the one at the end of the chain
                     throw new CertificateMessagePayloadException(
                         $"Expected signingcertificate: {Environment.NewLine} {signingCertificate} {Environment.NewLine}{Environment.NewLine}" +
@@ -266,20 +266,20 @@ namespace Helsenorge.Messaging.Security
             // Return the raw content (without a signature).
             return signedCms.ContentInfo.Content;
         }
-        
+
         private EnvelopedCms GetEnvelope(byte[] rawContent)
         {
-            if (_messagingEncryptionType == MessagingEncryptionType.AES256)
+            if (_messagingEncryptionType != MessagingEncryptionType.AES256 && _messagingEncryptionType != MessagingEncryptionType.TripleDES)
             {
-                return new EnvelopedCms(new ContentInfo(rawContent));
+                throw new ArgumentException("MessagingEncryptionType has been set to an unsupported type.", nameof(_messagingEncryptionType));
             }
 
-            else if (_messagingEncryptionType == MessagingEncryptionType.TripleDES)
+            if (_messagingEncryptionType == MessagingEncryptionType.TripleDES)
             {
                 return new EnvelopedCms(new ContentInfo(rawContent), new AlgorithmIdentifier(new Oid("1.2.840.113549.3.7")));
             }
 
-            return null;
+            return new EnvelopedCms(new ContentInfo(rawContent));
         }
     }
 }
