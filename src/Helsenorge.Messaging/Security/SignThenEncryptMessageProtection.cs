@@ -269,17 +269,12 @@ namespace Helsenorge.Messaging.Security
 
         private EnvelopedCms GetEnvelope(byte[] rawContent)
         {
-            if (_messagingEncryptionType != MessagingEncryptionType.AES256 && _messagingEncryptionType != MessagingEncryptionType.TripleDES)
-            {
-                throw new ArgumentException("MessagingEncryptionType has been set to an unsupported type.", nameof(_messagingEncryptionType));
-            }
-
-            if (_messagingEncryptionType == MessagingEncryptionType.TripleDES)
-            {
+            if (_messagingEncryptionType == MessagingEncryptionType.AES256)
+                return new EnvelopedCms(new ContentInfo(rawContent));
+            else if (_messagingEncryptionType == MessagingEncryptionType.TripleDES)
                 return new EnvelopedCms(new ContentInfo(rawContent), new AlgorithmIdentifier(new Oid("1.2.840.113549.3.7")));
-            }
 
-            return new EnvelopedCms(new ContentInfo(rawContent));
+            throw new ArgumentException($"MessagingEncryptionType has been set to an unsupported type.: {_messagingEncryptionType}", nameof(_messagingEncryptionType));
         }
     }
 }
