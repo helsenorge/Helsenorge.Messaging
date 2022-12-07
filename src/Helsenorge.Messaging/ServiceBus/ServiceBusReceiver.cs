@@ -88,40 +88,37 @@ namespace Helsenorge.Messaging.ServiceBus
                 message.CompleteAction = () => new ServiceBusOperationBuilder(_logger, "Complete")
                     .Build(() =>
                     {
-                        EnsureOpen();
                         _link.Accept(amqpMessage);
                     }).Perform();
                 message.CompleteActionAsync = () => new ServiceBusOperationBuilder(_logger, "CompleteAsync")
-                    .Build(async () =>
+                    .Build(() =>
                     {
-                        await EnsureOpenAsync().ConfigureAwait(false);
                         _link.Accept(amqpMessage);
+                        return Task.CompletedTask;
                     }).PerformAsync();
 
                 message.RejectAction = () => new ServiceBusOperationBuilder(_logger, "Reject")
                     .Build(() =>
                     {
-                        EnsureOpen();
                         _link.Reject(amqpMessage);
                     }).Perform();
                 message.RejectActionAsync = () => new ServiceBusOperationBuilder(_logger, "RejectAsync")
-                    .Build(async () =>
+                    .Build(() =>
                     {
-                        await EnsureOpenAsync().ConfigureAwait(false); ;
                         _link.Reject(amqpMessage);
+                        return Task.CompletedTask;
                     }).PerformAsync();
 
                 message.ReleaseAction = () => new ServiceBusOperationBuilder(_logger, "Release")
                     .Build(() =>
                     {
-                        EnsureOpen();
                         _link.Release(amqpMessage);
                     }).Perform();
                 message.ReleaseActionAsync = () => new ServiceBusOperationBuilder(_logger, "ReleaseAsync")
-                    .Build(async () =>
+                    .Build(() =>
                     {
-                        await EnsureOpenAsync().ConfigureAwait(false);
                         _link.Release(amqpMessage);
+                        return Task.CompletedTask;
                     }).PerformAsync();
 
                 message.DeadLetterAction = () => new ServiceBusOperationBuilder(_logger, "DeadLetter")
@@ -130,17 +127,16 @@ namespace Helsenorge.Messaging.ServiceBus
                         if (Connection.MessageBrokerDialect == MessageBrokerDialect.RabbitMQ)
                             throw new NotImplementedException("The method 'DeadLetter()' is not supported by RabbitMQ. Use 'Reject()' or 'RejectAsync' instead.");
 
-                        EnsureOpen();
                         _link.Reject(amqpMessage);
                     }).Perform();
                 message.DeadLetterActionAsync = () => new ServiceBusOperationBuilder(_logger, "DeadLetterAsync")
-                    .Build(async () =>
+                    .Build(() =>
                     {
                         if (Connection.MessageBrokerDialect == MessageBrokerDialect.RabbitMQ)
                             throw new NotImplementedException("The method 'DeadLetterAsync()' is not supported by RabbitMQ. Use 'RejectAsync()' or 'Reject()'' instead.");
 
-                        await EnsureOpenAsync().ConfigureAwait(false);
                         _link.Reject(amqpMessage);
+                        return Task.CompletedTask;
                     }).PerformAsync();
 
                 message.RenewLockAction = () => new ServiceBusOperationBuilder(_logger, "RenewLock")
@@ -149,7 +145,6 @@ namespace Helsenorge.Messaging.ServiceBus
                         if (Connection.MessageBrokerDialect == MessageBrokerDialect.RabbitMQ)
                             throw new NotImplementedException("The method 'RenewLock()' is not supported by RabbitMQ.");
 
-                        EnsureOpen();
                         var lockTimeout = TimeSpan.FromMinutes(1);
 #pragma warning disable CS0618
                         Connection.HttpClient.RenewLockAsync(_id, amqpMessage.GetSequenceNumber(), amqpMessage.GetLockToken(), lockTimeout, serverWaitTime).GetAwaiter().GetResult();
@@ -162,7 +157,6 @@ namespace Helsenorge.Messaging.ServiceBus
                         if (Connection.MessageBrokerDialect == MessageBrokerDialect.RabbitMQ)
                             throw new NotImplementedException("The method 'RenewLockAsync()' is not supported by RabbitMQ.");
 
-                        await EnsureOpenAsync().ConfigureAwait(false);
                         var lockTimeout = TimeSpan.FromMinutes(1);
 #pragma warning disable CS0618
                         await Connection.HttpClient.RenewLockAsync(_id, amqpMessage.GetSequenceNumber(), amqpMessage.GetLockToken(), lockTimeout, serverWaitTime).ConfigureAwait(false);
@@ -173,14 +167,13 @@ namespace Helsenorge.Messaging.ServiceBus
                 message.ModifyAction = (deliveryFailed, undeliverableHere) => new ServiceBusOperationBuilder(_logger, "Modify")
                     .Build(() =>
                     {
-                        EnsureOpen();
                         _link.Modify(amqpMessage, deliveryFailed, undeliverableHere);
                     }).Perform();
                 message.ModifyActionAsync = (deliveryFailed, undeliverableHere) => new ServiceBusOperationBuilder(_logger, "ModifyAsync")
-                    .Build(async () =>
+                    .Build(() =>
                     {
-                        await EnsureOpenAsync().ConfigureAwait(false);
                         _link.Modify(amqpMessage, deliveryFailed, undeliverableHere);
+                        return Task.CompletedTask;
                     }).PerformAsync();
             }
         }
