@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
+        <LangVersion>10.0</LangVersion>
         <AssemblyName>Helsenorge.Messaging.Tests</AssemblyName>
         <RootNamespace>Helsenorge.Messaging.Tests</RootNamespace>
         <ProjectGuid>{EE03ABE5-4B8D-48BB-AA52-0DC9D442634D}</ProjectGuid>
@@ -13,7 +14,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
         <PackageReference Include="Moq" Version="4.18.3" />
         <PackageReference Include="MSTest.TestAdapter" Version="3.0.0" />
@@ -23,6 +23,14 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.30" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
     </ItemGroup>
 
     <ItemGroup>

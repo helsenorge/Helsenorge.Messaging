@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+    <LangVersion>10.0</LangVersion>
     <AssemblyName>Helsenorge.Messaging</AssemblyName>
     <RootNamespace>Helsenorge.Messaging</RootNamespace>
     <ProjectGuid>{A0BA02E7-C2EA-496B-85ED-10ACD42B4DE8}</ProjectGuid>
@@ -15,6 +16,14 @@
     <PackageReference Include="AMQPNetLite" Version="2.4.5" />
     <PackageReference Include="AMQPNetLite.Serialization" Version="2.4.5" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="6.0.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.30" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.30" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.3" />
   </ItemGroup>
