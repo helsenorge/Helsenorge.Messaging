@@ -104,7 +104,7 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
-        public void Read_CollaborationProfile_OldCPPA()
+        public void Read_CollaborationProfile()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.AreEqual(profile.CpaId, Guid.Empty);
@@ -124,8 +124,6 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(2, role.SendMessages.Count);
             var message = role.ReceiveMessages[0];
             Assert.AreEqual("DIALOG_INNBYGGER_DIGITALBRUKER", message.Name);
-            // This test uses old CPPA XML (Service) where Action name is the MessageFunction
-            Assert.AreEqual("DIALOG_INNBYGGER_DIGITALBRUKER", message.Action); 
             Assert.AreEqual("sb.test.nhn.no/DigitalDialog/93238_async", message.DeliveryChannel);
             Assert.AreEqual(DeliveryProtocol.Amqp, message.DeliveryProtocol);
 
@@ -224,13 +222,12 @@ namespace Helsenorge.Registries.Tests
             Assert.IsNotNull(profile.FindMessageForSender("APPREC"));
         }
         [TestMethod]
-        public void FindMessageForSender_Found_Ny_CPPA()
+        public void FindMessageForSender_Found_Ny_CPP()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             var collaborationProtocolMessage = profile.FindMessageForReceiver("DIALOG_INNBYGGER_BEHANDLEROVERSIKT");
             Assert.IsNotNull(collaborationProtocolMessage);
-            Assert.AreEqual("DIALOG_INNBYGGER_BEHANDLEROVERSIKT", collaborationProtocolMessage.Name);
-            Assert.AreEqual("Svar", collaborationProtocolMessage.Action);
+            Assert.AreEqual("Svar", collaborationProtocolMessage.Name);
         }
         [TestMethod]
         public void FindMessageForSender_NotFound()
@@ -258,13 +255,12 @@ namespace Helsenorge.Registries.Tests
             Assert.IsNotNull(profile.FindMessageForReceiver("APPREC"));
         }
         [TestMethod]
-        public void FindMessageForReceiver_Found_Ny_CPPA()
+        public void FindMessageForReceiver_Found_Ny_CPP()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             var collaborationProtocolMessage = profile.FindMessageForSender("DIALOG_INNBYGGER_BEHANDLEROVERSIKT");
             Assert.IsNotNull(collaborationProtocolMessage);
-            Assert.AreEqual("DIALOG_INNBYGGER_BEHANDLEROVERSIKT", collaborationProtocolMessage.Name);
-            Assert.AreEqual("Hent", collaborationProtocolMessage.Action);
+            Assert.AreEqual("Hent", collaborationProtocolMessage.Name);
         }
         [TestMethod]
         public void FindMessageForReceiver_NotFound()

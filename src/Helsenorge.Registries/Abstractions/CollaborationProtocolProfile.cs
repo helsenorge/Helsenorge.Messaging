@@ -161,7 +161,7 @@ namespace Helsenorge.Registries.Abstractions
 
             if (messages == null)
             {
-                return Roles.SelectMany(role => role.SendMessages).FirstOrDefault((m) => m.Action.Equals(messageName, StringComparison.Ordinal));
+                return Roles.SelectMany(role => role.SendMessages).FirstOrDefault((m) => m.Name.Equals(messageName, StringComparison.Ordinal));
             }
             else
             {
@@ -184,7 +184,7 @@ namespace Helsenorge.Registries.Abstractions
 
             if (messages == null)
             {
-                return Roles.SelectMany(role => role.ReceiveMessages).FirstOrDefault((m) => m.Action.Equals(messageName, StringComparison.Ordinal));
+                return Roles.SelectMany(role => role.ReceiveMessages).FirstOrDefault((m) => m.Name.Equals(messageName, StringComparison.Ordinal));
             }
             else
             {
@@ -194,19 +194,22 @@ namespace Helsenorge.Registries.Abstractions
 
         private IEnumerable<CollaborationProtocolMessagePart> FindMessagePartsForSenderOrReceiverAppRec(string messageName, Func<CollaborationProtocolRole, IList<CollaborationProtocolMessage>> sendOrReceive)
         {
-            // first find the role with the correct message
-            var role = Roles.FirstOrDefault(r => r.ProcessSpecification.Name.Equals(messageName, StringComparison.OrdinalIgnoreCase));
-            if (role == null)
-                return null;
+            foreach (var role in Roles)
+            {
+                var messages = sendOrReceive(role);
 
-            var messages = sendOrReceive(role);
-
-            // then we find the Apprec message in the same role
-            var message = messages.FirstOrDefault((m) => m.Action.Equals("APPREC", StringComparison.OrdinalIgnoreCase));
-            if (message == null)
-                return null;
-
-            return message.Parts;
+                var message = messages.FirstOrDefault((m) => m.Name.Equals(messageName, StringComparison.OrdinalIgnoreCase));
+                // first find the role with the correct message
+                if (message == null) continue;
+                
+                // then we find the Apprec message in the same role
+                message = messages.FirstOrDefault((m) => m.Name.Equals("APPREC", StringComparison.OrdinalIgnoreCase));
+                if (message != null)
+                {
+                    return message.Parts;
+                }
+            }
+            return null;
         }
     }
 }
