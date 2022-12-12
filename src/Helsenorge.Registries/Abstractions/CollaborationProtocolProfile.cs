@@ -156,7 +156,8 @@ namespace Helsenorge.Registries.Abstractions
         {
             if (string.IsNullOrEmpty(messageName)) throw new ArgumentNullException(nameof(messageName));
 
-            var messages = Roles.FirstOrDefault(role => role.ProcessSpecification.Name.Equals(messageName, StringComparison.OrdinalIgnoreCase));
+            var messages = Roles.FirstOrDefault(role =>
+                role.ProcessSpecification != null && role.ProcessSpecification.Name.Equals(messageName, StringComparison.OrdinalIgnoreCase));
 
             if (messages == null)
             {
@@ -178,7 +179,8 @@ namespace Helsenorge.Registries.Abstractions
         {
             if (string.IsNullOrEmpty(messageName)) throw new ArgumentNullException(nameof(messageName));
 
-            var messages = Roles.FirstOrDefault(role => role.ProcessSpecification.Name.Equals(messageName, StringComparison.OrdinalIgnoreCase));
+            var messages = Roles.FirstOrDefault(role =>
+                role.ProcessSpecification != null && role.ProcessSpecification.Name.Equals(messageName, StringComparison.OrdinalIgnoreCase));
 
             if (messages == null)
             {
