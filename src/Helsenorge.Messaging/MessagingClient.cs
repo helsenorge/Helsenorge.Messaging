@@ -253,6 +253,7 @@ namespace Helsenorge.Messaging
                 collaborationProtocolMessage = new CollaborationProtocolMessage
                 {
                     Name = messageFunction,
+                    Action = "APPREC",
                     DeliveryProtocol = DeliveryProtocol.Amqp,
                     DeliveryChannel = communicationParty.AsynchronousQueueName,
                     Parts = new List<CollaborationProtocolMessagePart>
