@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -211,6 +213,15 @@ namespace Helsenorge.Messaging.ServiceBus
             stopwatch.Stop();
             logger.LogAfterEncryptingPayload(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
+            // FIXME: Remove this block after verification of AlgorithmIdentifier and PKCS information.
+#pragma warning disable CS0618
+            logger.LogInformation($"Core.Settings.MessagingEncryptionType: {Core.Settings.MessagingEncryptionType}");
+#pragma warning restore CS0618
+            var algorithmIdentifierAndContentInfo = await GetEncryptionAlgorithmAndContentInfo(stream).ConfigureAwait(false);
+            logger.LogInformation($"AlgorithmIdentifier - Oid: {algorithmIdentifierAndContentInfo.Item1.Oid.Value} FriendlyName: {algorithmIdentifierAndContentInfo.Item1.Oid.FriendlyName}");
+            logger.LogInformation($"ContentInfo - Oid: {algorithmIdentifierAndContentInfo.Item2.ContentType.Value} FriendlyName: {algorithmIdentifierAndContentInfo.Item2.ContentType.FriendlyName}");
+            // FIXME: End removal block
+
             logger.LogBeforeFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
             // Create an empty message
             var messagingMessage = await FactoryPool.CreateMessage(logger, stream).ConfigureAwait(false);
@@ -241,6 +252,18 @@ namespace Helsenorge.Messaging.ServiceBus
             await Send(logger, messagingMessage).ConfigureAwait(false);
 
             logger.LogEndSend(queueType, messagingMessage.MessageFunction, messagingMessage.FromHerId, messagingMessage.ToHerId, messagingMessage.MessageId);
+        }
+
+        // FIXME: Remove this function after verification of AlgorithmIdentifier and PKCS information.
+        private static async Task<(AlgorithmIdentifier, ContentInfo)> GetEncryptionAlgorithmAndContentInfo(Stream stream)
+        {
+            var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+
+            var envelopedCms = new EnvelopedCms();
+            envelopedCms.Decode(memoryStream.ToArray());
+
+            return (envelopedCms.ContentEncryptionAlgorithm, envelopedCms.ContentInfo);
         }
 
         /// <summary>
