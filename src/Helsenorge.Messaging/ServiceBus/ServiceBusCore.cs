@@ -131,7 +131,7 @@ namespace Helsenorge.Messaging.ServiceBus
                     replyTo :
                     await ConstructQueueName(logger, outgoingMessage.ToHerId, queueType).ConfigureAwait(false);
 
-            logger.LogStartSend(queueType, outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, $"Sending message using host and queue: '{HostnameAndPath}/{queueName}'", outgoingMessage.Payload);
+            logger.LogStartSend(queueType, outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, $"Sending message using host and queue: {HostnameAndPath}/{queueName}", outgoingMessage.Payload);
 
             var hasAgreement = true;
             // first we try and find an agreement
