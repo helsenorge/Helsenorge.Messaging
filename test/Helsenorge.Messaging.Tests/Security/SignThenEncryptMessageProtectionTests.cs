@@ -48,6 +48,30 @@ namespace Helsenorge.Messaging.Tests.Security
 
         [TestMethod]
         [TestCategory("X509Chain")]
+        public void Protect_And_Unprotect_OK_TripleDES()
+        {
+            MemoryStream contentStream = new MemoryStream(Encoding.UTF8.GetBytes(_content.ToString()));
+
+            var partyAProtection = new SignThenEncryptMessageProtection(
+                TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint),
+                TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint), null, null,
+                MessagingEncryptionType.TripleDES);
+            var stream = partyAProtection.Protect(contentStream,
+                TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint));
+
+            var partyBProtection = new SignThenEncryptMessageProtection(
+                TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint),
+                TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint), null, null,
+                MessagingEncryptionType.TripleDES);
+            var result = partyBProtection.Unprotect(
+                stream,
+                TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint));
+
+            Assert.AreEqual(_content.ToString(), result.ToXDocument().ToString());
+        }
+
+        [TestMethod]
+        [TestCategory("X509Chain")]
         public void Protect_And_Unprotect_UsingLegacy_OK()
         {
             MemoryStream contentStream = new MemoryStream(Encoding.UTF8.GetBytes(_content.ToString()));
