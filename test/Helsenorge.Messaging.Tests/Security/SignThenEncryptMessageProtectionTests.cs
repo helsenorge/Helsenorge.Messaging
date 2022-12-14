@@ -54,8 +54,8 @@ namespace Helsenorge.Messaging.Tests.Security
 
             var partyAProtection = new SignThenEncryptMessageProtection(
                 TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint),
-                TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint), null, null,
-                MessagingEncryptionType.TripleDES);
+                TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint), null, null);
+
             var stream = partyAProtection.Protect(contentStream,
                 TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint));
 
