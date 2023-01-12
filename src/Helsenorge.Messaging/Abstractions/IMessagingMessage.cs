@@ -67,6 +67,10 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         string MessageId { get; set; }
         /// <summary>
+        /// Gets or sets the GroupId
+        /// </summary>
+        string GroupId { get; set; }
+        /// <summary>
         /// Gets or sets the path where replies are sent
         /// </summary>
         string ReplyTo { get; set; }
