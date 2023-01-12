@@ -49,6 +49,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public string CorrelationId { get; set; }
         public string MessageFunction { get; set; }
         public string MessageId { get; set; }
+        public string GroupId { get; set; }
         public string ReplyTo { get; set; }
         public DateTime ScheduledEnqueueTimeUtc { get; set; }
         public TimeSpan TimeToLive { get; set; }

@@ -181,6 +181,15 @@ namespace Helsenorge.Messaging.ServiceBus
             [DebuggerStepThrough]
             set => GetMessageProperties().MessageId = value;
         }
+        public string GroupId
+        {
+            [DebuggerStepThrough]
+            get => GetMessageProperties().GroupId;
+
+            [DebuggerStepThrough]
+            set => GetMessageProperties().GroupId = value;
+        }
+
         public string ReplyTo
         {
             [DebuggerStepThrough]
