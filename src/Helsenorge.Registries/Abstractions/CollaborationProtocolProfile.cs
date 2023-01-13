@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
+using System.Xml.Linq;
+using Helsenorge.Registries.Utilities;
 
 namespace Helsenorge.Registries.Abstractions
 {
@@ -20,6 +22,43 @@ namespace Helsenorge.Registries.Abstractions
     [Serializable]
     public class CollaborationProtocolProfile
     {
+        private static XNamespace NameSpace = "http://www.oasis-open.org/committees/ebxml-cppa/schema/cpp-cpa-2_0.xsd";
+
+        public static CollaborationProtocolProfile CreateFromPartyInfoElement(XElement partyInfo)
+        {
+            if (partyInfo == null) throw new ArgumentNullException(nameof(partyInfo));
+
+            var collaboratoionProtocolProfile = new CollaborationProtocolProfile
+            {
+                Roles = new List<CollaborationProtocolRole>(),
+                Name = partyInfo.Attribute(NameSpace + "partyName").Value,
+
+                HerId = partyInfo.Element(NameSpace + "PartyId").Value.ToInt()
+            };
+
+            foreach (var role in partyInfo.Elements(NameSpace + "CollaborationRole"))
+            {
+                collaboratoionProtocolProfile.Roles.Add(CollaborationProtocolRole.CreateFromCollaborationRole(role, partyInfo));
+            }
+
+            XNamespace xmlSig = "http://www.w3.org/2000/09/xmldsig#";
+            foreach (var certificateElement in partyInfo.Elements(NameSpace + "Certificate"))
+            {
+                var base64 = certificateElement.Descendants(xmlSig + "X509Certificate").First().Value;
+                var certificate = new X509Certificate2(Convert.FromBase64String(base64));
+
+                if (certificate.HasKeyUsage(X509KeyUsageFlags.KeyEncipherment))
+                {
+                    collaboratoionProtocolProfile.EncryptionCertificate = certificate;
+                }
+                else if (certificate.HasKeyUsage(X509KeyUsageFlags.NonRepudiation))
+                {
+                    collaboratoionProtocolProfile.SignatureCertificate = certificate;
+                }
+            }
+            return collaboratoionProtocolProfile;
+        }
+
         // These are used during serialization and deserialization since X509Certificate2 and X509Certificate are no longer serializable in .net core.
         private string _signatureCertificateBase64String;
         private string _encryptionCertificateBase64String;
@@ -31,8 +70,6 @@ namespace Helsenorge.Registries.Abstractions
         {
             CpaId = Guid.Empty;
         }
-
-
 
         /// <summary>
         /// Called on serializing the object, exports the certificate to a base64-encoded string.
