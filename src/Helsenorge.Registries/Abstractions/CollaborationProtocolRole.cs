@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace Helsenorge.Registries.Abstractions
 {
@@ -56,6 +57,41 @@ namespace Helsenorge.Registries.Abstractions
     [Serializable]
     public class CollaborationProtocolRole
     {
+        private static XNamespace NameSpace = "http://www.oasis-open.org/committees/ebxml-cppa/schema/cpp-cpa-2_0.xsd";
+
+        public static CollaborationProtocolRole CreateFromCollaborationRole(XContainer element, XElement partyInfo)
+        {
+            if (element == null) throw new ArgumentNullException(nameof(element));
+            if (partyInfo == null) throw new ArgumentNullException(nameof(partyInfo));
+
+            var role = new CollaborationProtocolRole
+            {
+                ReceiveMessages = new List<CollaborationProtocolMessage>(),
+                SendMessages = new List<CollaborationProtocolMessage>(),
+                RoleName = element.Element(NameSpace + "Role")?.Attribute(NameSpace + "name").Value
+             };
+
+            var processSpecification = new ProcessSpecification
+            {
+                Name = element.Element(NameSpace + "ProcessSpecification")?.Attribute(NameSpace + "name").Value,
+                VersionString = element.Element(NameSpace + "ProcessSpecification")?.Attribute(NameSpace + "version").Value
+            };
+            role.ProcessSpecification = processSpecification;
+
+            var serviceBinding = element.Element(NameSpace + "ServiceBinding");
+            if (serviceBinding == null) return role;
+
+            foreach (var item in serviceBinding.Elements(NameSpace + "CanSend"))
+            {
+                role.SendMessages.Add(CollaborationProtocolMessage.CreateFromThisPartyActionBinding(item.Element(NameSpace + "ThisPartyActionBinding"), partyInfo, processSpecification.Name));
+            }
+            foreach (var item in serviceBinding.Elements(NameSpace + "CanReceive"))
+            {
+                role.ReceiveMessages.Add(CollaborationProtocolMessage.CreateFromThisPartyActionBinding(item.Element(NameSpace + "ThisPartyActionBinding"), partyInfo, processSpecification.Name));
+            }
+            return role;
+        }
+
         /// <summary>
         /// Name of role
         /// </summary>
