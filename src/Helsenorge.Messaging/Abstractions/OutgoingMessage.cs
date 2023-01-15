@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -30,7 +30,11 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         public string ReceiptForMessageFunction { get; set; }
         /// <summary>
-        /// The her id of recipient
+        /// The HER-id of the sender
+        /// </summary>
+        public int FromHerId { get; set; }
+        /// <summary>
+        /// The HER-id of the recipient
         /// </summary>
         public int ToHerId { get; set; }
         /// <summary>

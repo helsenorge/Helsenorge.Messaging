@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -30,34 +30,38 @@ namespace Helsenorge.Registries.Abstractions
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="id"></param>
+        /// <param name="myHerId"></param>
         /// <returns></returns>
-        Task<CollaborationProtocolProfile> FindAgreementByIdAsync(ILogger logger, Guid id);
+        Task<CollaborationProtocolProfile> FindAgreementByIdAsync(ILogger logger, Guid id, int myHerId);
 
         /// <summary>
         /// Finds a collaboration agreement based on an id
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="id"></param>
+        /// <param name="myHerId"></param>
         /// <param name="forceUpdate">Set to true to force cache update, default value false.</param>
         /// <returns></returns>
-        Task<CollaborationProtocolProfile> FindAgreementByIdAsync(ILogger logger, Guid id, bool forceUpdate);
+        Task<CollaborationProtocolProfile> FindAgreementByIdAsync(ILogger logger, Guid id, int myHerId, bool forceUpdate);
 
         /// <summary>
         /// Finds a collaboration agreement based on a communication party
         /// </summary>
         /// <param name="logger"></param>
+        /// <param name="myHerId"></param>
         /// <param name="counterpartyHerId"></param>
         /// <returns></returns>
-        Task<CollaborationProtocolProfile> FindAgreementForCounterpartyAsync(ILogger logger, int counterpartyHerId);
+        Task<CollaborationProtocolProfile> FindAgreementForCounterpartyAsync(ILogger logger, int myHerId, int counterpartyHerId);
 
         /// <summary>
         /// Finds a collaboration agreement based on a communication party
         /// </summary>
         /// <param name="logger"></param>
+        /// <param name="myHerId"></param>
         /// <param name="counterpartyHerId"></param>
         /// <param name="forceUpdate">Set to true to force cache update.</param>
         /// <returns></returns>
-        Task<CollaborationProtocolProfile> FindAgreementForCounterpartyAsync(ILogger logger, int counterpartyHerId, bool forceUpdate);
+        Task<CollaborationProtocolProfile> FindAgreementForCounterpartyAsync(ILogger logger, int myHerId, int counterpartyHerId, bool forceUpdate);
 
         /// <summary>
         /// Tries to Ping the AddressRegistry Service to verify a connection.

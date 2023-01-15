@@ -122,14 +122,14 @@ namespace Helsenorge.Registries
         protected virtual Task<string> FindProtocolForCounterparty(ILogger logger, int counterpartyHerId)
             => Invoke(logger, x => x.GetCppXmlForCommunicationPartyAsync(counterpartyHerId),"GetCppXmlForCommunicationPartyAsync");
 
-        /// <inheritdoc cref="FindAgreementByIdAsync"/>
-        public async Task<CollaborationProtocolProfile> FindAgreementByIdAsync(ILogger logger, Guid id)
+        /// <inheritdoc cref="FindAgreementByIdAsync(Microsoft.Extensions.Logging.ILogger,System.Guid,int)"/>
+        public async Task<CollaborationProtocolProfile> FindAgreementByIdAsync(ILogger logger, Guid id, int myHerId)
         {
-            return await FindAgreementByIdAsync(logger, id, false).ConfigureAwait(false);
+            return await FindAgreementByIdAsync(logger, id, myHerId, false).ConfigureAwait(false);
         }
 
-        /// <inheritdoc cref="FindAgreementByIdAsync"/>
-        public async Task<CollaborationProtocolProfile> FindAgreementByIdAsync(ILogger logger, Guid id, bool forceUpdate)
+        /// <inheritdoc cref="FindAgreementByIdAsync(Microsoft.Extensions.Logging.ILogger,System.Guid,int,bool)"/>
+        public async Task<CollaborationProtocolProfile> FindAgreementByIdAsync(ILogger logger, Guid id, int myHerId, bool forceUpdate)
         {
             logger.LogDebug($"FindAgreementByIdAsync {id}");
 
@@ -168,7 +168,7 @@ namespace Helsenorge.Registries
             if (doc.Root == null) return null;
 
             var node = (from x in doc.Root.Elements(_ns + "PartyInfo").Elements(_ns + "PartyId")
-                where x.Value != _settings.MyHerId.ToString()
+                where x.Value != myHerId.ToString()
                 select x.Parent).First();
 
             result = CollaborationProtocolProfile.CreateFromPartyInfoElement(node);
@@ -188,17 +188,17 @@ namespace Helsenorge.Registries
         internal virtual Task<CPAService.CpaXmlDetails> FindAgreementById(ILogger logger, Guid id)
             => Invoke(logger, x => x.GetCpaXmlAsync(id), "GetCpaXmlAsync");
 
-        /// <inheritdoc cref="FindAgreementForCounterpartyAsync"/>
-        public async Task<CollaborationProtocolProfile> FindAgreementForCounterpartyAsync(ILogger logger, int counterpartyHerId)
+        /// <inheritdoc cref="FindAgreementForCounterpartyAsync(Microsoft.Extensions.Logging.ILogger,int,int)"/>
+        public async Task<CollaborationProtocolProfile> FindAgreementForCounterpartyAsync(ILogger logger, int myHerId, int counterpartyHerId)
         {
-            return await FindAgreementForCounterpartyAsync(logger, counterpartyHerId, false).ConfigureAwait(false);
+            return await FindAgreementForCounterpartyAsync(logger, myHerId, counterpartyHerId, false).ConfigureAwait(false);
         }
 
-        /// <inheritdoc cref="FindAgreementForCounterpartyAsync(Microsoft.Extensions.Logging.ILogger,int,int)"/>
-        public async Task<CollaborationProtocolProfile> FindAgreementForCounterpartyAsync(ILogger logger, int counterpartyHerId, bool forceUpdate)
+        /// <inheritdoc cref="FindAgreementForCounterpartyAsync(Microsoft.Extensions.Logging.ILogger,int,int,bool)"/>
+        public async Task<CollaborationProtocolProfile> FindAgreementForCounterpartyAsync(ILogger logger, int myHerId, int counterpartyHerId, bool forceUpdate)
         {
 
-            var key = $"CPA_FindAgreementForCounterpartyAsync_{_settings.MyHerId}_{counterpartyHerId}";
+            var key = $"CPA_FindAgreementForCounterpartyAsync_{myHerId}_{counterpartyHerId}";
             var result = forceUpdate ? null : await CacheExtensions.ReadValueFromCache<CollaborationProtocolProfile>(logger, _cache, key, _settings.CachingFormatter).ConfigureAwait(false);
 
             if (result != null)
@@ -217,12 +217,12 @@ namespace Helsenorge.Registries
 
             try
             {
-                details = await FindAgreementForCounterparty(logger, counterpartyHerId).ConfigureAwait(false);
+                details = await FindAgreementForCounterparty(logger, myHerId, counterpartyHerId).ConfigureAwait(false);
             }
             catch (FaultException ex)
             {
                 // if there are error getting a proper CPA, we fallback to getting CPP.
-                logger.LogWarning($"Failed to resolve CPA between {_settings.MyHerId} and {counterpartyHerId}. {ex.Message}");
+                logger.LogWarning($"Failed to resolve CPA between {myHerId} and {counterpartyHerId}. {ex.Message}");
                 return await FindProtocolForCounterpartyAsync(logger, counterpartyHerId).ConfigureAwait(false);
             }
 
@@ -231,7 +231,7 @@ namespace Helsenorge.Registries
             if (doc.Root == null) return null;
 
             var node = (from x in doc.Root.Elements(_ns + "PartyInfo").Elements(_ns + "PartyId")
-                        where x.Value != _settings.MyHerId.ToString()
+                        where x.Value != myHerId.ToString()
                         select x.Parent).First();
 
             result = CollaborationProtocolProfile.CreateFromPartyInfoElement(node);
@@ -309,11 +309,12 @@ namespace Helsenorge.Registries
         /// Makes the actual call to the registry. Virtual so that it can overriden by mocks.
         /// </summary>
         /// <param name="logger"></param>
+        /// <param name="myHerId"></param>
         /// <param name="counterpartyHerId"></param>
         /// <returns></returns>
         [ExcludeFromCodeCoverage] // requires wire communication
-        internal virtual Task<CPAService.CpaXmlDetails> FindAgreementForCounterparty(ILogger logger, int counterpartyHerId)
-            => Invoke(logger, x => x.GetCpaForCommunicationPartiesXmlAsync(_settings.MyHerId, counterpartyHerId), "GetCpaForCommunicationPartiesXmlAsync");
+        internal virtual Task<CPAService.CpaXmlDetails> FindAgreementForCounterparty(ILogger logger, int myHerId, int counterpartyHerId)
+            => Invoke(logger, x => x.GetCpaForCommunicationPartiesXmlAsync(myHerId, counterpartyHerId), "GetCpaForCommunicationPartiesXmlAsync");
 
         [ExcludeFromCodeCoverage] // requires wire communication
         private Task<T> Invoke<T>(ILogger logger, Func<CPAService.ICPPAService, Task<T>> action, string methodName)

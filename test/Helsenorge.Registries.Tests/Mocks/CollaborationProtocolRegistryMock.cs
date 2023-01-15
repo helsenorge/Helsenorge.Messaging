@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -88,7 +88,7 @@ namespace Helsenorge.Registries.Tests.Mocks
             }
         }
 
-        internal override Task<CpaXmlDetails> FindAgreementForCounterparty(ILogger logger, int counterpartyHerId)
+        internal override Task<CpaXmlDetails> FindAgreementForCounterparty(ILogger logger, int myHerId, int counterpartyHerId)
         {
             try
             {

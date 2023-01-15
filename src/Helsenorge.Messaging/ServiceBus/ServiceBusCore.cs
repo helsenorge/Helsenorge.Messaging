@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -133,10 +133,10 @@ namespace Helsenorge.Messaging.ServiceBus
                     replyTo :
                     await ConstructQueueName(logger, outgoingMessage.ToHerId, queueType).ConfigureAwait(false);
 
-            logger.LogStartSend(queueType, outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, $"Sending message using host and queue: {HostnameAndPath}/{queueName}", outgoingMessage.Payload);
+            logger.LogStartSend(queueType, outgoingMessage.MessageFunction, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, $"Sending message using host and queue: {HostnameAndPath}/{queueName}", outgoingMessage.Payload);
 
-            // first we try and find an agreement
             var profile = await FindProfile(logger, outgoingMessage);
+
             var stopwatch = new Stopwatch();
             var contentType = Core.MessageProtection.ContentType;
             if (contentType.Equals(ContentType.SignedAndEnveloped, StringComparison.OrdinalIgnoreCase))
@@ -151,14 +151,14 @@ namespace Helsenorge.Messaging.ServiceBus
                 stopwatch.Stop();
                 logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, "KeyEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
-                logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate.Thumbprint, Core.MessageProtection.SigningCertificate.Subject, "NonRepudiation", Core.Settings.MyHerId, outgoingMessage.MessageId);
+                logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate.Thumbprint, Core.MessageProtection.SigningCertificate.Subject, "NonRepudiation", outgoingMessage.FromHerId, outgoingMessage.MessageId);
                 stopwatch.Restart();
                 // Validate "our" own signature certificate
                 var signatureStatus = validator == null
                     ? CertificateErrors.None
                     : validator.Validate(Core.MessageProtection.SigningCertificate, X509KeyUsageFlags.NonRepudiation);
                 stopwatch.Stop();
-                logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate.Thumbprint, "NonRepudiation", Core.Settings.MyHerId, outgoingMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+                logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate.Thumbprint, "NonRepudiation", outgoingMessage.FromHerId, outgoingMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
                 // this is the other parties certificate that may be out of date, not something we can fix
                 if (encryptionStatus != CertificateErrors.None)
@@ -199,22 +199,22 @@ namespace Helsenorge.Messaging.ServiceBus
                     }
                 }
             }
-            logger.LogBeforeEncryptingPayload(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate.Thumbprint, profile?.EncryptionCertificate.Thumbprint, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            logger.LogBeforeEncryptingPayload(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate.Thumbprint, profile?.EncryptionCertificate.Thumbprint, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
             stopwatch.Restart();
             // Encrypt the payload
             var stream = Core.MessageProtection.Protect(outgoingMessage.Payload?.ToStream(), profile?.EncryptionCertificate);
             stopwatch.Stop();
-            logger.LogAfterEncryptingPayload(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+            logger.LogAfterEncryptingPayload(outgoingMessage.MessageFunction, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
-            logger.LogBeforeFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            logger.LogBeforeFactoryPoolCreateMessage(outgoingMessage.MessageFunction, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
             // Create an empty message
             var messagingMessage = await FactoryPool.CreateMessage(logger, stream).ConfigureAwait(false);
-            logger.LogAfterFactoryPoolCreateMessage(outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            logger.LogAfterFactoryPoolCreateMessage(outgoingMessage.MessageFunction, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
 
             if (queueType != QueueType.SynchronousReply)
             {
                 messagingMessage.ReplyTo =
-                    replyTo ?? await ConstructQueueName(logger, Core.Settings.MyHerId, queueType).ConfigureAwait(false);
+                    replyTo ?? await ConstructQueueName(logger, outgoingMessage.FromHerId, queueType).ConfigureAwait(false);
             }
             messagingMessage.ContentType = Core.MessageProtection.ContentType;
             messagingMessage.MessageId = outgoingMessage.MessageId;
@@ -225,7 +225,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 ? Settings.Asynchronous.TimeToLive
                 : Settings.Synchronous.TimeToLive;
             messagingMessage.ScheduledEnqueueTimeUtc = outgoingMessage.ScheduledSendTimeUtc;
-            messagingMessage.FromHerId = Core.Settings.MyHerId;
+            messagingMessage.FromHerId = outgoingMessage.FromHerId;
             messagingMessage.ToHerId = outgoingMessage.ToHerId;
             messagingMessage.ApplicationTimestamp = DateTime.Now;
 
@@ -445,7 +445,7 @@ namespace Helsenorge.Messaging.ServiceBus
         /// <param name="logger"></param>
         /// <param name="message"></param>
         /// <returns>CollaborationProtocolProfile</returns>
-        public async Task<CollaborationProtocolProfile> FindProfile(ILogger logger, OutgoingMessage message)
+        internal async Task<CollaborationProtocolProfile> FindProfile(ILogger logger, OutgoingMessage message)
         {
             var messageFunction = string.IsNullOrEmpty(message.ReceiptForMessageFunction)
                 ? message.MessageFunction
@@ -458,10 +458,9 @@ namespace Helsenorge.Messaging.ServiceBus
             }
 
             var profile =
-                await CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(logger, message.ToHerId).ConfigureAwait(false) ??
+                await CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(logger, message.FromHerId, message.ToHerId).ConfigureAwait(false) ??
                 await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, message.ToHerId).ConfigureAwait(false);
             return profile;
         }
-
     }
 }

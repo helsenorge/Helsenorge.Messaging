@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -31,11 +31,6 @@ namespace Helsenorge.Registries
         /// </summary>
         public Utilities.CacheFormatterType CachingFormatter { get; set; } =
             Utilities.CacheFormatterType.BinaryFormatter;
-
-        /// <summary>
-        /// The HerId that belongs to me. In CPA operations, two communication parties may be returned, need to know which one is us
-        /// </summary>
-        public int MyHerId { get; set; }
 
         /// <summary>
         /// Use online certificate revocation list (CRL) check. Default true.

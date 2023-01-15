@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging
 {
+    public record QueueNames
+    {
+        public string Async { get; set; }
+        public string Sync { get; set; }
+        public string Error { get; set; }
+    }
+
     /// <summary>
     /// Default implementation for <see cref="IMessagingServer"/>
     /// This must be hosted as a singleton in order to leverage connection pooling against the message bus
@@ -217,17 +225,22 @@ namespace Helsenorge.Messaging
             if (!await CanAuthenticateAgainstMessageBroker())
                 throw new MessagingException("Non-successful authentication or connection attempt to the message broker on start-up. This can be caused by incorrect credentials / configuration errors.") { EventId = EventIds.ConnectionToMessageBrokerFailed };
 
+            if (!await HasCommonAncestor(ServiceBus.Settings.MyHerIds.ToArray()))
+                throw new MessagingException("There must be a common set of ancestor queues when receiving from multiple HER-Ids.");
+
+            var queueNames = await GetCommonAncestor(ServiceBus.Settings.MyHerIds);
+
             for (var i = 0; i < Settings.ServiceBus.Asynchronous.ProcessingTasks; i++)
             {
-                _listeners.Add(new AsynchronousMessageListener(ServiceBus, _loggerFactory.CreateLogger($"AsyncListener_{i}"), this));
+                _listeners.Add(new AsynchronousMessageListener(ServiceBus, _loggerFactory.CreateLogger($"AsyncListener_{i}"), this, queueNames));
             }
             for (var i = 0; i < Settings.ServiceBus.Synchronous.ProcessingTasks; i++)
             {
-                _listeners.Add(new SynchronousMessageListener(ServiceBus, _loggerFactory.CreateLogger($"SyncListener_{i}"), this));
+                _listeners.Add(new SynchronousMessageListener(ServiceBus, _loggerFactory.CreateLogger($"SyncListener_{i}"), this, queueNames));
             }
             for (var i = 0; i < Settings.ServiceBus.Error.ProcessingTasks; i++)
             {
-                _listeners.Add(new ErrorMessageListener(ServiceBus, _loggerFactory.CreateLogger($"ErrorListener_{i}"), this));
+                _listeners.Add(new ErrorMessageListener(ServiceBus, _loggerFactory.CreateLogger($"ErrorListener_{i}"), this, queueNames));
             }
             foreach (var listener in _listeners)
             {
@@ -497,6 +510,72 @@ namespace Helsenorge.Messaging
             }
         }
 
+        private async Task<bool> HasCommonAncestor(int[] herIds)
+        {
+            if (herIds.Count() <= 1)
+                return true;
+
+            var communicationPartyDetailsList = new List<CommunicationPartyDetails>();
+            foreach (var herId in herIds)
+                communicationPartyDetailsList.Add(await ServiceBus.AddressRegistry.FindCommunicationPartyDetailsAsync(_logger, herId));
+
+            var queueNames = GetCommonAncestor(communicationPartyDetailsList);
+
+            foreach (var communicationPartyDetails in communicationPartyDetailsList)
+            {
+                if (!string.IsNullOrEmpty(queueNames.Async) &&
+                    !string.IsNullOrEmpty(communicationPartyDetails.AsynchronousQueueName))
+                {
+                    if (!queueNames.Async.Equals(communicationPartyDetails.AsynchronousQueueName,
+                            StringComparison.OrdinalIgnoreCase))
+                        return false;
+                }
+
+                if (!string.IsNullOrEmpty(queueNames.Sync) &&
+                    !string.IsNullOrEmpty(communicationPartyDetails.SynchronousQueueName))
+                {
+                    if (!queueNames.Sync.Equals(communicationPartyDetails.SynchronousQueueName,
+                            StringComparison.OrdinalIgnoreCase))
+                        return false;
+                }
+
+                if (!string.IsNullOrEmpty(queueNames.Error) &&
+                    !string.IsNullOrEmpty(communicationPartyDetails.ErrorQueueName))
+                {
+                    if (!queueNames.Error.Equals(communicationPartyDetails.ErrorQueueName,
+                            StringComparison.OrdinalIgnoreCase))
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        private async Task<QueueNames> GetCommonAncestor(IEnumerable<int> herIds)
+        {
+            var communicationPartyDetailsList = new List<CommunicationPartyDetails>();
+            foreach (var herId in herIds)
+                communicationPartyDetailsList.Add(await ServiceBus.AddressRegistry.FindCommunicationPartyDetailsAsync(_logger, herId));
+            return GetCommonAncestor(communicationPartyDetailsList);
+        }
+
+        private QueueNames GetCommonAncestor(IReadOnlyList<CommunicationPartyDetails> communicationPartyDetailsList)
+        {
+            return new QueueNames
+            {
+                Async = communicationPartyDetailsList
+                    .FirstOrDefault(c => !string.IsNullOrEmpty(c.AsynchronousQueueName))?.AsynchronousQueueName,
+                Sync = communicationPartyDetailsList
+                    .FirstOrDefault(c => !string.IsNullOrEmpty(c.SynchronousQueueName))?.SynchronousQueueName,
+                Error = communicationPartyDetailsList
+                    .FirstOrDefault(c => !string.IsNullOrEmpty(c.ErrorQueueName))?.ErrorQueueName,
+            };
+        }
+
+        /// <summary>
+        /// Tries to authenticate against the message broker.
+        /// </summary>
+        /// <returns>true if authentication is successful, otherwise false.</returns>
         internal virtual async Task<bool> CanAuthenticateAgainstMessageBroker()
         {
             ServiceBusConnection connection = null;

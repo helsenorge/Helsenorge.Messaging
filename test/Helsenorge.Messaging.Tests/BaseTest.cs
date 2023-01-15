@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -13,6 +13,7 @@ using Helsenorge.Registries.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -128,7 +129,7 @@ namespace Helsenorge.Messaging.Tests
 
             Settings = new MessagingSettings()
             {
-                MyHerId = MockFactory.HelsenorgeHerId,
+                MyHerIds = new List<int> { MockFactory.HelsenorgeHerId },
                 SigningCertificate = new CertificateSettings()
                 {
                     StoreName = StoreName.My,

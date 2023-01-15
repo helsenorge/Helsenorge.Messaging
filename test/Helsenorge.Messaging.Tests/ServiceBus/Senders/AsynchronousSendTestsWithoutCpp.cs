@@ -16,19 +16,21 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
     [TestClass]
     public class AsynchronousSendTestsWithoutCpp : BaseTest
     {
-        private const int CommunicationPartyHerId = 93252;
+        private const int CommunicationPartyAHerId = 93238;
+        private const int CommunicationPartyBHerId = 93252;
 
         [TestInitialize]
         public override void Setup()
         {
-            SetupInternal(CommunicationPartyHerId);
+            SetupInternal(CommunicationPartyBHerId);
         }
         
         private OutgoingMessage CreateMessageForCommunicationPartyWithoutCpp()
         {
             return new OutgoingMessage()
             {
-                ToHerId = CommunicationPartyHerId,
+                FromHerId = CommunicationPartyAHerId,
+                ToHerId = CommunicationPartyBHerId,
                 Payload = GenericMessage,
                 MessageFunction = "NO_CPA_MESSAGE",
                 MessageId = Guid.NewGuid().ToString("D"),
@@ -61,7 +63,8 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             return new OutgoingMessage()
             {
-                ToHerId = CommunicationPartyHerId,
+                FromHerId = CommunicationPartyAHerId,
+                ToHerId = CommunicationPartyBHerId,
                 Payload = GenericMessage,
                 MessageFunction = "APPREC",
                 MessageId = Guid.NewGuid().ToString("D"),

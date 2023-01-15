@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -94,7 +94,7 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
                 {
                     // logs the response time in ms
                     stopwatch.Stop();
-                    logger.LogResponseTime(message.MessageFunction, message.ToHerId, _core.Settings.MyHerId, message.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+                    logger.LogResponseTime(message.MessageFunction, message.ToHerId, message.FromHerId, message.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
                     return payload;
                 }
@@ -147,7 +147,7 @@ namespace Helsenorge.Messaging.ServiceBus.Senders
                 logger.LogTimeoutError(message.MessageFunction, message.MessageId, message.ToHerId);
                 // logs the response time before throwing exception
                 stopwatch.Stop();
-                logger.LogResponseTime(message.MessageFunction, message.ToHerId, _core.Settings.MyHerId, message.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+                logger.LogResponseTime(message.MessageFunction, message.ToHerId, message.FromHerId, message.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
                 throw new MessagingException(error)
                 {
