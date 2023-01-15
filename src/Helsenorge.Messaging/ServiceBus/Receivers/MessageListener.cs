@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -19,6 +20,7 @@ using System.Xml.Linq;
 using System.Xml.Schema;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Security;
+using Helsenorge.Messaging.ServiceBus.Exceptions;
 using Helsenorge.Registries;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -33,6 +35,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         private CommunicationPartyDetails _myDetails;
         private IMessagingReceiver _messageReceiver;
         private bool _listenerEstablishedConfirmed = false;
+        protected QueueNames _queueNames;
 
         /// <summary>
         /// A helper method to set the Correlation Id from the callee code.
@@ -48,10 +51,23 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// The timeout used for reading messages from queue
         /// </summary>
         protected TimeSpan ReadTimeout { get; set; }
+
         /// <summary>
         /// Specifies the name of the queue this listener is reading from
         /// </summary>
-        protected abstract string QueueName { get; }
+        protected virtual string GetQueueName()
+        {
+            if (_queueNames == null)
+                throw new QueueNameNotSetException("QueueName has not been set. If this is intentional GetQueueName() must be overriden in your derived class.");
+
+            return QueueType switch
+            {
+                QueueType.Asynchronous => _queueNames.Async,
+                QueueType.Synchronous => _queueNames.Sync,
+                QueueType.Error => _queueNames.Error,
+                _ => throw new UnknownQueueTypeException(QueueType)
+            };
+        }
         /// <summary>
         /// Specifies what type of queue this listener is processing
         /// </summary>
@@ -71,19 +87,22 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         protected ILogger Logger { get; }
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="MessageListener"/> class.
         /// </summary>
-        /// <param name="core">Reference to core service bus infrastructure</param>
-        /// <param name="logger">Logger used for diagnostics information</param>
-        /// <param name="messagingNotification">A reference to the messaging notification system</param>
+        /// <param name="core">An instance of <see cref="ServiceBusCore"/> which has the common infrastructure to talk to the Message Bus.</param>
+        /// <param name="logger">An instance of <see cref="ILogger"/>, used to log diagnostics information.</param>
+        /// <param name="messagingNotification">An instance of <see cref="IMessagingNotification"/> which holds reference to callbacks back to the client that owns this instance of the <see cref="MessageListener"/>.</param>
+        /// <param name="queueNames">The Queue Names associated with the client.</param>
         protected MessageListener(
             ServiceBusCore core,
             ILogger logger,
-            IMessagingNotification messagingNotification)
+            IMessagingNotification messagingNotification,
+            QueueNames queueNames = null)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             Core = core ?? throw new ArgumentNullException(nameof(core));
             MessagingNotification = messagingNotification;
+            _queueNames = queueNames;
         }
 
         /// <summary>
@@ -109,7 +128,8 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <param name="cancellation">Cancellation token that signals when we should stop</param>
         public async Task Start(CancellationToken cancellation)
         {
-            Logger.LogInformation($"Starting listener on host and queue '{Core.HostnameAndPath}/{QueueName}'");
+            var queueName = Core.ExtractQueueName(GetQueueName());
+            Logger.LogInformation($"Starting listener on host and queue '{Core.HostnameAndPath}/{queueName}'");
 
             while (cancellation.IsCancellationRequested == false)
             {
@@ -119,7 +139,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 
                     if (!_listenerEstablishedConfirmed)
                     {
-                        Logger.LogInformation($"Listener established on host and queue '{Core.HostnameAndPath}/{QueueName}'");
+                        Logger.LogInformation($"Listener established on host and queue '{Core.HostnameAndPath}/{queueName}'");
                         _listenerEstablishedConfirmed = true;
                     }
 
@@ -127,7 +147,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 }
                 catch (Exception ex) // protect the main message pump
                 {
-                    Logger.LogException($"Generic service bus error at '{Core.HostnameAndPath}/{QueueName}'", ex);
+                    Logger.LogException($"Generic service bus error at '{Core.HostnameAndPath}/{queueName}'", ex);
                     // if there are problems with the message bus, we don't get interval of the ReadTimeout
                     // pause a bit so that we don't take over the whole system
                     await Task.Delay(5000, cancellation)
@@ -137,7 +157,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 finally
                 {
                     if (Core.Settings.LogReadTime)
-                        Logger.LogInformation($"Last Read Time UTC: '{LastReadTimeUtc.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo)}' on host and queue: '{Core.HostnameAndPath}/{QueueName}'");
+                        Logger.LogInformation($"Last Read Time UTC: '{LastReadTimeUtc.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo)}' on host and queue: '{Core.HostnameAndPath}/{queueName}'");
                 }
             }
         }
@@ -150,7 +170,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// </summary>
         public async Task<IncomingMessage> ReadAndProcessMessage(bool alwaysRemoveMessage = false)
         {
-            await SetUpReceiver().ConfigureAwait(false);
+            var queueName = Core.ExtractQueueName(GetQueueName());
+            await SetUpReceiver(queueName).ConfigureAwait(false);
+
             IMessagingMessage message;
             try
             {
@@ -168,6 +190,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         private async Task<IncomingMessage> HandleRawMessage(IMessagingMessage message, bool alwaysRemoveMessage)
         {
             if (message == null) return null;
+            var queueName = Core.ExtractQueueName(GetQueueName());
             Stream bodyStream = null;
             bool disposeMessage = true;
 
@@ -204,7 +227,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 
                 SetCorrelationIdAction?.Invoke(incomingMessage.MessageId);
 
-                Logger.LogStartReceive(QueueType, incomingMessage, $"Message received from host and queue: {Core.HostnameAndPath}/{QueueName}");
+                Logger.LogStartReceive(QueueType, incomingMessage, $"Message received from host and queue: {Core.HostnameAndPath}/{queueName}");
 
                 // we cannot dispose of the stream before we have potentially cloned the message for error use
                 bodyStream = message.GetBody();
@@ -225,7 +248,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                 }
                 await NotifyMessageProcessingReady(message, incomingMessage).ConfigureAwait(false);
                 ServiceBusCore.RemoveProcessedMessageFromQueue(message);
-                Logger.LogRemoveMessageFromQueueNormal(message, QueueName);
+                Logger.LogRemoveMessageFromQueueNormal(message, queueName);
                 await NotifyMessageProcessingCompleted(incomingMessage).ConfigureAwait(false);
                 Logger.LogEndReceive(QueueType, incomingMessage);
                 return incomingMessage;
@@ -339,11 +362,11 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             if (QueueType == QueueType.Error) return null;
             if (Guid.TryParse(message.CpaId, out Guid id) && (id != Guid.Empty))
             {
-                return await Core.CollaborationProtocolRegistry.FindAgreementByIdAsync(Logger, id).ConfigureAwait(false);
+                return await Core.CollaborationProtocolRegistry.FindAgreementByIdAsync(Logger, id, message.ToHerId).ConfigureAwait(false);
             }
             return
                 // try first to find an agreement
-                await Core.CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(Logger, message.FromHerId).ConfigureAwait(false) ??
+                await Core.CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(Logger, message.ToHerId, message.FromHerId).ConfigureAwait(false) ??
                 // if we cannot find that, we fallback to protocol (which may return a dummy protocol if things are really missing in AR)
                 await Core.CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(Logger, message.FromHerId).ConfigureAwait(false);
         }
@@ -381,28 +404,28 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
 
                 var validator = Core.CertificateValidator;
                 var stopwatch = new Stopwatch();
-                Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, Core.MessageProtection.EncryptionCertificate.Thumbprint, Core.MessageProtection.EncryptionCertificate.Subject, "KeyEncipherment", Core.Settings.MyHerId, originalMessage.MessageId);
+                Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, Core.MessageProtection.EncryptionCertificate.Thumbprint, Core.MessageProtection.EncryptionCertificate.Subject, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId);
                 stopwatch.Start();
                 // validate the local encryption certificate and, if present, the local legacy encryption certificate 
                 incomingMessage.DecryptionError = validator == null
                     ? CertificateErrors.None
                     : validator.Validate(Core.MessageProtection.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
                 stopwatch.Stop();
-                Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, Core.MessageProtection.EncryptionCertificate.Thumbprint, "KeyEncipherment", Core.Settings.MyHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+                Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, Core.MessageProtection.EncryptionCertificate.Thumbprint, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
                 // in earlier versions of Helsenorge.Messaging we removed the message, but we should rather
                 // want it to be dead lettered since this is a temp issue that should be fixed locally.
                 ReportErrorOnLocalCertificate(originalMessage, Core.MessageProtection.EncryptionCertificate, incomingMessage.DecryptionError);
 
                 if(Core.MessageProtection.LegacyEncryptionCertificate != null)
                 {
-                    Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, Core.MessageProtection.LegacyEncryptionCertificate.Thumbprint, Core.MessageProtection.LegacyEncryptionCertificate.Subject, "KeyEncipherment", Core.Settings.MyHerId, originalMessage.MessageId);
+                    Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, Core.MessageProtection.LegacyEncryptionCertificate.Thumbprint, Core.MessageProtection.LegacyEncryptionCertificate.Subject, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId);
                     stopwatch.Restart();
                     // this is optional information that should only be in effect durin a short transition period
                     incomingMessage.LegacyDecryptionError = validator == null
                         ? CertificateErrors.None
                         : validator.Validate(Core.MessageProtection.LegacyEncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
                     stopwatch.Stop();
-                    Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, Core.MessageProtection.LegacyEncryptionCertificate.Thumbprint, "KeyEncipherment", Core.Settings.MyHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+                    Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, Core.MessageProtection.LegacyEncryptionCertificate.Thumbprint, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
                     // if someone forgets to remove the legacy configuration, we log an error message but don't remove it
                     ReportErrorOnLocalCertificate(originalMessage, Core.MessageProtection.LegacyEncryptionCertificate, incomingMessage.LegacyDecryptionError);
@@ -547,15 +570,16 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
         /// <summary>
         /// Utilty method that helps us determine the name of specific queue
         /// </summary>
+        /// <param name="myHerId"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        protected string ResolveQueueName(Func<CommunicationPartyDetails, string> action)
+        protected string ResolveQueueName(int myHerId, Func<CommunicationPartyDetails, string> action)
         {
             if (_myDetails == null)
             {
                 try
                 {
-                    _myDetails = Core.AddressRegistry.FindCommunicationPartyDetailsAsync(Logger, Core.Settings.MyHerId).Result;
+                    _myDetails = Core.AddressRegistry.FindCommunicationPartyDetailsAsync(Logger, myHerId).Result;
                 }
                 catch (Exception ex)
                 {
@@ -568,9 +592,9 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             return string.IsNullOrEmpty(queueName) == false ? Core.ExtractQueueName(queueName) : null;
         }
 
-        private async Task SetUpReceiver()
+        private async Task SetUpReceiver(string queueName)
         {
-            if (string.IsNullOrEmpty(QueueName))
+            if (string.IsNullOrEmpty(queueName))
             {
                 throw new MessagingException("Queue name is empty. This could be due to connection issue with Address Registry")
                 {
@@ -583,7 +607,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             }
             if (_messageReceiver == null)
             {
-                _messageReceiver = await Core.ReceiverPool.CreateCachedMessageReceiver(Logger, QueueName).ConfigureAwait(false);
+                _messageReceiver = await Core.ReceiverPool.CreateCachedMessageReceiver(Logger, queueName).ConfigureAwait(false);
             }
         }
     }

@@ -9,11 +9,10 @@
     "WcfConfiguration": {
       "UserName": "???",
       "Password": "???"
-    },
-    "MyHerId": "1234"
+    }
   },
   "MessagingSettings": {
-    "MyHerId": "1234",
+    "MyHerIds": [ "1234" ],
     "ApplicationProperties": {
       "X-SystemIdentifier": "SomeSystemIdentifier"
     },

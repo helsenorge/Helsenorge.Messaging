@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -118,7 +119,12 @@ namespace Helsenorge.Messaging.Client
                     return 2;
                 }
                 _files = new Stack<string>(Directory.GetFiles(_clientSettings.SourceDirectory));
-                
+
+                // For the sake of the example we just fetch the first HER-id of MyHerIds configured in ClientSample.json.
+                var fromHerId = _messagingClient.Settings?.MyHerIds?.FirstOrDefault();
+                if (!fromHerId.HasValue)
+                    throw new MessagingException("At least one HER-id must be set for the setting MyHerIds in ClientSample.json.");
+
                 var tasks = new List<Task>();
                 for (var i = 0; i < _clientSettings.Threads; i++)
                 {
@@ -130,6 +136,7 @@ namespace Helsenorge.Messaging.Client
                             Task.WaitAll(_messagingClient.SendAndContinueAsync(new OutgoingMessage()
                             {
                                 MessageFunction = _clientSettings.MessageFunction,
+                                FromHerId = fromHerId.Value,
                                 ToHerId = _clientSettings.ToHerId,
                                 MessageId = Guid.NewGuid().ToString("D"),
                                 PersonalId = "99999999999",
@@ -166,6 +173,11 @@ namespace Helsenorge.Messaging.Client
                 }
                 _files = new Stack<string>(Directory.GetFiles(_clientSettings.SourceDirectory));
 
+                // For the sake of the example we just fetch the first HER-id of MyHerIds configured in ClientSample.json.
+                var fromHerId = _messagingClient.Settings?.MyHerIds?.FirstOrDefault();
+                if (!fromHerId.HasValue)
+                    throw new MessagingException("At least one HER-id must be set for the setting MyHerIds in ClientSample.json.");
+
                 // since we are synchronous, we don't fire off multiple tasks, we do them sequentially
                 for (var s = GetNextPath(); !string.IsNullOrEmpty(s); s = GetNextPath())
                 {
@@ -173,6 +185,7 @@ namespace Helsenorge.Messaging.Client
                     var result = _messagingClient.SendAndWaitAsync(new OutgoingMessage()
                     {
                         MessageFunction = _clientSettings.MessageFunction,
+                        FromHerId = fromHerId.Value,
                         ToHerId = _clientSettings.ToHerId,
                         MessageId = Guid.NewGuid().ToString("D"),
                         PersonalId = "99999999999",

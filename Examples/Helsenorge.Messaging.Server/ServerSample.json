@@ -9,11 +9,10 @@
         "WcfConfiguration": {
             "UserName": "???",
             "Password": "???"
-        },
-        "MyHerId": "6789"
+        }
     },
     "MessagingSettings": {
-        "MyHerId": "6789",
+        "MyHerIds": [ "6789" ],
         "ServiceBus": {
             "ConnectionString": "???",
             "MessageBrokerDialect": "RabbitMQ"

@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -43,7 +43,6 @@ namespace Helsenorge.Registries.Tests
                     Password = "password",
                 },
                 CachingInterval = TimeSpan.FromSeconds(5),
-                MyHerId = 93238 // matches a value in a CPA test file
             };
 
             var serviceCollection = new ServiceCollection();
@@ -208,10 +207,10 @@ namespace Helsenorge.Registries.Tests
         [TestMethod]
         public void Read_CollaborationAgreement_ById()
         {
-            var profile = _registry.FindAgreementByIdAsync(_logger, Guid.Parse("49391409-e528-4919-b4a3-9ccdab72c8c1")).Result;
+            var profile = _registry.FindAgreementByIdAsync(_logger, Guid.Parse("49391409-e528-4919-b4a3-9ccdab72c8c1"), 93238).Result;
 
-            Assert.AreEqual("Testlege Testlege", profile.Name);
             Assert.AreEqual(93252, profile.HerId);
+            Assert.AreEqual("Testlege Testlege", profile.Name);
             Assert.AreEqual(14, profile.Roles.Count);
 
             Assert.IsNotNull(profile.SignatureCertificate);
@@ -221,11 +220,11 @@ namespace Helsenorge.Registries.Tests
         [TestMethod]
         public void Read_CollaborationAgreement_ByCounterparty()
         {
-            var profile = _registry.FindAgreementForCounterpartyAsync(_logger, 93252).Result;
+            var profile = _registry.FindAgreementForCounterpartyAsync(_logger, 93238, 93252).Result;
 
-            Assert.AreEqual(profile.HerId, 93252);
-            Assert.AreEqual(profile.Name, "Testlege Testlege");
-            Assert.AreEqual(profile.CpaId, new Guid("{9333f3de-e85c-4c26-9066-6800055b1b8e}"));
+            Assert.AreEqual(93252, profile.HerId);
+            Assert.AreEqual("Testlege Testlege", profile.Name);
+            Assert.AreEqual(new Guid("{9333f3de-e85c-4c26-9066-6800055b1b8e}"), profile.CpaId);
             Assert.IsNotNull(profile.EncryptionCertificate);
             Assert.IsNotNull(profile.SignatureCertificate);
             Assert.AreEqual(profile.Roles.Count, 14);
@@ -234,7 +233,7 @@ namespace Helsenorge.Registries.Tests
         [TestMethod]
         public void Read_CollaborationAgreement_NotFound()
         {
-            var profile = _registry.FindAgreementForCounterpartyAsync(_logger, 1234).Result;
+            var profile = _registry.FindAgreementForCounterpartyAsync(_logger, 5678, 1234).Result;
             Assert.IsNull(profile);
         }
 
@@ -242,7 +241,7 @@ namespace Helsenorge.Registries.Tests
         public void Read_CollaborationAgreement_FromCache()
         {
             _registry.CertificateValidator = new MockCertificateValidator();
-            var profile = _registry.FindAgreementForCounterpartyAsync(_logger, 93252).Result;
+            var profile = _registry.FindAgreementForCounterpartyAsync(_logger, 5678, 93252).Result;
             Assert.IsNotNull(profile);
 
             // if it's not found in cache, it will cause an exception
@@ -250,7 +249,7 @@ namespace Helsenorge.Registries.Tests
             {
                 throw new NotImplementedException();
             });
-            profile = _registry.FindAgreementForCounterpartyAsync(_logger, 93252).Result;
+            profile = _registry.FindAgreementForCounterpartyAsync(_logger, 5678, 93252).Result;
             Assert.IsNotNull(profile);
         }
 
@@ -260,7 +259,7 @@ namespace Helsenorge.Registries.Tests
             _registry.CertificateValidator = new MockCertificateValidator();
             // FindAgreementForCounterpartyAsync reads data from old cache
             // Old cache of CollaborationProtocolMessage does not contain Action
-            var profileOldCache = _registry.FindAgreementForCounterpartyAsync(_logger, 93253).Result;
+            var profileOldCache = _registry.FindAgreementForCounterpartyAsync(_logger, 93238, 93253).Result;
             // Tests the fallback when reading from old cache
             // AppRec is a Action and in old cache this is mapped to Name and Action is null
             var messageForSender = profileOldCache.FindMessageForSender("APPREC");
@@ -450,7 +449,7 @@ namespace Helsenorge.Registries.Tests
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
 
-            var profile = _registry.FindAgreementByIdAsync(_logger, Guid.Parse("51795e2c-9d39-44e0-9168-5bee38f20819")).Result;
+            var profile = _registry.FindAgreementByIdAsync(_logger, Guid.Parse("51795e2c-9d39-44e0-9168-5bee38f20819"), 5678).Result;
 
             Assert.AreEqual("Digitale innbyggertjenester", profile.Name);
             Assert.AreEqual(8093240, profile.HerId);

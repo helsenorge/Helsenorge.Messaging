@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2020-2022, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -20,9 +20,9 @@ namespace Helsenorge.Messaging
     public class MessagingSettings
     {
         /// <summary>
-        /// The Her id that we represent
+        /// The HER-ids we are representing.
         /// </summary>
-        public int MyHerId { get; set; }
+        public List<int> MyHerIds { get; set; } = new List<int>();
         /// <summary>
         /// The certificate used for signing messages
         /// </summary>
@@ -81,7 +81,7 @@ namespace Helsenorge.Messaging
 
         internal void Validate()
         {
-            if (MyHerId <= 0) throw new ArgumentOutOfRangeException(nameof(MyHerId));
+            if (MyHerIds.Count == 0 || MyHerIds.Any(herId => herId <= 0)) throw new ArgumentOutOfRangeException(nameof(MyHerIds));
             if (DecryptionCertificate == null) throw new ArgumentNullException(nameof(DecryptionCertificate));
             DecryptionCertificate.Validate();
             if (SigningCertificate == null) throw new ArgumentNullException(nameof(SigningCertificate));
@@ -179,9 +179,9 @@ namespace Helsenorge.Messaging
         public bool LogReadTime { get; set; } = false;
 
         /// <summary>
-        /// The Her id that we represent
+        /// The HER-ids we are representing.
         /// </summary>
-        public int MyHerId => _settings.MyHerId;
+        public List<int> MyHerIds => _settings.MyHerIds;
         /// <summary>
         /// The certificate used for signing messages
         /// </summary>

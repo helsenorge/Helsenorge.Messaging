@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -24,6 +24,7 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
         {
             return  new OutgoingMessage()
             {
+                FromHerId = MockFactory.HelsenorgeHerId,
                 ToHerId = MockFactory.OtherHerId,
                 Payload = GenericMessage,
                 MessageFunction = "DIALOG_INNBYGGER_EKONTAKT",

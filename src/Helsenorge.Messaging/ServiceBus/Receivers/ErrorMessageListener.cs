@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -22,24 +22,22 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
     public class ErrorMessageListener : MessageListener
     {
         /// <summary>
-        /// Specifies the name of the queue this listener is reading from
-        /// </summary>
-        protected override string QueueName => ResolveQueueName((x) => x.ErrorQueueName);
-        /// <summary>
         /// Specifies what type of queue this listener is processing
         /// </summary>
         protected override QueueType QueueType => QueueType.Error;
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="ErrorMessageListener"/> class.
         /// </summary>
-        /// <param name="core">Reference to core service bus infrastructure</param>
-        /// <param name="logger">Logger used for diagnostic purposes</param>
-        /// <param name="messagingNotification">A reference to the messaging notification system</param>
+        /// <param name="core">An instance of <see cref="ServiceBusCore"/> which has the common infrastructure to talk to the Message Bus.</param>
+        /// <param name="logger">An instance of <see cref="ILogger"/>, used to log diagnostics information.</param>
+        /// <param name="messagingNotification">An instance of <see cref="IMessagingNotification"/> which holds reference to callbacks back to the client that owns this instance of the <see cref="MessageListener"/>.</param>
+        /// <param name="queueNames">The Queue Names associated with the client.</param>
         internal ErrorMessageListener(
             ServiceBusCore core,
             ILogger logger,
-            IMessagingNotification messagingNotification) : base(core, logger, messagingNotification)
+            IMessagingNotification messagingNotification,
+            QueueNames queueNames) : base(core, logger, messagingNotification, queueNames)
         {
             ReadTimeout = Core.Settings.Error.ReadTimeout;
         }

@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -68,10 +68,18 @@ namespace Helsenorge.Messaging.Tests
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void MyHerId_NotSet()
+        public void MyHerIds_NotSet()
         {
-            Settings.MyHerId = 0;
-            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
+            Settings.MyHerIds.Clear();
+            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
+        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void MyHerIds_InvalidValue()
+        {
+            Settings.MyHerIds.Clear();
+            Settings.MyHerIds.Add(0);
+            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
