@@ -61,12 +61,7 @@ namespace Helsenorge.Registries
             CertificateValidator = new CertificateValidator(_settings.UseOnlineRevocationCheck);
         }
 
-        /// <summary>
-        /// Gets the CPP profile for a specific communication party
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="counterpartyHerId">Her Id of communication party</param>
-        /// <returns></returns>
+        /// <inheritdoc cref="FindProtocolForCounterpartyAsync"/>
         public async Task<CollaborationProtocolProfile> FindProtocolForCounterpartyAsync(ILogger logger, int counterpartyHerId)
         {
             logger.LogDebug($"FindProtocolForCounterpartyAsync {counterpartyHerId}");
@@ -127,24 +122,13 @@ namespace Helsenorge.Registries
         protected virtual Task<string> FindProtocolForCounterparty(ILogger logger, int counterpartyHerId)
             => Invoke(logger, x => x.GetCppXmlForCommunicationPartyAsync(counterpartyHerId),"GetCppXmlForCommunicationPartyAsync");
 
-        /// <summary>
-        /// Finds a CPA based on an id, and returns the CPP profile for the other communication party
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="id">CPA id</param>
-        /// <returns></returns>
+        /// <inheritdoc cref="FindAgreementByIdAsync"/>
         public async Task<CollaborationProtocolProfile> FindAgreementByIdAsync(ILogger logger, Guid id)
         {
             return await FindAgreementByIdAsync(logger, id, false).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Finds a CPA based on an id, and returns the CPP profile for the other communication party
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="id">CPA id</param>
-        /// <param name="forceUpdate">Set to true to force cache update.</param>
-        /// <returns></returns>
+        /// <inheritdoc cref="FindAgreementByIdAsync"/>
         public async Task<CollaborationProtocolProfile> FindAgreementByIdAsync(ILogger logger, Guid id, bool forceUpdate)
         {
             logger.LogDebug($"FindAgreementByIdAsync {id}");
@@ -204,24 +188,13 @@ namespace Helsenorge.Registries
         internal virtual Task<CPAService.CpaXmlDetails> FindAgreementById(ILogger logger, Guid id)
             => Invoke(logger, x => x.GetCpaXmlAsync(id), "GetCpaXmlAsync");
 
-        /// <summary>
-        /// Finds the counterparty between us and some other communication party
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="counterpartyHerId">Her id of counterparty</param>
-        /// <returns></returns>
+        /// <inheritdoc cref="FindAgreementForCounterpartyAsync"/>
         public async Task<CollaborationProtocolProfile> FindAgreementForCounterpartyAsync(ILogger logger, int counterpartyHerId)
         {
             return await FindAgreementForCounterpartyAsync(logger, counterpartyHerId, false).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Finds the counterparty between us and some other communication party
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="counterpartyHerId">Her id of counterparty</param>
-        /// <param name="forceUpdate">Set to true to force cache update.</param>
-        /// <returns></returns>
+        /// <inheritdoc cref="FindAgreementForCounterpartyAsync(Microsoft.Extensions.Logging.ILogger,int,int)"/>
         public async Task<CollaborationProtocolProfile> FindAgreementForCounterpartyAsync(ILogger logger, int counterpartyHerId, bool forceUpdate)
         {
 
