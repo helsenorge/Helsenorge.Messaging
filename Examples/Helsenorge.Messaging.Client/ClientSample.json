@@ -19,6 +19,7 @@
     },
     "ServiceBus": {
       "ConnectionString": "???",
+      "MessageBrokerDialect": "RabbitMQ",
       "Synchronous": {
         "ReplyQueueMapping": {
           "MACHINE-NAME": "1111_syncreply"
