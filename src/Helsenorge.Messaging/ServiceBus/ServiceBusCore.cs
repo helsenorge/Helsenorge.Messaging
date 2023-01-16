@@ -55,6 +55,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
         //convencience properties
         internal ServiceBusSettings Settings => Core.Settings.ServiceBus;
+        internal MessagingSettings MessagingSettings => Core.Settings;
         internal IAddressRegistry AddressRegistry => Core.AddressRegistry;
         internal ICollaborationProtocolRegistry CollaborationProtocolRegistry => Core.CollaborationProtocolRegistry;
         internal ICertificateValidator CertificateValidator => Core.CertificateValidator;

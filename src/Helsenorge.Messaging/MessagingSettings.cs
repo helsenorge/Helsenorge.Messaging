@@ -58,6 +58,11 @@ namespace Helsenorge.Messaging
         public IDictionary<string, object> ApplicationProperties { get; } = new Dictionary<string, object>();
 
         /// <summary>
+        /// Skip CPA lookup for message functions in this list. Instead use an internal dummy CPA.
+        /// </summary>
+        public List<string> MessageFunctionsExcludedFromCpaResolve { get; set; } = new List<string>();
+
+        /// <summary>
         /// Specifies the encryption type used in messaging
         /// </summary>
         [Obsolete("SHOULD NOT BE USED BY ANYONE EXCEPT HELSENORGE. Temporary config to allow for TripleDES encryption")]
