@@ -14,6 +14,7 @@ using Helsenorge.Messaging.ServiceBus.Senders;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using Helsenorge.Registries;
 
 namespace Helsenorge.Messaging
 {
@@ -288,6 +289,12 @@ namespace Helsenorge.Messaging
 
         private async Task<CollaborationProtocolProfile> FindProfile(ILogger logger, OutgoingMessage message)
         {
+            if (Settings.MessageFunctionsExcludedFromCpaResolve.Contains(message.MessageFunction))
+            {
+                // MessageFunction is defined in exception list, return a dummy CollaborationProtocolProfile
+                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AddressRegistry, logger, message.ToHerId, message.MessageFunction);
+            }
+
             var profile = 
                 await CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(logger, message.ToHerId).ConfigureAwait(false) ??
                 await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, message.ToHerId).ConfigureAwait(false);
