@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2021, Norsk Helsenett SF and contributors
+ * Copyright (c) 2021-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  *
  * This file is licensed under the MIT license
@@ -19,8 +19,10 @@ namespace PooledSender
 {
     class Program
     {
-        private static readonly string _connectionString = "amqp://guest:guest@127.0.0.1:5672/NHNTESTServiceBus";
-        private static readonly string _queue = "test-queue";
+        private static readonly string _connectionString = "amqp://guest:guest@127.0.0.1:5672";
+        // More information about routing and addressing on RabbitMQ:
+        // https://github.com/rabbitmq/rabbitmq-server/tree/main/deps/rabbitmq_amqp1_0#routing-and-addressing
+        private static readonly string _queue = "/exchange/NHNTESTServiceBus/12345_async";
 
         static async Task Main(string[] args)
         {
