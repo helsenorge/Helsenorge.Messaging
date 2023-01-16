@@ -15,7 +15,8 @@
     "MessagingSettings": {
         "MyHerId": "6789",
         "ServiceBus": {
-            "ConnectionString": "???"
+            "ConnectionString": "???",
+            "MessageBrokerDialect": "RabbitMQ"
         },
         "DecryptionCertificate": {
             "Thumbprint": "fddbcfbb3231f0c66ee2168358229d3cac95e88a",
