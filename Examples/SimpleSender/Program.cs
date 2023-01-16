@@ -19,11 +19,7 @@ namespace SimpleSender
 {
     class Program
     {
-        // amqps should always be used in production and usually it will be used in the test environments.
-        //private static readonly string _connectionString = "amqps://[username]:[password]@127.0.0.1:5671";
-
-        // amqp can be used in your local test environment.
-        private static readonly string _connectionString = "amqp://guest:guest@127.0.0.1:5672";
+        private static readonly string _connectionString = "amqps://guest:guest@tb.test.nhn.no:5671";
         // More information about routing and addressing on RabbitMQ:
         // https://github.com/rabbitmq/rabbitmq-server/tree/main/deps/rabbitmq_amqp1_0#routing-and-addressing
         private static readonly string _queue = "/exchange/NHNTESTServiceBus/12345_async";

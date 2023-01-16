@@ -19,7 +19,7 @@ namespace ReceiveDecryptAndValidate
 {
     class Program
     {
-        private static readonly string _connectionString = "amqp://guest:guest@127.0.0.1:5672";
+        private static readonly string _connectionString = "amqps://guest:guest@tb.test.nhn.no:5671";
         // More information about routing and addressing on RabbitMQ:
         // https://github.com/rabbitmq/rabbitmq-server/tree/main/deps/rabbitmq_amqp1_0#routing-and-addressing
         private static readonly string _queue = "/amq/queue/12345_async";
