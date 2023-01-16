@@ -7,6 +7,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -27,6 +28,7 @@ namespace Helsenorge.Registries.Tests
     public class CollaborationRegistryTests
     {
         private CollaborationProtocolRegistryMock _registry;
+        private IAddressRegistry _addressRegistry;
         private ILoggerFactory _loggerFactory;
         private ILogger _logger;
 
@@ -52,8 +54,8 @@ namespace Helsenorge.Registries.Tests
 
             var distributedCache = DistributedCacheFactory.Create();
 
-            IAddressRegistry addressRegistry = AddressRegistryTests.GetDefaultAddressRegistryMock();
-            _registry = new CollaborationProtocolRegistryMock(settings, distributedCache, addressRegistry);
+            _addressRegistry = AddressRegistryTests.GetDefaultAddressRegistryMock();
+            _registry = new CollaborationProtocolRegistryMock(settings, distributedCache, _addressRegistry);
             _registry.SetupFindAgreementById(i =>
             {
                 var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_{i:D}.xml"));
@@ -142,6 +144,16 @@ namespace Helsenorge.Registries.Tests
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93252).Result;
             Assert.IsNotNull(profile);
             Assert.AreEqual("DummyCollaborationProtocolProfile", profile.Name);
+        }
+
+        [TestMethod]
+        public void Read_DummyCollaborationProfile_Found()
+        {
+            var profile = DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, 93238, "NO_CPA_MESSAGE").Result;
+            Assert.IsNotNull(profile);
+            Assert.AreEqual("DummyCollaborationProtocolProfile", profile.Name);
+            Assert.AreEqual("NO_CPA_MESSAGE", profile.Roles.First().SendMessages.First().Name);
+            Assert.AreEqual("NO_CPA_MESSAGE", profile.Roles.First().SendMessages.First().Action);
         }
 
         [TestMethod, Ignore]
