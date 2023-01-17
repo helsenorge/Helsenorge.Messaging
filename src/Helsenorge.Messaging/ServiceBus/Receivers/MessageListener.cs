@@ -154,7 +154,7 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
             IMessagingMessage message;
             try
             {
-                message = _messageReceiver.Receive(ReadTimeout);
+                message = await _messageReceiver.ReceiveAsync(ReadTimeout).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
