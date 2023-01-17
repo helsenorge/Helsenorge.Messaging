@@ -27,6 +27,7 @@ public static class DummyCollaborationProtocolProfileFactory
     /// </remarks>
     public const string DummyPartyName = "DummyCollaborationProtocolProfile";
 
+    private const string MessageFunctionExceptionProfileName = "MessageFunctionExceptionProfile";
 
     public static async Task<CollaborationProtocolProfile> CreateAsync(IAddressRegistry addressRegistry, ILogger logger, int herId, string messageFunction)
     {
@@ -76,7 +77,7 @@ public static class DummyCollaborationProtocolProfileFactory
                 }
             },
             HerId = herId,
-            Name = DummyPartyName,
+            Name = messageFunction != null ? MessageFunctionExceptionProfileName : DummyPartyName,
             EncryptionCertificate = encryptionCertificate?.Certificate,
             SignatureCertificate = signatureCertificate?.Certificate
         };
