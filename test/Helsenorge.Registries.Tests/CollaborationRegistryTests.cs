@@ -151,7 +151,7 @@ namespace Helsenorge.Registries.Tests
         {
             var profile = DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, 93238, "NO_CPA_MESSAGE").Result;
             Assert.IsNotNull(profile);
-            Assert.AreEqual("DummyCollaborationProtocolProfile", profile.Name);
+            Assert.AreEqual("MessageFunctionExceptionProfile", profile.Name);
             Assert.AreEqual("NO_CPA_MESSAGE", profile.Roles.First().SendMessages.First().Name);
             Assert.AreEqual("NO_CPA_MESSAGE", profile.Roles.First().SendMessages.First().Action);
         }
