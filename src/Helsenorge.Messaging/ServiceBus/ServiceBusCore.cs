@@ -14,6 +14,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
+using Helsenorge.Registries;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
 
@@ -136,13 +137,7 @@ namespace Helsenorge.Messaging.ServiceBus
 
             var hasAgreement = true;
             // first we try and find an agreement
-            var profile = await CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(logger, outgoingMessage.ToHerId).ConfigureAwait(false);
-            if (profile == null)
-            {
-                hasAgreement = false; // if we don't have an agreement, we try to find the specific profile
-                profile = await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, outgoingMessage.ToHerId).ConfigureAwait(false);
-            }
-
+            var profile = await FindProfile(logger, outgoingMessage);
             var stopwatch = new Stopwatch();
             var contentType = Core.MessageProtection.ContentType;
             if (contentType.Equals(ContentType.SignedAndEnveloped, StringComparison.OrdinalIgnoreCase))
@@ -438,5 +433,26 @@ namespace Helsenorge.Messaging.ServiceBus
         /// </summary>
         /// <param name="factory"></param>
         public void RegisterAlternateMessagingFactory(IMessagingFactory factory) => FactoryPool.RegisterAlternateMessagingFactory(factory);
+
+        /// <summary>
+        /// Find CPA/CPP
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="message"></param>
+        /// <returns>CollaborationProtocolProfile</returns>
+        public async Task<CollaborationProtocolProfile> FindProfile(ILogger logger, OutgoingMessage message)
+        {
+            if (Core.Settings.MessageFunctionsExcludedFromCpaResolve.Contains(message.MessageFunction))
+            {
+                // MessageFunction is defined in exception list, return a dummy CollaborationProtocolProfile
+                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AddressRegistry, logger, message.ToHerId, message.MessageFunction);
+            }
+
+            var profile =
+                await CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(logger, message.ToHerId).ConfigureAwait(false) ??
+                await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, message.ToHerId).ConfigureAwait(false);
+            return profile;
+        }
+
     }
 }

@@ -168,7 +168,7 @@ namespace Helsenorge.Messaging
                     return;
                 case DeliveryProtocol.Unknown:
                 default:
-                    var profile = await FindProfile(logger, message).ConfigureAwait(false);
+                    var profile = await ServiceBus.FindProfile(logger, message).ConfigureAwait(false);
                     throw new MessagingException($"Invalid delivery protocol. Message Function {message.MessageFunction} might be missing from either CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}.")
                     {
                         EventId = EventIds.InvalidMessageFunction
@@ -193,7 +193,7 @@ namespace Helsenorge.Messaging
                     return await _synchronousServiceBusSender.SendAsync(logger, message).ConfigureAwait(false);
                 case DeliveryProtocol.Unknown:
                 default:
-                    var profile = await FindProfile(logger, message).ConfigureAwait(false);
+                    var profile = await ServiceBus.FindProfile(logger, message).ConfigureAwait(false);
                     throw new MessagingException($"Invalid delivery protocol. Message Function {message.MessageFunction} might be missing from either CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}.")
                     {
                         EventId = EventIds.InvalidMessageFunction
@@ -241,10 +241,10 @@ namespace Helsenorge.Messaging
                 ? message.MessageFunction
                 : message.ReceiptForMessageFunction;
 
-            var profile = await FindProfile(logger, message).ConfigureAwait(false);
+            var profile = await ServiceBus.FindProfile(logger, message).ConfigureAwait(false);
             var collaborationProtocolMessage = profile?.FindMessageForReceiver(messageFunction);
 
-            if ((profile != null && profile.Name == Registries.DummyCollaborationProtocolProfileFactory.DummyPartyName)
+            if ((profile != null && profile.Name == DummyCollaborationProtocolProfileFactory.DummyPartyName)
                 || (collaborationProtocolMessage == null && messageFunction.ToUpper().Contains("DIALOG_INNBYGGER_TIMERESERVASJON")))
             {
                 // HACK: This whole section inside this if statement is a hack to support communication parties which do not have the process DIALOG_INNBYGGER_TIMERESERVASJON configured.
@@ -285,20 +285,6 @@ namespace Helsenorge.Messaging
             }
 
             return collaborationProtocolMessage;
-        }
-
-        private async Task<CollaborationProtocolProfile> FindProfile(ILogger logger, OutgoingMessage message)
-        {
-            if (Settings.MessageFunctionsExcludedFromCpaResolve.Contains(message.MessageFunction))
-            {
-                // MessageFunction is defined in exception list, return a dummy CollaborationProtocolProfile
-                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AddressRegistry, logger, message.ToHerId, message.MessageFunction);
-            }
-
-            var profile = 
-                await CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(logger, message.ToHerId).ConfigureAwait(false) ??
-                await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, message.ToHerId).ConfigureAwait(false);
-            return profile;
         }
 
         /// <inheritdoc />
