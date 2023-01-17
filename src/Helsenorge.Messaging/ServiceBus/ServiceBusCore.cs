@@ -135,7 +135,6 @@ namespace Helsenorge.Messaging.ServiceBus
 
             logger.LogStartSend(queueType, outgoingMessage.MessageFunction, Core.Settings.MyHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, $"Sending message using host and queue: {HostnameAndPath}/{queueName}", outgoingMessage.Payload);
 
-            var hasAgreement = true;
             // first we try and find an agreement
             var profile = await FindProfile(logger, outgoingMessage);
             var stopwatch = new Stopwatch();
@@ -230,10 +229,11 @@ namespace Helsenorge.Messaging.ServiceBus
             messagingMessage.ToHerId = outgoingMessage.ToHerId;
             messagingMessage.ApplicationTimestamp = DateTime.Now;
 
-            if (hasAgreement)
+            if(profile.CpaId != Guid.Empty)
             {
                 messagingMessage.CpaId = profile.CpaId.ToString("D");
             }
+
             await Send(logger, messagingMessage).ConfigureAwait(false);
 
             logger.LogEndSend(queueType, messagingMessage.MessageFunction, messagingMessage.FromHerId, messagingMessage.ToHerId, messagingMessage.MessageId);
