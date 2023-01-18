@@ -17,11 +17,10 @@ Dette er et eksempel på hvordan en slik fil kan se ut.
     },
     "CollaborationProtocolRegistrySettings": {
         "EndpointName": "BasicHttpBinding_ICPPAService",
-        "CachingInterval": "00:05:00",
-        "MyHerId": "1234"
+        "CachingInterval": "00:05:00"
     },
     "MessagingSettings": {
-        "MyHerId": "1234",
+        "MyHerIds": [ "1234" ],
         "ApplicationProperties": {
             "X-SystemIdentifier": "SomeSystemIdentifier"
         },
