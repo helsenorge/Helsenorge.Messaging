@@ -2,7 +2,7 @@
 
 Før du kan ta i bruk denne pakken, så er det en del forutsetninger som må være på plass. 
 
-- Løsningen din må støtte .NET 4.6
+- Løsningen din må støtte .NET 4.6.2
 - Din organisasjon må være registrert i adresseregisteret.
 - Du må ha brukernavn og passord til adresseregisteret og CPA-tjenesten
 - Du må ha brukernavn og passord til køsystemet, samt connection string.
@@ -21,6 +21,6 @@ Koden i denne pakken benytter
 - [Microsoft.Extensions.Caching.Abstractions.IDistributedCache](https://www.nuget.org/packages/Microsoft.Extensions.Caching.Abstractions/)
 - [Microsoft.Extensions.Logging.Abstractions.ILogger](https://www.nuget.org/packages/Microsoft.Extensions.Logging.Abstractions/)
 
-Disse tilbyr generelle grensesnitt for logging og caching. Pakkene er en del av den nye ASP.NET Core-stacken, men fungerer fint med .NET 4.6. 
+Disse tilbyr generelle grensesnitt for logging og caching. Pakkene er en del av den nye .NET Core-stacken, men fungerer fint med .NET 4.6.2.
 
 For faktisk implementasjon av disse grensesnittene så kan man enten bruke noe som allerede er laget, eller benytte en egen implementasjon.

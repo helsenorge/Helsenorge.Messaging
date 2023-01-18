@@ -62,6 +62,6 @@ public enum WfcHttpBinding
 ```
 
 ### Andre endringer i biblioteket
-Biblioteket er kompatibelt med .NET Core 3.1, .NET Framework 4.6.1 og høyere versjoner.
+Biblioteket er kompatibelt med .NET 6.0, .NET Framework 4.6.2 og senere versjoner.
 
 Vi har flyttet store deler av kodebasen over til et async-pattern og derfor vil mange av metodene måtte awaites.
