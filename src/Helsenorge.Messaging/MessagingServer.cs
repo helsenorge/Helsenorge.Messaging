@@ -576,7 +576,7 @@ namespace Helsenorge.Messaging
         /// Tries to authenticate against the message broker.
         /// </summary>
         /// <returns>true if authentication is successful, otherwise false.</returns>
-        internal virtual async Task<bool> CanAuthenticateAgainstMessageBroker()
+        protected virtual async Task<bool> CanAuthenticateAgainstMessageBroker()
         {
             ServiceBusConnection connection = null;
             try

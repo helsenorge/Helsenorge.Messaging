@@ -27,7 +27,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
         }
 
         /// <inheritdoc />
-        internal override Task<bool> CanAuthenticateAgainstMessageBroker()
+        protected override Task<bool> CanAuthenticateAgainstMessageBroker()
         {
             return Task.FromResult(true);
         }
