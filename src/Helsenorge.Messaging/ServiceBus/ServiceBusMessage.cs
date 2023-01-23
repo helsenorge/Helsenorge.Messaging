@@ -291,7 +291,6 @@ namespace Helsenorge.Messaging.ServiceBus
                     GroupSequence = _implementation.Properties.GroupSequence,
                     MessageId = _implementation.Properties.MessageId,
                     ReplyTo = _implementation.Properties.ReplyTo,
-                    UserId = _implementation.Properties.UserId,
                     AbsoluteExpiryTime = _implementation.Properties.AbsoluteExpiryTime,
                     ReplyToGroupId = _implementation.Properties.ReplyToGroupId,
                 };
