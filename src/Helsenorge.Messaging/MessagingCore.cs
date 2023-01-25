@@ -139,7 +139,7 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Gets the options used for messaging
         /// </summary>
-        internal MessagingSettings Settings { get; }
+        public MessagingSettings Settings { get; }
         /// <summary>
         /// Provides access to the collaboration protocol registry
         /// </summary>
