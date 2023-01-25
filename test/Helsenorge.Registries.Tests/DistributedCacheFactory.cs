@@ -6,6 +6,7 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using Helsenorge.Registries.Tests.Mocks;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace Helsenorge.Registries.Tests
@@ -15,6 +16,11 @@ namespace Helsenorge.Registries.Tests
         public static IDistributedCache Create()
         {
             return CreateForNet471();
+        }
+
+        public static IDistributedCache CreatePartlyMockedDistributedCache()
+        {
+            return new PartlyMockedDistributedCache(CreateForNet471());
         }
 
         private static IDistributedCache CreateForNet471()

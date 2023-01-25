@@ -52,7 +52,7 @@ namespace Helsenorge.Registries.Tests
             _loggerFactory = provider.GetRequiredService<ILoggerFactory>();            
             _logger = _loggerFactory.CreateLogger<CollaborationRegistryTests>();
 
-            var distributedCache = DistributedCacheFactory.Create();
+            var distributedCache = DistributedCacheFactory.CreatePartlyMockedDistributedCache();
 
             _addressRegistry = AddressRegistryTests.GetDefaultAddressRegistryMock();
             _registry = new CollaborationProtocolRegistryMock(settings, distributedCache, _addressRegistry);
@@ -86,6 +86,7 @@ namespace Helsenorge.Registries.Tests
 
             new CollaborationProtocolRegistry(null, distributedCache, addressRegistry);
         }
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_Cache_Null()
@@ -96,6 +97,7 @@ namespace Helsenorge.Registries.Tests
 
             new CollaborationProtocolRegistry(new CollaborationProtocolRegistrySettings(), null, addressRegistry);
         }
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_AddressRegistry_Null()
@@ -166,9 +168,10 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual("APPREC", profile.Roles.First().SendMessages.First().Action);
         }
 
-        [TestMethod, Ignore]
+        [TestMethod]
         public void Read_CollaborationProfile_FromCache()
         {
+            _registry.CertificateValidator = new MockCertificateValidator();
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNotNull(profile);
 
@@ -179,6 +182,27 @@ namespace Helsenorge.Registries.Tests
             });
             profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNotNull(profile);
+        }
+
+        [TestMethod]
+        public void Read_CollaborationProfile_FromCache_OldCachedData()
+        {
+            _registry.CertificateValidator = new MockCertificateValidator();
+            // FindAgreementForCounterpartyAsync reads data from old cache
+            // Old cache of CollaborationProtocolMessage does not contain Action
+            var profileOldCache = _registry.FindProtocolForCounterpartyAsync(_logger, 93239).Result;
+            // Tests the fallback when reading from old cache
+            // AppRec is a Action and in old cache this is mapped to Name and Action is null
+            var messageForSender = profileOldCache.FindMessageForSender("APPREC");
+            Assert.AreEqual("APPREC", messageForSender.Name);
+            Assert.IsNull(messageForSender.Action);
+            // Tests MessageFunction not in CPA still returns null
+            var messageForReceiver = profileOldCache.FindMessageForReceiver("DIALOG_INNBYGGER_MELDINGSFORMIDLING");
+            Assert.IsNull(messageForReceiver);
+            // Tests fallback for finding MessageParts for AppRec
+            var messagePartsApprec = profileOldCache.FindMessagePartsForReceiveAppRec("DIALOG_INNBYGGER_EKONSULTASJON");
+            Assert.AreEqual(2, messagePartsApprec.Count());
+            Assert.AreEqual("AppRec-v1_1.xsd", messagePartsApprec.First().XmlSchema);
         }
 
         [TestMethod]
@@ -193,6 +217,7 @@ namespace Helsenorge.Registries.Tests
             Assert.IsNotNull(profile.SignatureCertificate);
             Assert.IsNotNull(profile.EncryptionCertificate);
         }
+
         [TestMethod]
         public void Read_CollaborationAgreement_ByCounterparty()
         {
@@ -205,15 +230,18 @@ namespace Helsenorge.Registries.Tests
             Assert.IsNotNull(profile.SignatureCertificate);
             Assert.AreEqual(profile.Roles.Count, 14);
         }
+
         [TestMethod]
         public void Read_CollaborationAgreement_NotFound()
         {
             var profile = _registry.FindAgreementForCounterpartyAsync(_logger, 1234).Result;
             Assert.IsNull(profile);
         }
-        [TestMethod, Ignore]
+
+        [TestMethod]
         public void Read_CollaborationAgreement_FromCache()
         {
+            _registry.CertificateValidator = new MockCertificateValidator();
             var profile = _registry.FindAgreementForCounterpartyAsync(_logger, 93252).Result;
             Assert.IsNotNull(profile);
 
@@ -227,24 +255,48 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
+        public void Read_CollaborationAgreement_FromCache_OldCachedData()
+        {
+            _registry.CertificateValidator = new MockCertificateValidator();
+            // FindAgreementForCounterpartyAsync reads data from old cache
+            // Old cache of CollaborationProtocolMessage does not contain Action
+            var profileOldCache = _registry.FindAgreementForCounterpartyAsync(_logger, 93253).Result;
+            // Tests the fallback when reading from old cache
+            // AppRec is a Action and in old cache this is mapped to Name and Action is null
+            var messageForSender = profileOldCache.FindMessageForSender("APPREC");
+            Assert.AreEqual("APPREC", messageForSender.Name);
+            Assert.IsNull(messageForSender.Action);
+            // Tests MessageFunction not in CPA still returns null
+            var messageForReceiver = profileOldCache.FindMessageForReceiver("DIALOG_INNBYGGER_MELDINGSFORMIDLING");
+            Assert.IsNull(messageForReceiver);
+            // Tests fallback for finding MessageParts for AppRec
+            var messagePartsApprec = profileOldCache.FindMessagePartsForReceiveAppRec("DIALOG_INNBYGGER_EKONSULTASJON");
+            Assert.AreEqual(2, messagePartsApprec.Count());
+            Assert.AreEqual("AppRec-v1_1.xsd", messagePartsApprec.First().XmlSchema);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void FindMessageForSender_ArgumentNull()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNotNull(profile.FindMessageForSender(null));
         }
+
         [TestMethod]
         public void FindMessageForSender_Found()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNotNull(profile.FindMessageForSender("DIALOG_INNBYGGER_EKONTAKT"));
         }
+
         [TestMethod]
         public void FindMessageForSender_Found_AppRec()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNotNull(profile.FindMessageForSender("APPREC"));
         }
+
         [TestMethod]
         public void FindMessageForSender_Found_Ny_CPPA()
         {
@@ -254,12 +306,14 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual("DIALOG_INNBYGGER_BEHANDLEROVERSIKT", collaborationProtocolMessage.Name);
             Assert.AreEqual("Svar", collaborationProtocolMessage.Action);
         }
+
         [TestMethod]
         public void FindMessageForSender_NotFound()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNull(profile.FindMessageForSender("BOB"));
         }
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void FindMessageForReceiver_ArgumentNull()
@@ -267,18 +321,21 @@ namespace Helsenorge.Registries.Tests
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNotNull(profile.FindMessageForReceiver(null));
         }
+
         [TestMethod]
         public void FindMessageForReceiver_Found()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNotNull(profile.FindMessageForReceiver("DIALOG_INNBYGGER_EKONTAKT"));
         }
+
         [TestMethod]
         public void FindMessageForReceiver_Found_AppRec()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNotNull(profile.FindMessageForReceiver("APPREC"));
         }
+
         [TestMethod]
         public void FindMessageForReceiver_Found_Ny_CPPA()
         {
@@ -288,6 +345,7 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual("DIALOG_INNBYGGER_BEHANDLEROVERSIKT", collaborationProtocolMessage.Name);
             Assert.AreEqual("Hent", collaborationProtocolMessage.Action);
         }
+
         [TestMethod]
         public void FindMessageForReceiver_NotFound()
         {
@@ -302,12 +360,14 @@ namespace Helsenorge.Registries.Tests
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNotNull(profile.FindMessagePartsForReceiveMessage(null));
         }
+
         [TestMethod]
         public void FindMessagePartsForReceiveMessage_Found()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsTrue(profile.FindMessagePartsForReceiveMessage("DIALOG_INNBYGGER_EKONTAKT").Any());
         }
+
         [TestMethod]
         public void FindMessagePartsForReceiveMessage_NotFound()
         {
@@ -322,19 +382,20 @@ namespace Helsenorge.Registries.Tests
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNotNull(profile.FindMessagePartsForReceiveAppRec(null));
         }
+
         [TestMethod]
         public void FindMessagePartsForReceiveAppRec_Found()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsTrue(profile.FindMessagePartsForReceiveAppRec("DIALOG_INNBYGGER_EKONTAKT").Any());
         }
+
         [TestMethod]
         public void FindMessagePartsForReceiveAppRec_NotFound()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNull(profile.FindMessagePartsForReceiveAppRec("BOB"));
         }
-
         
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -343,12 +404,14 @@ namespace Helsenorge.Registries.Tests
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNotNull(profile.FindMessagePartsForSendMessage(null));
         }
+
         [TestMethod]
         public void FindMessagePartsForSendMessage_Found()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsTrue(profile.FindMessagePartsForSendMessage("DIALOG_INNBYGGER_EKONTAKT").Any());
         }
+
         [TestMethod]
         public void FindMessagePartsForSendMessage_NotFound()
         {
@@ -363,12 +426,14 @@ namespace Helsenorge.Registries.Tests
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsNotNull(profile.FindMessagePartsForSendAppRec(null));
         }
+
         [TestMethod]
         public void FindMessagePartsForSendAppRec_Found()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
             Assert.IsTrue(profile.FindMessagePartsForSendAppRec("DIALOG_INNBYGGER_EKONTAKT").Any());
         }
+
         [TestMethod]
         public void FindMessagePartsForSendAppRec_NotFound()
         {
