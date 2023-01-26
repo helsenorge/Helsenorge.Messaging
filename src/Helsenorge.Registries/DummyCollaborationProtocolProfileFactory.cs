@@ -29,6 +29,8 @@ public static class DummyCollaborationProtocolProfileFactory
 
     private const string MessageFunctionExceptionProfileName = "MessageFunctionExceptionProfile";
 
+    public static bool IsDummyProfile(CollaborationProtocolProfile cpp) => cpp?.Name == DummyPartyName || cpp?.Name == MessageFunctionExceptionProfileName;
+
     public static async Task<CollaborationProtocolProfile> CreateAsync(IAddressRegistry addressRegistry, ILogger logger, int herId, string messageFunction)
     {
         var communicationParty = await addressRegistry.FindCommunicationPartyDetailsAsync(logger, herId).ConfigureAwait(false);

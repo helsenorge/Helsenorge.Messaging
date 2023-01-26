@@ -147,13 +147,23 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
-        public void Read_DummyCollaborationProfile_Found()
+        public void Read_MessageFunctionExceptionProfile_Found()
         {
             var profile = DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, 93238, "NO_CPA_MESSAGE").Result;
             Assert.IsNotNull(profile);
             Assert.AreEqual("MessageFunctionExceptionProfile", profile.Name);
             Assert.AreEqual("NO_CPA_MESSAGE", profile.Roles.First().SendMessages.First().Name);
             Assert.AreEqual("NO_CPA_MESSAGE", profile.Roles.First().SendMessages.First().Action);
+        }
+
+        [TestMethod]
+        public void Read_DummyCollaborationProfile_Found()
+        {
+            var profile = DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, 93238, null).Result;
+            Assert.IsNotNull(profile);
+            Assert.AreEqual("DummyCollaborationProtocolProfile", profile.Name);
+            Assert.AreEqual("APPREC", profile.Roles.First().SendMessages.First().Name);
+            Assert.AreEqual("APPREC", profile.Roles.First().SendMessages.First().Action);
         }
 
         [TestMethod, Ignore]
