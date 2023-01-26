@@ -244,7 +244,7 @@ namespace Helsenorge.Messaging
             var profile = await ServiceBus.FindProfile(logger, message).ConfigureAwait(false);
             var collaborationProtocolMessage = profile?.FindMessageForReceiver(messageFunction);
 
-            if ((profile != null && profile.Name == DummyCollaborationProtocolProfileFactory.DummyPartyName)
+            if ((profile != null && DummyCollaborationProtocolProfileFactory.IsDummyProfile(profile))
                 || (collaborationProtocolMessage == null && messageFunction.ToUpper().Contains("DIALOG_INNBYGGER_TIMERESERVASJON")))
             {
                 // HACK: This whole section inside this if statement is a hack to support communication parties which do not have the process DIALOG_INNBYGGER_TIMERESERVASJON configured.

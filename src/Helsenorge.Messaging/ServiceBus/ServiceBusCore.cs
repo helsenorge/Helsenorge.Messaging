@@ -442,10 +442,14 @@ namespace Helsenorge.Messaging.ServiceBus
         /// <returns>CollaborationProtocolProfile</returns>
         public async Task<CollaborationProtocolProfile> FindProfile(ILogger logger, OutgoingMessage message)
         {
-            if (Core.Settings.MessageFunctionsExcludedFromCpaResolve.Contains(message.MessageFunction))
+            var messageFunction = string.IsNullOrEmpty(message.ReceiptForMessageFunction)
+                ? message.MessageFunction
+                : message.ReceiptForMessageFunction;
+
+            if (Core.Settings.MessageFunctionsExcludedFromCpaResolve.Contains(messageFunction))
             {
                 // MessageFunction is defined in exception list, return a dummy CollaborationProtocolProfile
-                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AddressRegistry, logger, message.ToHerId, message.MessageFunction);
+                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AddressRegistry, logger, message.ToHerId, messageFunction);
             }
 
             var profile =

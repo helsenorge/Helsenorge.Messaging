@@ -7,6 +7,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,34 +16,79 @@ namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
     [TestClass]
     public class AsynchronousSendTestsWithoutCpp : BaseTest
     {
-        private const int CommunicationPartyWithoutCppHerId = 94867;
+        private const int CommunicationPartyHerId = 93252;
 
         [TestInitialize]
         public override void Setup()
         {
-            SetupInternal(CommunicationPartyWithoutCppHerId);
+            SetupInternal(CommunicationPartyHerId);
         }
         
         private OutgoingMessage CreateMessageForCommunicationPartyWithoutCpp()
         {
             return new OutgoingMessage()
             {
-                ToHerId = CommunicationPartyWithoutCppHerId,
+                ToHerId = CommunicationPartyHerId,
                 Payload = GenericMessage,
-                MessageFunction = "DIALOG_INNBYGGER_EKONTAKT",
+                MessageFunction = "NO_CPA_MESSAGE",
                 MessageId = Guid.NewGuid().ToString("D"),
                 PersonalId = "12345"
             };
         }
 
-        [TestMethod, Ignore]
+        [TestMethod]
         public void Send_Asynchronous_CommunicationPartyWithoutCpp_OK()
         {
             var message = CreateMessageForCommunicationPartyWithoutCpp();
+            Settings.MessageFunctionsExcludedFromCpaResolve = new List<string> { "NO_CPA_MESSAGE" };
 
             RunAndHandleException(Client.SendAndContinueAsync(message));
 
             Assert.AreEqual(1, MockFactory.OtherParty.Asynchronous.Messages.Count);
+        }
+
+        [TestMethod]
+        public void Send_Asynchronous_CommunicationPartyWithoutCpp_Exception()
+        {
+            var message = CreateMessageForCommunicationPartyWithoutCpp();
+
+            Assert.ThrowsException<MessagingException>(() => RunAndHandleException(Client.SendAndContinueAsync(message)));
+
+            Assert.AreEqual(0, MockFactory.OtherParty.Asynchronous.Messages.Count);
+        }
+
+        private OutgoingMessage CreateApprecMessageForCommunicationPartyWithoutCpp()
+        {
+            return new OutgoingMessage()
+            {
+                ToHerId = CommunicationPartyHerId,
+                Payload = GenericMessage,
+                MessageFunction = "APPREC",
+                MessageId = Guid.NewGuid().ToString("D"),
+                PersonalId = "12345",
+                ReceiptForMessageFunction = "NO_CPA_MESSAGE",
+            };
+        }
+
+        [TestMethod]
+        public void Send_Asynchronous_Apprec_CommunicationPartyWithoutCpp_OK()
+        {
+            var message = CreateApprecMessageForCommunicationPartyWithoutCpp();
+            Settings.MessageFunctionsExcludedFromCpaResolve = new List<string> { "NO_CPA_MESSAGE" };
+
+            RunAndHandleException(Client.SendAndContinueAsync(message));
+
+            Assert.AreEqual(1, MockFactory.OtherParty.Asynchronous.Messages.Count);
+        }
+
+        [TestMethod]
+        public void Send_Asynchronous_Apprec_CommunicationPartyWithoutCpp_Exception()
+        {
+            var message = CreateApprecMessageForCommunicationPartyWithoutCpp();
+
+            Assert.ThrowsException<MessagingException>(() => RunAndHandleException(Client.SendAndContinueAsync(message)));
+
+            Assert.AreEqual(0, MockFactory.OtherParty.Asynchronous.Messages.Count);
         }
     }
 }
