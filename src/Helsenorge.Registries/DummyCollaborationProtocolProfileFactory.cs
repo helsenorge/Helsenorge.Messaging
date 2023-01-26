@@ -25,7 +25,7 @@ public static class DummyCollaborationProtocolProfileFactory
     /// <remarks>
     /// This will be removed in a future version without warning, since lacking a CPP is not considered good or acceptable practice
     /// </remarks>
-    public const string DummyPartyName = "DummyCollaborationProtocolProfile";
+    private const string DummyPartyName = "DummyCollaborationProtocolProfile";
 
     private const string MessageFunctionExceptionProfileName = "MessageFunctionExceptionProfile";
 
