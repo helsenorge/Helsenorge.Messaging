@@ -57,14 +57,14 @@ namespace Helsenorge.Messaging.Tests
         [TestInitialize]
         public virtual void Setup()
         {
-            _encryptionCertificate = TestCertificates.GetCertificate(TestCertificates.HelsenorgeLegacyEncryptionThumbprint); //TestCertificates.GenerateSelfSignedCertificate("ActorA", X509KeyUsageFlags.KeyEncipherment, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
-            _signatureCertificate = TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint); //TestCertificates.GenerateSelfSignedCertificate("ActorA", X509KeyUsageFlags.NonRepudiation, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
-
             SetupInternal(DefaultOtherHerId);
         }
 
         internal void SetupInternal(int otherHerId)
         {
+            _encryptionCertificate = TestCertificates.GetCertificate(TestCertificates.HelsenorgeLegacyEncryptionThumbprint); //TestCertificates.GenerateSelfSignedCertificate("ActorA", X509KeyUsageFlags.KeyEncipherment, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
+            _signatureCertificate = TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint); //TestCertificates.GenerateSelfSignedCertificate("ActorA", X509KeyUsageFlags.NonRepudiation, DateTimeOffset.Now.AddDays(-1), DateTimeOffset.Now.AddMonths(1));
+
             var addressRegistrySettings = new AddressRegistrySettings()
             {
                 WcfConfiguration = new WcfConfiguration
