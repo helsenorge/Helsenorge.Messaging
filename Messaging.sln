@@ -17,8 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{5D87F89A
 		tools\key.snk = tools\key.snk
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Messaging.IntegrationTests", "test\Helsenorge.Messaging.IntegrationTests\Helsenorge.Messaging.IntegrationTests.csproj", "{EEF50149-F300-4C09-BB26-5C75CF8AB88B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{E5E73A1E-1589-4B95-A894-B27029F5707C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{FB9DDD90-D5A5-4F25-8C81-4E6C9B4A18EE}"
@@ -98,10 +96,6 @@ Global
 		{0DD35E31-7384-4F3D-BBE0-366993DC2307}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DD35E31-7384-4F3D-BBE0-366993DC2307}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DD35E31-7384-4F3D-BBE0-366993DC2307}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EEF50149-F300-4C09-BB26-5C75CF8AB88B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EEF50149-F300-4C09-BB26-5C75CF8AB88B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EEF50149-F300-4C09-BB26-5C75CF8AB88B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EEF50149-F300-4C09-BB26-5C75CF8AB88B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D86E01D4-983C-4F30-A69D-8C80A927D16E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D86E01D4-983C-4F30-A69D-8C80A927D16E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D86E01D4-983C-4F30-A69D-8C80A927D16E}.Release|Any CPU.ActiveCfg = Release|Any CPU
