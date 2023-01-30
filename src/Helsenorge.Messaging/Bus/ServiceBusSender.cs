@@ -54,7 +54,7 @@ namespace Helsenorge.Messaging.Bus
             if (!(message.OriginalObject is Message originalMessage))
                 throw new InvalidOperationException("OriginalObject is not a Message");
 
-            new ServiceBusOperationBuilder(_logger, "Send").Build(() =>
+            new BusOperationBuilder(_logger, "Send").Build(() =>
             {
                 EnsureOpen();
                 _link.Send(originalMessage, serverWaitTime);
@@ -76,7 +76,7 @@ namespace Helsenorge.Messaging.Bus
                 throw new InvalidOperationException("OriginalObject is not a Message");
             }
 
-            await new ServiceBusOperationBuilder(_logger, "SendAsync").Build(async () =>
+            await new BusOperationBuilder(_logger, "SendAsync").Build(async () =>
             {
                 await EnsureOpenAsync().ConfigureAwait(false);
                 originalMessage.ApplicationProperties.AddApplicationProperties(_applicationProperties);

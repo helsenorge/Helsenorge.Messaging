@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Bus
 {
-    internal class ServiceBusOperationBuilder
+    internal class BusOperationBuilder
     {
         public static readonly TimeSpan DefaultOperationTimeout = TimeSpan.FromMinutes(1);
         public static readonly TimeSpan DefaultRetryMinBackoff = TimeSpan.Zero;
@@ -29,7 +29,7 @@ namespace Helsenorge.Messaging.Bus
         public ILogger Logger;
         public string OperationName;
 
-        public ServiceBusOperationBuilder(ILogger logger, string operationName)
+        public BusOperationBuilder(ILogger logger, string operationName)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             OperationName = operationName ?? throw new ArgumentNullException(nameof(operationName));
@@ -47,28 +47,28 @@ namespace Helsenorge.Messaging.Bus
             }
         }
 
-        public ServiceBusAsyncOperation<T> Build<T>(Func<Task<T>> func)
+        public BusAsyncOperation<T> Build<T>(Func<Task<T>> func)
         {
             Validate();
-            return new ServiceBusAsyncOperation<T>(this, func);
+            return new BusAsyncOperation<T>(this, func);
         }
 
-        public ServiceBusAsyncOperation Build(Func<Task> func)
+        public BusAsyncOperation Build(Func<Task> func)
         {
             Validate();
-            return new ServiceBusAsyncOperation(this, func);
+            return new BusAsyncOperation(this, func);
         }
 
-        public ServiceBusOperation<T> Build<T>(Func<T> func)
+        public BusOperation<T> Build<T>(Func<T> func)
         {
             Validate();
-            return new ServiceBusOperation<T>(this, func);
+            return new BusOperation<T>(this, func);
         }
 
-        public ServiceBusOperation Build(Action func)
+        public BusOperation Build(Action func)
         {
             Validate();
-            return new ServiceBusOperation(this, func);
+            return new BusOperation(this, func);
         }
     }
 }

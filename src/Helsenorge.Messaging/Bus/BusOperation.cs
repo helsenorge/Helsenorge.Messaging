@@ -14,9 +14,9 @@ using System.Threading.Tasks;
 namespace Helsenorge.Messaging.Bus
 {
     /// <summary>
-    /// <code>Microsoft.Azure.ServiceBus</code>-like Retry Policy (exponential).
+    /// The base class for Bus Operations.
     /// </summary>
-    internal abstract class ServiceBusOperationBase
+    internal abstract class BusOperationBase
     {
         private readonly ILogger _logger;
         private readonly string _operationName;
@@ -30,7 +30,7 @@ namespace Helsenorge.Messaging.Bus
         private readonly int _maxRetryCount;
         private readonly ITimeManager _timeManager;
 
-        protected ServiceBusOperationBase(ServiceBusOperationBuilder builder)
+        protected BusOperationBase(BusOperationBuilder builder)
         {
             _logger = builder.Logger;
             _operationName = builder.OperationName;
@@ -117,11 +117,11 @@ namespace Helsenorge.Messaging.Bus
         }
     }
 
-    internal class ServiceBusOperation<T> : ServiceBusOperationBase
+    internal class BusOperation<T> : BusOperationBase
     {
         private readonly Func<T> _func;
 
-        internal ServiceBusOperation(ServiceBusOperationBuilder builder, Func<T> func) : base(builder)
+        internal BusOperation(BusOperationBuilder builder, Func<T> func) : base(builder)
         {
             _func = func;
         }
@@ -142,11 +142,11 @@ namespace Helsenorge.Messaging.Bus
         }
     }
 
-    internal class ServiceBusAsyncOperation<T> : ServiceBusOperationBase
+    internal class BusAsyncOperation<T> : BusOperationBase
     {
         private readonly Func<Task<T>> _func;
 
-        internal ServiceBusAsyncOperation(ServiceBusOperationBuilder builder, Func<Task<T>> func) : base(builder)
+        internal BusAsyncOperation(BusOperationBuilder builder, Func<Task<T>> func) : base(builder)
         {
             _func = func;
         }
@@ -167,11 +167,11 @@ namespace Helsenorge.Messaging.Bus
         }
     }
 
-    internal class ServiceBusOperation : ServiceBusOperationBase
+    internal class BusOperation : BusOperationBase
     {
         private readonly Action _func;
 
-        internal ServiceBusOperation(ServiceBusOperationBuilder builder, Action func) : base(builder)
+        internal BusOperation(BusOperationBuilder builder, Action func) : base(builder)
         {
             _func = func;
         }
@@ -193,11 +193,11 @@ namespace Helsenorge.Messaging.Bus
         }
     }
 
-    internal class ServiceBusAsyncOperation : ServiceBusOperationBase
+    internal class BusAsyncOperation : BusOperationBase
     {
         private readonly Func<Task> _func;
 
-        internal ServiceBusAsyncOperation(ServiceBusOperationBuilder builder, Func<Task> func) : base(builder)
+        internal BusAsyncOperation(BusOperationBuilder builder, Func<Task> func) : base(builder)
         {
             _func = func;
         }
