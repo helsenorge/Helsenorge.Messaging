@@ -39,7 +39,7 @@ namespace Helsenorge.Messaging.Bus
 
         public IMessagingSender CreateMessageSender(string id)
         {
-            return new ServiceBusSender(_logger, _connection, id, _applicationProperties);
+            return new AmqpSender(_logger, _connection, id, _applicationProperties);
         }
 
         public bool IsClosed => _connection.IsClosedOrClosing;
