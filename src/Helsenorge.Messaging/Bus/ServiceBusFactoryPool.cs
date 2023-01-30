@@ -16,7 +16,7 @@ using System.Threading;
 
 namespace Helsenorge.Messaging.Bus
 {
-    internal class ServiceBusFactoryPool : MessagingEntityCache<IMessagingFactory>, IServiceBusFactoryPool
+    internal class ServiceBusFactoryPool : MessagingEntityCache<IMessagingFactory>, IBusFactoryPool
     {
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly ServiceBusSettings _settings;

@@ -85,7 +85,7 @@ namespace Helsenorge.Messaging.Bus
         /// </summary>
         private MessagingCore Core { get; }
 
-        internal IServiceBusFactoryPool FactoryPool { get; }
+        internal IBusFactoryPool FactoryPool { get; }
         internal ServiceBusSenderPool SenderPool { get; }
         internal ServiceBusReceiverPool ReceiverPool { get; }
 
