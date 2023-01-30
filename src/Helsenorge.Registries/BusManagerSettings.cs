@@ -12,9 +12,9 @@ using Helsenorge.Registries.Configuration;
 namespace Helsenorge.Registries
 {
     /// <summary>
-    /// Information required when communicating with the ServiceBusManager service.
+    /// Information required when communicating with the BusManager service.
     /// </summary>
-    public class ServiceBusManagerSettings
+    public class BusManagerSettings
     {
         /// <summary>
         /// The configuration containing WCF settings
