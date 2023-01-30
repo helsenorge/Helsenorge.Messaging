@@ -48,8 +48,6 @@ namespace Helsenorge.Messaging.ServiceBus
         internal Func<Task> ReleaseActionAsync { get; set; }
         internal Action DeadLetterAction { get; set; }
         internal Func<Task> DeadLetterActionAsync { get; set; }
-        internal Func<DateTime> RenewLockAction { get; set; }
-        internal Func<Task<DateTime>> RenewLockActionAsync { get; set; }
         internal Action<bool, bool> ModifyAction { get; set; }
         internal Func<bool, bool, Task> ModifyActionAsync { get; set; }
 
@@ -339,8 +337,6 @@ namespace Helsenorge.Messaging.ServiceBus
                 ReleaseActionAsync = ReleaseActionAsync,
                 DeadLetterAction = DeadLetterAction,
                 DeadLetterActionAsync = DeadLetterActionAsync,
-                RenewLockAction = RenewLockAction,
-                RenewLockActionAsync = RenewLockActionAsync,
                 ModifyAction = ModifyAction,
                 ModifyActionAsync = ModifyActionAsync,
             };
@@ -386,20 +382,6 @@ namespace Helsenorge.Messaging.ServiceBus
 
         public DateTime LockedUntil => (DateTime?)_implementation.MessageAnnotations?[LockedUntilSymbol]
                                        ?? DateTime.MinValue;
-
-        [Obsolete("The method 'RenewLock()' is deprecated and will be removed in future releases.")]
-        public void RenewLock()
-        {
-            var lockedUntilUtc = RenewLockAction.Invoke();
-            _implementation.MessageAnnotations[LockedUntilSymbol] = lockedUntilUtc;
-        }
-
-        [Obsolete("The method 'RenewLockAsync()' is deprecated and will be removed in future releases.")]
-        public async Task RenewLockAsync()
-        {
-            var lockedUntilUtc = await RenewLockActionAsync.Invoke().ConfigureAwait(false);
-            _implementation.MessageAnnotations[LockedUntilSymbol] = lockedUntilUtc;
-        }
 
         public void AddDetailsToException(Exception ex)
         {

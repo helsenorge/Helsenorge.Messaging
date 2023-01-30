@@ -67,14 +67,6 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         public bool ContentWasSigned { get; set; }
         /// <summary>
-        /// Renews the lock of the message
-        /// </summary>
-        public Action RenewLock { get; internal set; }
-        /// <summary>
-        /// Renews the lock of the message
-        /// </summary>
-        public Func<Task> RenewLockAsync { get; internal set; }
-        /// <summary>
         /// Removes the message from the queue.
         /// </summary>
         public Action Complete { get; internal set; }

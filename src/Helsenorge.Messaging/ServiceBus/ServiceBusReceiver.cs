@@ -57,7 +57,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 return amqpMessage != null ? new ServiceBusMessage(amqpMessage) : null;
             }).Perform();
 
-            ConfigureServiceBusOperations(serverWaitTime, message);
+            ConfigureServiceBusOperations(message);
 
             return message;
         }
@@ -74,12 +74,12 @@ namespace Helsenorge.Messaging.ServiceBus
                 return amqpMessage != null ? new ServiceBusMessage(amqpMessage) : null;
             }).PerformAsync().ConfigureAwait(false);
 
-            ConfigureServiceBusOperations(serverWaitTime, message);
+            ConfigureServiceBusOperations(message);
 
             return message;
         }
 
-        private void ConfigureServiceBusOperations(TimeSpan serverWaitTime, ServiceBusMessage message)
+        private void ConfigureServiceBusOperations(ServiceBusMessage message)
         {
             if (message != null)
             {
@@ -137,25 +137,6 @@ namespace Helsenorge.Messaging.ServiceBus
 
                         _link.Reject(amqpMessage);
                         return Task.CompletedTask;
-                    }).PerformAsync();
-
-                message.RenewLockAction = () => new ServiceBusOperationBuilder(_logger, "RenewLock")
-                    .Build(() =>
-                    {
-                        if (Connection.MessageBrokerDialect == MessageBrokerDialect.RabbitMQ)
-                            throw new NotImplementedException("The method 'RenewLock()' is not supported by RabbitMQ.");
-
-                        var lockTimeout = TimeSpan.FromMinutes(1);
-                        return DateTime.UtcNow + lockTimeout;
-                    }).Perform();
-                message.RenewLockActionAsync = () => new ServiceBusOperationBuilder(_logger, "RenewLockAsync")
-                    .Build(async () =>
-                    {
-                        if (Connection.MessageBrokerDialect == MessageBrokerDialect.RabbitMQ)
-                            throw new NotImplementedException("The method 'RenewLockAsync()' is not supported by RabbitMQ.");
-
-                        var lockTimeout = TimeSpan.FromMinutes(1);
-                        return DateTime.UtcNow + lockTimeout;
                     }).PerformAsync();
 
                 message.ModifyAction = (deliveryFailed, undeliverableHere) => new ServiceBusOperationBuilder(_logger, "Modify")

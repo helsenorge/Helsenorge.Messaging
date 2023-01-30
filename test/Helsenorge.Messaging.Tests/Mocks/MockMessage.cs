@@ -154,15 +154,6 @@ namespace Helsenorge.Messaging.Tests.Mocks
             _stream = stream;  
         }
 
-        public void RenewLock()
-        {
-        }
-
-        public Task RenewLockAsync()
-        {
-            return Task.CompletedTask;
-        }
-
         public void Dispose()
         {
         }
