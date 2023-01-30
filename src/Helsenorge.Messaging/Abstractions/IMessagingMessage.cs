@@ -147,14 +147,6 @@ namespace Helsenorge.Messaging.Abstractions
         /// <param name="ex"></param>
         void AddDetailsToException(Exception ex);
         /// <summary>
-        /// Renews the lock of the message
-        /// </summary>
-        void RenewLock();
-        /// <summary>
-        /// Renews the lock of the message
-        /// </summary>
-        Task RenewLockAsync();
-        /// <summary>
         /// Sends this message to the deadletter queue
         /// </summary>
         void DeadLetter();

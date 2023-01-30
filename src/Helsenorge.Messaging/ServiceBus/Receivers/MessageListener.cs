@@ -210,8 +210,6 @@ namespace Helsenorge.Messaging.ServiceBus.Receivers
                     MessageId = message.MessageId,
                     CorrelationId = message.CorrelationId,
                     EnqueuedTimeUtc = message.EnqueuedTimeUtc,
-                    RenewLock = message.RenewLock,
-                    RenewLockAsync = message.RenewLockAsync,
                     Complete = message.Complete,
                     CompleteAsync = message.CompleteAsync,
                     Release = message.Release,
