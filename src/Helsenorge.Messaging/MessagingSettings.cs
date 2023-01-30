@@ -119,7 +119,7 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Gets or set the Type of Message Broker we are using
         /// </summary>
-        public MessageBrokerDialect MessageBrokerDialect { get; set; } = MessageBrokerDialect.ServiceBus;
+        public MessageBrokerDialect MessageBrokerDialect { get; set; } = MessageBrokerDialect.RabbitMQ;
 
         /// <summary>
         /// Gets or sets the connection string
