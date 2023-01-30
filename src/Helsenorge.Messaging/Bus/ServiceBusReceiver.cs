@@ -50,7 +50,7 @@ namespace Helsenorge.Messaging.Bus
 
         public IMessagingMessage Receive(TimeSpan serverWaitTime)
         {
-            var message = new ServiceBusOperationBuilder(_logger, "Receive").Build(() =>
+            var message = new BusOperationBuilder(_logger, "Receive").Build(() =>
             {
                 EnsureOpen();
                 var amqpMessage = _link.Receive(serverWaitTime);
@@ -67,7 +67,7 @@ namespace Helsenorge.Messaging.Bus
 
         public async Task<IMessagingMessage> ReceiveAsync(TimeSpan serverWaitTime)
         {
-            var message = await new ServiceBusOperationBuilder(_logger, "Receive").Build(async () =>
+            var message = await new BusOperationBuilder(_logger, "Receive").Build(async () =>
             {
                 await EnsureOpenAsync().ConfigureAwait(false);
                 var amqpMessage = await _link.ReceiveAsync(serverWaitTime).ConfigureAwait(false);
@@ -85,43 +85,43 @@ namespace Helsenorge.Messaging.Bus
             {
                 var amqpMessage = (Message)message.OriginalObject;
 
-                message.CompleteAction = () => new ServiceBusOperationBuilder(_logger, "Complete")
+                message.CompleteAction = () => new BusOperationBuilder(_logger, "Complete")
                     .Build(() =>
                     {
                         _link.Accept(amqpMessage);
                     }).Perform();
-                message.CompleteActionAsync = () => new ServiceBusOperationBuilder(_logger, "CompleteAsync")
+                message.CompleteActionAsync = () => new BusOperationBuilder(_logger, "CompleteAsync")
                     .Build(() =>
                     {
                         _link.Accept(amqpMessage);
                         return Task.CompletedTask;
                     }).PerformAsync();
 
-                message.RejectAction = () => new ServiceBusOperationBuilder(_logger, "Reject")
+                message.RejectAction = () => new BusOperationBuilder(_logger, "Reject")
                     .Build(() =>
                     {
                         _link.Reject(amqpMessage);
                     }).Perform();
-                message.RejectActionAsync = () => new ServiceBusOperationBuilder(_logger, "RejectAsync")
+                message.RejectActionAsync = () => new BusOperationBuilder(_logger, "RejectAsync")
                     .Build(() =>
                     {
                         _link.Reject(amqpMessage);
                         return Task.CompletedTask;
                     }).PerformAsync();
 
-                message.ReleaseAction = () => new ServiceBusOperationBuilder(_logger, "Release")
+                message.ReleaseAction = () => new BusOperationBuilder(_logger, "Release")
                     .Build(() =>
                     {
                         _link.Release(amqpMessage);
                     }).Perform();
-                message.ReleaseActionAsync = () => new ServiceBusOperationBuilder(_logger, "ReleaseAsync")
+                message.ReleaseActionAsync = () => new BusOperationBuilder(_logger, "ReleaseAsync")
                     .Build(() =>
                     {
                         _link.Release(amqpMessage);
                         return Task.CompletedTask;
                     }).PerformAsync();
 
-                message.DeadLetterAction = () => new ServiceBusOperationBuilder(_logger, "DeadLetter")
+                message.DeadLetterAction = () => new BusOperationBuilder(_logger, "DeadLetter")
                     .Build(() =>
                     {
                         if (Connection.MessageBrokerDialect == MessageBrokerDialect.RabbitMQ)
@@ -129,7 +129,7 @@ namespace Helsenorge.Messaging.Bus
 
                         _link.Reject(amqpMessage);
                     }).Perform();
-                message.DeadLetterActionAsync = () => new ServiceBusOperationBuilder(_logger, "DeadLetterAsync")
+                message.DeadLetterActionAsync = () => new BusOperationBuilder(_logger, "DeadLetterAsync")
                     .Build(() =>
                     {
                         if (Connection.MessageBrokerDialect == MessageBrokerDialect.RabbitMQ)
@@ -139,12 +139,12 @@ namespace Helsenorge.Messaging.Bus
                         return Task.CompletedTask;
                     }).PerformAsync();
 
-                message.ModifyAction = (deliveryFailed, undeliverableHere) => new ServiceBusOperationBuilder(_logger, "Modify")
+                message.ModifyAction = (deliveryFailed, undeliverableHere) => new BusOperationBuilder(_logger, "Modify")
                     .Build(() =>
                     {
                         _link.Modify(amqpMessage, deliveryFailed, undeliverableHere);
                     }).Perform();
-                message.ModifyActionAsync = (deliveryFailed, undeliverableHere) => new ServiceBusOperationBuilder(_logger, "ModifyAsync")
+                message.ModifyActionAsync = (deliveryFailed, undeliverableHere) => new BusOperationBuilder(_logger, "ModifyAsync")
                     .Build(() =>
                     {
                         _link.Modify(amqpMessage, deliveryFailed, undeliverableHere);

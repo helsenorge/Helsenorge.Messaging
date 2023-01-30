@@ -235,7 +235,7 @@ namespace Helsenorge.Messaging.Bus
             RetryOperationInProgress = LoggerMessage.Define<string>(
                 LogLevel.Warning,
                 EventIds.RetryOperation,
-                "ServiceBusOperation-Retry: {Message}");
+                "BusOperation-Retry: {Message}");
         }
 
         public static void LogException(this ILogger logger, string message, Exception ex)

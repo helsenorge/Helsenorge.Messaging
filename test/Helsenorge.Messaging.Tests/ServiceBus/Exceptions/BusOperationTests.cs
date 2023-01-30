@@ -20,7 +20,7 @@ using Xunit;
 
 namespace Helsenorge.Messaging.Tests.Bus.Exceptions
 {
-    public class ServiceBusOperationTests
+    public class BusOperationTests
     {
         public static object[][] RecoverableExceptions =
         {
@@ -62,7 +62,7 @@ namespace Helsenorge.Messaging.Tests.Bus.Exceptions
             var attempts = 0;
 
             var exception = await Assert.ThrowsAsync(resultingExceptionType, () =>
-                new ServiceBusOperationBuilder(_loggerMock.Object, e.GetType().Name)
+                new BusOperationBuilder(_loggerMock.Object, e.GetType().Name)
                 {
                     TimeManager = _timeManager,
                     MaxRetryCount = 5,
@@ -93,7 +93,7 @@ namespace Helsenorge.Messaging.Tests.Bus.Exceptions
             var attempts = 0;
 
             var exception = await Assert.ThrowsAsync(resultingExceptionType, () =>
-                new ServiceBusOperationBuilder(_loggerMock.Object, e.GetType().Name)
+                new BusOperationBuilder(_loggerMock.Object, e.GetType().Name)
                 {
                     TimeManager = _timeManager
                 }.Build(() =>
