@@ -25,7 +25,7 @@ namespace PooledReceiver
         static async Task Main(string[] args)
         {
             var loggerFactory = new LoggerFactory();
-            var settings = new ServiceBusSettings
+            var settings = new BusSettings
             {
                 ConnectionString = _connectionString,
                 MessageBrokerDialect = MessageBrokerDialect.RabbitMQ,

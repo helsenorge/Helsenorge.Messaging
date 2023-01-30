@@ -144,12 +144,12 @@ namespace Helsenorge.Messaging.Tests
                 }
             };
             
-            Settings.ServiceBus.ConnectionString = "connection string";
-            Settings.ServiceBus.Synchronous.ReplyQueueMapping.Add(Environment.MachineName.ToLower(), "RepliesGoHere");
+            Settings.BusSettings.ConnectionString = "connection string";
+            Settings.BusSettings.Synchronous.ReplyQueueMapping.Add(Environment.MachineName.ToLower(), "RepliesGoHere");
             // make things easier by only having one processing task per queue
-            Settings.ServiceBus.Asynchronous.ProcessingTasks = 1;
-            Settings.ServiceBus.Synchronous.ProcessingTasks = 1;
-            Settings.ServiceBus.Error.ProcessingTasks = 1;
+            Settings.BusSettings.Asynchronous.ProcessingTasks = 1;
+            Settings.BusSettings.Synchronous.ProcessingTasks = 1;
+            Settings.BusSettings.Error.ProcessingTasks = 1;
 
             MockFactory = new MockFactory(otherHerId);
             CertificateValidator = new MockCertificateValidator();

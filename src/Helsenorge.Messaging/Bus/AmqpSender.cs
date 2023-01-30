@@ -45,7 +45,7 @@ namespace Helsenorge.Messaging.Bus
         }
 
         public void Send(IMessagingMessage message)
-            => Send(message, TimeSpan.FromMilliseconds(ServiceBusSettings.DefaultTimeoutInMilliseconds));
+            => Send(message, TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
 
         public void Send(IMessagingMessage message, TimeSpan serverWaitTime)
         {
@@ -62,7 +62,7 @@ namespace Helsenorge.Messaging.Bus
         }
 
         public Task SendAsync(IMessagingMessage message)
-            => SendAsync(message, TimeSpan.FromMilliseconds(ServiceBusSettings.DefaultTimeoutInMilliseconds));
+            => SendAsync(message, TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
 
         public async Task SendAsync(IMessagingMessage message, TimeSpan serverWaitTime)
         {

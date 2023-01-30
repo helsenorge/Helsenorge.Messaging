@@ -99,75 +99,75 @@ namespace Helsenorge.Messaging.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void ConnectionString_NotSet()
         {
-            Settings.ServiceBus.ConnectionString = null;
+            Settings.BusSettings.ConnectionString = null;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
         }
 
         [TestMethod]
         public void Synchronous_ProcessingTasksEqualsZero_IsAllowed()
         {
-            Settings.ServiceBus.Synchronous.ProcessingTasks = 0;
+            Settings.BusSettings.Synchronous.ProcessingTasks = 0;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Synchronous_TimeToLive_NotSet()
         {
-            Settings.ServiceBus.Synchronous.TimeToLive = TimeSpan.Zero;
+            Settings.BusSettings.Synchronous.TimeToLive = TimeSpan.Zero;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Synchronous_ReadTimeout_NotSet()
         {
-            Settings.ServiceBus.Synchronous.ReadTimeout = TimeSpan.Zero;
+            Settings.BusSettings.Synchronous.ReadTimeout = TimeSpan.Zero;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Synchronous_CallTimeout_NotSet()
         {
-            Settings.ServiceBus.Synchronous.CallTimeout = TimeSpan.Zero;
+            Settings.BusSettings.Synchronous.CallTimeout = TimeSpan.Zero;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
         }
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Synchronous_ReplyQueue_NotSet()
         {
-            Settings.ServiceBus.Synchronous.ReplyQueueMapping = new Dictionary<string, string>();
+            Settings.BusSettings.Synchronous.ReplyQueueMapping = new Dictionary<string, string>();
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
         }
         
         [TestMethod]
         public void Asynchronous_ProcessingTasksEqualsZero_IsAllowed()
         {
-            Settings.ServiceBus.Asynchronous.ProcessingTasks = 0;
+            Settings.BusSettings.Asynchronous.ProcessingTasks = 0;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
         }
         [TestMethod]
         public void Asynchronous_TimeToLive_NotSet()
         {
-            Settings.ServiceBus.Asynchronous.TimeToLive = TimeSpan.Zero;
+            Settings.BusSettings.Asynchronous.TimeToLive = TimeSpan.Zero;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Asynchronous_ReadTimeout_NotSet()
         {
-            Settings.ServiceBus.Asynchronous.ReadTimeout = TimeSpan.Zero;
+            Settings.BusSettings.Asynchronous.ReadTimeout = TimeSpan.Zero;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
         }
         [TestMethod]
         public void Error_ProcessingTasksEqualsZero_IsAllowed()
         {
-            Settings.ServiceBus.Error.ProcessingTasks = 0;
+            Settings.BusSettings.Error.ProcessingTasks = 0;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Error_ReadTimeout_NotSet()
         {
-            Settings.ServiceBus.Error.ReadTimeout = TimeSpan.Zero;
+            Settings.BusSettings.Error.ReadTimeout = TimeSpan.Zero;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
         }
     }

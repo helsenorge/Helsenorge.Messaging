@@ -230,15 +230,15 @@ namespace Helsenorge.Messaging
 
             var queueNames = await GetCommonAncestor(BusCore.Settings.MyHerIds);
 
-            for (var i = 0; i < Settings.ServiceBus.Asynchronous.ProcessingTasks; i++)
+            for (var i = 0; i < Settings.BusSettings.Asynchronous.ProcessingTasks; i++)
             {
                 _listeners.Add(new AsynchronousMessageListener(BusCore, _loggerFactory.CreateLogger($"AsyncListener_{i}"), this, queueNames));
             }
-            for (var i = 0; i < Settings.ServiceBus.Synchronous.ProcessingTasks; i++)
+            for (var i = 0; i < Settings.BusSettings.Synchronous.ProcessingTasks; i++)
             {
                 _listeners.Add(new SynchronousMessageListener(BusCore, _loggerFactory.CreateLogger($"SyncListener_{i}"), this, queueNames));
             }
-            for (var i = 0; i < Settings.ServiceBus.Error.ProcessingTasks; i++)
+            for (var i = 0; i < Settings.BusSettings.Error.ProcessingTasks; i++)
             {
                 _listeners.Add(new ErrorMessageListener(BusCore, _loggerFactory.CreateLogger($"ErrorListener_{i}"), this, queueNames));
             }
@@ -581,7 +581,7 @@ namespace Helsenorge.Messaging
             BusConnection connection = null;
             try
             {
-                connection = new BusConnection(Settings.ServiceBus.ConnectionString, _logger);
+                connection = new BusConnection(Settings.BusSettings.ConnectionString, _logger);
                 _ = await connection.EnsureConnectionAsync();
             }
             catch (Exception e)

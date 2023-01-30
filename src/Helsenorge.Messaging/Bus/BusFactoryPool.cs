@@ -19,12 +19,12 @@ namespace Helsenorge.Messaging.Bus
     internal class BusFactoryPool : MessagingEntityCache<IMessagingFactory>, IBusFactoryPool
     {
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
-        private readonly ServiceBusSettings _settings;
+        private readonly BusSettings _settings;
         private readonly IDictionary<string, object> _applicationProperties;
         private int _index;
         private IMessagingFactory _alternateMessagingFactor;
 
-        public BusFactoryPool(ServiceBusSettings settings, IDictionary<string, object> applicationProperties = null) :
+        public BusFactoryPool(BusSettings settings, IDictionary<string, object> applicationProperties = null) :
             base("FactoryPool", settings.MaxFactories, settings.CacheEntryTimeToLive, settings.MaxCacheEntryTrimCount)
         {
             _settings = settings;

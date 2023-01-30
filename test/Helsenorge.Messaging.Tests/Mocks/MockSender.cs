@@ -32,7 +32,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
         }
 
         public void Send(IMessagingMessage message)
-            => SendAsync(message, TimeSpan.FromMilliseconds(ServiceBusSettings.DefaultTimeoutInMilliseconds));
+            => SendAsync(message, TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
 
         public void Send(IMessagingMessage message, TimeSpan serverWaitTime)
         {
@@ -60,7 +60,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
         }
 
         public Task SendAsync(IMessagingMessage message)
-            => SendAsync(message, TimeSpan.FromMilliseconds(ServiceBusSettings.DefaultTimeoutInMilliseconds));
+            => SendAsync(message, TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
 
         public Task SendAsync(IMessagingMessage message, TimeSpan serverWaitTime)
         {

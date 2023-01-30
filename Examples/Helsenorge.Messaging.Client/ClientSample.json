@@ -16,7 +16,7 @@
     "ApplicationProperties": {
       "X-SystemIdentifier": "SomeSystemIdentifier"
     },
-    "ServiceBus": {
+    "BusSettings": {
       "ConnectionString": "???",
       "MessageBrokerDialect": "RabbitMQ",
       "Synchronous": {

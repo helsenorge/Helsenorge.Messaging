@@ -25,13 +25,13 @@ namespace Helsenorge.Messaging.Tests.Bus.Senders
         public override void Setup()
         {
             base.Setup();
-            Settings.ServiceBus.Synchronous.ReplyQueueMapping = new Dictionary<string, string>
+            Settings.BusSettings.Synchronous.ReplyQueueMapping = new Dictionary<string, string>
             {
                 // machine name is set to lowercase by design, other code uses Environment.MachineName to look things up
                 // so this will make things case-insensitive
                 {Environment.MachineName.ToLower(), MockFactory.Helsenorge.SynchronousReply.Name}
             };
-            Settings.ServiceBus.Synchronous.CallTimeout = TimeSpan.FromSeconds(1);
+            Settings.BusSettings.Synchronous.CallTimeout = TimeSpan.FromSeconds(1);
         }
 
         private OutgoingMessage CreateMessage()
