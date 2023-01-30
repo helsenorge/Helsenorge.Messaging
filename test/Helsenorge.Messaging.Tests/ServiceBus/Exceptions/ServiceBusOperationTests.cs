@@ -6,8 +6,8 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
-using Helsenorge.Messaging.ServiceBus;
-using Helsenorge.Messaging.ServiceBus.Exceptions;
+using Helsenorge.Messaging.Bus;
+using Helsenorge.Messaging.Bus.Exceptions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
@@ -18,7 +18,7 @@ using Amqp;
 using Amqp.Framing;
 using Xunit;
 
-namespace Helsenorge.Messaging.Tests.ServiceBus.Exceptions
+namespace Helsenorge.Messaging.Tests.Bus.Exceptions
 {
     public class ServiceBusOperationTests
     {

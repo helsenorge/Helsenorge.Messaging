@@ -13,7 +13,7 @@ using System.Reflection;
 using System.Runtime.Versioning;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Security;
-using Helsenorge.Messaging.ServiceBus;
+using Helsenorge.Messaging.Bus;
 using Helsenorge.Registries;
 using Helsenorge.Registries.Abstractions;
 

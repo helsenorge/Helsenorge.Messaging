@@ -8,13 +8,13 @@
 
 using Amqp;
 using Amqp.Framing;
-using Helsenorge.Messaging.ServiceBus;
+using Helsenorge.Messaging.Bus;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Globalization;
 using System.IO;
 
-namespace Helsenorge.Messaging.Tests.ServiceBus
+namespace Helsenorge.Messaging.Tests.Bus
 {
     [TestClass]
     public class ServiceBusMessageTests

@@ -6,7 +6,7 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
 */
 
-using Helsenorge.Messaging.ServiceBus;
+using Helsenorge.Messaging.Bus;
 using Xunit;
 
 namespace Helsenorge.Messaging.AdminLib.Tests;

@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
+namespace Helsenorge.Messaging.Tests.Bus.Senders
 {
     [TestClass]
     public class AsynchronousSendTestsWithoutCpp : BaseTest

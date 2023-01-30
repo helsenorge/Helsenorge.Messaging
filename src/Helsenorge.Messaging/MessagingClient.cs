@@ -10,7 +10,7 @@ using System;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
-using Helsenorge.Messaging.ServiceBus.Senders;
+using Helsenorge.Messaging.Bus.Senders;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
