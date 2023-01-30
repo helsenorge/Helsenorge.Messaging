@@ -14,10 +14,10 @@ namespace Helsenorge.Messaging.Bus
 {
     internal class ServiceBusReceiverPool : MessagingEntityCache<IMessagingReceiver>
     {
-        private readonly IServiceBusFactoryPool _factoryPool;
+        private readonly IBusFactoryPool _factoryPool;
         private readonly int _credit;
         
-        public ServiceBusReceiverPool(ServiceBusSettings settings, IServiceBusFactoryPool factoryPool) :
+        public ServiceBusReceiverPool(ServiceBusSettings settings, IBusFactoryPool factoryPool) :
             base("ReceiverPool", settings.MaxReceivers, settings.CacheEntryTimeToLive, settings.MaxCacheEntryTrimCount)
         {
             _factoryPool = factoryPool;
