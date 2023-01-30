@@ -16,7 +16,7 @@ using System.Threading;
 
 namespace Helsenorge.Messaging.Bus
 {
-    internal class ServiceBusFactoryPool : MessagingEntityCache<IMessagingFactory>, IBusFactoryPool
+    internal class BusFactoryPool : MessagingEntityCache<IMessagingFactory>, IBusFactoryPool
     {
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly ServiceBusSettings _settings;
@@ -24,7 +24,7 @@ namespace Helsenorge.Messaging.Bus
         private int _index;
         private IMessagingFactory _alternateMessagingFactor;
 
-        public ServiceBusFactoryPool(ServiceBusSettings settings, IDictionary<string, object> applicationProperties = null) :
+        public BusFactoryPool(ServiceBusSettings settings, IDictionary<string, object> applicationProperties = null) :
             base("FactoryPool", settings.MaxFactories, settings.CacheEntryTimeToLive, settings.MaxCacheEntryTrimCount)
         {
             _settings = settings;

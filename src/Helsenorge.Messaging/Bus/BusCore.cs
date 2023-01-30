@@ -105,7 +105,7 @@ namespace Helsenorge.Messaging.Bus
             }
             else
             {
-                FactoryPool = new ServiceBusFactoryPool(core.Settings.ServiceBus, core.Settings.ApplicationProperties);
+                FactoryPool = new BusFactoryPool(core.Settings.ServiceBus, core.Settings.ApplicationProperties);
             }
             
             SenderPool = new ServiceBusSenderPool(core.Settings.ServiceBus, FactoryPool);
