@@ -124,7 +124,7 @@ namespace Helsenorge.Messaging.Tests
                 // ServiceBusFactoryPool.FindNextFactory makes sure that it won't
                 await serviceBusFactoryPool.FindNextFactory(Logger);
                 var entry = serviceBusFactoryPool.Entries[$"MessagingFactory{i}"];
-                // Even though we have requested the same ServiceBusFactory twice, once in the first loop and a second
+                // Even though we have requested the same BusFactory twice, once in the first loop and a second
                 // time in this loop, ActiveCount should still be 1.
                 Assert.AreEqual(1, entry.ActiveCount);
             }
