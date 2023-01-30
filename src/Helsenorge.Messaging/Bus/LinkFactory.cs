@@ -21,15 +21,15 @@ namespace Helsenorge.Messaging.Bus
     /// </summary>
     public class LinkFactory
     {
-        private readonly ServiceBusConnection _connection;
+        private readonly BusConnection _connection;
         private readonly ILogger<LinkFactory> _logger;
         private readonly IDictionary<string, object> _applicationProperties;
 
-        /// <summary>Initializes a new instance of the <see cref="LinkFactory" /> class with a <see cref="ServiceBusConnection"/> and a <see cref="ILogger{LinkFactory}"/>.</summary>
-        /// <param name="connection">A <see cref="ServiceBusConnection"/> that represents the connection to ServiecBus.</param>
+        /// <summary>Initializes a new instance of the <see cref="LinkFactory" /> class with a <see cref="BusConnection"/> and a <see cref="ILogger{LinkFactory}"/>.</summary>
+        /// <param name="connection">A <see cref="BusConnection"/> that represents the connection to ServiecBus.</param>
         /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
         /// <param name="applicationProperties">A Dictionary with additional application properties which will be added to <see cref="Amqp.Message"/>.</param>
-        public LinkFactory(ServiceBusConnection connection, ILogger<LinkFactory> logger, IDictionary<string, object> applicationProperties = null)
+        public LinkFactory(BusConnection connection, ILogger<LinkFactory> logger, IDictionary<string, object> applicationProperties = null)
         {
             _connection = connection;
             _logger = logger;

@@ -24,7 +24,7 @@ namespace Helsenorge.Messaging.Bus
         private readonly ILogger _logger;
         private readonly string _name;
 
-        public ServiceBusReceiver(ServiceBusConnection connection, string id, int credit, ILogger logger) : base(connection)
+        public ServiceBusReceiver(BusConnection connection, string id, int credit, ILogger logger) : base(connection)
         {
             if (string.IsNullOrEmpty(id))
             {

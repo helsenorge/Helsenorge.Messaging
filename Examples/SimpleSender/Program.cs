@@ -27,7 +27,7 @@ namespace SimpleSender
         static async Task Main(string[] args)
         {
             var loggerFactory = new LoggerFactory();
-            var connection = new ServiceBusConnection(_connectionString, loggerFactory.CreateLogger<ServiceBusConnection>());
+            var connection = new BusConnection(_connectionString, loggerFactory.CreateLogger<BusConnection>());
             IMessagingSender sender = null;
             var messageCount = 20;
             try

@@ -14,39 +14,39 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Helsenorge.Messaging.Tests.Bus
 {
     [TestClass]
-    public class ServiceBusConnectionTests
+    public class BusConnectionTests
     {
         private static string ConnectionString = "amqps://guest:guest@messagebroker.nhn.no/NameSpaceTest";
 
         [TestMethod]
         public void CanGetEnityNameForReceiverLinkForRabbitMQ()
         {
-            var serviceBusConnection = new ServiceBusConnection(ConnectionString, MessageBrokerDialect.RabbitMQ, new Logger<ServiceBusConnectionTests>(new NullLoggerFactory()));
-            var entityName = serviceBusConnection.GetEntityName("my-queue-name", LinkRole.Receiver);
+            var connection = new BusConnection(ConnectionString, MessageBrokerDialect.RabbitMQ, new Logger<BusConnectionTests>(new NullLoggerFactory()));
+            var entityName = connection.GetEntityName("my-queue-name", LinkRole.Receiver);
             Assert.AreEqual("/amq/queue/my-queue-name", entityName);
         }
 
         [TestMethod]
         public void CanGetEnityNameForSenderLinkForRabbitMQ()
         {
-            var serviceBusConnection = new ServiceBusConnection(ConnectionString, MessageBrokerDialect.RabbitMQ, new Logger<ServiceBusConnectionTests>(new NullLoggerFactory()));
-            var entityName = serviceBusConnection.GetEntityName("my-queue-name", LinkRole.Sender);
+            var connection = new BusConnection(ConnectionString, MessageBrokerDialect.RabbitMQ, new Logger<BusConnectionTests>(new NullLoggerFactory()));
+            var entityName = connection.GetEntityName("my-queue-name", LinkRole.Sender);
             Assert.AreEqual("/exchange/NameSpaceTest/my-queue-name", entityName);
         }
 
         [TestMethod]
         public void CanGetEnityNameForReceiverLinkForServiceBus()
         {
-            var serviceBusConnection = new ServiceBusConnection(ConnectionString, MessageBrokerDialect.ServiceBus, new Logger<ServiceBusConnectionTests>(new NullLoggerFactory()));
-            var entityName = serviceBusConnection.GetEntityName("my-queue-name", LinkRole.Receiver);
+            var connection = new BusConnection(ConnectionString, MessageBrokerDialect.ServiceBus, new Logger<BusConnectionTests>(new NullLoggerFactory()));
+            var entityName = connection.GetEntityName("my-queue-name", LinkRole.Receiver);
             Assert.AreEqual("NameSpaceTest/my-queue-name", entityName);
         }
 
         [TestMethod]
         public void CanGetEnityNameForSenderLinkForServiceBus()
         {
-            var serviceBusConnection = new ServiceBusConnection(ConnectionString, MessageBrokerDialect.ServiceBus, new Logger<ServiceBusConnectionTests>(new NullLoggerFactory()));
-            var entityName = serviceBusConnection.GetEntityName("my-queue-name", LinkRole.Sender);
+            var connection = new BusConnection(ConnectionString, MessageBrokerDialect.ServiceBus, new Logger<BusConnectionTests>(new NullLoggerFactory()));
+            var entityName = connection.GetEntityName("my-queue-name", LinkRole.Sender);
             Assert.AreEqual("NameSpaceTest/my-queue-name", entityName);
         }
     }
