@@ -26,7 +26,7 @@ namespace Helsenorge.Messaging.Bus
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
         /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
         public BusConnection(string connectionString, ILogger logger)
-            : this(connectionString, MessageBrokerDialect.ServiceBus, BusSettings.DefaultMaxLinksPerSession, BusSettings.DefaultMaxSessions, logger)
+            : this(connectionString, MessageBrokerDialect.RabbitMQ, BusSettings.DefaultMaxLinksPerSession, BusSettings.DefaultMaxSessions, logger)
         {
         }
 
