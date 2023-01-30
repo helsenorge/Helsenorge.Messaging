@@ -1,8 +1,8 @@
 ## Migrere fra 4.0 til 5.0
 
 Hovedendringen for 5.0 er støtte for arv av køsett fra virksomheten slik at flere kommunikasjonsparter kan dele det samme settet med køer fra virksomheten.
-I tillegg er det gjort en god del opprydding som i hovedsak ikke skal påvirke de aller fleste brukere av biblioteket.
-
+I tillegg er det fjernet ubrukte metoder og egenskaper som hadde relevans for MS ServiceBus og gjort visse navneendringer. Alle endringer er
+dokumentert i dette migreringsdokumentet.
 
 Alle `async` metoder har nå endelsen Async. F.eks `MessagingServer.Start` er nå endret til `MessagingServer.StartAsync`.
 
@@ -10,6 +10,7 @@ Alle `async` metoder har nå endelsen Async. F.eks `MessagingServer.Start` er n�
 
 - `MessagingSettings.MyHerId` &rarr; `MessagingSettings.MyHerIds`
   - Datatypen er endret fra `int` til `List<int>`
+- `MessagingSettings.ConnectionString` er endret til datatypen AmqpConnectionString. Denne implementasjonen forenkler byggingen av en connection string.
 - `CollaborationProtocolRegistrySettings.MyHerId` er fjernet
 - `MessagingSettings.ServiceBus` &rarr; `MessagingSettings.BusSettings`
 - Standardverdien tilhørende `MessagingSettings.BusSettings.MessageBrokerDialect` er endret fra `MessageBrokerDialect.ServiceBus`
@@ -52,17 +53,30 @@ ILogger argumentet har blitt fjernet fra metodene og er flyttet som en avhengigh
 ServiceBusHttpClient har vært merket som `Obsolete` i gjennom versjon 4.0 av biblioteket og fjernes nå i forbindelse med at støtte
 for produktet Microsoft ServiceBus fases ut. Lignende funksjonalitet eksisterer ikke over AMQP 1.0 for RabbitMQ. 
 
-#### Metodene RenewLock{Async} er fjernet
+#### Metodene RenewLock{Async} er fjernet fra IMessagingMessage og IncomingMessage
 
 Disse var avhengig av funksjonalitet som lå i klassen ServiceBusHttpClient og hadde kun relevans mot en MS ServiceBus instans.
 I tillegg dette var funksjonaliteten svært ustabil.
 
 Følgende metoder er fjernet:
 
-- IMessagingMessage.RenewLock()
-- IMessagingMessage.RenewLockAsync()
-- IncomingMessage.RenewLock()
-- IncomingMessage.RenewLockAsync()
+- `IMessagingMessage.RenewLock()`
+- `IMessagingMessage.RenewLockAsync()`
+- `IncomingMessage.RenewLock()`
+- `IncomingMessage.RenewLockAsync()`
+
+#### Andre endringer på IMessagingMessage
+
+Følgende metoder og egenskaper har endringer:
+
+Endret:
+- `IMessagingMessage.GetValue()` &rarr; `IMessagingMessage.GetApplicationPropertyValue()`
+- `IMessagingMessage.SetApplicationProperty()` &rarr; `IMessagingMessage.SetApplicationPropertyValue()`
+
+Fjernet:
+- `IMessagingMessage.ScheduledEnqueTimeUtc`
+- `IMessagingMessage.RenewLock()`
+- `IMessagingMessage.RenewLockAsync()`
 
 #### Navneendring på namespace 
 
@@ -73,23 +87,32 @@ Følgende namespace er endret:
 #### Navneendring på klasser, interfacer og egenskaper
 
 Navneendringer på klasser og interfacer:
-- `ServiceBusSettings` &rarr; `BusSettings`
-- `ServiceBusConnection` &rarr; `BusConnection`
-- `ServiceBusCore` &rarr; `BusCore`
-- `ServiceBusException` &rarr; `BusException`
-- `ServiceBusCommunicationException` &rarr; `BusCommunicationException`
-- `ServiceBusException` &rarr; `BusException`
-- `ServiceBusTimeoutException` &rarr; `BusTimeoutException`
+- `IMessagingMessage` &arr; `IAmqpMessage`
+- `IMessagingFactory` &arr; `IAmqpFactory`
+- `IMessagingReceiver` &arr; `IAmqpReceiver`
+- `IMessagingSender` &arr; `IAmqpSender`
+- `ICachedMessagingEntity` &arr; `ICachedAmqpEntity`
+- `MessagingEntityCache` &arr; `AmqpEntityCache`
+- `ServiceBusSettings` &rarr; `AmqpSettings`
+- `ServiceBusConnection` &rarr; `AmqpConnection`
+- `ServiceBusCore` &rarr; `AmqpCore`
+- `ServiceBusException` &rarr; `AmqpException`
+- `ServiceBusCommunicationException` &rarr; `AmqpCommunicationException`
+- `ServiceBusException` &rarr; `AmqpException`
+- `ServiceBusTimeoutException` &rarr; `AmqpTimeoutException`
+- `RecoverableServiceBusException` &rarr; `RecoverableAmqpException`
+- `UncategorizedServiceBusException` &rarr; `UncategorizedAmqpException`
 - `IServiceBusManager` &rarr; `IBusManager`
 - `ServiceBusManager` &rarr; `BusManager`
 - `ServiceBusManagerSettings` &rarr; `BusManagerSettings`
 - `IServiceBusFactoryPool` &rarr; `IAmqpFactoryPool`
 
 Navneendringer på egenskaper:
-- `MessagingCore.Core` &rarr; `MessagingCore.BusCore`
-- `MessagingSettings.MyHerId` &rarr; `MessagingSettings.MyHerIds` 
+- `MessagingCore.Core` &rarr; `MessagingCore.AmqpCore`
+- `MessagingSettings.MyHerId` &rarr; `MessagingSettings.MyHerIds`
+- `MessagingSettings.ServiceBus` &rarr; `MessagingSettings.AmqpSettings`
 
 
 #### Message broker kompatibilitet
 
-Helsenorge.Messaging 5.0 er fortsatt kompatibel med MS ServiceBus i tillegg til RabbitMQ. 
+Helsenorge.Messaging 5.0 er fortsatt kompatibel med MS ServiceBus i tillegg til RabbitMQ.
