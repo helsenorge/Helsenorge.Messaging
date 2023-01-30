@@ -22,13 +22,6 @@ using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Bus
 {
-    /// <summary>
-    /// AMPQNetLite-based implementation which is trying to mimic Microsoft Azure ServiceBus specifics
-    /// described here https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-amqp-protocol-guide
-    /// and here https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-amqp-request-response.
-    /// The original implementation was removed because it fails to support .NET Standard library.
-    /// (Microsoft.Azure.ServiceBus does by fact support it but it doesn't allow to authenticate using plain password).
-    /// </summary>
     [ExcludeFromCodeCoverage]
     internal class BusMessage : IMessagingMessage
     {
