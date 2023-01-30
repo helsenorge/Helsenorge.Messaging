@@ -61,13 +61,6 @@ namespace Helsenorge.Messaging.ServiceBus
 
             _address = new Address(connectionString);
             MessageBrokerDialect = messageBrokerDialect;
-            // 'ServicBusHttpClient' is only relevant for Microsoft ServiceBus. It is used to communicate with Microsoft ServiceBus specific operations.
-            if (messageBrokerDialect == MessageBrokerDialect.ServiceBus)
-            {
-#pragma warning disable CS0618
-                HttpClient = new ServiceBusHttpClient(_address, logger);
-#pragma warning restore CS0618
-            }
 
             if (!string.IsNullOrEmpty(_address.Path))
             {
@@ -96,9 +89,6 @@ namespace Helsenorge.Messaging.ServiceBus
         /// Returns what kind of Message Broker Dialect we should use.
         /// </summary>
         public MessageBrokerDialect MessageBrokerDialect { get; protected set; }
-
-        [Obsolete("The property 'HttpClient' will be removed in the future. It can only be used to communicate with Microsoft ServiceBus specific operations.")]
-        internal ServiceBusHttpClient HttpClient { get; }
 
         /// <summary>Let's you get access to the internal <see cref="IConnection"/>.</summary>
         /// <returns>Returns a <see cref="IConnection"/>.</returns>
