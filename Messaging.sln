@@ -45,6 +45,7 @@ ProjectSection(SolutionItems) = preProject
 	Documentation\Testmiljøer.md = Documentation\Testmiljøer.md
 	Documentation\Eksempler.md = Documentation\Eksempler.md
 	Documentation\MigrateFrom3To4.md = Documentation\MigrateFrom3To4.md
+	Documentation\MigrateFrom4To5.md = Documentation\MigrateFrom4To5.md
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{0539614B-FB26-4204-B08C-D044A8DEAA41}"
