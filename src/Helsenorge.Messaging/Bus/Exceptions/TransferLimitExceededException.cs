@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when message transfers exceeds the limit currently allowed on the link.
     /// </summary>
-    public class TransferLimitExceededException : ServiceBusException
+    public class TransferLimitExceededException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TransferLimitExceededException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

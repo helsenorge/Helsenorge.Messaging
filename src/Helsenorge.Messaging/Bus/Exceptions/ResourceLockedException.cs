@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when the client attempted to work with a server entity to which it has no access because another client is working with it.
     /// </summary>
-    public class ResourceLockedException : ServiceBusException
+    public class ResourceLockedException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceLockedException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

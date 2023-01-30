@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when the lock on the message is lost. Callers should call Receive and process the message again.
     /// </summary>
-    public sealed class MessageLockLostException : ServiceBusException
+    public sealed class MessageLockLostException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageLockLostException"/> class.
@@ -33,7 +33,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

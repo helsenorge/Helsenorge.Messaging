@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when the message has been released by the peer.
     /// </summary>
-    public class MessageReleasedException : ServiceBusException
+    public class MessageReleasedException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageReleasedException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

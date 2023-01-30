@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when the Messaging Entity is not found. Verify Entity Exists.
     /// </summary>
-    public sealed class MessagingEntityNotFoundException : ServiceBusException
+    public sealed class MessagingEntityNotFoundException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingEntityNotFoundException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when the peer sent a larger message than is supported on the link.
     /// </summary>
-    public sealed class MessageSizeExceededException : ServiceBusException
+    public sealed class MessageSizeExceededException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageSizeExceededException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

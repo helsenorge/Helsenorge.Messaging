@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when an already existing entity is being re-created.
     /// </summary>
-    public class MessagingEntityAlreadyExistsException : ServiceBusException
+    public class MessagingEntityAlreadyExistsException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingEntityAlreadyExistsException"/> class.
@@ -33,7 +33,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

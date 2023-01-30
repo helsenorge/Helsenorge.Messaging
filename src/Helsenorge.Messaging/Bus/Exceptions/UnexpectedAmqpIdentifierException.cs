@@ -17,7 +17,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// The identifier type may be valid within the AMQP specification, but Helsenorge.Messaging does not support the identifier type.
     /// Valid types are <see cref="System.String"/> and <see cref="System.Guid"/>
     /// </remarks>
-    public class UnexpectedMessageIdentifierTypeException : ServiceBusException
+    public class UnexpectedMessageIdentifierTypeException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UnexpectedMessageIdentifierTypeException"/> class.
@@ -36,7 +36,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

@@ -14,7 +14,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// The exception that is thrown when the Quota (Entity Max Size or other Connection etc) allocated to the Entity has exceeded. Callers should check the
     /// error message to see which of the Quota exceeded and take appropriate action.
     /// </summary>
-    public sealed class QuotaExceededException : ServiceBusException
+    public sealed class QuotaExceededException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="QuotaExceededException"/> class.
@@ -35,7 +35,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

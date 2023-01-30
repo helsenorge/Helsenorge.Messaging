@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when a server is busy. Callers should wait a while and retry the operation.
     /// </summary>
-    public sealed class ServerBusyException : ServiceBusException
+    public sealed class ServerBusyException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerBusyException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => true;
     }
 }

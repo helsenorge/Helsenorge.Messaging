@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when an internal error occurred. Operator intervention may be required to resume normal operation.
     /// </summary>
-    public class InternalErrorException : ServiceBusException
+    public class InternalErrorException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InternalErrorException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => true;
     }
 }

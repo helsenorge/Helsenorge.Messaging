@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when an invalid field was passed in a frame body, and the operation could not proceed.
     /// </summary>
-    public class InvalidFieldException : ServiceBusException
+    public class InvalidFieldException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InvalidFieldException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

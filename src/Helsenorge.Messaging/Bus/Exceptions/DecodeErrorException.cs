@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when AMQP data could not be decoded.
     /// </summary>
-    public class DecodeErrorException : ServiceBusException
+    public class DecodeErrorException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DecodeErrorException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

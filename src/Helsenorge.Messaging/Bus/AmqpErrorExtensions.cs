@@ -19,7 +19,7 @@ namespace Helsenorge.Messaging.Bus
 {
     internal static class AmqpErrorExtensions
     {
-        public static Exception ToServiceBusException(this Exception exception)
+        public static Exception ToBusException(this Exception exception)
         {
             var stringBuilder = new StringBuilder();
             stringBuilder.Append(exception.Message);
@@ -28,37 +28,37 @@ namespace Helsenorge.Messaging.Bus
             {
                 case SocketException e:
                     stringBuilder.AppendFormat(CultureInfo.InvariantCulture, $" ErrorCode: {e.SocketErrorCode}");
-                    return new ServiceBusCommunicationException(stringBuilder.ToString(), exception);
+                    return new BusCommunicationException(stringBuilder.ToString(), exception);
 
                 case IOException _:
                     if (exception.InnerException is SocketException socketException)
                         stringBuilder.AppendFormat(CultureInfo.InvariantCulture, $" ErrorCode: {socketException.SocketErrorCode}");
-                    return new ServiceBusCommunicationException(stringBuilder.ToString(), exception);
+                    return new BusCommunicationException(stringBuilder.ToString(), exception);
 
                 case AmqpException amqpException:
-                    return amqpException.Error.ToServiceBusException(amqpException);
+                    return amqpException.Error.ToBusException(amqpException);
 
                 case OperationCanceledException operationCanceledException when operationCanceledException.InnerException is AmqpException amqpException:
-                    return amqpException.Error.ToServiceBusException(operationCanceledException);
+                    return amqpException.Error.ToBusException(operationCanceledException);
 
                 case OperationCanceledException _:
-                    return new RecoverableServiceBusException(stringBuilder.ToString(), exception);
+                    return new RecoverableBusException(stringBuilder.ToString(), exception);
 
                 case TimeoutException _:
-                    return new ServiceBusTimeoutException(stringBuilder.ToString(), exception);
+                    return new BusTimeoutException(stringBuilder.ToString(), exception);
             }
 
             return exception;
         }
 
-        public static Exception ToServiceBusException(this Error error, Exception exception)
+        public static Exception ToBusException(this Error error, Exception exception)
         {
             return error == null
-                ? new UncategorizedServiceBusException("Unknown error.", exception)
-                : ToServiceBusException(error.Condition, error.Description, exception);
+                ? new UncategorizedBusException("Unknown error.", exception)
+                : ToBusException(error.Condition, error.Description, exception);
         }
 
-        private static Exception ToServiceBusException(string condition, string message, Exception exception)
+        private static Exception ToBusException(string condition, string message, Exception exception)
         {
             if (string.Equals(condition, ErrorCode.IllegalState)
                 || string.Equals(condition, ErrorCode.DetachForced)
@@ -70,13 +70,13 @@ namespace Helsenorge.Messaging.Bus
                 || string.Equals(condition, ErrorCode.WindowViolation)
                 || string.Equals(condition, ErrorCode.ConnectionRedirect))
             {
-                return new RecoverableServiceBusException(message, exception);
+                return new RecoverableBusException(message, exception);
             }
 
             if (string.Equals(condition, AmqpClientConstants.TimeoutError)
                 || string.Equals(condition, ErrorCode.TransactionTimeout))
             {
-                return new ServiceBusTimeoutException(message, exception);
+                return new BusTimeoutException(message, exception);
             }
 
             if (string.Equals(condition, ErrorCode.NotFound))
@@ -195,7 +195,7 @@ namespace Helsenorge.Messaging.Bus
                 return new InternalErrorException(message, exception);
             }
 
-            return new UncategorizedServiceBusException(message, condition, exception);
+            return new UncategorizedBusException(message, condition, exception);
         }
     }
 }

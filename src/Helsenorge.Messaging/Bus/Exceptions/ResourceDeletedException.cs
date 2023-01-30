@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when a server entity the client is working with has been deleted.
     /// </summary>
-    public class ResourceDeletedException : ServiceBusException
+    public class ResourceDeletedException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceDeletedException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }
