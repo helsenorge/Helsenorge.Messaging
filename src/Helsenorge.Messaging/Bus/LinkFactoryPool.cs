@@ -26,7 +26,7 @@ namespace Helsenorge.Messaging.Bus
         private readonly ServiceBusSettings _settings;
         private readonly IDictionary<string, object> _applicationProperties;
         private readonly BusFactoryPool _factoryPool;
-        private readonly ServiceBusReceiverPool _receiverPool;
+        private readonly AmqpReceiverPool _receiverPool;
         private readonly ServiceBusSenderPool _senderPool;
 
         /// <summary>Initializes a new instance of the <see cref="LinkFactoryPool" /> class with a <see cref="ServiceBusSettings"/> and a <see cref="ILogger"/>.</summary>
@@ -40,7 +40,7 @@ namespace Helsenorge.Messaging.Bus
             _applicationProperties = applicationProperties ?? new Dictionary<string, object>();
 
             _factoryPool = new BusFactoryPool(_settings, _applicationProperties);
-            _receiverPool = new ServiceBusReceiverPool(_settings, _factoryPool);
+            _receiverPool = new AmqpReceiverPool(_settings, _factoryPool);
             _senderPool = new ServiceBusSenderPool(_settings, _factoryPool);
         }
 

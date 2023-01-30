@@ -87,7 +87,7 @@ namespace Helsenorge.Messaging.Bus
 
         internal IBusFactoryPool FactoryPool { get; }
         internal ServiceBusSenderPool SenderPool { get; }
-        internal ServiceBusReceiverPool ReceiverPool { get; }
+        internal AmqpReceiverPool ReceiverPool { get; }
 
         /// <summary>
         /// Constructor
@@ -109,7 +109,7 @@ namespace Helsenorge.Messaging.Bus
             }
             
             SenderPool = new ServiceBusSenderPool(core.Settings.ServiceBus, FactoryPool);
-            ReceiverPool = new ServiceBusReceiverPool(core.Settings.ServiceBus, FactoryPool);
+            ReceiverPool = new AmqpReceiverPool(core.Settings.ServiceBus, FactoryPool);
         }
 
         /// <summary>

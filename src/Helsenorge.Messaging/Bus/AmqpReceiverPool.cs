@@ -12,12 +12,12 @@ using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Bus
 {
-    internal class ServiceBusReceiverPool : MessagingEntityCache<IMessagingReceiver>
+    internal class AmqpReceiverPool : MessagingEntityCache<IMessagingReceiver>
     {
         private readonly IBusFactoryPool _factoryPool;
         private readonly int _credit;
         
-        public ServiceBusReceiverPool(ServiceBusSettings settings, IBusFactoryPool factoryPool) :
+        public AmqpReceiverPool(ServiceBusSettings settings, IBusFactoryPool factoryPool) :
             base("ReceiverPool", settings.MaxReceivers, settings.CacheEntryTimeToLive, settings.MaxCacheEntryTrimCount)
         {
             _factoryPool = factoryPool;
