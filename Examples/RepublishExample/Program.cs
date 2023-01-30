@@ -7,7 +7,7 @@
  */
 
 using Helsenorge.Messaging.AdminLib;
-using Helsenorge.Messaging.ServiceBus;
+using Helsenorge.Messaging.Bus;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

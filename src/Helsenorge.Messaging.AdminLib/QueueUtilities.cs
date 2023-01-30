@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Helsenorge.Messaging.ServiceBus;
+using Helsenorge.Messaging.Bus;
 
 namespace Helsenorge.Messaging.AdminLib;
 

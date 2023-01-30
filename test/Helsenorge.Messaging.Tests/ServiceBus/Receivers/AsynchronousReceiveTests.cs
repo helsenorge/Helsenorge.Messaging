@@ -15,8 +15,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using Helsenorge.Messaging.Abstractions;
-using Helsenorge.Messaging.ServiceBus;
-using Helsenorge.Messaging.ServiceBus.Receivers;
+using Helsenorge.Messaging.Bus;
+using Helsenorge.Messaging.Bus.Receivers;
 using Helsenorge.Messaging.Tests.Mocks;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -25,7 +25,7 @@ using Helsenorge.Messaging.Security;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
+namespace Helsenorge.Messaging.Tests.Bus.Receivers
 {
     [TestClass]
     public class AsynchronousReceiveTests : BaseTest

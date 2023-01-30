@@ -6,7 +6,7 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
-using Helsenorge.Messaging.ServiceBus.Receivers;
+using Helsenorge.Messaging.Bus.Receivers;
 using System;
 using System.Threading.Tasks;
 using System.Xml.Linq;

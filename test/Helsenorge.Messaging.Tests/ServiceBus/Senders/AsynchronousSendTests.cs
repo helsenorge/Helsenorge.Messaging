@@ -15,7 +15,7 @@ using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
+namespace Helsenorge.Messaging.Tests.Bus.Senders
 {
     [TestClass]
     public class AsynchronousSendTests : BaseTest

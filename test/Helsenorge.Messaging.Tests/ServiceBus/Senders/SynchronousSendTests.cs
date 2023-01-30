@@ -16,7 +16,7 @@ using Helsenorge.Messaging.Tests.Mocks;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Helsenorge.Messaging.Tests.ServiceBus.Senders
+namespace Helsenorge.Messaging.Tests.Bus.Senders
 {
     [TestClass]
     public class SynchronousSendTests : BaseTest

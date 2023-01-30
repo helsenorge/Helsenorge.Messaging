@@ -14,7 +14,7 @@ using Helsenorge.Messaging.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 
-namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
+namespace Helsenorge.Messaging.Tests.Bus.Receivers
 {
     [TestClass]
     public class ErrorReceiveTests : BaseTest

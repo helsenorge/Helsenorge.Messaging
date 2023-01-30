@@ -11,7 +11,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Security;
-using Helsenorge.Messaging.ServiceBus;
+using Helsenorge.Messaging.Bus;
 using Helsenorge.Messaging.Tests.Mocks;
 using Microsoft.Extensions.Logging;
 

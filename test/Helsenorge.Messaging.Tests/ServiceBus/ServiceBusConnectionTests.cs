@@ -6,12 +6,12 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
-using Helsenorge.Messaging.ServiceBus;
+using Helsenorge.Messaging.Bus;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Helsenorge.Messaging.Tests.ServiceBus
+namespace Helsenorge.Messaging.Tests.Bus
 {
     [TestClass]
     public class ServiceBusConnectionTests

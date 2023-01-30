@@ -9,13 +9,13 @@
 using System;
 using System.Linq;
 using Helsenorge.Messaging.Abstractions;
-using Helsenorge.Messaging.ServiceBus.Receivers;
+using Helsenorge.Messaging.Bus.Receivers;
 using Helsenorge.Messaging.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
-namespace Helsenorge.Messaging.Tests.ServiceBus.Receivers
+namespace Helsenorge.Messaging.Tests.Bus.Receivers
 {
     [TestClass]
     public class SynchronousReceiveTests : BaseTest

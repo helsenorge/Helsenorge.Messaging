@@ -13,7 +13,7 @@ using System.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
-using Helsenorge.Messaging.ServiceBus;
+using Helsenorge.Messaging.Bus;
 
 namespace Helsenorge.Messaging.Tests
 {

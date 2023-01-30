@@ -14,8 +14,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
-using Helsenorge.Messaging.ServiceBus;
-using Helsenorge.Messaging.ServiceBus.Receivers;
+using Helsenorge.Messaging.Bus;
+using Helsenorge.Messaging.Bus.Receivers;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
 
