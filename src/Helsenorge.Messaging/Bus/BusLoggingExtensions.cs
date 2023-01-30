@@ -13,7 +13,7 @@ using Helsenorge.Messaging.Abstractions;
 
 namespace Helsenorge.Messaging.Bus
 {
-    internal static class ServiceBusLoggingExtensions
+    internal static class BusLoggingExtensions
     {
         private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> StartReceive;
         private static readonly Action<ILogger, QueueType, string, int, int, string, Exception> EndReceive;
@@ -139,7 +139,7 @@ namespace Helsenorge.Messaging.Bus
             RetryOperationInProgress(logger, message, null);
         }
 
-        static ServiceBusLoggingExtensions()
+        static BusLoggingExtensions()
         {
             StartReceive = LoggerMessage.Define<QueueType, string, int, int, string, string>(
                 LogLevel.Information,
