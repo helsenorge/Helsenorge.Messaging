@@ -52,9 +52,9 @@ namespace Helsenorge.Messaging.Tests
             }
         }
 
-        private class ServiceBusFactoryPoolMock : ServiceBusFactoryPool
+        private class BusFactoryPoolMock : BusFactoryPool
         {
-            public ServiceBusFactoryPoolMock(uint capacity, ushort timeToLiveInSeconds, ushort maxTrimCountPerRecycle) 
+            public BusFactoryPoolMock(uint capacity, ushort timeToLiveInSeconds, ushort maxTrimCountPerRecycle)
                 : base(new ServiceBusSettings(new MessagingSettings())
                 {
                     MaxFactories = capacity,
@@ -110,20 +110,20 @@ namespace Helsenorge.Messaging.Tests
         }
 
         [TestMethod]
-        public async Task ServiceBusFactoryPool_DoNotIncrementActiveCountBeyond1()
+        public async Task BusFactoryPool_DoNotIncrementActiveCountBeyond1()
         {
-            var serviceBusFactoryPool = new ServiceBusFactoryPoolMock(5, 0, 24);
+            var factoryPool = new BusFactoryPoolMock(5, 0, 24);
             for (int i = 0; i < 5; i++)
             {
-                await serviceBusFactoryPool.FindNextFactory(Logger);
+                await factoryPool.FindNextFactory(Logger);
             }
 
             for (int i = 0; i < 5; i++)
             {
                 // For other pool types, this would result in ActiveCount being incremented, but for
-                // ServiceBusFactoryPool.FindNextFactory makes sure that it won't
-                await serviceBusFactoryPool.FindNextFactory(Logger);
-                var entry = serviceBusFactoryPool.Entries[$"MessagingFactory{i}"];
+                // BusFactoryPool.FindNextFactory makes sure that it won't
+                await factoryPool.FindNextFactory(Logger);
+                var entry = factoryPool.Entries[$"MessagingFactory{i}"];
                 // Even though we have requested the same BusFactory twice, once in the first loop and a second
                 // time in this loop, ActiveCount should still be 1.
                 Assert.AreEqual(1, entry.ActiveCount);

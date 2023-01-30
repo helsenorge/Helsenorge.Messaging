@@ -25,7 +25,7 @@ namespace Helsenorge.Messaging.Bus
         private readonly ILogger _logger;
         private readonly ServiceBusSettings _settings;
         private readonly IDictionary<string, object> _applicationProperties;
-        private readonly ServiceBusFactoryPool _factoryPool;
+        private readonly BusFactoryPool _factoryPool;
         private readonly ServiceBusReceiverPool _receiverPool;
         private readonly ServiceBusSenderPool _senderPool;
 
@@ -39,7 +39,7 @@ namespace Helsenorge.Messaging.Bus
             _settings = settings;
             _applicationProperties = applicationProperties ?? new Dictionary<string, object>();
 
-            _factoryPool = new ServiceBusFactoryPool(_settings, _applicationProperties);
+            _factoryPool = new BusFactoryPool(_settings, _applicationProperties);
             _receiverPool = new ServiceBusReceiverPool(_settings, _factoryPool);
             _senderPool = new ServiceBusSenderPool(_settings, _factoryPool);
         }
