@@ -41,7 +41,7 @@ namespace Helsenorge.Messaging.Bus
         {
             if (_alternateMessagingFactor != null) return Task.FromResult(_alternateMessagingFactor);
             var connection = new BusConnection(_settings.ConnectionString, _settings.MessageBrokerDialect, _settings.MaxLinksPerSession, _settings.MaxSessionsPerConnection, logger);
-            return Task.FromResult<IMessagingFactory>(new ServiceBusFactory(logger, connection, _applicationProperties));
+            return Task.FromResult<IMessagingFactory>(new BusFactory(logger, connection, _applicationProperties));
         }
         public async Task<IMessagingMessage> CreateMessage(ILogger logger, Stream stream)
         {
@@ -59,7 +59,7 @@ namespace Helsenorge.Messaging.Bus
                 {
                     _index = 0;
                     // Make sure we do not increment ActiveCount any further after we have created all the needed
-                    // ServiceBusFactory instances.
+                    // BusFactory instances.
                     if(_incrementActiveCount) _incrementActiveCount = false;
                 }
                 var name = string.Format(null, "MessagingFactory{0}", _index);
