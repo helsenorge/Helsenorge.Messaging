@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when the requested message is not found.
     /// </summary>
-    public sealed class MessageNotFoundException : ServiceBusException
+    public sealed class MessageNotFoundException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageNotFoundException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

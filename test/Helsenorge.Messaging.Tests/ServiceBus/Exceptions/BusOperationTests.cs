@@ -24,10 +24,10 @@ namespace Helsenorge.Messaging.Tests.Bus.Exceptions
     {
         public static object[][] RecoverableExceptions =
         {
-            new object[]{new ServiceBusCommunicationException(string.Empty), typeof(ServiceBusCommunicationException)},
+            new object[]{new BusCommunicationException(string.Empty), typeof(BusCommunicationException)},
             new object[]{new ServerBusyException(string.Empty), typeof(ServerBusyException) },
-            new object[]{new TimeoutException(), typeof(ServiceBusTimeoutException) },
-            new object[]{new AmqpException(new Error(AmqpClientConstants.TimeoutError)), typeof(ServiceBusTimeoutException) },
+            new object[]{new TimeoutException(), typeof(BusTimeoutException) },
+            new object[]{new AmqpException(new Error(AmqpClientConstants.TimeoutError)), typeof(BusTimeoutException) },
             new object[]{new AmqpException(new Error(AmqpClientConstants.ServerBusyError)), typeof(ServerBusyException) }
         };
 

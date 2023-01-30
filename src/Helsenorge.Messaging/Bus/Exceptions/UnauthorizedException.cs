@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when user doesn't have access to the entity.
     /// </summary>
-    public sealed class UnauthorizedException : ServiceBusException
+    public sealed class UnauthorizedException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UnauthorizedException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

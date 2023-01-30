@@ -44,7 +44,7 @@ namespace Helsenorge.Messaging.Bus
 
         protected void Retry(Exception e)
         {
-            e = e.ToServiceBusException();
+            e = e.ToBusException();
 
             if (!CanRetry(e))
             {
@@ -77,7 +77,7 @@ namespace Helsenorge.Messaging.Bus
 
         protected async Task RetryAsync(Exception e)
         {
-            e = e.ToServiceBusException();
+            e = e.ToBusException();
 
             if (!CanRetry(e))
             {
@@ -112,7 +112,7 @@ namespace Helsenorge.Messaging.Bus
 
         private static bool CanRetry(Exception e)
         {
-            return e is ServiceBusException serviceBusException &&
+            return e is BusException serviceBusException &&
                    serviceBusException.CanRetry;
         }
     }

@@ -11,30 +11,30 @@ using System;
 namespace Helsenorge.Messaging.Bus.Exceptions
 {
     /// <summary>
-    /// An abstract exception class.
+    /// The exception that is thrown for signaling general communication errors related to messaging operations.
     /// </summary>
-    public abstract class ServiceBusException : Exception
+    public class BusCommunicationException : BusException
     {
         /// <summary>
-        /// Returns true if the exception represents an error on an operation that can be retried, otherwise false.
-        /// </summary>
-        public abstract bool CanRetry { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceBusException"/> class.
+        /// Initializes a new instance of the <see cref="BusCommunicationException"/> class.
         /// </summary>
         /// <param name="message">The error message that explains the reason for this exception.</param>
-        protected ServiceBusException(string message) : base(message)
+        public BusCommunicationException(string message)
+            : this(message, null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceBusException"/> class.
+        /// Initializes a new instance of the <see cref="BusCommunicationException"/> class.
         /// </summary>
         /// <param name="message">The error message that explains the reason for this exception.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
-        protected ServiceBusException(string message, Exception innerException) : base(message, innerException)
+        public BusCommunicationException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
+
+        /// <inheritdoc cref="BusException.CanRetry"/>
+        public override bool CanRetry => true;
     }
 }

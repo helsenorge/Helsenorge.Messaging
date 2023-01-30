@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when the lock on the Session has expired.
     /// </summary>
-    public sealed class SessionLockLostException : ServiceBusException
+    public sealed class SessionLockLostException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SessionLockLostException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

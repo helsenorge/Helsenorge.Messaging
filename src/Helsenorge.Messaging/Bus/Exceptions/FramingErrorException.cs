@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when a valid frame header cannot be formed from the incoming byte stream.
     /// </summary>
-    public class FramingErrorException : ServiceBusException
+    public class FramingErrorException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FramingErrorException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

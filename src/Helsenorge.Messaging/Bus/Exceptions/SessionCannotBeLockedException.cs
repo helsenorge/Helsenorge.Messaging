@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when a session cannot be locked.
     /// </summary>
-    public sealed class SessionCannotBeLockedException : ServiceBusException
+    public sealed class SessionCannotBeLockedException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SessionCannotBeLockedException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

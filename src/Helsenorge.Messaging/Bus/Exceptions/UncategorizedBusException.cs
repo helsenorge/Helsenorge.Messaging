@@ -13,36 +13,36 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// <summary>
     /// The exception that is thrown when we encounter and unknown or uncategorized error condition.
     /// </summary>
-    public sealed class UncategorizedServiceBusException : ServiceBusException
+    public sealed class UncategorizedBusException : BusException
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UncategorizedServiceBusException"/> class.
+        /// Initializes a new instance of the <see cref="UncategorizedBusException"/> class.
         /// </summary>
         /// <param name="message">The error message that explains the reason for this exception.</param>
-        public UncategorizedServiceBusException(string message) : base(message)
+        public UncategorizedBusException(string message) : base(message)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UncategorizedServiceBusException"/> class.
+        /// Initializes a new instance of the <see cref="UncategorizedBusException"/> class.
         /// </summary>
         /// <param name="message">The error message that explains the reason for this exception.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
-        public UncategorizedServiceBusException(string message, Exception innerException) : base(message, innerException)
+        public UncategorizedBusException(string message, Exception innerException) : base(message, innerException)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UncategorizedServiceBusException"/> class.
+        /// Initializes a new instance of the <see cref="UncategorizedBusException"/> class.
         /// </summary>
         /// <param name="message">The error message that explains the reason for this exception.</param>
         /// <param name="condition">The error condition that occurred.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
-        public UncategorizedServiceBusException(string message, string condition, Exception innerException) : base($"{message} Condition: {condition}", innerException)
+        public UncategorizedBusException(string message, string condition, Exception innerException) : base($"{message} Condition: {condition}", innerException)
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

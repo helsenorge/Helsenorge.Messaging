@@ -14,7 +14,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
     /// The exception that is thrown when the peer cannot send a frame because the smallest encoding of the performative
     /// with the currently valid values would be too large to fit within a frame of the agreed maximum frame size.
     /// </summary>
-    public class FrameSizeTooSmallException : ServiceBusException
+    public class FrameSizeTooSmallException : BusException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FrameSizeTooSmallException"/> class.
@@ -35,7 +35,7 @@ namespace Helsenorge.Messaging.Bus.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

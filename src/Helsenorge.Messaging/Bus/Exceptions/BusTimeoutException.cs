@@ -11,28 +11,28 @@ using System;
 namespace Helsenorge.Messaging.Bus.Exceptions
 {
     /// <summary>
-    /// The exception that is thrown when the error reported is a general, but recoverable error.
+    /// The exception that is thrown when a time out is encountered. Callers should retry the operation.
     /// </summary>
-    public sealed class RecoverableServiceBusException : ServiceBusException
+    public class BusTimeoutException : BusException
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RecoverableServiceBusException"/> class.
+        /// Initializes a new instance of the <see cref="BusTimeoutException"/> class.
         /// </summary>
         /// <param name="message">The error message that explains the reason for this exception.</param>
-        public RecoverableServiceBusException(string message) : base(message)
+        public BusTimeoutException(string message) : this(message, null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RecoverableServiceBusException"/> class.
+        /// Initializes a new instance of the <see cref="BusCommunicationException"/> class.
         /// </summary>
         /// <param name="message">The error message that explains the reason for this exception.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
-        public RecoverableServiceBusException(string message, Exception innerException) : base(message, innerException)
+        public BusTimeoutException(string message, Exception innerException) : base(message, innerException)
         {
         }
 
-        /// <inheritdoc cref="ServiceBusException.CanRetry"/>
+        /// <inheritdoc cref="BusException.CanRetry"/>
         public override bool CanRetry => true;
     }
 }
