@@ -41,7 +41,7 @@ namespace Helsenorge.Messaging
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             CollaborationProtocolRegistry = collaborationProtocolRegistry ?? throw new ArgumentNullException(nameof(collaborationProtocolRegistry));
             AddressRegistry = addressRegistry ?? throw new ArgumentNullException(nameof(addressRegistry));
-            ServiceBus = new ServiceBusCore(this);
+            BusCore = new BusCore(this);
 
             Settings.Validate();
 
@@ -72,7 +72,7 @@ namespace Helsenorge.Messaging
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             CollaborationProtocolRegistry = collaborationProtocolRegistry ?? throw new ArgumentNullException(nameof(collaborationProtocolRegistry));
             AddressRegistry = addressRegistry ?? throw new ArgumentNullException(nameof(addressRegistry));
-            ServiceBus = new ServiceBusCore(this);
+            BusCore = new BusCore(this);
 
             Settings.Validate();
 
@@ -114,7 +114,7 @@ namespace Helsenorge.Messaging
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             CollaborationProtocolRegistry = collaborationProtocolRegistry ?? throw new ArgumentNullException(nameof(collaborationProtocolRegistry));
             AddressRegistry = addressRegistry ?? throw new ArgumentNullException(nameof(addressRegistry));
-            ServiceBus = new ServiceBusCore(this);
+            BusCore = new BusCore(this);
 
             Settings.Validate();
 
@@ -177,9 +177,9 @@ namespace Helsenorge.Messaging
         [Obsolete("This property is deprecated use parameter 'messageProtection' on the ctor of MessagingCore, MessagingClient or MessagingServer to override default message protection.")]
         public IMessageProtection DefaultMessageProtection { get { return MessageProtection; } set { MessageProtection = value; } }
         /// <summary>
-        /// Provides access to service bus specific functionality
+        /// Provides access to bus specific functionality
         /// </summary>
-        public ServiceBusCore ServiceBus { get; }
+        public BusCore BusCore { get; }
 
         internal ICertificateStore GetDefaultCertificateStore()
         {

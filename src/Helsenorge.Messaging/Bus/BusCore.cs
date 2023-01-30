@@ -23,7 +23,7 @@ namespace Helsenorge.Messaging.Bus
     /// <summary>
     /// Provides a number of functions used by both the Gateway (sending) and message listeners
     /// </summary>
-    public class ServiceBusCore
+    public class BusCore
     {
         /// <summary>
         /// Label used when error message contains a SOAP fault
@@ -94,7 +94,7 @@ namespace Helsenorge.Messaging.Bus
         /// </summary>
         /// <param name="core">A reference to the core messaging system</param>
         /// <exception cref="ArgumentNullException"></exception>
-        internal ServiceBusCore(MessagingCore core)
+        internal BusCore(MessagingCore core)
         {
             Core = core ?? throw new ArgumentNullException(nameof(core));
             

@@ -59,29 +59,29 @@ namespace Helsenorge.Messaging.Bus
         public int FromHerId
         {
             [DebuggerStepThrough]
-            get => GetValue(ServiceBusCore.FromHerIdHeaderKey, 0);
+            get => GetValue(BusCore.FromHerIdHeaderKey, 0);
             [DebuggerStepThrough]
-            set => SetApplicationProperty(ServiceBusCore.FromHerIdHeaderKey, value);
+            set => SetApplicationProperty(BusCore.FromHerIdHeaderKey, value);
         }
         public int ToHerId
         {
             [DebuggerStepThrough]
-            get => GetValue(ServiceBusCore.ToHerIdHeaderKey, 0);
+            get => GetValue(BusCore.ToHerIdHeaderKey, 0);
             [DebuggerStepThrough]
-            set => SetApplicationProperty(ServiceBusCore.ToHerIdHeaderKey, value);
+            set => SetApplicationProperty(BusCore.ToHerIdHeaderKey, value);
         }
         public DateTime ApplicationTimestamp
         {
-            get => GetValue(ServiceBusCore.ApplicationTimestampHeaderKey, DateTime.MinValue);
+            get => GetValue(BusCore.ApplicationTimestampHeaderKey, DateTime.MinValue);
             [DebuggerStepThrough]
-            set => SetApplicationProperty(ServiceBusCore.ApplicationTimestampHeaderKey, value);
+            set => SetApplicationProperty(BusCore.ApplicationTimestampHeaderKey, value);
         }
         public string CpaId
         {
             [DebuggerStepThrough]
-            get => GetValue(ServiceBusCore.CpaIdHeaderKey, string.Empty);
+            get => GetValue(BusCore.CpaIdHeaderKey, string.Empty);
             [DebuggerStepThrough]
-            set => SetApplicationProperty(ServiceBusCore.CpaIdHeaderKey, value);
+            set => SetApplicationProperty(BusCore.CpaIdHeaderKey, value);
         }
         public object OriginalObject => _implementation;
 

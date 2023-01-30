@@ -225,22 +225,22 @@ namespace Helsenorge.Messaging
             if (!await CanAuthenticateAgainstMessageBroker())
                 throw new MessagingException("Non-successful authentication or connection attempt to the message broker on start-up. This can be caused by incorrect credentials / configuration errors.") { EventId = EventIds.ConnectionToMessageBrokerFailed };
 
-            if (!await HasCommonAncestor(ServiceBus.Settings.MyHerIds.ToArray()))
+            if (!await HasCommonAncestor(BusCore.Settings.MyHerIds.ToArray()))
                 throw new MessagingException("There must be a common set of ancestor queues when receiving from multiple HER-Ids.");
 
-            var queueNames = await GetCommonAncestor(ServiceBus.Settings.MyHerIds);
+            var queueNames = await GetCommonAncestor(BusCore.Settings.MyHerIds);
 
             for (var i = 0; i < Settings.ServiceBus.Asynchronous.ProcessingTasks; i++)
             {
-                _listeners.Add(new AsynchronousMessageListener(ServiceBus, _loggerFactory.CreateLogger($"AsyncListener_{i}"), this, queueNames));
+                _listeners.Add(new AsynchronousMessageListener(BusCore, _loggerFactory.CreateLogger($"AsyncListener_{i}"), this, queueNames));
             }
             for (var i = 0; i < Settings.ServiceBus.Synchronous.ProcessingTasks; i++)
             {
-                _listeners.Add(new SynchronousMessageListener(ServiceBus, _loggerFactory.CreateLogger($"SyncListener_{i}"), this, queueNames));
+                _listeners.Add(new SynchronousMessageListener(BusCore, _loggerFactory.CreateLogger($"SyncListener_{i}"), this, queueNames));
             }
             for (var i = 0; i < Settings.ServiceBus.Error.ProcessingTasks; i++)
             {
-                _listeners.Add(new ErrorMessageListener(ServiceBus, _loggerFactory.CreateLogger($"ErrorListener_{i}"), this, queueNames));
+                _listeners.Add(new ErrorMessageListener(BusCore, _loggerFactory.CreateLogger($"ErrorListener_{i}"), this, queueNames));
             }
             foreach (var listener in _listeners)
             {
@@ -268,9 +268,9 @@ namespace Helsenorge.Messaging
             await Task.WhenAll(_tasks.ToArray()).ConfigureAwait(false);
             
             // when all the listeners have shut down, close down the messaging infrastructure
-            await ServiceBus.SenderPool.Shutdown(_logger).ConfigureAwait(false);
-            await ServiceBus.ReceiverPool.Shutdown(_logger).ConfigureAwait(false);
-            await ServiceBus.FactoryPool.Shutdown(_logger).ConfigureAwait(false);
+            await BusCore.SenderPool.Shutdown(_logger).ConfigureAwait(false);
+            await BusCore.ReceiverPool.Shutdown(_logger).ConfigureAwait(false);
+            await BusCore.FactoryPool.Shutdown(_logger).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -517,7 +517,7 @@ namespace Helsenorge.Messaging
 
             var communicationPartyDetailsList = new List<CommunicationPartyDetails>();
             foreach (var herId in herIds)
-                communicationPartyDetailsList.Add(await ServiceBus.AddressRegistry.FindCommunicationPartyDetailsAsync(_logger, herId));
+                communicationPartyDetailsList.Add(await BusCore.AddressRegistry.FindCommunicationPartyDetailsAsync(_logger, herId));
 
             var queueNames = GetCommonAncestor(communicationPartyDetailsList);
 
@@ -555,7 +555,7 @@ namespace Helsenorge.Messaging
         {
             var communicationPartyDetailsList = new List<CommunicationPartyDetails>();
             foreach (var herId in herIds)
-                communicationPartyDetailsList.Add(await ServiceBus.AddressRegistry.FindCommunicationPartyDetailsAsync(_logger, herId));
+                communicationPartyDetailsList.Add(await BusCore.AddressRegistry.FindCommunicationPartyDetailsAsync(_logger, herId));
             return GetCommonAncestor(communicationPartyDetailsList);
         }
 

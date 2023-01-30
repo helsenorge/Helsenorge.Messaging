@@ -47,20 +47,20 @@ namespace Helsenorge.Messaging.Bus.Senders
             /// </summary>
             public string MessageId { get; internal set; }
         }
-        private readonly ServiceBusCore _core;
+        private readonly BusCore _busCore;
     
-        public SynchronousSender(ServiceBusCore core)
+        public SynchronousSender(BusCore busCore)
         {
-            _core = core;
+            _busCore = busCore;
         }
 
         public Func<IncomingMessage, Task> OnSynchronousReplyMessageReceived { get; set; }
 
         public async Task<XDocument> SendAsync(ILogger logger, OutgoingMessage message)
         {
-            await _core.Send(logger, message, QueueType.Synchronous, _core.Settings.Synchronous.FindReplyQueueForMe()).ConfigureAwait(false);
+            await _busCore.Send(logger, message, QueueType.Synchronous, _busCore.Settings.Synchronous.FindReplyQueueForMe()).ConfigureAwait(false);
                         
-            var listener = new SynchronousReplyListener(_core, logger, this);
+            var listener = new SynchronousReplyListener(_busCore, logger, this);
             //stopwatch used to measure response time
             var stopwatch = Stopwatch.StartNew();
             var start = DateTime.UtcNow;
@@ -136,7 +136,7 @@ namespace Helsenorge.Messaging.Bus.Senders
                     }
                 }
 
-                if (DateTime.UtcNow <= (start + _core.Settings.Synchronous.CallTimeout)) continue;
+                if (DateTime.UtcNow <= (start + _busCore.Settings.Synchronous.CallTimeout)) continue;
 
                 // if the request times out, we mark it. That way we can report if the message is received right after a timeout
                 if (_pendingSynchronousRequests.TryGetValue(correlationId, out MessageEntry entry))
@@ -167,7 +167,7 @@ namespace Helsenorge.Messaging.Bus.Senders
         }
         private void RemoveExpiredSynchronousEntries(ILogger logger)
         {
-            var limit = DateTime.UtcNow.AddSeconds(-10) - _core.Settings.Synchronous.CallTimeout;
+            var limit = DateTime.UtcNow.AddSeconds(-10) - _busCore.Settings.Synchronous.CallTimeout;
 
             var array = (
                 from kvp in _pendingSynchronousRequests
