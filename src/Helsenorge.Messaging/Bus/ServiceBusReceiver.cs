@@ -54,7 +54,7 @@ namespace Helsenorge.Messaging.Bus
             {
                 EnsureOpen();
                 var amqpMessage = _link.Receive(serverWaitTime);
-                return amqpMessage != null ? new ServiceBusMessage(amqpMessage) : null;
+                return amqpMessage != null ? new BusMessage(amqpMessage) : null;
             }).Perform();
 
             ConfigureServiceBusOperations(message);
@@ -71,7 +71,7 @@ namespace Helsenorge.Messaging.Bus
             {
                 await EnsureOpenAsync().ConfigureAwait(false);
                 var amqpMessage = await _link.ReceiveAsync(serverWaitTime).ConfigureAwait(false);
-                return amqpMessage != null ? new ServiceBusMessage(amqpMessage) : null;
+                return amqpMessage != null ? new BusMessage(amqpMessage) : null;
             }).PerformAsync().ConfigureAwait(false);
 
             ConfigureServiceBusOperations(message);
@@ -79,7 +79,7 @@ namespace Helsenorge.Messaging.Bus
             return message;
         }
 
-        private void ConfigureServiceBusOperations(ServiceBusMessage message)
+        private void ConfigureServiceBusOperations(BusMessage message)
         {
             if (message != null)
             {

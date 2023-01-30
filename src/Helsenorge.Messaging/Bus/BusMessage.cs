@@ -30,7 +30,7 @@ namespace Helsenorge.Messaging.Bus
     /// (Microsoft.Azure.ServiceBus does by fact support it but it doesn't allow to authenticate using plain password).
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal class ServiceBusMessage : IMessagingMessage
+    internal class BusMessage : IMessagingMessage
     {
         private readonly Message _implementation;
 
@@ -51,7 +51,7 @@ namespace Helsenorge.Messaging.Bus
         internal Action<bool, bool> ModifyAction { get; set; }
         internal Func<bool, bool, Task> ModifyActionAsync { get; set; }
 
-        public ServiceBusMessage(Message implementation)
+        public BusMessage(Message implementation)
         {
             _implementation = implementation ?? throw new ArgumentNullException(nameof(implementation));
         }
@@ -327,7 +327,7 @@ namespace Helsenorge.Messaging.Bus
                 }
             }
 
-            return new ServiceBusMessage(clone)
+            return new BusMessage(clone)
             {
                 CompleteAction = CompleteAction,
                 CompleteActionAsync = CompleteActionAsync,
