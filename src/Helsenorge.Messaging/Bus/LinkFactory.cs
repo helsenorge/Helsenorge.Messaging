@@ -47,7 +47,7 @@ namespace Helsenorge.Messaging.Bus
         /// <param name="queue">The path to the queue you want to receive messages from.</param>
         /// <returns>A <see cref="IMessagingSender"/></returns>
         public IMessagingSender CreateSender(string queue)
-            => new ServiceBusSender(_logger, _connection, queue, _applicationProperties);
+            => new AmqpSender(_logger, _connection, queue, _applicationProperties);
 
         /// <summary>Creates a <see cref="IMessagingMessage"/>.</summary>
         /// <param name="fromHerId">The HER-id which is the receipient of the message</param>

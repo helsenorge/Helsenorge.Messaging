@@ -17,14 +17,14 @@ using Microsoft.Extensions.Logging;
 namespace Helsenorge.Messaging.Bus
 {
     [ExcludeFromCodeCoverage]
-    internal class ServiceBusSender : CachedAmpqSessionEntity<SenderLink>, IMessagingSender
+    internal class AmqpSender : CachedAmpqSessionEntity<SenderLink>, IMessagingSender
     {
         private readonly ILogger _logger;
         private readonly string _id;
         private readonly IDictionary<string, object> _applicationProperties;
         private readonly string _name;
 
-        public ServiceBusSender(ILogger logger, BusConnection connection, string id, IDictionary<string, object> applicationProperties = null) : base(connection)
+        public AmqpSender(ILogger logger, BusConnection connection, string id, IDictionary<string, object> applicationProperties = null) : base(connection)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             if (string.IsNullOrEmpty(id))
