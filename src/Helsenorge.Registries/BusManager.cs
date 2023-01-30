@@ -19,10 +19,10 @@ namespace Helsenorge.Registries.Utilities
     /// <summary>
     /// 
     /// </summary>
-    public class ServiceBusManager : IServiceBusManager
+    public class BusManager : IBusManager
     {
         private readonly SoapServiceInvoker _invoker;
-        private readonly ILogger<ServiceBusManager> _logger;
+        private readonly ILogger<BusManager> _logger;
 
         /// <summary>
         /// 
@@ -30,7 +30,7 @@ namespace Helsenorge.Registries.Utilities
         /// <param name="settings"></param>
         /// <param name="logger"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public ServiceBusManager(ServiceBusManagerSettings settings, ILogger<ServiceBusManager> logger)
+        public BusManager(BusManagerSettings settings, ILogger<BusManager> logger)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             
@@ -38,32 +38,32 @@ namespace Helsenorge.Registries.Utilities
             _invoker = new SoapServiceInvoker(settings.WcfConfiguration);
         }
 
-        /// <inheritdoc cref="IServiceBusManager.GetSubscriptionsAsync"/>
+        /// <inheritdoc cref="IBusManager.GetSubscriptionsAsync"/>
         public async Task<IEnumerable<EventSubscription>> GetSubscriptionsAsync()
         {
             var subscriptions = await GetSubscriptionsAsyncInternal();
             return subscriptions.AsEnumerable();
         }
 
-        /// <inheritdoc cref="IServiceBusManager.SubscribeAsync"/>
+        /// <inheritdoc cref="IBusManager.SubscribeAsync"/>
         public Task<EventSubscription> SubscribeAsync(SubscriptionEventSource eventSource, string systemIdentificator, string eventName = null)
             => SubscribeAsyncInternal(eventSource, systemIdentificator, eventName ?? string.Empty);
 
-        /// <inheritdoc cref="IServiceBusManager.UnsubscribeAsync"/>
+        /// <inheritdoc cref="IBusManager.UnsubscribeAsync"/>
         public Task UnsubscribeAsync(string queueName)
             => UnsubscribeAsyncInternal(queueName);
 
-        /// <inheritdoc cref="IServiceBusManager.GetSubscriptionsAsync"/>
+        /// <inheritdoc cref="IBusManager.GetSubscriptionsAsync"/>
         [ExcludeFromCodeCoverage]
         protected async virtual Task<EventSubscription[]> GetSubscriptionsAsyncInternal()
             => await Invoke(sbm => sbm.GetSubscriptionsAsync(), "GetSubscriptionsAsync").ConfigureAwait(false);
         
-        /// <inheritdoc cref="IServiceBusManager.SubscribeAsync"/>
+        /// <inheritdoc cref="IBusManager.SubscribeAsync"/>
         [ExcludeFromCodeCoverage]
         protected async virtual Task<EventSubscription> SubscribeAsyncInternal(SubscriptionEventSource eventSource, string systemIdentificator, string eventName)
             => await Invoke(sbm => sbm.SubscribeAsync(eventSource, eventName, systemIdentificator), "SubscribeAsync").ConfigureAwait(false);
 
-        /// <inheritdoc cref="IServiceBusManager.UnsubscribeAsync"/>
+        /// <inheritdoc cref="IBusManager.UnsubscribeAsync"/>
         [ExcludeFromCodeCoverage]
         protected async virtual Task UnsubscribeAsyncInternal(string queueName)
             => await Invoke(sbm => sbm.UnsubscribeAsync(queueName), "UnsubscribeAsync").ConfigureAwait(false);

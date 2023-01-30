@@ -11,14 +11,10 @@ using System.Threading.Tasks;
 
 namespace Helsenorge.Registries.Abstractions
 {
-
-    /*
- 
-     */
     /// <summary>
     /// The IServiceBusManager interface.
     /// </summary>
-    public interface IServiceBusManager
+    public interface IBusManager
     {
         /// <summary>
         /// Returns the subscriptions associated with the authenticated user.

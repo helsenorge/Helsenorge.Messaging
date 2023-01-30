@@ -29,7 +29,7 @@ namespace SubscriptionExample
             {
                 var loggerFactory = new LoggerFactory();
 
-                var serviceManagerBusSettings = new ServiceBusManagerSettings
+                var busManagerSettings = new BusManagerSettings
                 {
                     WcfConfiguration = new WcfConfiguration
                     {
@@ -38,7 +38,7 @@ namespace SubscriptionExample
                         Password = Password
                     }
                 };
-                var serviceBusManager = new ServiceBusManager(serviceManagerBusSettings, loggerFactory.CreateLogger<ServiceBusManager>());
+                var busManager = new BusManager(busManagerSettings, loggerFactory.CreateLogger<BusManager>());
 
                 var serviceBusSettings = new ServiceBusSettings
                 {
@@ -48,7 +48,7 @@ namespace SubscriptionExample
                 await using var linkFactoryPool = new LinkFactoryPool(loggerFactory.CreateLogger("LinkFactoryPool"), serviceBusSettings);
 
                 // Create or fetch an already existing subscription.
-                var subscription = await serviceBusManager.SubscribeAsync(SubscriptionEventSource.AddressRegister, "SubscriptionExample");
+                var subscription = await busManager.SubscribeAsync(SubscriptionEventSource.AddressRegister, "SubscriptionExample");
 
                 // Create a receiver that will listen to our subscription queue.
                 var receiver = await linkFactoryPool.CreateCachedMessageReceiver(subscription.QueueName);
