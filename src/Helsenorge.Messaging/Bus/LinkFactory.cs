@@ -41,7 +41,7 @@ namespace Helsenorge.Messaging.Bus
         /// <param name="linkCredit">How many messages should the client buffer client-side.</param>
         /// <returns>A <see cref="IMessagingReceiver"/></returns>
         public IMessagingReceiver CreateReceiver(string queue, int linkCredit = 25)
-            => new ServiceBusReceiver(_connection, queue, linkCredit, _logger);
+            => new AmqpReceiver(_connection, queue, linkCredit, _logger);
 
         /// <summary>Creates a Sender Link of type <see cref="IMessagingSender"/>.</summary>
         /// <param name="queue">The path to the queue you want to receive messages from.</param>
