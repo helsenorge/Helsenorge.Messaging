@@ -11,12 +11,12 @@ using System;
 
 namespace Helsenorge.Messaging.Bus
 {
-    internal static class ServiceBusMessageExtensions
+    internal static class BusMessageExtensions
     {
         public static long GetSequenceNumber(this Message message)
         {
-            return message.MessageAnnotations?.Map.ContainsKey(ServiceBusMessage.SequenceNumberSymbol) == true
-                ? (long)message.MessageAnnotations[ServiceBusMessage.SequenceNumberSymbol]
+            return message.MessageAnnotations?.Map.ContainsKey(BusMessage.SequenceNumberSymbol) == true
+                ? (long)message.MessageAnnotations[BusMessage.SequenceNumberSymbol]
                 : 0;
         }
 
@@ -41,8 +41,8 @@ namespace Helsenorge.Messaging.Bus
 
         public static string GetPartitionKey(this Message message)
         {
-            return message.MessageAnnotations?.Map.ContainsKey(ServiceBusMessage.PartitionKeySymbol) == true
-                ? (string)message.MessageAnnotations[ServiceBusMessage.PartitionKeySymbol]
+            return message.MessageAnnotations?.Map.ContainsKey(BusMessage.PartitionKeySymbol) == true
+                ? (string)message.MessageAnnotations[BusMessage.PartitionKeySymbol]
                 : null;
         }
     }

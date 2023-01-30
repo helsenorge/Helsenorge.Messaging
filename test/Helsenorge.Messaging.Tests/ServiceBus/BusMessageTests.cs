@@ -17,12 +17,12 @@ using System.IO;
 namespace Helsenorge.Messaging.Tests.Bus
 {
     [TestClass]
-    public class ServiceBusMessageTests
+    public class BusMessageTests
     {
         [TestMethod]
         public void Should_Return_TimeSpan_MaxValue_If_TimeToLive_Not_Set()
         {
-            using (ServiceBusMessage message = new ServiceBusMessage(new Message()))
+            using (BusMessage message = new BusMessage(new Message()))
                 Assert.AreEqual(TimeSpan.MaxValue, message.TimeToLive);
         }
 
@@ -30,7 +30,7 @@ namespace Helsenorge.Messaging.Tests.Bus
         public void Should_Return_Set_TimeToLive_If_TimeToLive_Set()
         {
             TimeSpan ttl = TimeSpan.FromDays(4);
-            using (ServiceBusMessage message = new ServiceBusMessage(new Message()))
+            using (BusMessage message = new BusMessage(new Message()))
             {
                 message.TimeToLive = ttl;
                 Assert.AreEqual(ttl, message.TimeToLive);
@@ -41,7 +41,7 @@ namespace Helsenorge.Messaging.Tests.Bus
         public void Should_Return_Set_ScheduledEnqueueTimeUtc_If_ScheduledEnqueueTimeUtc_Set()
         {
             DateTime scheduledEnqueueTimeUtc = DateTime.UtcNow.AddDays(1);
-            using (ServiceBusMessage message = new ServiceBusMessage(new Message()))
+            using (BusMessage message = new BusMessage(new Message()))
             {
                 message.ScheduledEnqueueTimeUtc = scheduledEnqueueTimeUtc;
                 Assert.AreEqual(scheduledEnqueueTimeUtc, message.ScheduledEnqueueTimeUtc);
@@ -51,21 +51,21 @@ namespace Helsenorge.Messaging.Tests.Bus
         [TestMethod]
         public void Should_Return_DeliveryCount_Zero_If_Message_Just_Initialized()
         {
-            using (ServiceBusMessage message = new ServiceBusMessage(new Message()))
+            using (BusMessage message = new BusMessage(new Message()))
                 Assert.AreEqual(0, message.DeliveryCount);
         }
 
         [TestMethod]
         public void Should_Return_EnqueuedTimeUtc_DateTime_MaxValue_If_Message_Just_Initialized()
         {
-            using (ServiceBusMessage message = new ServiceBusMessage(new Message()))
+            using (BusMessage message = new BusMessage(new Message()))
                 Assert.AreEqual(DateTime.MaxValue, message.EnqueuedTimeUtc);
         }
 
         [TestMethod]
         public void Should_Return_ExpiresAtUtc_DateTime_MaxValue_If_Message_Just_Initialized()
         {
-            using (ServiceBusMessage message = new ServiceBusMessage(new Message()))
+            using (BusMessage message = new BusMessage(new Message()))
                 Assert.AreEqual(DateTime.MaxValue, message.ExpiresAtUtc);
         }
 
@@ -73,14 +73,14 @@ namespace Helsenorge.Messaging.Tests.Bus
         public void Should_Return_Same_Amqp_Message_On_OriginalObject_As_Passed_To_Constructor()
         {
             Message originalObject = new Message();
-            using (ServiceBusMessage message = new ServiceBusMessage(originalObject))
+            using (BusMessage message = new BusMessage(originalObject))
                 Assert.AreSame(originalObject, message.OriginalObject);
         }
 
         [TestMethod]
         public void Should_Return_Size_Zero_If_Payload_NotSet()
         {
-            using (ServiceBusMessage message = new ServiceBusMessage(new Message()))
+            using (BusMessage message = new BusMessage(new Message()))
                 Assert.AreEqual(0, message.Size);
         }
 
@@ -92,7 +92,7 @@ namespace Helsenorge.Messaging.Tests.Bus
             DateTime utcNow = DateTime.UtcNow;
             DateTime applicationTimeStamp = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day, utcNow.Hour, utcNow.Minute, utcNow.Second);
             string cpaId = "cpaId_value";
-            using (ServiceBusMessage message = new ServiceBusMessage(new Message()))
+            using (BusMessage message = new BusMessage(new Message()))
             {
                 message.ToHerId = toHerId;
                 message.FromHerId = fromHerId;
@@ -114,7 +114,7 @@ namespace Helsenorge.Messaging.Tests.Bus
             string customProperty2 = "Value 2";
             DateTime customProperty3 = DateTime.Now;
 
-            using ServiceBusMessage message = new ServiceBusMessage(new Message());
+            using BusMessage message = new BusMessage(new Message());
             message.SetApplicationProperty("CustomProperty1", customProperty1);
             message.SetApplicationProperty("CustomProperty2", customProperty2);
             message.SetApplicationProperty("CustomProperty3", customProperty3);
@@ -137,7 +137,7 @@ namespace Helsenorge.Messaging.Tests.Bus
             string replyTo = "replyTo_value";
             string to = "to_value";
 
-            using (ServiceBusMessage message = new ServiceBusMessage(new Message()))
+            using (BusMessage message = new BusMessage(new Message()))
             {
                 message.ContentType = contentType;
                 message.CorrelationId = correlationId;
@@ -173,7 +173,7 @@ namespace Helsenorge.Messaging.Tests.Bus
             DateTime scheduledEnqueueTimeUtc = DateTime.UtcNow;
             byte[] data = new byte[] { 255, 0, 255 };
 
-            using (ServiceBusMessage message = new ServiceBusMessage(new Message(data)))
+            using (BusMessage message = new BusMessage(new Message(data)))
             {
                 message.ToHerId = toHerId;
                 message.FromHerId = fromHerId;
@@ -217,7 +217,7 @@ namespace Helsenorge.Messaging.Tests.Bus
         public void Should_Return_Cloned_Message_When_Payload_Is_Stream()
         {
             using MemoryStream data = new MemoryStream(new byte[] { 255, 0, 255 });
-            using ServiceBusMessage message = new ServiceBusMessage(new Message(data));
+            using BusMessage message = new BusMessage(new Message(data));
             var clonedMessage = message.Clone();
 
             Assert.IsNotNull(((Message)clonedMessage.OriginalObject).Body);
@@ -252,7 +252,7 @@ namespace Helsenorge.Messaging.Tests.Bus
 
             byte[] data =  new byte[] { 255, 0, 255 };
 
-            using (ServiceBusMessage message = new ServiceBusMessage(new Message(data)))
+            using (BusMessage message = new BusMessage(new Message(data)))
             {
                 message.ToHerId = toHerId;
                 message.FromHerId = fromHerId;
@@ -292,7 +292,7 @@ namespace Helsenorge.Messaging.Tests.Bus
             var toHerId = 123;
             var fromHerId = 456;
 
-            using var originalMessage = new ServiceBusMessage(new Message());
+            using var originalMessage = new BusMessage(new Message());
             originalMessage.ToHerId = toHerId;
             originalMessage.FromHerId = fromHerId;
 

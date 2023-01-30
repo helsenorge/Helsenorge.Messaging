@@ -51,7 +51,7 @@ namespace Helsenorge.Messaging.Bus
             using var memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream).ConfigureAwait(false);
             stream.Close();
-            return new ServiceBusMessage(new Message
+            return new BusMessage(new Message
             {
                 BodySection = new Data { Binary = memoryStream.ToArray() }
             });

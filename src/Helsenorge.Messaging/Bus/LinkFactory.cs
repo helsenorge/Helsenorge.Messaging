@@ -67,7 +67,7 @@ namespace Helsenorge.Messaging.Bus
                 }
             };
 
-            return new ServiceBusMessage(innerMessage)
+            return new BusMessage(innerMessage)
             {
                 MessageId = message.MessageId,
                 MessageFunction = string.IsNullOrWhiteSpace(message.ReceiptForMessageFunction)
