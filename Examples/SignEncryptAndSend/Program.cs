@@ -29,7 +29,7 @@ namespace SignEncryptAndSend
         {
             var loggerFactory = new LoggerFactory();
             var logger = loggerFactory.CreateLogger<Program>();
-            var connection = new ServiceBusConnection(_connectionString, loggerFactory.CreateLogger<ServiceBusConnection>());
+            var connection = new BusConnection(_connectionString, loggerFactory.CreateLogger<BusConnection>());
             IMessagingSender sender = null;
             var messageCount = 20;
             try

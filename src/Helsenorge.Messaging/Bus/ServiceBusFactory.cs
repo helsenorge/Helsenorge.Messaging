@@ -22,10 +22,10 @@ namespace Helsenorge.Messaging.Bus
     internal class ServiceBusFactory : IMessagingFactory
     {
         private readonly ILogger _logger;
-        private readonly ServiceBusConnection _connection;
+        private readonly BusConnection _connection;
         private readonly IDictionary<string, object> _applicationProperties;
 
-        public ServiceBusFactory(ILogger logger, ServiceBusConnection connection, IDictionary<string, object> applicationProperties)
+        public ServiceBusFactory(ILogger logger, BusConnection connection, IDictionary<string, object> applicationProperties)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));

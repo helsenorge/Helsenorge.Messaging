@@ -578,10 +578,10 @@ namespace Helsenorge.Messaging
         /// <returns>true if authentication is successful, otherwise false.</returns>
         protected virtual async Task<bool> CanAuthenticateAgainstMessageBroker()
         {
-            ServiceBusConnection connection = null;
+            BusConnection connection = null;
             try
             {
-                connection = new ServiceBusConnection(Settings.ServiceBus.ConnectionString, _logger);
+                connection = new BusConnection(Settings.ServiceBus.ConnectionString, _logger);
                 _ = await connection.EnsureConnectionAsync();
             }
             catch (Exception e)

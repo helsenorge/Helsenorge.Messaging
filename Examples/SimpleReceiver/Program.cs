@@ -25,7 +25,7 @@ namespace SimpleReceiver
         static async Task Main(string[] args)
         {
             var loggerFactory = new LoggerFactory();
-            var connection = new ServiceBusConnection(_connectionString, loggerFactory.CreateLogger<ServiceBusConnection>());
+            var connection = new BusConnection(_connectionString, loggerFactory.CreateLogger<BusConnection>());
             IMessagingReceiver receiver = null;
             try
             {

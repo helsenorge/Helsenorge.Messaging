@@ -16,38 +16,38 @@ namespace Helsenorge.Messaging.Bus
     /// <summary>
     /// Represents the connection to a Message Broker.
     /// </summary>
-    public class ServiceBusConnection
+    public class BusConnection
     {
         private ConnectionFactory _connectionFactory;
         private readonly Address _address;
         private IConnection _connection;
 
-        /// <summary>Initializes a new instance of the <see cref="ServiceBusConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
+        /// <summary>Initializes a new instance of the <see cref="BusConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
         /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
-        public ServiceBusConnection(string connectionString, ILogger logger)
+        public BusConnection(string connectionString, ILogger logger)
             : this(connectionString, MessageBrokerDialect.ServiceBus, ServiceBusSettings.DefaultMaxLinksPerSession, ServiceBusSettings.DefaultMaxSessions, logger)
         {
         }
 
-        /// <summary>Initializes a new instance of the <see cref="ServiceBusConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
+        /// <summary>Initializes a new instance of the <see cref="BusConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
-        /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells ServiceBusConnection what kind of Message Broker we are communicating with.</param>
+        /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells BusConnection what kind of Message Broker we are communicating with.</param>
         /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
-        public ServiceBusConnection(string connectionString, MessageBrokerDialect messageBrokerDialect, ILogger logger)
+        public BusConnection(string connectionString, MessageBrokerDialect messageBrokerDialect, ILogger logger)
             : this(connectionString, messageBrokerDialect, ServiceBusSettings.DefaultMaxLinksPerSession, ServiceBusSettings.DefaultMaxSessions, logger)
         {
         }
 
-        /// <summary>Initializes a new instance of the <see cref="ServiceBusConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
+        /// <summary>Initializes a new instance of the <see cref="BusConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
-        /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells ServiceBusConnection what kind of Message Broker we are communicating with.</param>
+        /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells BusConnection what kind of Message Broker we are communicating with.</param>
         /// <param name="maxLinksPerSession">The max links that will be allowed per session.</param>
         /// <param name="maxSessionsPerConnection">The max sessions that will be allowed per connection.</param>
         /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
         /// <exception cref="ArgumentException" />
         /// <exception cref="ArgumentNullException" />
-        public ServiceBusConnection(string connectionString, MessageBrokerDialect messageBrokerDialect, int maxLinksPerSession, ushort maxSessionsPerConnection, ILogger logger)
+        public BusConnection(string connectionString, MessageBrokerDialect messageBrokerDialect, int maxLinksPerSession, ushort maxSessionsPerConnection, ILogger logger)
         {
             if (string.IsNullOrEmpty(connectionString))
             {

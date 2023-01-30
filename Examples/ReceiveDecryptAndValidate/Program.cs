@@ -28,7 +28,7 @@ namespace ReceiveDecryptAndValidate
         {
             var loggerFactory = new LoggerFactory();
             var logger = loggerFactory.CreateLogger<Program>();
-            var connection = new ServiceBusConnection(_connectionString, loggerFactory.CreateLogger<ServiceBusConnection>());
+            var connection = new BusConnection(_connectionString, loggerFactory.CreateLogger<BusConnection>());
             IMessagingReceiver receiver = null;
             try
             {
