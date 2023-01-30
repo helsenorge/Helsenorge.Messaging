@@ -30,14 +30,14 @@ namespace PooledSender
             var settings = new MessagingSettings
             {
                 ApplicationProperties = {{ "X-SystemIdentifier", "ExampleSystemIdentifier" }},
-                ServiceBus =
+                BusSettings =
                 {
                     ConnectionString = _connectionString,
                     MessageBrokerDialect = MessageBrokerDialect.RabbitMQ,
                 }
             };
 
-            await using var linkFactoryPool = new LinkFactoryPool(loggerFactory.CreateLogger<LinkFactoryPool>(), settings.ServiceBus, settings.ApplicationProperties);
+            await using var linkFactoryPool = new LinkFactoryPool(loggerFactory.CreateLogger<LinkFactoryPool>(), settings.BusSettings, settings.ApplicationProperties);
             try
             {
                 var messageCount = 20;

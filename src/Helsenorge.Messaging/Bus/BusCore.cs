@@ -55,7 +55,7 @@ namespace Helsenorge.Messaging.Bus
         private string _hostnameAndPath;
 
         //convencience properties
-        internal ServiceBusSettings Settings => Core.Settings.ServiceBus;
+        internal BusSettings Settings => Core.Settings.BusSettings;
         internal MessagingSettings MessagingSettings => Core.Settings;
         internal IAddressRegistry AddressRegistry => Core.AddressRegistry;
         internal ICollaborationProtocolRegistry CollaborationProtocolRegistry => Core.CollaborationProtocolRegistry;
@@ -70,7 +70,7 @@ namespace Helsenorge.Messaging.Bus
             {
                 if (_hostnameAndPath == null)
                 {
-                    var connectionString = Core?.Settings?.ServiceBus?.ConnectionString ?? string.Empty;
+                    var connectionString = Core?.Settings?.BusSettings?.ConnectionString ?? string.Empty;
                     var startIndex = connectionString.IndexOf("@", StringComparison.InvariantCulture);
                     if (startIndex > -1)
                         _hostnameAndPath = connectionString.Substring(startIndex + 1);
@@ -98,18 +98,18 @@ namespace Helsenorge.Messaging.Bus
         {
             Core = core ?? throw new ArgumentNullException(nameof(core));
             
-            var connectionString = core.Settings.ServiceBus.ConnectionString;
+            var connectionString = core.Settings.BusSettings.ConnectionString;
             if (connectionString == null)
             {
                 throw new ArgumentNullException("connectionString");
             }
             else
             {
-                FactoryPool = new BusFactoryPool(core.Settings.ServiceBus, core.Settings.ApplicationProperties);
+                FactoryPool = new BusFactoryPool(core.Settings.BusSettings, core.Settings.ApplicationProperties);
             }
             
-            SenderPool = new AmqpSenderPool(core.Settings.ServiceBus, FactoryPool);
-            ReceiverPool = new AmqpReceiverPool(core.Settings.ServiceBus, FactoryPool);
+            SenderPool = new AmqpSenderPool(core.Settings.BusSettings, FactoryPool);
+            ReceiverPool = new AmqpReceiverPool(core.Settings.BusSettings, FactoryPool);
         }
 
         /// <summary>

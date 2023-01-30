@@ -46,7 +46,7 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Provides access to service bus settings
         /// </summary>
-        public ServiceBusSettings ServiceBus { get; }
+        public BusSettings BusSettings { get; }
         /// <summary>
         /// Indicates if the payload should be logged. This is false by default since the payload can contain sensitive information
         /// </summary>
@@ -76,7 +76,7 @@ namespace Helsenorge.Messaging
             IgnoreCertificateErrorOnSend = false;
             LogPayload = false;
 
-            ServiceBus = new ServiceBusSettings(this);
+            BusSettings = new BusSettings(this);
         }
 
         internal void Validate()
@@ -86,14 +86,14 @@ namespace Helsenorge.Messaging
             DecryptionCertificate.Validate();
             if (SigningCertificate == null) throw new ArgumentNullException(nameof(SigningCertificate));
             SigningCertificate.Validate();
-            ServiceBus.Validate();
+            BusSettings.Validate();
         }
     
     }
     /// <summary>
     /// Defines settings for service bus
     /// </summary>
-    public class ServiceBusSettings
+    public class BusSettings
     {
         internal const int DefaultMaxLinksPerSession = 64;
         internal const ushort DefaultMaxSessions = 256;
@@ -104,14 +104,14 @@ namespace Helsenorge.Messaging
 
         private readonly MessagingSettings _settings;
 
-        /// <summary>Initializes a new instance of the <see cref="ServiceBusSettings" /> class.</summary>
-        public ServiceBusSettings()
+        /// <summary>Initializes a new instance of the <see cref="BusSettings" /> class.</summary>
+        public BusSettings()
         {
         }
 
-        /// <summary>Initializes a new instance of the <see cref="ServiceBusSettings" /> class with a <see cref="MessagingSettings"/>.</summary>
+        /// <summary>Initializes a new instance of the <see cref="BusSettings" /> class with a <see cref="MessagingSettings"/>.</summary>
         /// <param name="settings">A <see cref="MessagingSettings"/> instance that contains additional settings.</param>
-        public ServiceBusSettings(MessagingSettings settings)
+        public BusSettings(MessagingSettings settings)
         {
             _settings = settings;
         }

@@ -26,7 +26,7 @@ namespace Helsenorge.Messaging.Bus
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
         /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
         public BusConnection(string connectionString, ILogger logger)
-            : this(connectionString, MessageBrokerDialect.ServiceBus, ServiceBusSettings.DefaultMaxLinksPerSession, ServiceBusSettings.DefaultMaxSessions, logger)
+            : this(connectionString, MessageBrokerDialect.ServiceBus, BusSettings.DefaultMaxLinksPerSession, BusSettings.DefaultMaxSessions, logger)
         {
         }
 
@@ -35,7 +35,7 @@ namespace Helsenorge.Messaging.Bus
         /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells BusConnection what kind of Message Broker we are communicating with.</param>
         /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
         public BusConnection(string connectionString, MessageBrokerDialect messageBrokerDialect, ILogger logger)
-            : this(connectionString, messageBrokerDialect, ServiceBusSettings.DefaultMaxLinksPerSession, ServiceBusSettings.DefaultMaxSessions, logger)
+            : this(connectionString, messageBrokerDialect, BusSettings.DefaultMaxLinksPerSession, BusSettings.DefaultMaxSessions, logger)
         {
         }
 
@@ -69,11 +69,11 @@ namespace Helsenorge.Messaging.Bus
             }
 
             _connectionFactory = new ConnectionFactory();
-            if (maxLinksPerSession != ServiceBusSettings.DefaultMaxLinksPerSession)
+            if (maxLinksPerSession != BusSettings.DefaultMaxLinksPerSession)
             {
                 _connectionFactory.AMQP.MaxLinksPerSession = maxLinksPerSession;
             }
-            if (maxSessionsPerConnection != ServiceBusSettings.DefaultMaxSessions)
+            if (maxSessionsPerConnection != BusSettings.DefaultMaxSessions)
             {
                 _connectionFactory.AMQP.MaxSessionsPerConnection = maxSessionsPerConnection;
             }

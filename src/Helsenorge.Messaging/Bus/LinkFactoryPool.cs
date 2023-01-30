@@ -23,17 +23,17 @@ namespace Helsenorge.Messaging.Bus
     public class LinkFactoryPool : IAsyncDisposable
     {
         private readonly ILogger _logger;
-        private readonly ServiceBusSettings _settings;
+        private readonly BusSettings _settings;
         private readonly IDictionary<string, object> _applicationProperties;
         private readonly BusFactoryPool _factoryPool;
         private readonly AmqpReceiverPool _receiverPool;
         private readonly AmqpSenderPool _senderPool;
 
-        /// <summary>Initializes a new instance of the <see cref="LinkFactoryPool" /> class with a <see cref="ServiceBusSettings"/> and a <see cref="ILogger"/>.</summary>
-        /// <param name="settings">A <see cref="ServiceBusSettings"/> instance that contains the settings.</param>
+        /// <summary>Initializes a new instance of the <see cref="LinkFactoryPool" /> class with a <see cref="BusSettings"/> and a <see cref="ILogger"/>.</summary>
+        /// <param name="settings">A <see cref="BusSettings"/> instance that contains the settings.</param>
         /// <param name="logger">An <see cref="ILogger"/> instance which will be used to log errors and information.</param>
         /// <param name="applicationProperties">A Dictionary with additional application properties which will be added to <see cref="Amqp.Message"/>.</param>
-        public LinkFactoryPool(ILogger logger, ServiceBusSettings settings, IDictionary<string, object> applicationProperties = null)
+        public LinkFactoryPool(ILogger logger, BusSettings settings, IDictionary<string, object> applicationProperties = null)
         {
             _logger = logger;
             _settings = settings;

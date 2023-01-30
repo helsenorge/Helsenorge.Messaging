@@ -40,7 +40,7 @@ namespace SubscriptionExample
                 };
                 var busManager = new BusManager(busManagerSettings, loggerFactory.CreateLogger<BusManager>());
 
-                var serviceBusSettings = new ServiceBusSettings
+                var serviceBusSettings = new BusSettings
                 {
                     ConnectionString = string.Format(ConnectionString, UserName, Password),
                     MessageBrokerDialect = MessageBrokerDialect.RabbitMQ

@@ -46,7 +46,7 @@ namespace Helsenorge.Messaging.Bus
         }
 
         public IMessagingMessage Receive()
-            => Receive(TimeSpan.FromMilliseconds(ServiceBusSettings.DefaultTimeoutInMilliseconds));
+            => Receive(TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
 
         public IMessagingMessage Receive(TimeSpan serverWaitTime)
         {
@@ -63,7 +63,7 @@ namespace Helsenorge.Messaging.Bus
         }
 
         public Task<IMessagingMessage> ReceiveAsync()
-            => ReceiveAsync(TimeSpan.FromMilliseconds(ServiceBusSettings.DefaultTimeoutInMilliseconds));
+            => ReceiveAsync(TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
 
         public async Task<IMessagingMessage> ReceiveAsync(TimeSpan serverWaitTime)
         {

@@ -55,7 +55,7 @@ namespace Helsenorge.Messaging.Tests
         private class BusFactoryPoolMock : BusFactoryPool
         {
             public BusFactoryPoolMock(uint capacity, ushort timeToLiveInSeconds, ushort maxTrimCountPerRecycle)
-                : base(new ServiceBusSettings(new MessagingSettings())
+                : base(new BusSettings(new MessagingSettings())
                 {
                     MaxFactories = capacity,
                     CacheEntryTimeToLive = timeToLiveInSeconds,
