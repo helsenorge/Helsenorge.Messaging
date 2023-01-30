@@ -75,7 +75,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// <summary>
         /// Reference to service bus related setting
         /// </summary>
-        protected ServiceBusCore Core { get; }
+        protected BusCore BusCore { get; }
 
         /// <summary>
         /// Gets a reference to the server
@@ -89,18 +89,18 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageListener"/> class.
         /// </summary>
-        /// <param name="core">An instance of <see cref="ServiceBusCore"/> which has the common infrastructure to talk to the Message Bus.</param>
+        /// <param name="busCore">An instance of <see cref="Bus.BusCore"/> which has the common infrastructure to talk to the Message Bus.</param>
         /// <param name="logger">An instance of <see cref="ILogger"/>, used to log diagnostics information.</param>
         /// <param name="messagingNotification">An instance of <see cref="IMessagingNotification"/> which holds reference to callbacks back to the client that owns this instance of the <see cref="MessageListener"/>.</param>
         /// <param name="queueNames">The Queue Names associated with the client.</param>
         protected MessageListener(
-            ServiceBusCore core,
+            BusCore busCore,
             ILogger logger,
             IMessagingNotification messagingNotification,
             QueueNames queueNames = null)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            Core = core ?? throw new ArgumentNullException(nameof(core));
+            BusCore = busCore ?? throw new ArgumentNullException(nameof(busCore));
             MessagingNotification = messagingNotification;
             _queueNames = queueNames;
         }
@@ -128,8 +128,8 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// <param name="cancellation">Cancellation token that signals when we should stop</param>
         public async Task Start(CancellationToken cancellation)
         {
-            var queueName = Core.ExtractQueueName(GetQueueName());
-            Logger.LogInformation($"Starting listener on host and queue '{Core.HostnameAndPath}/{queueName}'");
+            var queueName = BusCore.ExtractQueueName(GetQueueName());
+            Logger.LogInformation($"Starting listener on host and queue '{BusCore.HostnameAndPath}/{queueName}'");
 
             while (cancellation.IsCancellationRequested == false)
             {
@@ -139,7 +139,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
 
                     if (!_listenerEstablishedConfirmed)
                     {
-                        Logger.LogInformation($"Listener established on host and queue '{Core.HostnameAndPath}/{queueName}'");
+                        Logger.LogInformation($"Listener established on host and queue '{BusCore.HostnameAndPath}/{queueName}'");
                         _listenerEstablishedConfirmed = true;
                     }
 
@@ -147,7 +147,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
                 }
                 catch (Exception ex) // protect the main message pump
                 {
-                    Logger.LogException($"Generic service bus error at '{Core.HostnameAndPath}/{queueName}'", ex);
+                    Logger.LogException($"Generic service bus error at '{BusCore.HostnameAndPath}/{queueName}'", ex);
                     // if there are problems with the message bus, we don't get interval of the ReadTimeout
                     // pause a bit so that we don't take over the whole system
                     await Task.Delay(5000, cancellation)
@@ -156,8 +156,8 @@ namespace Helsenorge.Messaging.Bus.Receivers
                 }
                 finally
                 {
-                    if (Core.Settings.LogReadTime)
-                        Logger.LogInformation($"Last Read Time UTC: '{LastReadTimeUtc.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo)}' on host and queue: '{Core.HostnameAndPath}/{queueName}'");
+                    if (BusCore.Settings.LogReadTime)
+                        Logger.LogInformation($"Last Read Time UTC: '{LastReadTimeUtc.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo)}' on host and queue: '{BusCore.HostnameAndPath}/{queueName}'");
                 }
             }
         }
@@ -170,7 +170,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// </summary>
         public async Task<IncomingMessage> ReadAndProcessMessage(bool alwaysRemoveMessage = false)
         {
-            var queueName = Core.ExtractQueueName(GetQueueName());
+            var queueName = BusCore.ExtractQueueName(GetQueueName());
             await SetUpReceiver(queueName).ConfigureAwait(false);
 
             IMessagingMessage message;
@@ -190,7 +190,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
         private async Task<IncomingMessage> HandleRawMessage(IMessagingMessage message, bool alwaysRemoveMessage)
         {
             if (message == null) return null;
-            var queueName = Core.ExtractQueueName(GetQueueName());
+            var queueName = BusCore.ExtractQueueName(GetQueueName());
             Stream bodyStream = null;
             bool disposeMessage = true;
 
@@ -225,7 +225,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
                 
                 SetCorrelationIdAction?.Invoke(incomingMessage.MessageId);
 
-                Logger.LogStartReceive(QueueType, incomingMessage, $"Message received from host and queue: {Core.HostnameAndPath}/{queueName}");
+                Logger.LogStartReceive(QueueType, incomingMessage, $"Message received from host and queue: {BusCore.HostnameAndPath}/{queueName}");
 
                 // we cannot dispose of the stream before we have potentially cloned the message for error use
                 bodyStream = message.GetBody();
@@ -238,14 +238,14 @@ namespace Helsenorge.Messaging.Bus.Receivers
                 incomingMessage.ContentWasSigned = contentWasSigned;
                 if (payload != null)
                 {
-                    if (Core.LogPayload)
+                    if (BusCore.LogPayload)
                     {
                         Logger.LogDebug(payload.ToString());
                     }
                     incomingMessage.Payload = payload;
                 }
                 await NotifyMessageProcessingReady(message, incomingMessage).ConfigureAwait(false);
-                ServiceBusCore.RemoveProcessedMessageFromQueue(message);
+                BusCore.RemoveProcessedMessageFromQueue(message);
                 Logger.LogRemoveMessageFromQueueNormal(message, queueName);
                 await NotifyMessageProcessingCompleted(incomingMessage).ConfigureAwait(false);
                 Logger.LogEndReceive(QueueType, incomingMessage);
@@ -257,42 +257,42 @@ namespace Helsenorge.Messaging.Bus.Receivers
                   $"FromHerId: {message.FromHerId} ToHerId: {message.ToHerId} CpaId: {message.CpaId} " +
                   $"CorrelationId: {message.CorrelationId} Certificate thumbprint: {ex.AdditionalInformation}");
 
-                await Core.ReportErrorToExternalSender(Logger, ex.EventId, message, ex.ErrorCode, ex.Description, ex.AdditionalInformation).ConfigureAwait(false);
+                await BusCore.ReportErrorToExternalSender(Logger, ex.EventId, message, ex.ErrorCode, ex.Description, ex.AdditionalInformation).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (SecurityException ex)
             {
-                await Core.ReportErrorToExternalSender(Logger, EventIds.RemoteCertificate, message, "transport:invalid-certificate", ex.Message, null, ex).ConfigureAwait(false);
+                await BusCore.ReportErrorToExternalSender(Logger, EventIds.RemoteCertificate, message, "transport:invalid-certificate", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (HeaderValidationException ex)
             {
-                await Core.ReportErrorToExternalSender(Logger, EventIds.MissingField, message, "transport:invalid-field-value", ex.Message, ex.Fields).ConfigureAwait(false);
+                await BusCore.ReportErrorToExternalSender(Logger, EventIds.MissingField, message, "transport:invalid-field-value", ex.Message, ex.Fields).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (XmlSchemaValidationException ex) // reportable error from message handler (application)
             {
-                await Core.ReportErrorToExternalSender(Logger, EventIds.NotXml, message, "transport:not-well-formed-xml", ex.Message, null, ex).ConfigureAwait(false);
+                await BusCore.ReportErrorToExternalSender(Logger, EventIds.NotXml, message, "transport:not-well-formed-xml", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (ReceivedDataMismatchException ex) // reportable error from message handler (application)
             {
-                await Core.ReportErrorToExternalSender(Logger, EventIds.DataMismatch, message, "transport:invalid-field-value", ex.Message, new[] { ex.ExpectedValue, ex.ReceivedValue }, ex).ConfigureAwait(false);
+                await BusCore.ReportErrorToExternalSender(Logger, EventIds.DataMismatch, message, "transport:invalid-field-value", ex.Message, new[] { ex.ExpectedValue, ex.ReceivedValue }, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (NotifySenderException ex) // reportable error from message handler (application)
             {
-                await Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:internal-error", ex.Message, null, ex).ConfigureAwait(false);
+                await BusCore.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:internal-error", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (SenderHerIdMismatchException ex) // reportable error from message handler (application)
             {
-                await Core.ReportErrorToExternalSender(Logger, EventIds.DataMismatch, message, "abuse:spoofing-attack", ex.Message, null, ex).ConfigureAwait(false);
+                await BusCore.ReportErrorToExternalSender(Logger, EventIds.DataMismatch, message, "abuse:spoofing-attack", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (PayloadDeserializationException ex) // from parsing to XML, reportable exception
             {
-                await Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:not-well-formed-xml", ex.Message, null, ex).ConfigureAwait(false);
+                await BusCore.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:not-well-formed-xml", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (AggregateException ex) when (ex.InnerException is MessagingException && ((MessagingException)ex.InnerException).EventId.Id == EventIds.Send.Id)
@@ -302,12 +302,12 @@ namespace Helsenorge.Messaging.Bus.Receivers
             }
             catch (UnsupportedMessageException ex)  // reportable error from message handler (application)
             {
-                await Core.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:unsupported-message", ex.Message, null, ex).ConfigureAwait(false);
+                await BusCore.ReportErrorToExternalSender(Logger, EventIds.ApplicationReported, message, "transport:unsupported-message", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (InvalidHerIdException ex)
             {
-                await Core.ReportErrorToExternalSender(Logger, EventIds.InvalidHerId, message, "transport:invalid-field-value", ex.Message, new [] { "FromHerId", $"{ex.HerId}" }, ex).ConfigureAwait(false);
+                await BusCore.ReportErrorToExternalSender(Logger, EventIds.InvalidHerId, message, "transport:invalid-field-value", ex.Message, new [] { "FromHerId", $"{ex.HerId}" }, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
             }
             catch (Exception ex) // unknown error
@@ -324,7 +324,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
 
                 if (alwaysRemoveMessage)
                 {
-                    ServiceBusCore.RemoveMessageFromQueueAfterError(Logger, message);
+                    BusCore.RemoveMessageFromQueueAfterError(Logger, message);
                 }
                 await MessagingNotification.NotifyUnhandledException(message, ex).ConfigureAwait(false);
 
@@ -350,23 +350,23 @@ namespace Helsenorge.Messaging.Bus.Receivers
 
         private async Task<CollaborationProtocolProfile> ResolveProfile(IMessagingMessage message)
         {
-            if(Core.MessagingSettings.MessageFunctionsExcludedFromCpaResolve.Contains(message.MessageFunction))
+            if(BusCore.MessagingSettings.MessageFunctionsExcludedFromCpaResolve.Contains(message.MessageFunction))
             {
                 // MessageFunction is defined in exception list, return a dummy CollaborationProtocolProfile
-                return await DummyCollaborationProtocolProfileFactory.CreateAsync(Core.AddressRegistry, Logger, message.FromHerId, message.MessageFunction);
+                return await DummyCollaborationProtocolProfileFactory.CreateAsync(BusCore.AddressRegistry, Logger, message.FromHerId, message.MessageFunction);
             }
 
             // if we receive an error message then CPA isn't needed because we're not decrypting the message and then the CPA info isn't needed
             if (QueueType == QueueType.Error) return null;
             if (Guid.TryParse(message.CpaId, out Guid id) && (id != Guid.Empty))
             {
-                return await Core.CollaborationProtocolRegistry.FindAgreementByIdAsync(Logger, id, message.ToHerId).ConfigureAwait(false);
+                return await BusCore.CollaborationProtocolRegistry.FindAgreementByIdAsync(Logger, id, message.ToHerId).ConfigureAwait(false);
             }
             return
                 // try first to find an agreement
-                await Core.CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(Logger, message.ToHerId, message.FromHerId).ConfigureAwait(false) ??
+                await BusCore.CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(Logger, message.ToHerId, message.FromHerId).ConfigureAwait(false) ??
                 // if we cannot find that, we fallback to protocol (which may return a dummy protocol if things are really missing in AR)
-                await Core.CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(Logger, message.FromHerId).ConfigureAwait(false);
+                await BusCore.CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(Logger, message.FromHerId).ConfigureAwait(false);
         }
 
         private XDocument HandlePayload(IMessagingMessage originalMessage, Stream bodyStream, string contentType, IncomingMessage incomingMessage, out bool contentWasSigned)
@@ -382,7 +382,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
                 payload = new NoMessageProtection().Unprotect(bodyStream, null)?.ToXDocument();
 
                 // Log a warning if the message is in plain text.
-                if (Core.Settings.LogMessagesNotSignedAndEnvelopedAsWarning && isPlainText)
+                if (BusCore.Settings.LogMessagesNotSignedAndEnvelopedAsWarning && isPlainText)
                     Logger.LogWarning($"ContentType of message is '{contentType}'.");
             }
             else
@@ -400,33 +400,33 @@ namespace Helsenorge.Messaging.Bus.Receivers
                 // invalid certificates are flagged to the application layer processing the decrypted message.
                 // with the decrypted content, they may have a chance to figure out who sent it
 
-                var validator = Core.CertificateValidator;
+                var validator = BusCore.CertificateValidator;
                 var stopwatch = new Stopwatch();
-                Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, Core.MessageProtection.EncryptionCertificate.Thumbprint, Core.MessageProtection.EncryptionCertificate.Subject, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId);
+                Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, BusCore.MessageProtection.EncryptionCertificate.Thumbprint, BusCore.MessageProtection.EncryptionCertificate.Subject, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId);
                 stopwatch.Start();
                 // validate the local encryption certificate and, if present, the local legacy encryption certificate 
                 incomingMessage.DecryptionError = validator == null
                     ? CertificateErrors.None
-                    : validator.Validate(Core.MessageProtection.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
+                    : validator.Validate(BusCore.MessageProtection.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
                 stopwatch.Stop();
-                Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, Core.MessageProtection.EncryptionCertificate.Thumbprint, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+                Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, BusCore.MessageProtection.EncryptionCertificate.Thumbprint, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
                 // in earlier versions of Helsenorge.Messaging we removed the message, but we should rather
                 // want it to be dead lettered since this is a temp issue that should be fixed locally.
-                ReportErrorOnLocalCertificate(originalMessage, Core.MessageProtection.EncryptionCertificate, incomingMessage.DecryptionError);
+                ReportErrorOnLocalCertificate(originalMessage, BusCore.MessageProtection.EncryptionCertificate, incomingMessage.DecryptionError);
 
-                if(Core.MessageProtection.LegacyEncryptionCertificate != null)
+                if(BusCore.MessageProtection.LegacyEncryptionCertificate != null)
                 {
-                    Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, Core.MessageProtection.LegacyEncryptionCertificate.Thumbprint, Core.MessageProtection.LegacyEncryptionCertificate.Subject, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId);
+                    Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, BusCore.MessageProtection.LegacyEncryptionCertificate.Thumbprint, BusCore.MessageProtection.LegacyEncryptionCertificate.Subject, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId);
                     stopwatch.Restart();
                     // this is optional information that should only be in effect durin a short transition period
                     incomingMessage.LegacyDecryptionError = validator == null
                         ? CertificateErrors.None
-                        : validator.Validate(Core.MessageProtection.LegacyEncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
+                        : validator.Validate(BusCore.MessageProtection.LegacyEncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
                     stopwatch.Stop();
-                    Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, Core.MessageProtection.LegacyEncryptionCertificate.Thumbprint, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+                    Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, BusCore.MessageProtection.LegacyEncryptionCertificate.Thumbprint, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
                     // if someone forgets to remove the legacy configuration, we log an error message but don't remove it
-                    ReportErrorOnLocalCertificate(originalMessage, Core.MessageProtection.LegacyEncryptionCertificate, incomingMessage.LegacyDecryptionError);
+                    ReportErrorOnLocalCertificate(originalMessage, BusCore.MessageProtection.LegacyEncryptionCertificate, incomingMessage.LegacyDecryptionError);
                 }
 
                 var signature = incomingMessage.CollaborationAgreement?.SignatureCertificate;
@@ -441,10 +441,10 @@ namespace Helsenorge.Messaging.Bus.Receivers
 
                 ReportErrorOnRemoteCertificate(originalMessage, signature, incomingMessage.SignatureError);
 
-                Logger.LogBeforeDecryptingPayload(originalMessage.MessageFunction, signature?.Thumbprint, Core.MessageProtection.EncryptionCertificate.Thumbprint, originalMessage.FromHerId, originalMessage.ToHerId, originalMessage.MessageId);
+                Logger.LogBeforeDecryptingPayload(originalMessage.MessageFunction, signature?.Thumbprint, BusCore.MessageProtection.EncryptionCertificate.Thumbprint, originalMessage.FromHerId, originalMessage.ToHerId, originalMessage.MessageId);
                 stopwatch.Restart();
                 // decrypt the message and validate the signatureS
-                payload = Core.MessageProtection.Unprotect(bodyStream, signature)?.ToXDocument();
+                payload = BusCore.MessageProtection.Unprotect(bodyStream, signature)?.ToXDocument();
                 Logger.LogAfterDecryptingPayload(originalMessage.MessageFunction, originalMessage.FromHerId, originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
                 stopwatch.Stop();
             }
@@ -538,11 +538,11 @@ namespace Helsenorge.Messaging.Bus.Receivers
             // but we have no idea who the sender is because the information is missing
             if (message.ToHerId == 0)
             {
-                missingFields.Add(ServiceBusCore.ToHerIdHeaderKey);
+                missingFields.Add(BusCore.ToHerIdHeaderKey);
             }
             if(message.FromHerId == 0)
             {
-                missingFields.Add(ServiceBusCore.FromHerIdHeaderKey);
+                missingFields.Add(BusCore.FromHerIdHeaderKey);
             }
             if (string.IsNullOrEmpty(message.MessageFunction))
             {
@@ -550,7 +550,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
             }
             if (message.ApplicationTimestamp == DateTime.MinValue)
             {
-                missingFields.Add(ServiceBusCore.ApplicationTimestampHeaderKey);
+                missingFields.Add(BusCore.ApplicationTimestampHeaderKey);
             }
             if (string.IsNullOrEmpty(message.ContentType))
             {
@@ -577,7 +577,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
             {
                 try
                 {
-                    _myDetails = Core.AddressRegistry.FindCommunicationPartyDetailsAsync(Logger, myHerId).Result;
+                    _myDetails = BusCore.AddressRegistry.FindCommunicationPartyDetailsAsync(Logger, myHerId).Result;
                 }
                 catch (Exception ex)
                 {
@@ -587,7 +587,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
             if (_myDetails == null) return null;
 
             var queueName = action(_myDetails);
-            return string.IsNullOrEmpty(queueName) == false ? Core.ExtractQueueName(queueName) : null;
+            return string.IsNullOrEmpty(queueName) == false ? BusCore.ExtractQueueName(queueName) : null;
         }
 
         private async Task SetUpReceiver(string queueName)
@@ -605,7 +605,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
             }
             if (_messageReceiver == null)
             {
-                _messageReceiver = await Core.ReceiverPool.CreateCachedMessageReceiver(Logger, queueName).ConfigureAwait(false);
+                _messageReceiver = await BusCore.ReceiverPool.CreateCachedMessageReceiver(Logger, queueName).ConfigureAwait(false);
             }
         }
     }

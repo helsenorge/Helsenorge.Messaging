@@ -165,7 +165,7 @@ namespace Helsenorge.Messaging.Tests
                 CertificateValidator,
                 MessageProtection
             ); ;
-            Client.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
+            Client.BusCore.RegisterAlternateMessagingFactory(MockFactory);
 
             Server = new MockMessagingServer(
                 Settings, 
@@ -176,7 +176,7 @@ namespace Helsenorge.Messaging.Tests
                 CertificateValidator, 
                 MessageProtection
             );
-            Server.ServiceBus.RegisterAlternateMessagingFactory(MockFactory);
+            Server.BusCore.RegisterAlternateMessagingFactory(MockFactory);
         }
 
         internal MockMessage CreateMockMessage(OutgoingMessage message)

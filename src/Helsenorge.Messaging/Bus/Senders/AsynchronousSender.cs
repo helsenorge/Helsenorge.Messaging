@@ -17,16 +17,16 @@ namespace Helsenorge.Messaging.Bus.Senders
     /// </summary>
     internal class AsynchronousSender
     {
-        private readonly ServiceBusCore _core;
+        private readonly BusCore _busCore;
     
-        public AsynchronousSender(ServiceBusCore core)
+        public AsynchronousSender(BusCore busCore)
         {
-            _core = core;
+            _busCore = busCore;
         }
 
         public async Task SendAsync(ILogger logger, OutgoingMessage message)
         {
-            await _core.Send(logger, message, QueueType.Asynchronous).ConfigureAwait(false);
+            await _busCore.Send(logger, message, QueueType.Asynchronous).ConfigureAwait(false);
         }
     }
 }

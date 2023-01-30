@@ -20,7 +20,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// <summary>
         /// Specifies the name of the queue this listener is reading from
         /// </summary>
-        protected override string GetQueueName() => Core.Settings.Synchronous.FindReplyQueueForMe();
+        protected override string GetQueueName() => BusCore.Settings.Synchronous.FindReplyQueueForMe();
         /// <summary>
         /// Specifies what type of queue this listener is processing
         /// </summary>
@@ -29,12 +29,12 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// <summary>
         /// Initializes a new instance of the <see cref="SynchronousReplyListener"/> class.
         /// </summary>
-        /// <param name="core">An instance of <see cref="ServiceBusCore"/> which has the common infrastructure to talk to the Message Bus.</param>
+        /// <param name="busCore">An instance of <see cref="BusCore"/> which has the common infrastructure to talk to the Message Bus.</param>
         /// <param name="logger">An instance of <see cref="ILogger"/>, used to log diagnostics information.</param>
         /// <param name="messagingNotification">An instance of <see cref="IMessagingNotification"/> which holds reference to callbacks back to the client that owns this instance of the <see cref="MessageListener"/>.</param>
-        internal SynchronousReplyListener(ServiceBusCore core, ILogger logger, IMessagingNotification messagingNotification) : base(core, logger, messagingNotification)
+        internal SynchronousReplyListener(BusCore busCore, ILogger logger, IMessagingNotification messagingNotification) : base(busCore, logger, messagingNotification)
         {
-            ReadTimeout = Core.Settings.Synchronous.ReadTimeout;
+            ReadTimeout = BusCore.Settings.Synchronous.ReadTimeout;
         }
 
         /// <summary>

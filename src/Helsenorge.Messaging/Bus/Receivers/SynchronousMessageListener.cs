@@ -26,17 +26,17 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// <summary>
         /// Initializes a new instance of the <see cref="SynchronousMessageListener"/> class.
         /// </summary>
-        /// <param name="core">An instance of <see cref="ServiceBusCore"/> which has the common infrastructure to talk to the Message Bus.</param>
+        /// <param name="busCore">An instance of <see cref="BusCore"/> which has the common infrastructure to talk to the Message Bus.</param>
         /// <param name="logger">An instance of <see cref="ILogger"/>, used to log diagnostics information.</param>
         /// <param name="messagingNotification">An instance of <see cref="IMessagingNotification"/> which holds reference to callbacks back to the client that owns this instance of the <see cref="MessageListener"/>.</param>
         /// <param name="queueNames">The Queue Names associated with the client.</param>
         internal SynchronousMessageListener(
-            ServiceBusCore core,
+            BusCore busCore,
             ILogger logger, 
             IMessagingNotification messagingNotification,
-            QueueNames queueNames) : base(core, logger, messagingNotification, queueNames)
+            QueueNames queueNames) : base(busCore, logger, messagingNotification, queueNames)
         {
-            ReadTimeout = Core.Settings.Synchronous.ReadTimeout;
+            ReadTimeout = BusCore.Settings.Synchronous.ReadTimeout;
         }
         /// <summary>
         /// Called prior to message processing
@@ -73,7 +73,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
                 MessageFunction = message.MessageFunction,
                 MessageId = Guid.NewGuid().ToString()
             };
-            await Core.Send(Logger, outgoingMessage, QueueType.SynchronousReply, rawMessage.ReplyTo, rawMessage.CorrelationId).ConfigureAwait(false);
+            await BusCore.Send(Logger, outgoingMessage, QueueType.SynchronousReply, rawMessage.ReplyTo, rawMessage.CorrelationId).ConfigureAwait(false);
         }
         /// <summary>
         /// Called when message processing is complete

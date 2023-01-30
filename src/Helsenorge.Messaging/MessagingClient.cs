@@ -41,8 +41,8 @@ namespace Helsenorge.Messaging
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
             IAddressRegistry addressRegistry) : base(settings, collaborationProtocolRegistry, addressRegistry)
         {
-            _asynchronousServiceBusSender = new AsynchronousSender(ServiceBus);
-            _synchronousServiceBusSender = new SynchronousSender(ServiceBus);
+            _asynchronousServiceBusSender = new AsynchronousSender(BusCore);
+            _synchronousServiceBusSender = new SynchronousSender(BusCore);
         }
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace Helsenorge.Messaging
             IAddressRegistry addressRegistry,
             ICertificateStore certificateStore) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore)
         {
-            _asynchronousServiceBusSender = new AsynchronousSender(ServiceBus);
-            _synchronousServiceBusSender = new SynchronousSender(ServiceBus);
+            _asynchronousServiceBusSender = new AsynchronousSender(BusCore);
+            _synchronousServiceBusSender = new SynchronousSender(BusCore);
         }
 
         /// <summary>
@@ -81,8 +81,8 @@ namespace Helsenorge.Messaging
             ICertificateValidator certificateValidator,
             IMessageProtection messageProtection) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore, certificateValidator, messageProtection)
         {
-            _asynchronousServiceBusSender = new AsynchronousSender(ServiceBus);
-            _synchronousServiceBusSender = new SynchronousSender(ServiceBus);
+            _asynchronousServiceBusSender = new AsynchronousSender(BusCore);
+            _synchronousServiceBusSender = new SynchronousSender(BusCore);
         }
 
         /// <summary>
@@ -100,8 +100,8 @@ namespace Helsenorge.Messaging
         {
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _logger = _loggerFactory.CreateLogger(nameof(MessagingClient));
-            _asynchronousServiceBusSender = new AsynchronousSender(ServiceBus);
-            _synchronousServiceBusSender = new SynchronousSender(ServiceBus);
+            _asynchronousServiceBusSender = new AsynchronousSender(BusCore);
+            _synchronousServiceBusSender = new SynchronousSender(BusCore);
         }
 
         /// <summary>
@@ -121,8 +121,8 @@ namespace Helsenorge.Messaging
         {
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _logger = _loggerFactory.CreateLogger(nameof(MessagingClient));
-            _asynchronousServiceBusSender = new AsynchronousSender(ServiceBus);
-            _synchronousServiceBusSender = new SynchronousSender(ServiceBus);
+            _asynchronousServiceBusSender = new AsynchronousSender(BusCore);
+            _synchronousServiceBusSender = new SynchronousSender(BusCore);
         }
 
         /// <summary>
@@ -146,8 +146,8 @@ namespace Helsenorge.Messaging
         {
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _logger = _loggerFactory.CreateLogger(nameof(MessagingClient));
-            _asynchronousServiceBusSender = new AsynchronousSender(ServiceBus);
-            _synchronousServiceBusSender = new SynchronousSender(ServiceBus);
+            _asynchronousServiceBusSender = new AsynchronousSender(BusCore);
+            _synchronousServiceBusSender = new SynchronousSender(BusCore);
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace Helsenorge.Messaging
                     return;
                 case DeliveryProtocol.Unknown:
                 default:
-                    var profile = await ServiceBus.FindProfile(logger, message).ConfigureAwait(false);
+                    var profile = await BusCore.FindProfile(logger, message).ConfigureAwait(false);
                     throw new MessagingException($"Invalid delivery protocol. Message Function {message.MessageFunction} might be missing from either CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}.")
                     {
                         EventId = EventIds.InvalidMessageFunction
@@ -193,7 +193,7 @@ namespace Helsenorge.Messaging
                     return await _synchronousServiceBusSender.SendAsync(logger, message).ConfigureAwait(false);
                 case DeliveryProtocol.Unknown:
                 default:
-                    var profile = await ServiceBus.FindProfile(logger, message).ConfigureAwait(false);
+                    var profile = await BusCore.FindProfile(logger, message).ConfigureAwait(false);
                     throw new MessagingException($"Invalid delivery protocol. Message Function {message.MessageFunction} might be missing from either CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}.")
                     {
                         EventId = EventIds.InvalidMessageFunction
@@ -241,7 +241,7 @@ namespace Helsenorge.Messaging
                 ? message.MessageFunction
                 : message.ReceiptForMessageFunction;
 
-            var profile = await ServiceBus.FindProfile(logger, message).ConfigureAwait(false);
+            var profile = await BusCore.FindProfile(logger, message).ConfigureAwait(false);
             var collaborationProtocolMessage = profile?.FindMessageForReceiver(messageFunction);
 
             if ((profile != null && DummyCollaborationProtocolProfileFactory.IsDummyProfile(profile))
@@ -291,9 +291,9 @@ namespace Helsenorge.Messaging
         public async Task Close()
         {
             // when all the listeners have shut down, close down the messaging infrastructure
-            await ServiceBus.SenderPool.Shutdown(_logger).ConfigureAwait(false);
-            await ServiceBus.ReceiverPool.Shutdown(_logger).ConfigureAwait(false);
-            await ServiceBus.FactoryPool.Shutdown(_logger).ConfigureAwait(false);
+            await BusCore.SenderPool.Shutdown(_logger).ConfigureAwait(false);
+            await BusCore.ReceiverPool.Shutdown(_logger).ConfigureAwait(false);
+            await BusCore.FactoryPool.Shutdown(_logger).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
