@@ -17,14 +17,14 @@ using Microsoft.Extensions.Logging;
 namespace Helsenorge.Messaging.Bus
 {
     [ExcludeFromCodeCoverage]
-    internal class ServiceBusReceiver : CachedAmpqSessionEntity<ReceiverLink>, IMessagingReceiver
+    internal class AmqpReceiver : CachedAmpqSessionEntity<ReceiverLink>, IMessagingReceiver
     {
         private readonly string _id;
         private readonly int _credit;
         private readonly ILogger _logger;
         private readonly string _name;
 
-        public ServiceBusReceiver(BusConnection connection, string id, int credit, ILogger logger) : base(connection)
+        public AmqpReceiver(BusConnection connection, string id, int credit, ILogger logger) : base(connection)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -57,7 +57,7 @@ namespace Helsenorge.Messaging.Bus
                 return amqpMessage != null ? new BusMessage(amqpMessage) : null;
             }).Perform();
 
-            ConfigureServiceBusOperations(message);
+            ConfigureBusOperations(message);
 
             return message;
         }
@@ -74,12 +74,12 @@ namespace Helsenorge.Messaging.Bus
                 return amqpMessage != null ? new BusMessage(amqpMessage) : null;
             }).PerformAsync().ConfigureAwait(false);
 
-            ConfigureServiceBusOperations(message);
+            ConfigureBusOperations(message);
 
             return message;
         }
 
-        private void ConfigureServiceBusOperations(BusMessage message)
+        private void ConfigureBusOperations(BusMessage message)
         {
             if (message != null)
             {

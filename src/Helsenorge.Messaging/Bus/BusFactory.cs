@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Bus
 
         public IMessagingReceiver CreateMessageReceiver(string id, int credit)
         {
-            return new ServiceBusReceiver(_connection, id, credit, _logger);
+            return new AmqpReceiver(_connection, id, credit, _logger);
         }
 
         public IMessagingSender CreateMessageSender(string id)
