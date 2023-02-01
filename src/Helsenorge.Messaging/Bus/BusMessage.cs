@@ -347,12 +347,6 @@ namespace Helsenorge.Messaging.Bus
 
         public async Task RelaseAsync() =>  await ReleaseActionAsync.Invoke().ConfigureAwait(false);
 
-        [Obsolete("The method 'DeadLetter()' is deprecated and will be removed in future releases.")]
-        public void DeadLetter() => DeadLetterAction.Invoke();
-
-        [Obsolete("The method 'DeadLetterAsync()' is deprecated and will be removed in future releases.")]
-        public async Task DeadLetterAsync() => await DeadLetterActionAsync.Invoke().ConfigureAwait(false);
-
         public void Modify(bool deliveryFailed, bool undeliverableHere = false) => ModifyAction.Invoke(deliveryFailed, undeliverableHere);
 
         public async Task ModifyAsync(bool deliveryFailed, bool undeliverableHere = false) => await ModifyActionAsync.Invoke(deliveryFailed, undeliverableHere).ConfigureAwait(false);

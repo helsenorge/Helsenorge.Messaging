@@ -147,14 +147,6 @@ namespace Helsenorge.Messaging.Abstractions
         /// <param name="ex"></param>
         void AddDetailsToException(Exception ex);
         /// <summary>
-        /// Sends this message to the deadletter queue
-        /// </summary>
-        void DeadLetter();
-        /// <summary>
-        /// Sends this message to the deadletter queue
-        /// </summary>
-        Task DeadLetterAsync();
-        /// <summary>
         /// Gets the number of deliveries.
         /// </summary>
         int DeliveryCount { get; }
