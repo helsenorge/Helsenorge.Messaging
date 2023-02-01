@@ -87,16 +87,16 @@ namespace Helsenorge.Messaging
         /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
         /// <param name="addressRegistry">Reference to the address registry</param>
         /// <param name="certificateStore">
-        /// Reference to a custom implementation of <see cref="ICertificateStore"/>, if not set the library will default to Windows Certificate Store. 
-        /// Setting this argument to null must be done cautiously as the default implementation of <see cref="IMessageProtection"/> 
+        /// Reference to a custom implementation of <see cref="ICertificateStore"/>, if not set the library will default to Windows Certificate Store.
+        /// Setting this argument to null must be done cautiously as the default implementation of <see cref="IMessageProtection"/>
         /// <see cref="SignThenEncryptMessageProtection"/> relies on an <see cref="ICertificateStore"/> implementation.
         /// </param>
         /// <param name="certificateValidator">
-        /// Reference to a custom implementation of <see cref="ICertificateValidator"/>, if not set the library will default to the standard implementation 
+        /// Reference to a custom implementation of <see cref="ICertificateValidator"/>, if not set the library will default to the standard implementation
         /// of <see cref="ICertificateValidator"/>. By setting this parameter to null you effectively disable certificate validation.
         /// </param>
         /// <param name="messageProtection">
-        /// Reference to custom implemenation of <see cref="IMessageProtection"/>, if not set the library will default to standard behavior which relies on 
+        /// Reference to custom implemenation of <see cref="IMessageProtection"/>, if not set the library will default to standard behavior which relies on
         /// certificates retrieved from <see cref="ICertificateStore"/>. Setting this parameter to null will throw an <see cref="ArgumentNullException"/>.
         /// </param>
         /// <exception cref="ArgumentNullException"></exception>
