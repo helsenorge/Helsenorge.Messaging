@@ -14,7 +14,7 @@ using System.Xml.Linq;
 namespace Helsenorge.Messaging.Abstractions
 {
     /// <summary>
-    /// Protectes a message using certificate encryption and signing
+    /// Protects a message using certificate encryption and signing
     /// </summary>
     public interface IMessageProtection
     {
@@ -39,33 +39,12 @@ namespace Helsenorge.Messaging.Abstractions
         X509Certificate2 LegacyEncryptionCertificate { get; }
 
         /// <summary>
-        /// Protect the message data
-        /// </summary>
-        /// <param name="data">Data to protect</param>
-        /// <param name="encryptionCertificate">Certificate use for encryption</param>
-        /// <param name="signingCertificate">Certificate used for signature</param>
-        /// <returns>Data that has been encrypted and signed</returns>
-        [Obsolete("This method is deprecated and is superseded by IMessageProtection.Protect(Stream).")]
-        MemoryStream Protect(XDocument data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate);
-
-        /// <summary>
         /// Signs and then encrypts the contents of <paramref name="data"/>.
         /// </summary>
         /// <param name="data">A <see cref="Stream"/> containing the data that will be signed and then encrypted.</param>
         /// <param name="encryptionCertificate">The public key <see cref="X509Certificate2"/> which will be used to encrypt the data.</param>
         /// <returns>A <see cref="Stream"/> containing the signed and encrypted data.</returns>
         Stream Protect(Stream data, X509Certificate2 encryptionCertificate);
-
-        /// <summary>
-        /// Removes protection from the message data
-        /// </summary>
-        /// <param name="data">Protected data</param>
-        /// <param name="encryptionCertificate">Certificate use for encryption</param>
-        /// <param name="signingCertificate">Certificate used for signature</param>
-        /// <param name="legacyEncryptionCertificate">Old encryption certificate that is no longer i use</param>
-        /// <returns>Data that has been decrypted and verified</returns>
-        [Obsolete("This method is deprecated and is superseded by IMessageProtection.Unprotect(Stream).")]
-        XDocument Unprotect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate, X509Certificate2 legacyEncryptionCertificate);
 
         /// <summary>
         /// Decrypts and then verifies the signature of the content in <paramref name="data"/>.
