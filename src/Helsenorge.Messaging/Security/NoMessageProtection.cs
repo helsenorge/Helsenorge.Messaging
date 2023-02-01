@@ -8,12 +8,8 @@
 
 using System;
 using System.IO;
-using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
-using System.Xml;
-using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
-using Helsenorge.Messaging.Bus.Receivers;
 
 namespace Helsenorge.Messaging.Security
 {
