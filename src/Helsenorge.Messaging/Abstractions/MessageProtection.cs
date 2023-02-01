@@ -49,39 +49,12 @@ namespace Helsenorge.Messaging.Abstractions
         public X509Certificate2 LegacyEncryptionCertificate { get; private set; }
 
         /// <summary>
-        /// Protect the message data
-        /// </summary>
-        /// <param name="data">Data to protect</param>
-        /// <param name="encryptionCertificate">Certificate use for encryption</param>
-        /// <param name="signingCertificate">Certificate used for signature</param>
-        /// <returns>Data that has been encrypted and signed</returns>
-        [Obsolete("This method is deprecated and is superseded by MessageProtection.Protect(Stream).")]
-        public virtual MemoryStream Protect(XDocument data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Signs and then encrypts the contents of <paramref name="data"/>.
         /// </summary>
         /// <param name="data">A <see cref="Stream"/> containing the data that will be signed and then encrypted.</param>
         /// <param name="encryptionCertificate">The public key <see cref="X509Certificate2"/> which will be used to encrypt the data.</param>
         /// <returns>A <see cref="Stream"/> containing the signed and encrypted data.</returns>
         public virtual Stream Protect(Stream data, X509Certificate2 encryptionCertificate)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Removes protection from the message data
-        /// </summary>
-        /// <param name="data">Protected data</param>
-        /// <param name="encryptionCertificate">Certificate use for encryption</param>
-        /// <param name="signingCertificate">Certificate used for signature</param>
-        /// <param name="legacyEncryptionCertificate">Old encryption certificate</param>
-        /// <returns>Data that has been decrypted and verified</returns>
-        [Obsolete("This method is deprecated and is superseded by MessageProtection.Unprotect(Stream).")]
-        public virtual XDocument Unprotect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate, X509Certificate2 legacyEncryptionCertificate)
         {
             throw new NotImplementedException();
         }
