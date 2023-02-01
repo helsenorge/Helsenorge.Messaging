@@ -21,17 +21,17 @@ namespace Helsenorge.Messaging.Abstractions
         /// <summary>
         /// Start message processing
         /// </summary>
-        Task Start();
+        Task StartAsync();
         /// <summary>
         /// Terminate message processing
         /// </summary>
-        Task Stop();
+        Task StopAsync();
 
         /// <summary>
         /// Terminate message processing
         /// </summary>
         /// <param name="timeout">The amount of time we wait for things to shut down</param>
-        Task Stop(TimeSpan timeout = default);
+        Task StopAsync(TimeSpan timeout = default);
 
         /// <summary>
         /// Registers a delegate that should be called as we start processing a message

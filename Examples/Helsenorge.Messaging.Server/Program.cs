@@ -47,7 +47,7 @@ namespace Helsenorge.Messaging.Server
 
                 Configure(profileArgument.Value);
 
-                await _messagingServer.Start();
+                await _messagingServer.StartAsync();
 
                 string input;
                 do
@@ -57,7 +57,7 @@ namespace Helsenorge.Messaging.Server
                 }
                 while (input != "q");
 
-                await _messagingServer.Stop(TimeSpan.FromSeconds(10));
+                await _messagingServer.StopAsync(TimeSpan.FromSeconds(10));
                 return 0;
             });
 

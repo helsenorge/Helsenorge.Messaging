@@ -739,10 +739,10 @@ namespace Helsenorge.Messaging.Tests.Bus.Receivers
             }
             );
             
-            await Server.Start();
+            await Server.StartAsync();
 
             Wait(20, wait); // we have a high timeout in case we do a bit of debugging. With more extensive debugging (breakpoints), we will get a timeout
-            await Server.Stop();
+            await Server.StopAsync();
             
             // check the state of the system
             postValidation();
