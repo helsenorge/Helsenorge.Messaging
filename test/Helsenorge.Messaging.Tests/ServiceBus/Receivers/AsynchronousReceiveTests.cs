@@ -672,27 +672,11 @@ namespace Helsenorge.Messaging.Tests.Bus.Receivers
             /// </summary>
             public X509Certificate2 LegacyEncryptionCertificate => null;
 
-            [Obsolete("This method is deprecated and is superseded by SecurityExceptionMessageProtection.Protect(Stream).")]
-            public MemoryStream Protect(XDocument data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate)
-            {
-                if (data == null) throw new ArgumentNullException(nameof(data));
-
-                var ms = new MemoryStream();
-                data.Save(ms);
-                return ms;
-            }
-
             public Stream Protect(Stream data, X509Certificate2 encryptionCertificate)
             {
                 if (data == null) throw new ArgumentNullException(nameof(data));
 
                 return data;
-            }
-
-            [Obsolete("This method is deprecated and is superseded by SecurityExceptionMessageProtection.Unprotect(Stream).")]
-            public XDocument Unprotect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate, X509Certificate2 legacyEncryptionCertificate)
-            {
-                throw new SecurityException("Invalid certificate");
             }
 
             public Stream Unprotect(Stream data, X509Certificate2 signingCertificate)
