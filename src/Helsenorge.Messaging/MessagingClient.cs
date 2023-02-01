@@ -97,64 +97,25 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Sends a message and allows the calling code to continue its work
         /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="message">Information about the message being sent</param>
-        /// <returns></returns>
-        [Obsolete("This method is replaced by SendAndContinueAsync(OutgoingMessage) and will be removed in a future version")]
-        public async Task SendAndContinueAsync(ILogger logger, OutgoingMessage message)
-        {
-            var collaborationProtocolMessage = await PreCheck(logger, message).ConfigureAwait(false);
-
-            switch (collaborationProtocolMessage.DeliveryProtocol)
-            {
-                case DeliveryProtocol.Amqp:
-                    await _asynchronousServiceBusSender.SendAsync(logger, message).ConfigureAwait(false);
-                    return;
-                case DeliveryProtocol.Unknown:
-                default:
-                    var profile = await BusCore.FindProfile(logger, message).ConfigureAwait(false);
-                    throw new MessagingException($"Invalid delivery protocol. Message Function {message.MessageFunction} might be missing from either CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}.")
-                    {
-                        EventId = EventIds.InvalidMessageFunction
-                    };
-            }
-        }
-
-        /// <summary>
-        /// Sends a message and blocks the calling code until we have an answer
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="message"></param>
-        /// <returns>The received XML</returns>
-        [Obsolete("This method is replaced by SendAndWaitAsync(OutgoingMessage) and will be removed in a future version")]
-        public async Task<XDocument> SendAndWaitAsync(ILogger logger, OutgoingMessage message)
-        {
-            var collaborationProtocolMessage = await PreCheck(logger, message).ConfigureAwait(false);
-           
-            switch (collaborationProtocolMessage.DeliveryProtocol)
-            {
-                case DeliveryProtocol.Amqp:
-                    return await _synchronousServiceBusSender.SendAsync(logger, message).ConfigureAwait(false);
-                case DeliveryProtocol.Unknown:
-                default:
-                    var profile = await BusCore.FindProfile(logger, message).ConfigureAwait(false);
-                    throw new MessagingException($"Invalid delivery protocol. Message Function {message.MessageFunction} might be missing from either CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}.")
-                    {
-                        EventId = EventIds.InvalidMessageFunction
-                    };
-            }
-        }
-
-        /// <summary>
-        /// Sends a message and allows the calling code to continue its work
-        /// </summary>
         /// <param name="message">Information about the message being sent</param>
         /// <returns></returns>
         public async Task SendAndContinueAsync(OutgoingMessage message)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
-            await SendAndContinueAsync(_logger, message).ConfigureAwait(false);
-#pragma warning restore CS0618 // Type or member is obsolete
+            var collaborationProtocolMessage = await PreCheck(_logger, message).ConfigureAwait(false);
+
+            switch (collaborationProtocolMessage.DeliveryProtocol)
+            {
+                case DeliveryProtocol.Amqp:
+                    await _asynchronousServiceBusSender.SendAsync(_logger, message).ConfigureAwait(false);
+                    return;
+                case DeliveryProtocol.Unknown:
+                default:
+                    var profile = await BusCore.FindProfile(_logger, message).ConfigureAwait(false);
+                    throw new MessagingException($"Invalid delivery protocol. Message Function {message.MessageFunction} might be missing from either CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}.")
+                    {
+                        EventId = EventIds.InvalidMessageFunction
+                    };
+            }
         }
 
         /// <summary>
@@ -164,9 +125,20 @@ namespace Helsenorge.Messaging
         /// <returns>The received XML</returns>
         public async Task<XDocument> SendAndWaitAsync(OutgoingMessage message)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
-            return await SendAndWaitAsync(_logger, message).ConfigureAwait(false);
-#pragma warning restore CS0618 // Type or member is obsolete
+            var collaborationProtocolMessage = await PreCheck(_logger, message).ConfigureAwait(false);
+
+            switch (collaborationProtocolMessage.DeliveryProtocol)
+            {
+                case DeliveryProtocol.Amqp:
+                    return await _synchronousServiceBusSender.SendAsync(_logger, message).ConfigureAwait(false);
+                case DeliveryProtocol.Unknown:
+                default:
+                    var profile = await BusCore.FindProfile(_logger, message).ConfigureAwait(false);
+                    throw new MessagingException($"Invalid delivery protocol. Message Function {message.MessageFunction} might be missing from either CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}.")
+                    {
+                        EventId = EventIds.InvalidMessageFunction
+                    };
+            }
         }
 
         /// <summary>
