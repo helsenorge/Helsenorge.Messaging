@@ -196,7 +196,7 @@ namespace Helsenorge.Messaging
             {
                 var assemblyName = Assembly.GetExecutingAssembly().GetName();
                 systemInformation.Add("X-ExecutingAssembly", assemblyName.FullName);
-                systemInformation.Add("X-ExecutingAssemblyVersion", assemblyName.Version.ToString());
+                systemInformation.Add("X-ExecutingAssemblyVersion", assemblyName.Version?.ToString());
 
                 var targetFramework = Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName;
                 if(!string.IsNullOrWhiteSpace(targetFramework))
