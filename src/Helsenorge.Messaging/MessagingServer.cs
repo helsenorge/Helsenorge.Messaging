@@ -150,7 +150,7 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Start the server
         /// </summary>
-        public async Task Start()
+        public async Task StartAsync()
         {
             _logger.LogInformation("Messaging Server starting up");
 
@@ -183,16 +183,16 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Stops the server, waiting for all tasks to complete their current work
         /// </summary>
-        public Task Stop()
+        public Task StopAsync()
         {
-            return Stop(TimeSpan.FromSeconds(10));
+            return StopAsync(TimeSpan.FromSeconds(10));
         }
 
         /// <summary>
         /// Stops the server, waiting for all tasks to complete their current work
         /// </summary>
         /// <param name="timeout">The amount of time we wait for things to shut down</param>
-        public async Task Stop(TimeSpan timeout)
+        public async Task StopAsync(TimeSpan timeout)
         {
             _logger.LogInformation("Messaging Server shutting down");
 
@@ -535,7 +535,7 @@ namespace Helsenorge.Messaging
         {
             if (_disposed) return;
 
-            await Stop(TimeSpan.Zero).ConfigureAwait(false);
+            await StopAsync(TimeSpan.Zero).ConfigureAwait(false);
 
             _disposed = true;
         }
