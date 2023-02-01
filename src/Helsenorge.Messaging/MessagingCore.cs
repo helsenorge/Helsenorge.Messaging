@@ -96,7 +96,7 @@ namespace Helsenorge.Messaging
         /// of <see cref="ICertificateValidator"/>. By setting this parameter to null you effectively disable certificate validation.
         /// </param>
         /// <param name="messageProtection">
-        /// Reference to custom implemenation of <see cref="IMessageProtection"/>, if not set the library will default to standard behavior which relies on
+        /// Reference to custom implementation of <see cref="IMessageProtection"/>, if not set the library will default to standard behavior which relies on
         /// certificates retrieved from <see cref="ICertificateStore"/>. Setting this parameter to null will throw an <see cref="ArgumentNullException"/>.
         /// </param>
         /// <exception cref="ArgumentNullException"></exception>
