@@ -157,25 +157,13 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Returns the current instance of <see cref="IMessageProtection"/>.
         /// </summary>
-        // TODO: Remove set part of property when removing DefaultMessageProtection property
-        internal IMessageProtection MessageProtection { get; set; }
+        internal IMessageProtection MessageProtection { get; set;  }
 
         /// <summary>
         /// Returns the current instance of <see cref="ICertificateValidator"/>.
         /// </summary>
-        // TODO: Remove set part of property when removing DefaultCertificateValidator property
-        internal ICertificateValidator CertificateValidator { get; set; }
+        internal ICertificateValidator CertificateValidator { get; }
 
-        /// <summary>
-        /// Gets or sets the default <see cref="ICertificateValidator"/>.The default implementation is <see cref="CertificateValidator"/>
-        /// </summary>
-        [Obsolete("This property is deprecated use the parameter 'certificateValidator' on the ctor of MessagingCore, MessagingClient or MessagingServer to override default message protection.")]
-        public ICertificateValidator DefaultCertificateValidator { get { return CertificateValidator; } set { CertificateValidator = value; } }
-        /// <summary>
-        /// Gets or sets the default <see cref="IMessageProtection"/>. The default implementation is <see cref="SignThenEncryptMessageProtection"/>
-        /// </summary>
-        [Obsolete("This property is deprecated use parameter 'messageProtection' on the ctor of MessagingCore, MessagingClient or MessagingServer to override default message protection.")]
-        public IMessageProtection DefaultMessageProtection { get { return MessageProtection; } set { MessageProtection = value; } }
         /// <summary>
         /// Provides access to bus specific functionality
         /// </summary>
@@ -194,7 +182,7 @@ namespace Helsenorge.Messaging
 
 #pragma warning disable CS0618
             return new SignThenEncryptMessageProtection(signingCertificate, encryptionCertificate, legacyEncryptionCertificate, messagingEncryptionType: Settings.MessagingEncryptionType);
-#pragma warning restore CS0618 
+#pragma warning restore CS0618
         }
 
         internal ICertificateValidator GetDefaultCertificateValidator()
