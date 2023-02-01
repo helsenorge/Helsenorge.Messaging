@@ -18,7 +18,7 @@ using Helsenorge.Messaging.Bus.Receivers;
 namespace Helsenorge.Messaging.Security
 {
     /// <summary>
-    /// Provices no message protection at all
+    /// Provides no message protection at all
     /// </summary>
     public class NoMessageProtection : IMessageProtection
     {
