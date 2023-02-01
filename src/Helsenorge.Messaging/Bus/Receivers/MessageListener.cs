@@ -214,8 +214,6 @@ namespace Helsenorge.Messaging.Bus.Receivers
                     CompleteAsync = message.CompleteAsync,
                     Release = message.Release,
                     ReleaseAsync = message.RelaseAsync,
-                    Deadletter = message.DeadLetter,
-                    DeadletterAsync = message.DeadLetterAsync,
                     // FIXME: This will be moved to the interface IMessagingMessage in version 5.0
                     FirstAquirer = (message as BusMessage)?.FirstAcquirer ?? false,
                     DeliveryCount = message.DeliveryCount,
