@@ -40,7 +40,7 @@ namespace Helsenorge.Messaging.Bus
             return connection.CreateSession();
         }
 
-        protected async Task OnSessionClosing()
+        protected async Task OnSessionClosingAsync()
         {
             if (_link == null || _link.IsClosed)
             {
@@ -119,7 +119,7 @@ namespace Helsenorge.Messaging.Bus
             IsClosed = true;
             if (_session != null && !_session.IsClosed)
             {
-                await OnSessionClosing().ConfigureAwait(false);
+                await OnSessionClosingAsync().ConfigureAwait(false);
                 await _session.CloseAsync().ConfigureAwait(false);
             }
         }
