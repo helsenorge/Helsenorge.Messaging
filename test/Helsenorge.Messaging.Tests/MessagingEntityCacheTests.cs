@@ -89,7 +89,7 @@ namespace Helsenorge.Messaging.Tests
                 return null;
             }
 
-            public Task<IMessagingMessage> CreateMessage(Stream stream)
+            public Task<IMessagingMessage> CreateMessageAsync(Stream stream)
             {
                 return null;
             }

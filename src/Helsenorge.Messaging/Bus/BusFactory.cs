@@ -46,7 +46,7 @@ namespace Helsenorge.Messaging.Bus
 
         public async Task Close() => await _connection.CloseAsync().ConfigureAwait(false);
 
-        public async Task<IMessagingMessage> CreateMessage(Stream stream)
+        public async Task<IMessagingMessage> CreateMessageAsync(Stream stream)
         {
             using var memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream).ConfigureAwait(false);
