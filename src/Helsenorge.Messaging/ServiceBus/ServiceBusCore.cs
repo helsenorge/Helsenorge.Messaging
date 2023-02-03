@@ -294,7 +294,7 @@ namespace Helsenorge.Messaging.ServiceBus
                 logger.LogWarning(EventIds.MissingField, "FromHerId is missing. No idea where to send the error");
                 return;
             }
-            
+
             // Clones original message, but leaves out the payload
             var clonedMessage = originalMessage.Clone(false);
             // update some properties on the cloned message
@@ -339,9 +339,14 @@ namespace Helsenorge.Messaging.ServiceBus
                     clonedMessage.SetApplicationProperty(ErrorConditionDataHeaderKey, additionDataValue);
                 }
             }
-            logger.LogWarning("Reporting error to sender. FromHerId: {0} ToHerId: {1} ErrorCode: {2} ErrorDescription: {3} AdditionalData: {4}",  originalMessage.FromHerId, originalMessage.ToHerId, errorCode, errorDescription, additionDataValue);
+
+            logger.LogWarning("Reporting error to sender. FromHerId: {0} ToHerId: {1} ErrorCode: {2} ErrorDescription: {3} AdditionalData: {4}", originalMessage.FromHerId, originalMessage.ToHerId, errorCode, errorDescription, additionDataValue);
+
+            logger.LogStartSend(QueueType.Error, clonedMessage.MessageFunction, Core.Settings.MyHerId, clonedMessage.ToHerId, clonedMessage.MessageId, additionDataValue, null);
             await Send(logger, clonedMessage).ConfigureAwait(false);
+            logger.LogEndSend(QueueType.Error, clonedMessage.MessageFunction, Core.Settings.MyHerId, clonedMessage.ToHerId, clonedMessage.MessageId);
         }
+
         /// <summary>
         /// Gets the queue name that we can use on messages from a more extensive name
         /// </summary>
