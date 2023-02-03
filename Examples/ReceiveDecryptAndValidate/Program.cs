@@ -79,7 +79,7 @@ namespace ReceiveDecryptAndValidate
             finally
             {
                 if (receiver != null)
-                    await receiver.Close();
+                    await receiver.CloseAsync();
                 await connection.CloseAsync();
             }
         }

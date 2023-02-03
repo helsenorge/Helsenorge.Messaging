@@ -29,7 +29,7 @@ namespace Helsenorge.Messaging.Tests
             {
                 _path = path;
             }
-            public Task Close()
+            public Task CloseAsync()
             {
                 _isClosed = true;
                 return Task.CompletedTask;
@@ -74,7 +74,7 @@ namespace Helsenorge.Messaging.Tests
         {
             public bool IsClosed { get; } = false;
 
-            public Task Close()
+            public Task CloseAsync()
             {
                 return Task.CompletedTask;
             }

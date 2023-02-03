@@ -58,7 +58,7 @@ namespace SimpleSender
             finally
             {
                 if(sender != null)
-                    await sender.Close();
+                    await sender.CloseAsync();
                 if (connection != null)
                     await connection.CloseAsync();
             }

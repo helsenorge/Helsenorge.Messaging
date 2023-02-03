@@ -21,6 +21,6 @@ namespace Helsenorge.Messaging.Abstractions
         /// <summary>
         /// Closes the item
         /// </summary>
-        Task Close();
+        Task CloseAsync();
     }
 }

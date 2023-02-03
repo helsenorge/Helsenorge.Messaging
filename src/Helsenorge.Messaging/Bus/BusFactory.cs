@@ -44,7 +44,7 @@ namespace Helsenorge.Messaging.Bus
 
         public bool IsClosed => _connection.IsClosedOrClosing;
 
-        public async Task Close() => await _connection.CloseAsync().ConfigureAwait(false);
+        public async Task CloseAsync() => await _connection.CloseAsync().ConfigureAwait(false);
 
         public async Task<IMessagingMessage> CreateMessageAsync(Stream stream)
         {
