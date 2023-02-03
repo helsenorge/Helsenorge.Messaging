@@ -481,8 +481,8 @@ namespace Helsenorge.Registries.Tests
             var data = Encoding.UTF8.GetBytes("Hello, World!");
 
             var profile = _registry.FindProtocolForCounterpartyAsync(_logger, 93238).Result;
-            CacheExtensions.WriteValueToCache(_logger, distributedCache, key, profile, TimeSpan.FromDays(1)).Wait();
-            var cached = CacheExtensions.ReadValueFromCache<Abstractions.CollaborationProtocolProfile>(_logger, distributedCache, key).Result;
+            CacheExtensions.WriteValueToCacheAsync(_logger, distributedCache, key, profile, TimeSpan.FromDays(1)).Wait();
+            var cached = CacheExtensions.ReadValueFromCacheAsync<Abstractions.CollaborationProtocolProfile>(_logger, distributedCache, key).Result;
             Assert.IsNotNull(cached);
             using (var rsa = cached.EncryptionCertificate.GetRSAPublicKey())
             {
