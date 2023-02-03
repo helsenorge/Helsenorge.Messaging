@@ -94,7 +94,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// <param name="logger"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        protected abstract Task<T> CreateEntity(ILogger logger, string id);
+        protected abstract Task<T> CreateEntityAsync(ILogger logger, string id);
 
         /// <summary>
         /// Gets a cached copy. Creates it if it doesn't exist
@@ -102,13 +102,13 @@ namespace Helsenorge.Messaging.Abstractions
         /// <param name="logger"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        public async Task<T> Create(ILogger logger, string path)
+        public async Task<T> CreateAsync(ILogger logger, string path)
         {
             if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path));
             if (_shutdownPending) return null;
 
             CacheEntry<T> entry;
-            await TrimEntries(logger).ConfigureAwait(false); // see if we need to trim entries
+            await TrimEntriesAsync(logger).ConfigureAwait(false); // see if we need to trim entries
             await _semaphore.WaitAsync().ConfigureAwait(false);
             try
             {
@@ -122,7 +122,7 @@ namespace Helsenorge.Messaging.Abstractions
                     {
                         ActiveCount = 1,
                         LastUsed = DateTime.Now,
-                        Entity = await CreateEntity(logger, path).ConfigureAwait(false),
+                        Entity = await CreateEntityAsync(logger, path).ConfigureAwait(false),
                         Path = path,
                     };
                     _entries.Add(path, entry);
@@ -142,7 +142,7 @@ namespace Helsenorge.Messaging.Abstractions
                 if (entry.Entity is { IsClosed: false }) return entry.Entity;
 
                 logger.LogDebug(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache::Create: Creating new entity for {Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
-                entry.Entity = await CreateEntity(logger, path).ConfigureAwait(false);
+                entry.Entity = await CreateEntityAsync(logger, path).ConfigureAwait(false);
             }
             finally
             {
@@ -157,7 +157,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="path"></param>
-        public async Task Release(ILogger logger, string path)
+        public async Task ReleaseAsync(ILogger logger, string path)
         {
             if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path));
             if (_shutdownPending) return;
@@ -184,7 +184,7 @@ namespace Helsenorge.Messaging.Abstractions
             }
         }
 
-        private static async Task CloseEntity(ILogger logger, CacheEntry<T> entry, string path)
+        private static async Task CloseEntityAsync(ILogger logger, CacheEntry<T> entry, string path)
         {
             if (entry.Entity == null) return;
             if (entry.Entity.IsClosed == false)
@@ -211,7 +211,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// <summary>
         /// Closes all entities
         /// </summary>
-        public async Task Shutdown(ILogger logger)
+        public async Task ShutdownAsync(ILogger logger)
         {
             _shutdownPending = true;
             await _semaphore.WaitAsync().ConfigureAwait(false);
@@ -221,7 +221,7 @@ namespace Helsenorge.Messaging.Abstractions
                 foreach (var key in _entries.Keys)
                 {
                     var entry = _entries[key];
-                    await CloseEntity(logger, entry, key).ConfigureAwait(false);
+                    await CloseEntityAsync(logger, entry, key).ConfigureAwait(false);
                 }
             }
             finally
@@ -230,7 +230,7 @@ namespace Helsenorge.Messaging.Abstractions
             }
         }
 
-        private async Task TrimEntries(ILogger logger)
+        private async Task TrimEntriesAsync(ILogger logger)
         {
             await _semaphore.WaitAsync().ConfigureAwait(false);
             try
@@ -256,7 +256,7 @@ namespace Helsenorge.Messaging.Abstractions
                 
                 foreach (var item in removal)
                 {
-                    await CloseEntity(logger, item, item.Path).ConfigureAwait(false);
+                    await CloseEntityAsync(logger, item, item.Path).ConfigureAwait(false);
                 }
             }
             finally

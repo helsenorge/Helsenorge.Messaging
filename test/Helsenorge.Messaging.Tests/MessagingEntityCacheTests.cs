@@ -46,7 +46,7 @@ namespace Helsenorge.Messaging.Tests
             {
             }
 
-            protected override Task<EntityItem> CreateEntity(ILogger logger, string id)
+            protected override Task<EntityItem> CreateEntityAsync(ILogger logger, string id)
             {
                 return Task.FromResult(new EntityItem(id));
             }
@@ -64,7 +64,7 @@ namespace Helsenorge.Messaging.Tests
             {
             }
 
-            protected override Task<IMessagingFactory> CreateEntity(ILogger logger, string id)
+            protected override Task<IMessagingFactory> CreateEntityAsync(ILogger logger, string id)
             {
                 return Task.FromResult<IMessagingFactory>(new MessagingFactoryMock());
             }
@@ -136,7 +136,7 @@ namespace Helsenorge.Messaging.Tests
         [TestMethod]
         public async Task MessageClientEntity_Create()
         {
-            await _cache.Create(Logger, "path");
+            await _cache.CreateAsync(Logger, "path");
 
             Assert.AreEqual(1, _cache.Entries.Count, "EntryCount");
             var entry = _cache.Entries.First().Value;
@@ -152,7 +152,7 @@ namespace Helsenorge.Messaging.Tests
         public async Task MessageClientEntity_CreateAndRelease()
         {
             var path = "path";
-            await _cache.Create(Logger, path);
+            await _cache.CreateAsync(Logger, path);
 
             Assert.AreEqual(1, _cache.Entries.Count, "EntryCount");
             var entry = _cache.Entries.First().Value;
@@ -160,7 +160,7 @@ namespace Helsenorge.Messaging.Tests
             Assert.AreEqual(1, entry.ActiveCount, "ActiveCount");
             Assert.IsNotNull(entry.Entity, "Entity");
 
-            await _cache.Release(Logger, path);
+            await _cache.ReleaseAsync(Logger, path);
 
             Assert.AreEqual(0, entry.ActiveCount, "ActiveCount");
             Assert.IsNotNull(entry.Entity, "Entity");
@@ -174,7 +174,7 @@ namespace Helsenorge.Messaging.Tests
         {
             for (int i = 0; i < 100; i++)
             {
-                await _cache.Create(Logger, "path");
+                await _cache.CreateAsync(Logger, "path");
             }
             Assert.AreEqual(1, _cache.Entries.Count, "EntryCount");
             var entry = _cache.Entries.First().Value;
@@ -184,7 +184,7 @@ namespace Helsenorge.Messaging.Tests
 
             for (int i = 0; i < 100; i++)
             {
-                await _cache.Release(Logger, "path");
+                await _cache.ReleaseAsync(Logger, "path");
             }
             Assert.AreEqual(1, _cache.Entries.Count, "EntryCount");
             entry = _cache.Entries.First().Value;
@@ -201,7 +201,7 @@ namespace Helsenorge.Messaging.Tests
         {
             for (int i = 0; i < _cache.Capacity; i++)
             {
-                await _cache.Create(Logger, "path" + i.ToString());
+                await _cache.CreateAsync(Logger, "path" + i.ToString());
             }
             Assert.AreEqual(5, _cache.Entries.Count, "EntryCount");
 
@@ -219,26 +219,26 @@ namespace Helsenorge.Messaging.Tests
         {
             for (var i = 1; i < 3001; i++)
             {
-                var entry = await _cache.Create(Logger, $"path{i}");
+                var entry = await _cache.CreateAsync(Logger, $"path{i}");
                 if ((i+1) % 5 == 0)
                 {
-                    await _cache.Release(Logger, entry.Path);
+                    await _cache.ReleaseAsync(Logger, entry.Path);
                 }
             }
 
             foreach (var entry in _cache.Entries)
             {
-                await _cache.Release(Logger, entry.Value.Path);
+                await _cache.ReleaseAsync(Logger, entry.Value.Path);
             }
 
             await Task.Delay(4_000);
 
             for (var i = 3001; i < 3501; i++)
             {
-                var entry = await _cache.Create(Logger, $"path{i}");
+                var entry = await _cache.CreateAsync(Logger, $"path{i}");
                 if ((i+1) % 5 == 0)
                 {
-                    await _cache.Release(Logger, entry.Path);
+                    await _cache.ReleaseAsync(Logger, entry.Path);
                 }
             }
 
@@ -246,10 +246,10 @@ namespace Helsenorge.Messaging.Tests
 
             for (var i = 3501; i < 4001; i++)
             {
-                var entry = await _cache.Create(Logger, $"path{i}");
+                var entry = await _cache.CreateAsync(Logger, $"path{i}");
                 if ((i+1) % 5 == 0)
                 {
-                    await _cache.Release(Logger, entry.Path);
+                    await _cache.ReleaseAsync(Logger, entry.Path);
                 }
             }
 
@@ -257,10 +257,10 @@ namespace Helsenorge.Messaging.Tests
 
             for (var i = 4001; i < 4501; i++)
             {
-                var entry = await _cache.Create(Logger, $"path{i}");
+                var entry = await _cache.CreateAsync(Logger, $"path{i}");
                 if ((i+1) % 5 == 0)
                 {
-                    await _cache.Release(Logger, entry.Path);
+                    await _cache.ReleaseAsync(Logger, entry.Path);
                 }
             }
 
@@ -268,10 +268,10 @@ namespace Helsenorge.Messaging.Tests
 
             for (var i = 4501; i < 5001; i++)
             {
-                var entry = await _cache.Create(Logger, $"path{i}");
+                var entry = await _cache.CreateAsync(Logger, $"path{i}");
                 if ((i+1) % 5 == 0)
                 {
-                    await _cache.Release(Logger, entry.Path);
+                    await _cache.ReleaseAsync(Logger, entry.Path);
                 }
             }
 
@@ -296,17 +296,17 @@ namespace Helsenorge.Messaging.Tests
         [TestMethod]
         public async Task MessageClientEntity_EntityGetsClosePending()
         {
-            await _cache.Create(Logger, "path1");
-            await _cache.Create(Logger, "path2");
-            await _cache.Create(Logger, "path3");
-            await _cache.Create(Logger, "path4");
-            await _cache.Create(Logger, "path5");
+            await _cache.CreateAsync(Logger, "path1");
+            await _cache.CreateAsync(Logger, "path2");
+            await _cache.CreateAsync(Logger, "path3");
+            await _cache.CreateAsync(Logger, "path4");
+            await _cache.CreateAsync(Logger, "path5");
 
             // path3 will be the one that will be reclaimed
             var entry = _cache.Entries["path3"];
             entry.LastUsed = DateTime.Now.AddSeconds(-15);
 
-            await _cache.Create(Logger, "path6");
+            await _cache.CreateAsync(Logger, "path6");
 
             Assert.AreEqual(1, entry.ActiveCount, "ActiveCount"); // path3 is still active since we haven't release it
         }
@@ -317,19 +317,19 @@ namespace Helsenorge.Messaging.Tests
         [TestMethod]
         public async Task MessageClientEntity_CloseEntityWhenBeyondCapacity()
         {
-            await _cache.Create(Logger, "path1");
-            await _cache.Create(Logger, "path2");
-            await _cache.Create(Logger, "path3");
-            await _cache.Create(Logger, "path4");
-            await _cache.Create(Logger, "path5");
+            await _cache.CreateAsync(Logger, "path1");
+            await _cache.CreateAsync(Logger, "path2");
+            await _cache.CreateAsync(Logger, "path3");
+            await _cache.CreateAsync(Logger, "path4");
+            await _cache.CreateAsync(Logger, "path5");
 
             // path3 will be the one that will be reclaimed
             var entry = _cache.Entries["path3"];
-            await _cache.Release(Logger, "path3"); // we are done with path 3
+            await _cache.ReleaseAsync(Logger, "path3"); // we are done with path 3
             entry.LastUsed = DateTime.Now.AddSeconds(-15);
 
-            await _cache.Create(Logger, "path6");
-            await _cache.Create(Logger, "path7");
+            await _cache.CreateAsync(Logger, "path6");
+            await _cache.CreateAsync(Logger, "path7");
 
             // entity object for path3 has been reclaimed
             Assert.AreEqual(0, entry.ActiveCount, "ActiveCount is not equal to zero");
@@ -342,24 +342,24 @@ namespace Helsenorge.Messaging.Tests
         [TestMethod]
         public async Task MessageClientEntity_RecreatePreviouslyClosed()
         {
-            await _cache.Create(Logger, "path1");
-            await _cache.Create(Logger, "path2");
-            await _cache.Create(Logger, "path3");
-            await _cache.Create(Logger, "path4");
-            await _cache.Create(Logger, "path5");
+            await _cache.CreateAsync(Logger, "path1");
+            await _cache.CreateAsync(Logger, "path2");
+            await _cache.CreateAsync(Logger, "path3");
+            await _cache.CreateAsync(Logger, "path4");
+            await _cache.CreateAsync(Logger, "path5");
 
             // path3 will be the one that will be reclaimed
             var entry = _cache.Entries["path3"];
             entry.LastUsed = DateTime.Now.AddSeconds(-15);
 
-            await _cache.Create(Logger, "path6"); // create a new entry so that we have to free up another
-            await _cache.Release(Logger, "path3"); // we are done with path 3
-            await _cache.Release(Logger, "path2");
+            await _cache.CreateAsync(Logger, "path6"); // create a new entry so that we have to free up another
+            await _cache.ReleaseAsync(Logger, "path3"); // we are done with path 3
+            await _cache.ReleaseAsync(Logger, "path2");
 
             // path2 will be bumped since it was LastUsed 5 seconds earlier than path3
             _cache.Entries["path2"].LastUsed = DateTime.Now.AddSeconds(-20);
 
-            await _cache.Create(Logger, "path3");
+            await _cache.CreateAsync(Logger, "path3");
             Assert.AreEqual(1, entry.ActiveCount, "ActiveCount");
             Assert.IsNotNull(entry.Entity, "Entity");
 
@@ -375,17 +375,17 @@ namespace Helsenorge.Messaging.Tests
         [TestMethod]
         public async Task Shutdown()
         {
-            await _cache.Create(Logger, "path1");
-            await _cache.Create(Logger, "path2");
-            await _cache.Create(Logger, "path3");
-            await _cache.Create(Logger, "path4");
-            await _cache.Create(Logger, "path5");
+            await _cache.CreateAsync(Logger, "path1");
+            await _cache.CreateAsync(Logger, "path2");
+            await _cache.CreateAsync(Logger, "path3");
+            await _cache.CreateAsync(Logger, "path4");
+            await _cache.CreateAsync(Logger, "path5");
 
-            await _cache.Shutdown(Logger);
+            await _cache.ShutdownAsync(Logger);
 
 
             // new create commands are ignored in shutdown mode
-            await _cache.Create(Logger, "path6");
+            await _cache.CreateAsync(Logger, "path6");
             Assert.AreEqual(5, _cache.Entries.Count, "EntryCount");
 
             foreach (var key in _cache.Entries.Keys)

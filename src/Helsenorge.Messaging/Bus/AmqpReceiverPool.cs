@@ -24,7 +24,7 @@ namespace Helsenorge.Messaging.Bus
             _credit = settings.LinkCredits;
         }
 
-        protected override async Task<IMessagingReceiver> CreateEntity(ILogger logger, string id)
+        protected override async Task<IMessagingReceiver> CreateEntityAsync(ILogger logger, string id)
         {
             var factory = await _factoryPool.FindNextFactory(logger).ConfigureAwait(false);
             return factory.CreateMessageReceiver(id, _credit);
@@ -36,13 +36,13 @@ namespace Helsenorge.Messaging.Bus
         /// <param name="logger"></param>
         /// <param name="queueName"></param>
         /// <returns></returns>
-        public async Task<IMessagingReceiver> CreateCachedMessageReceiver(ILogger logger, string queueName) => await Create(logger, queueName).ConfigureAwait(false);
+        public async Task<IMessagingReceiver> CreateCachedMessageReceiver(ILogger logger, string queueName) => await CreateAsync(logger, queueName).ConfigureAwait(false);
 
         /// <summary>
         /// Releases a cached message receiver
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="queueName"></param>
-        public async Task ReleaseCachedMessageReceiver(ILogger logger, string queueName) => await Release(logger, queueName).ConfigureAwait(false);
+        public async Task ReleaseCachedMessageReceiver(ILogger logger, string queueName) => await ReleaseAsync(logger, queueName).ConfigureAwait(false);
     }
 }

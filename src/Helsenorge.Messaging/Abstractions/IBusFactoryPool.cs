@@ -16,7 +16,7 @@ namespace Helsenorge.Messaging.Abstractions
     {
         Task<IMessagingFactory> FindNextFactory(ILogger logger);
         void RegisterAlternateMessagingFactory(IMessagingFactory factory);
-        Task Shutdown(ILogger logger);
+        Task ShutdownAsync(ILogger logger);
         Task<IMessagingMessage> CreateMessage(ILogger logger, Stream stream);
     }
 }

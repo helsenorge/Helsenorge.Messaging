@@ -100,9 +100,9 @@ namespace Helsenorge.Messaging.Bus
         /// <inheritdoc />
         public async ValueTask DisposeAsync()
         {
-            await _receiverPool.Shutdown(_logger).ConfigureAwait(false);
-            await _senderPool.Shutdown(_logger).ConfigureAwait(false);
-            await _factoryPool.Shutdown(_logger).ConfigureAwait(false);
+            await _receiverPool.ShutdownAsync(_logger).ConfigureAwait(false);
+            await _senderPool.ShutdownAsync(_logger).ConfigureAwait(false);
+            await _factoryPool.ShutdownAsync(_logger).ConfigureAwait(false);
         }
     }
 }
