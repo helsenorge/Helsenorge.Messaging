@@ -204,7 +204,7 @@ namespace Helsenorge.Messaging
         }
 
         /// <inheritdoc />
-        public async Task Close()
+        public async Task CloseAsync()
         {
             // when all the listeners have shut down, close down the messaging infrastructure
             await BusCore.SenderPool.ShutdownAsync(_logger).ConfigureAwait(false);
@@ -219,7 +219,7 @@ namespace Helsenorge.Messaging
 
             _loggerFactory?.Dispose();
 
-            await Close().ConfigureAwait(false);
+            await CloseAsync().ConfigureAwait(false);
 
             _disposed = true;
         }
