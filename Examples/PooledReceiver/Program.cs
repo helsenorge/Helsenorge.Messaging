@@ -35,7 +35,7 @@ namespace PooledReceiver
             await using var linkFactoryPool = new LinkFactoryPool(loggerFactory.CreateLogger<LinkFactoryPool>(), settings);
             try
             {
-                var receiver = await linkFactoryPool.CreateCachedMessageReceiver(_queue);
+                var receiver = await linkFactoryPool.CreateCachedMessageReceiverAsync(_queue);
                 int i = 0;
                 while (true)
                 {
@@ -64,7 +64,7 @@ namespace PooledReceiver
             }
             finally
             {
-                await linkFactoryPool.ReleaseCachedMessageReceiver(_queue);
+                await linkFactoryPool.ReleaseCachedMessageReceiverAsync(_queue);
             }
         }
     }

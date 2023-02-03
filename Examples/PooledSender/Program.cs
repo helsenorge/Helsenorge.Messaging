@@ -41,7 +41,7 @@ namespace PooledSender
             try
             {
                 var messageCount = 20;
-                var sender = await linkFactoryPool.CreateCachedMessageSender(_queue);
+                var sender = await linkFactoryPool.CreateCachedMessageSenderAsync(_queue);
                 for (int i = 0; i < messageCount; i++)
                 {
                     var outgoingMessage = new OutgoingMessage
@@ -65,7 +65,7 @@ namespace PooledSender
             }
             finally
             {
-                await linkFactoryPool.ReleaseCachedMessageSender(_queue);
+                await linkFactoryPool.ReleaseCachedMessageSenderAsync(_queue);
             }
         }
     }
