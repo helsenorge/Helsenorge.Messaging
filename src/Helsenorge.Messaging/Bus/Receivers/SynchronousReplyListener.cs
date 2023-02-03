@@ -65,9 +65,9 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// <param name="message">The refined message data. All information should now be present</param>
         protected override async Task NotifyMessageProcessingReadyAsync(IMessagingMessage rawMessage, IncomingMessage message)
         {
-            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
-            await MessagingNotification.NotifySynchronousMessageReceived(message).ConfigureAwait(false);
-            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            await MessagingNotification.NotifySynchronousMessageReceivedAsync(message).ConfigureAwait(false);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
     }
 }
