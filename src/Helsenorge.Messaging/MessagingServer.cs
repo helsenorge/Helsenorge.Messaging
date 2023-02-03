@@ -176,7 +176,7 @@ namespace Helsenorge.Messaging
             }
             foreach (var listener in _listeners)
             {
-                _tasks.Add(Task.Run(async () => await listener.Start(_cancellationTokenSource.Token).ConfigureAwait(false)));
+                _tasks.Add(Task.Run(async () => await listener.StartAsync(_cancellationTokenSource.Token).ConfigureAwait(false)));
             }
         }
 

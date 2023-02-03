@@ -99,7 +99,7 @@ namespace Helsenorge.Messaging.Bus.Senders
                     return payload;
                 }
 
-                var incomingMessage = await listener.ReadAndProcessMessage(true).ConfigureAwait(false);
+                var incomingMessage = await listener.ReadAndProcessMessageAsync(true).ConfigureAwait(false);
                 if (incomingMessage != null)
                 {
                     // see if this is a message we are waiting for

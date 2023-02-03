@@ -47,7 +47,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// </summary>
         /// <param name="listener">Reference to the listener which invoked the callback.</param>
         /// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
-        protected override async Task NotifyMessageProcessingStarted(MessageListener listener, IncomingMessage message)
+        protected override async Task NotifyMessageProcessingStartedAsync(MessageListener listener, IncomingMessage message)
         {
             Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
             await MessagingNotification.NotifyErrorMessageReceivedStarting(message).ConfigureAwait(false);
@@ -58,7 +58,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// </summary>
         /// <param name="rawMessage">The message from the queue</param>
         /// <param name="message">The refined message data. All information should now be present</param>
-        protected override async Task NotifyMessageProcessingReady(IMessagingMessage rawMessage, IncomingMessage message)
+        protected override async Task NotifyMessageProcessingReadyAsync(IMessagingMessage rawMessage, IncomingMessage message)
         {
             if (rawMessage == null) throw new ArgumentNullException(nameof(rawMessage));
             if (message == null) throw new ArgumentNullException(nameof(message));
@@ -121,7 +121,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// Called when message processing is complete
         /// </summary>
         /// <param name="message">Reference to the incoming message</param>
-        protected override Task NotifyMessageProcessingCompleted(IncomingMessage message)
+        protected override Task NotifyMessageProcessingCompletedAsync(IncomingMessage message)
         {
             // not relevant for error messages
             return Task.CompletedTask;
