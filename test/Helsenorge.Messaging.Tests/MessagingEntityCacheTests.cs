@@ -115,14 +115,14 @@ namespace Helsenorge.Messaging.Tests
             var factoryPool = new BusFactoryPoolMock(5, 0, 24);
             for (int i = 0; i < 5; i++)
             {
-                await factoryPool.FindNextFactory(Logger);
+                await factoryPool.FindNextFactoryAsync(Logger);
             }
 
             for (int i = 0; i < 5; i++)
             {
                 // For other pool types, this would result in ActiveCount being incremented, but for
                 // BusFactoryPool.FindNextFactory makes sure that it won't
-                await factoryPool.FindNextFactory(Logger);
+                await factoryPool.FindNextFactoryAsync(Logger);
                 var entry = factoryPool.Entries[$"MessagingFactory{i}"];
                 // Even though we have requested the same BusFactory twice, once in the first loop and a second
                 // time in this loop, ActiveCount should still be 1.
