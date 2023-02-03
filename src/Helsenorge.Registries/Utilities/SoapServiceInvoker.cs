@@ -28,7 +28,7 @@ namespace Helsenorge.Registries.Utilities
         }
 
         [ExcludeFromCodeCoverage] // requires wire communication
-        public async Task<TResponse> Execute<TContract, TResponse>(ILogger logger, Func<TContract, Task<TResponse>> action, string operationName)
+        public async Task<TResponse> ExecuteAsync<TContract, TResponse>(ILogger logger, Func<TContract, Task<TResponse>> action, string operationName)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
             if (action == null) throw new ArgumentNullException(nameof(action));
@@ -78,7 +78,7 @@ namespace Helsenorge.Registries.Utilities
         }
 
         [ExcludeFromCodeCoverage] // requires wire communication
-        public async Task Execute<TContract>(ILogger logger, Func<TContract, Task> action, string operationName)
+        public async Task ExecuteAsync<TContract>(ILogger logger, Func<TContract, Task> action, string operationName)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
             if (action == null) throw new ArgumentNullException(nameof(action));
