@@ -45,9 +45,9 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
         protected override async Task NotifyMessageProcessingStartedAsync(MessageListener listener, IncomingMessage message)
         {
-            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
-            await MessagingNotification.NotifySynchronousMessageReceivedStarting(message).ConfigureAwait(false);
-            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedStartingAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            await MessagingNotification.NotifySynchronousMessageReceivedStartingAsync(message).ConfigureAwait(false);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedStartingAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
         /// <summary>
         /// Called to process message
@@ -56,9 +56,9 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// <param name="message">The refined message data. All information should now be present</param>
         protected override async Task NotifyMessageProcessingReadyAsync(IMessagingMessage rawMessage, IncomingMessage message)
         {
-            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
-            var reply = await MessagingNotification.NotifySynchronousMessageReceived(message).ConfigureAwait(false);
-            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            var reply = await MessagingNotification.NotifySynchronousMessageReceivedAsync(message).ConfigureAwait(false);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
 
             if (reply == null)
             {
@@ -81,9 +81,9 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// <param name="message">Reference to the incoming message</param>
         protected override async Task NotifyMessageProcessingCompletedAsync(IncomingMessage message)
         {
-            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedCompleted), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
-            await MessagingNotification.NotifySynchronousMessageReceivedCompleted(message).ConfigureAwait(false);
-            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedCompleted), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedCompletedAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            await MessagingNotification.NotifySynchronousMessageReceivedCompletedAsync(message).ConfigureAwait(false);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceivedCompletedAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
     }
 }

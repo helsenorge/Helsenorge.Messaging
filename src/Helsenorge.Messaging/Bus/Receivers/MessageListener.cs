@@ -256,57 +256,57 @@ namespace Helsenorge.Messaging.Bus.Receivers
                   $"CorrelationId: {message.CorrelationId} Certificate thumbprint: {ex.AdditionalInformation}");
 
                 await BusCore.ReportErrorToExternalSenderAsync(Logger, ex.EventId, message, ex.ErrorCode, ex.Description, ex.AdditionalInformation).ConfigureAwait(false);
-                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
+                await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (SecurityException ex)
             {
                 await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.RemoteCertificate, message, "transport:invalid-certificate", ex.Message, null, ex).ConfigureAwait(false);
-                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
+                await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (HeaderValidationException ex)
             {
                 await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.MissingField, message, "transport:invalid-field-value", ex.Message, ex.Fields).ConfigureAwait(false);
-                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
+                await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (XmlSchemaValidationException ex) // reportable error from message handler (application)
             {
                 await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.NotXml, message, "transport:not-well-formed-xml", ex.Message, null, ex).ConfigureAwait(false);
-                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
+                await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (ReceivedDataMismatchException ex) // reportable error from message handler (application)
             {
                 await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.DataMismatch, message, "transport:invalid-field-value", ex.Message, new[] { ex.ExpectedValue, ex.ReceivedValue }, ex).ConfigureAwait(false);
-                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
+                await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (NotifySenderException ex) // reportable error from message handler (application)
             {
                 await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.ApplicationReported, message, "transport:internal-error", ex.Message, null, ex).ConfigureAwait(false);
-                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
+                await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (SenderHerIdMismatchException ex) // reportable error from message handler (application)
             {
                 await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.DataMismatch, message, "abuse:spoofing-attack", ex.Message, null, ex).ConfigureAwait(false);
-                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
+                await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (PayloadDeserializationException ex) // from parsing to XML, reportable exception
             {
                 await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.ApplicationReported, message, "transport:not-well-formed-xml", ex.Message, null, ex).ConfigureAwait(false);
-                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
+                await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (AggregateException ex) when (ex.InnerException is MessagingException && ((MessagingException)ex.InnerException).EventId.Id == EventIds.Send.Id)
             {
                 Logger.LogError(EventIds.Send, ex, $"Send operation failed when processing message with MessageId: {message.MessageId} MessageFunction: {message.MessageFunction}");
-                await MessagingNotification.NotifyUnhandledException(message, ex);
+                await MessagingNotification.NotifyUnhandledExceptionAsync(message, ex);
             }
             catch (UnsupportedMessageException ex)  // reportable error from message handler (application)
             {
                 await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.ApplicationReported, message, "transport:unsupported-message", ex.Message, null, ex).ConfigureAwait(false);
-                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
+                await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (InvalidHerIdException ex)
             {
                 await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.InvalidHerId, message, "transport:invalid-field-value", ex.Message, new [] { "FromHerId", $"{ex.HerId}" }, ex).ConfigureAwait(false);
-                await MessagingNotification.NotifyHandledException(message, ex).ConfigureAwait(false);
+                await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (Exception ex) // unknown error
             {
@@ -324,7 +324,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
                 {
                     BusCore.RemoveMessageFromQueueAfterError(Logger, message);
                 }
-                await MessagingNotification.NotifyUnhandledException(message, ex).ConfigureAwait(false);
+                await MessagingNotification.NotifyUnhandledExceptionAsync(message, ex).ConfigureAwait(false);
 
                 // Start a thread which will await until we reach LockedUntilUtc
                 // before releasing the message.

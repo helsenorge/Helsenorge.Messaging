@@ -216,7 +216,7 @@ namespace Helsenorge.Messaging
         /// <param name="action">The delegate that should be called</param>
         public void RegisterAsynchronousMessageReceivedCallbackAsync(Func<IncomingMessage, Task> action) => _onAsynchronousMessageReceivedAsync = action;
 
-        async Task IMessagingNotification.NotifyAsynchronousMessageReceived(IncomingMessage message)
+        async Task IMessagingNotification.NotifyAsynchronousMessageReceivedAsync(IncomingMessage message)
         {
             _logger.LogDebug("NotifyAsynchronousMessageReceived");
             if (_onAsynchronousMessageReceivedAsync != null)
@@ -240,7 +240,7 @@ namespace Helsenorge.Messaging
         /// <param name="action">The delegate that should be called</param>
         public void RegisterAsynchronousMessageReceivedStartingCallbackAsync(Func<MessageListener, IncomingMessage, Task> action) => _onAsynchronousMessageReceivedStartingAsync = action;
 
-        async Task IMessagingNotification.NotifyAsynchronousMessageReceivedStarting(MessageListener listener, IncomingMessage message)
+        async Task IMessagingNotification.NotifyAsynchronousMessageReceivedStartingAsync(MessageListener listener, IncomingMessage message)
         {
             _logger.LogDebug("NotifyAsynchronousMessageReceivedStarting");
             if (_onAsynchronousMessageReceivedStartingAsync != null)
@@ -264,7 +264,7 @@ namespace Helsenorge.Messaging
         /// <param name="action">The delegate that should be called</param>
         public void RegisterAsynchronousMessageReceivedCompletedCallbackAsync(Func<IncomingMessage, Task> action) => _onAsynchronousMessageReceivedCompletedAsync = action;
 
-        async Task IMessagingNotification.NotifyAsynchronousMessageReceivedCompleted(IncomingMessage message)
+        async Task IMessagingNotification.NotifyAsynchronousMessageReceivedCompletedAsync(IncomingMessage message)
         {
             _logger.LogDebug("NotifyAsynchronousMessageReceivedCompleted");
             if (_onAsynchronousMessageReceivedCompletedAsync != null)
@@ -287,7 +287,7 @@ namespace Helsenorge.Messaging
         /// <param name="action">The delegate that should be called</param>
         public void RegisterErrorMessageReceivedCallbackAsync(Func<IMessagingMessage, Task> action) => _onErrorMessageReceivedAsync = action;
 
-        async Task IMessagingNotification.NotifyErrorMessageReceived(IMessagingMessage message)
+        async Task IMessagingNotification.NotifyErrorMessageReceivedAsync(IMessagingMessage message)
         {
             _logger.LogDebug("NotifyErrorMessageReceived");
             if (_onErrorMessageReceivedAsync != null)
@@ -311,7 +311,7 @@ namespace Helsenorge.Messaging
         /// <param name="action">The delegate that should be called</param>
         public void RegisterErrorMessageReceivedStartingCallback(Func<IncomingMessage, Task> action) => _onErrorMessageReceivedStartingAsync = action;
 
-        async Task IMessagingNotification.NotifyErrorMessageReceivedStarting(IncomingMessage message)
+        async Task IMessagingNotification.NotifyErrorMessageReceivedStartingAsync(IncomingMessage message)
         {
             _logger.LogDebug("NotifyErrorMessageReceivedStarting");
             if (_onErrorMessageReceivedStartingAsync != null)
@@ -335,7 +335,7 @@ namespace Helsenorge.Messaging
         /// <param name="action">The delegate that should be called</param>
         public void RegisterSynchronousMessageReceivedCallbackAsync(Func<IncomingMessage, Task<XDocument>> action) => _onSynchronousMessageReceivedAsync = action;
 
-        async Task<XDocument> IMessagingNotification.NotifySynchronousMessageReceived(IncomingMessage message)
+        async Task<XDocument> IMessagingNotification.NotifySynchronousMessageReceivedAsync(IncomingMessage message)
         {
             _logger.LogDebug("NotifySynchronousMessageReceived");
             if (_onSynchronousMessageReceivedAsync != null)
@@ -360,7 +360,7 @@ namespace Helsenorge.Messaging
         /// <param name="action">The delegate that should be called</param>
         public void RegisterSynchronousMessageReceivedCompletedCallbackAsync(Func<IncomingMessage, Task> action) => _onSynchronousMessageReceivedCompletedAsync = action;
 
-        async Task IMessagingNotification.NotifySynchronousMessageReceivedCompleted(IncomingMessage message)
+        async Task IMessagingNotification.NotifySynchronousMessageReceivedCompletedAsync(IncomingMessage message)
         {
             _logger.LogDebug("NotifySynchronousMessageReceivedCompleted");
             if (_onSynchronousMessageReceivedCompletedAsync != null)
@@ -383,7 +383,7 @@ namespace Helsenorge.Messaging
         /// <param name="action">The delegate that should be called</param>
         public void RegisterSynchronousMessageReceivedStartingCallbackAsync(Func<IncomingMessage, Task> action) => _onSynchronousMessageReceivedStartingAsync = action;
 
-        async Task IMessagingNotification.NotifySynchronousMessageReceivedStarting(IncomingMessage message)
+        async Task IMessagingNotification.NotifySynchronousMessageReceivedStartingAsync(IncomingMessage message)
         {
             _logger.LogDebug("NotifySynchronousMessageReceivedStarting");
             if (_onSynchronousMessageReceivedStartingAsync != null)
@@ -406,7 +406,7 @@ namespace Helsenorge.Messaging
         /// <param name="action">The delegate that should be called</param>
         public void RegisterHandledExceptionCallbackAsync(Func<IMessagingMessage, Exception, Task> action) => _onHandledExceptionAsync = action;
 
-        async Task IMessagingNotification.NotifyHandledException(IMessagingMessage message, Exception ex)
+        async Task IMessagingNotification.NotifyHandledExceptionAsync(IMessagingMessage message, Exception ex)
         {
             _logger.LogDebug("NotifyHandledException");
             if (_onHandledExceptionAsync != null)
@@ -429,7 +429,7 @@ namespace Helsenorge.Messaging
         /// <param name="action">The delegate that should be called</param>
         public void RegisterUnhandledExceptionCallbackAsync(Func<IMessagingMessage, Exception, Task> action) => _onUnhandledExceptionAsync = action;
 
-        async Task IMessagingNotification.NotifyUnhandledException(IMessagingMessage message, Exception ex)
+        async Task IMessagingNotification.NotifyUnhandledExceptionAsync(IMessagingMessage message, Exception ex)
         {
             _logger.LogDebug("NotifyUnhandledException");
             if (_onUnhandledExceptionAsync != null)

@@ -49,9 +49,9 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
         protected override async Task NotifyMessageProcessingStartedAsync(MessageListener listener, IncomingMessage message)
         {
-            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
-            await MessagingNotification.NotifyErrorMessageReceivedStarting(message).ConfigureAwait(false);
-            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceivedStartingAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            await MessagingNotification.NotifyErrorMessageReceivedStartingAsync(message).ConfigureAwait(false);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceivedStartingAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
         /// <summary>
         /// Called to process message
@@ -112,9 +112,9 @@ namespace Helsenorge.Messaging.Bus.Receivers
 
             Logger.LogExternalReportedError(stringBuilder.ToString());
 
-            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
-            await MessagingNotification.NotifyErrorMessageReceived(rawMessage).ConfigureAwait(false);
-            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceivedAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            await MessagingNotification.NotifyErrorMessageReceivedAsync(rawMessage).ConfigureAwait(false);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyErrorMessageReceivedAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
 
         /// <summary>

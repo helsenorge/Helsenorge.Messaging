@@ -194,32 +194,32 @@ namespace Helsenorge.Messaging.Bus.Senders
             }
         }
 
-        public Task NotifyAsynchronousMessageReceived(IncomingMessage message)
+        public Task NotifyAsynchronousMessageReceivedAsync(IncomingMessage message)
         {
             return Task.CompletedTask;
         }
 
-        public Task NotifyAsynchronousMessageReceivedStarting(MessageListener listener, IncomingMessage message)
+        public Task NotifyAsynchronousMessageReceivedStartingAsync(MessageListener listener, IncomingMessage message)
         {
             return Task.CompletedTask;
         }
 
-        public Task NotifyAsynchronousMessageReceivedCompleted(IncomingMessage message)
+        public Task NotifyAsynchronousMessageReceivedCompletedAsync(IncomingMessage message)
         {
             return Task.CompletedTask;
         }
 
-        public Task NotifyErrorMessageReceived(IMessagingMessage message)
+        public Task NotifyErrorMessageReceivedAsync(IMessagingMessage message)
         {
             return Task.CompletedTask;
         }
 
-        public Task NotifyErrorMessageReceivedStarting(IncomingMessage message)
+        public Task NotifyErrorMessageReceivedStartingAsync(IncomingMessage message)
         {
             return Task.CompletedTask;
         }
 
-        public async Task<XDocument> NotifySynchronousMessageReceived(IncomingMessage message)
+        public async Task<XDocument> NotifySynchronousMessageReceivedAsync(IncomingMessage message)
         {
             if (OnSynchronousReplyMessageReceived != null)
             {
@@ -228,22 +228,22 @@ namespace Helsenorge.Messaging.Bus.Senders
             return message.Payload;
         }
 
-        public Task NotifySynchronousMessageReceivedCompleted(IncomingMessage message)
+        public Task NotifySynchronousMessageReceivedCompletedAsync(IncomingMessage message)
         {
             return Task.CompletedTask;
         }
 
-        public Task NotifySynchronousMessageReceivedStarting(IncomingMessage message)
+        public Task NotifySynchronousMessageReceivedStartingAsync(IncomingMessage message)
         {
             return Task.CompletedTask;
         }
 
-        public Task NotifyUnhandledException(IMessagingMessage message, Exception ex)
+        public Task NotifyUnhandledExceptionAsync(IMessagingMessage message, Exception ex)
         {
             return Task.CompletedTask;
         }
 
-        public Task NotifyHandledException(IMessagingMessage message, Exception ex)
+        public Task NotifyHandledExceptionAsync(IMessagingMessage message, Exception ex)
         {
             return Task.CompletedTask;
         }

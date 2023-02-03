@@ -45,9 +45,9 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
         protected override async Task NotifyMessageProcessingStartedAsync(MessageListener listener, IncomingMessage message)
         {
-            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
-            await MessagingNotification.NotifyAsynchronousMessageReceivedStarting(listener, message).ConfigureAwait(false);
-            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceivedStarting), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceivedStartingAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            await MessagingNotification.NotifyAsynchronousMessageReceivedStartingAsync(listener, message).ConfigureAwait(false);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceivedStartingAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
         /// <summary>
         /// Called to process message
@@ -56,9 +56,9 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// <param name="message">The refined message data. All information should now be present</param>
         protected override async Task NotifyMessageProcessingReadyAsync(IMessagingMessage rawMessage, IncomingMessage message)
         {
-            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
-            await MessagingNotification.NotifyAsynchronousMessageReceived(message).ConfigureAwait(false);
-            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceivedAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            await MessagingNotification.NotifyAsynchronousMessageReceivedAsync(message).ConfigureAwait(false);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceivedAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
         /// <summary>
         /// Called when message processing is complete
@@ -66,9 +66,9 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// <param name="message">Reference to the incoming message</param>
         protected override async Task NotifyMessageProcessingCompletedAsync(IncomingMessage message)
         {
-            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceivedCompleted), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
-            await MessagingNotification.NotifyAsynchronousMessageReceivedCompleted(message).ConfigureAwait(false);
-            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceivedCompleted), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceivedCompletedAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
+            await MessagingNotification.NotifyAsynchronousMessageReceivedCompletedAsync(message).ConfigureAwait(false);
+            Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifyAsynchronousMessageReceivedCompletedAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
     }
 }
