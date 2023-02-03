@@ -121,7 +121,7 @@ namespace Helsenorge.Messaging.Bus
         /// <param name="replyTo">An optional ReplyTo queue that should be used. Only relevant in synchronous messaging</param>
         /// <param name="correlationId">The correlation id to use when sending the message. Only relevant in synchronous messaging</param>
         /// <returns></returns>
-        internal async Task Send(ILogger logger, OutgoingMessage outgoingMessage, QueueType queueType, string replyTo = null, string correlationId = null)
+        internal async Task SendAsync(ILogger logger, OutgoingMessage outgoingMessage, QueueType queueType, string replyTo = null, string correlationId = null)
         {
             if (outgoingMessage == null) throw new ArgumentNullException(nameof(outgoingMessage));
             if (string.IsNullOrEmpty(outgoingMessage.MessageId)) throw new ArgumentNullException(nameof(outgoingMessage.MessageId));
@@ -131,11 +131,11 @@ namespace Helsenorge.Messaging.Bus
             var queueName =
                 (queueType == QueueType.SynchronousReply) ?
                     replyTo :
-                    await ConstructQueueName(logger, outgoingMessage.ToHerId, queueType).ConfigureAwait(false);
+                    await ConstructQueueNameAsync(logger, outgoingMessage.ToHerId, queueType).ConfigureAwait(false);
 
             logger.LogStartSend(queueType, outgoingMessage.MessageFunction, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, $"Sending message using host and queue: {HostnameAndPath}/{queueName}", outgoingMessage.Payload);
 
-            var profile = await FindProfile(logger, outgoingMessage);
+            var profile = await FindProfileAsync(logger, outgoingMessage);
 
             var stopwatch = new Stopwatch();
             var contentType = Core.MessageProtection.ContentType;
@@ -214,7 +214,7 @@ namespace Helsenorge.Messaging.Bus
             if (queueType != QueueType.SynchronousReply)
             {
                 messagingMessage.ReplyTo =
-                    replyTo ?? await ConstructQueueName(logger, outgoingMessage.FromHerId, queueType).ConfigureAwait(false);
+                    replyTo ?? await ConstructQueueNameAsync(logger, outgoingMessage.FromHerId, queueType).ConfigureAwait(false);
             }
             messagingMessage.ContentType = Core.MessageProtection.ContentType;
             messagingMessage.MessageId = outgoingMessage.MessageId;
@@ -234,7 +234,7 @@ namespace Helsenorge.Messaging.Bus
                 messagingMessage.CpaId = profile.CpaId.ToString("D");
             }
 
-            await Send(logger, messagingMessage).ConfigureAwait(false);
+            await SendAsync(logger, messagingMessage).ConfigureAwait(false);
 
             logger.LogEndSend(queueType, messagingMessage.MessageFunction, messagingMessage.FromHerId, messagingMessage.ToHerId, messagingMessage.MessageId);
         }
@@ -245,7 +245,7 @@ namespace Helsenorge.Messaging.Bus
         /// <param name="logger"></param>
         /// <param name="message">The prepared message</param>
         /// <returns></returns>
-        private async Task Send(ILogger logger, IMessagingMessage message)
+        private async Task SendAsync(ILogger logger, IMessagingMessage message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
@@ -283,7 +283,7 @@ namespace Helsenorge.Messaging.Bus
         /// <param name="errorDescription">The error description to report</param>
         /// <param name="additionalData">Additional information to include</param>
         /// <returns></returns>
-        private async Task SendError(ILogger logger, IMessagingMessage originalMessage, string errorCode, string errorDescription, IEnumerable<string> additionalData) //TODO: Sjekk at SendError fungerer med Http-meldinger
+        private async Task SendErrorAsync(ILogger logger, IMessagingMessage originalMessage, string errorCode, string errorDescription, IEnumerable<string> additionalData) //TODO: Sjekk at SendError fungerer med Http-meldinger
         {
             if (originalMessage == null) throw new ArgumentNullException(nameof(originalMessage));
             if (string.IsNullOrEmpty(errorCode)) throw new ArgumentNullException(nameof(errorCode));
@@ -298,7 +298,7 @@ namespace Helsenorge.Messaging.Bus
             // Clones original message, but leaves out the payload
             var clonedMessage = originalMessage.Clone(false);
             // update some properties on the cloned message
-            clonedMessage.To = await ConstructQueueName(logger, originalMessage.FromHerId, QueueType.Error).ConfigureAwait(false); // change target 
+            clonedMessage.To = await ConstructQueueNameAsync(logger, originalMessage.FromHerId, QueueType.Error).ConfigureAwait(false); // change target 
             clonedMessage.TimeToLive = Settings.Error.TimeToLive;
             clonedMessage.FromHerId = originalMessage.ToHerId;
             clonedMessage.ToHerId = originalMessage.FromHerId;
@@ -342,9 +342,9 @@ namespace Helsenorge.Messaging.Bus
 
             logger.LogWarning("Reporting error to sender. FromHerId: {0} ToHerId: {1} ErrorCode: {2} ErrorDescription: {3} AdditionalData: {4}", originalMessage.FromHerId, originalMessage.ToHerId, errorCode, errorDescription, additionDataValue);
 
-            logger.LogStartSend(QueueType.Error, clonedMessage.MessageFunction, Core.Settings.MyHerId, clonedMessage.ToHerId, clonedMessage.MessageId, additionDataValue, null);
-            await Send(logger, clonedMessage).ConfigureAwait(false);
-            logger.LogEndSend(QueueType.Error, clonedMessage.MessageFunction, Core.Settings.MyHerId, clonedMessage.ToHerId, clonedMessage.MessageId);
+            logger.LogStartSend(QueueType.Error, clonedMessage.MessageFunction, clonedMessage.FromHerId, clonedMessage.ToHerId, clonedMessage.MessageId, additionDataValue, null);
+            await SendAsync(logger, clonedMessage).ConfigureAwait(false);
+            logger.LogEndSend(QueueType.Error, clonedMessage.MessageFunction, clonedMessage.FromHerId, clonedMessage.ToHerId, clonedMessage.MessageId);
         }
 
         /// <summary>
@@ -364,7 +364,7 @@ namespace Helsenorge.Messaging.Bus
             return queueAddress.Substring(i + 1);
         }
 
-        private async Task<string> ConstructQueueName(ILogger logger, int herId, QueueType type)
+        private async Task<string> ConstructQueueNameAsync(ILogger logger, int herId, QueueType type)
         {
             var details = await Core.AddressRegistry.FindCommunicationPartyDetailsAsync(logger, herId).ConfigureAwait(false);
             if (details == null)
@@ -396,7 +396,7 @@ namespace Helsenorge.Messaging.Bus
         /// <param name="description"></param>
         /// <param name="additionalData"></param>
         /// <param name="ex"></param>
-        internal async Task ReportErrorToExternalSender(
+        internal async Task ReportErrorToExternalSenderAsync(
             ILogger logger,
             EventId id,
             IMessagingMessage originalMessage,
@@ -406,7 +406,7 @@ namespace Helsenorge.Messaging.Bus
             Exception ex = null)
         {
             logger.LogWarning(id, ex, description);
-            await SendError(logger, originalMessage, errorCode, description, additionalData).ConfigureAwait(false);
+            await SendErrorAsync(logger, originalMessage, errorCode, description, additionalData).ConfigureAwait(false);
             RemoveMessageFromQueueAfterError(logger, originalMessage);
         }
 
@@ -445,7 +445,7 @@ namespace Helsenorge.Messaging.Bus
         /// <param name="logger"></param>
         /// <param name="message"></param>
         /// <returns>CollaborationProtocolProfile</returns>
-        internal async Task<CollaborationProtocolProfile> FindProfile(ILogger logger, OutgoingMessage message)
+        internal async Task<CollaborationProtocolProfile> FindProfileAsync(ILogger logger, OutgoingMessage message)
         {
             var messageFunction = string.IsNullOrEmpty(message.ReceiptForMessageFunction)
                 ? message.MessageFunction
