@@ -31,7 +31,7 @@ namespace Helsenorge.Messaging.Bus
             _applicationProperties = applicationProperties;
         }
 
-        public void RegisterAlternateMessagingFactory(IMessagingFactory alternateMessagingFactory)
+        public void RegisterAlternateMessagingFactoryAsync(IMessagingFactory alternateMessagingFactory)
         {
             _alternateMessagingFactor = alternateMessagingFactory;
         }
@@ -43,12 +43,12 @@ namespace Helsenorge.Messaging.Bus
             var connection = new BusConnection(_settings.ConnectionString, _settings.MessageBrokerDialect, _settings.MaxLinksPerSession, _settings.MaxSessionsPerConnection, logger);
             return Task.FromResult<IMessagingFactory>(new BusFactory(logger, connection, _applicationProperties));
         }
-        public async Task<IMessagingMessage> CreateMessage(ILogger logger, Stream stream)
+        public async Task<IMessagingMessage> CreateMessageAsync(ILogger logger, Stream stream)
         {
-            var factory = await FindNextFactory(logger).ConfigureAwait(false);
+            var factory = await FindNextFactoryAsync(logger).ConfigureAwait(false);
             return await factory.CreateMessage(stream).ConfigureAwait(false);
         }
-        public async Task<IMessagingFactory> FindNextFactory(ILogger logger)
+        public async Task<IMessagingFactory> FindNextFactoryAsync(ILogger logger)
         {
             await _semaphore.WaitAsync().ConfigureAwait(false);
             try

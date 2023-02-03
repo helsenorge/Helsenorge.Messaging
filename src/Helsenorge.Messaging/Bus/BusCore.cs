@@ -208,7 +208,7 @@ namespace Helsenorge.Messaging.Bus
 
             logger.LogBeforeFactoryPoolCreateMessage(outgoingMessage.MessageFunction, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
             // Create an empty message
-            var messagingMessage = await FactoryPool.CreateMessage(logger, stream).ConfigureAwait(false);
+            var messagingMessage = await FactoryPool.CreateMessageAsync(logger, stream).ConfigureAwait(false);
             logger.LogAfterFactoryPoolCreateMessage(outgoingMessage.MessageFunction, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
 
             if (queueType != QueueType.SynchronousReply)
@@ -437,7 +437,7 @@ namespace Helsenorge.Messaging.Bus
         /// Registers an alternate messaging factory
         /// </summary>
         /// <param name="factory"></param>
-        public void RegisterAlternateMessagingFactory(IMessagingFactory factory) => FactoryPool.RegisterAlternateMessagingFactory(factory);
+        public void RegisterAlternateMessagingFactory(IMessagingFactory factory) => FactoryPool.RegisterAlternateMessagingFactoryAsync(factory);
 
         /// <summary>
         /// Find CPA/CPP

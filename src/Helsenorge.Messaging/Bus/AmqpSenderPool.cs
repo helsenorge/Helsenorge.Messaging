@@ -23,7 +23,7 @@ namespace Helsenorge.Messaging.Bus
         }
         protected override async Task<IMessagingSender> CreateEntityAsync(ILogger logger, string id)
         {
-            var factory = await _factoryPool.FindNextFactory(logger).ConfigureAwait(false);
+            var factory = await _factoryPool.FindNextFactoryAsync(logger).ConfigureAwait(false);
             return factory.CreateMessageSender(id);
         }
 

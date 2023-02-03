@@ -14,9 +14,9 @@ namespace Helsenorge.Messaging.Abstractions
 {
     internal interface IBusFactoryPool
     {
-        Task<IMessagingFactory> FindNextFactory(ILogger logger);
-        void RegisterAlternateMessagingFactory(IMessagingFactory factory);
+        Task<IMessagingFactory> FindNextFactoryAsync(ILogger logger);
+        void RegisterAlternateMessagingFactoryAsync(IMessagingFactory factory);
         Task ShutdownAsync(ILogger logger);
-        Task<IMessagingMessage> CreateMessage(ILogger logger, Stream stream);
+        Task<IMessagingMessage> CreateMessageAsync(ILogger logger, Stream stream);
     }
 }
