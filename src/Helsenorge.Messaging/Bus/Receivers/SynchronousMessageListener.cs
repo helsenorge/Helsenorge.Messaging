@@ -73,7 +73,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
                 MessageFunction = message.MessageFunction,
                 MessageId = Guid.NewGuid().ToString()
             };
-            await BusCore.Send(Logger, outgoingMessage, QueueType.SynchronousReply, rawMessage.ReplyTo, rawMessage.CorrelationId).ConfigureAwait(false);
+            await BusCore.SendAsync(Logger, outgoingMessage, QueueType.SynchronousReply, rawMessage.ReplyTo, rawMessage.CorrelationId).ConfigureAwait(false);
         }
         /// <summary>
         /// Called when message processing is complete

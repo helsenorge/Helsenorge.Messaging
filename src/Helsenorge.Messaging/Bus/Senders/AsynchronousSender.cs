@@ -26,7 +26,7 @@ namespace Helsenorge.Messaging.Bus.Senders
 
         public async Task SendAsync(ILogger logger, OutgoingMessage message)
         {
-            await _busCore.Send(logger, message, QueueType.Asynchronous).ConfigureAwait(false);
+            await _busCore.SendAsync(logger, message, QueueType.Asynchronous).ConfigureAwait(false);
         }
     }
 }

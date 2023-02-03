@@ -110,7 +110,7 @@ namespace Helsenorge.Messaging
                     return;
                 case DeliveryProtocol.Unknown:
                 default:
-                    var profile = await BusCore.FindProfile(_logger, message).ConfigureAwait(false);
+                    var profile = await BusCore.FindProfileAsync(_logger, message).ConfigureAwait(false);
                     throw new MessagingException($"Invalid delivery protocol. Message Function {message.MessageFunction} might be missing from either CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}.")
                     {
                         EventId = EventIds.InvalidMessageFunction
@@ -133,7 +133,7 @@ namespace Helsenorge.Messaging
                     return await _synchronousServiceBusSender.SendAsync(_logger, message).ConfigureAwait(false);
                 case DeliveryProtocol.Unknown:
                 default:
-                    var profile = await BusCore.FindProfile(_logger, message).ConfigureAwait(false);
+                    var profile = await BusCore.FindProfileAsync(_logger, message).ConfigureAwait(false);
                     throw new MessagingException($"Invalid delivery protocol. Message Function {message.MessageFunction} might be missing from either CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}.")
                     {
                         EventId = EventIds.InvalidMessageFunction
@@ -157,7 +157,7 @@ namespace Helsenorge.Messaging
                 ? message.MessageFunction
                 : message.ReceiptForMessageFunction;
 
-            var profile = await BusCore.FindProfile(logger, message).ConfigureAwait(false);
+            var profile = await BusCore.FindProfileAsync(logger, message).ConfigureAwait(false);
             var collaborationProtocolMessage = profile?.FindMessageForReceiver(messageFunction);
 
             if ((profile != null && DummyCollaborationProtocolProfileFactory.IsDummyProfile(profile))

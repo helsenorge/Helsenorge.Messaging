@@ -58,7 +58,7 @@ namespace Helsenorge.Messaging.Bus.Senders
 
         public async Task<XDocument> SendAsync(ILogger logger, OutgoingMessage message)
         {
-            await _busCore.Send(logger, message, QueueType.Synchronous, _busCore.Settings.Synchronous.FindReplyQueueForMe()).ConfigureAwait(false);
+            await _busCore.SendAsync(logger, message, QueueType.Synchronous, _busCore.Settings.Synchronous.FindReplyQueueForMe()).ConfigureAwait(false);
                         
             var listener = new SynchronousReplyListener(_busCore, logger, this);
             //stopwatch used to measure response time
