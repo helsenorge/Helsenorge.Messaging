@@ -46,7 +46,7 @@ namespace Helsenorge.Messaging.Bus
         public async Task<IMessagingMessage> CreateMessageAsync(ILogger logger, Stream stream)
         {
             var factory = await FindNextFactoryAsync(logger).ConfigureAwait(false);
-            return await factory.CreateMessage(stream).ConfigureAwait(false);
+            return await factory.CreateMessageAsync(stream).ConfigureAwait(false);
         }
         public async Task<IMessagingFactory> FindNextFactoryAsync(ILogger logger)
         {
