@@ -35,6 +35,6 @@ namespace Helsenorge.Messaging.Abstractions
         /// <summary>
         /// Closes down links, sessions and connections.
         /// </summary>
-        Task Close();
+        Task CloseAsync();
     }
 }
