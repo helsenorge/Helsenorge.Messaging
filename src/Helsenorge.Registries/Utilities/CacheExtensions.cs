@@ -17,7 +17,7 @@ namespace Helsenorge.Registries.Utilities
 {
     internal static class CacheExtensions
     {
-        public static async Task<T> ReadValueFromCache<T>(
+        public static async Task<T> ReadValueFromCacheAsync<T>(
             ILogger logger,
             IDistributedCache cache,
             string key,
@@ -31,7 +31,7 @@ namespace Helsenorge.Registries.Utilities
                 if (cached is null)
                     return default;
 
-                return await ByteArrayToObject<T>(cached, formatter).ConfigureAwait(false);
+                return await ByteArrayToObjectAsync<T>(cached, formatter).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -40,7 +40,7 @@ namespace Helsenorge.Registries.Utilities
             }
         }
 
-        public static async Task WriteValueToCache(
+        public static async Task WriteValueToCacheAsync(
             ILogger logger,
             IDistributedCache cache,
             string key, object value,
@@ -81,7 +81,7 @@ namespace Helsenorge.Registries.Utilities
             }
         }
 
-        private static async Task<T> ByteArrayToObject<T>(byte[] value, CacheFormatterType formatter)
+        private static async Task<T> ByteArrayToObjectAsync<T>(byte[] value, CacheFormatterType formatter)
             where T : class
         {
             if (typeof(T) == typeof(byte[])) return value as T;
@@ -89,7 +89,7 @@ namespace Helsenorge.Registries.Utilities
             switch (formatter)
             {
                 case CacheFormatterType.BinaryFormatter:
-                    return await ByteArrayToObject<T>(value);
+                    return await ByteArrayToObjectAsync<T>(value);
                 case CacheFormatterType.XmlFormatter:
                     return await XmlCacheFormatter.DeserializeAsync<T>(value);
                 default:
@@ -107,7 +107,7 @@ namespace Helsenorge.Registries.Utilities
             return memoryStream.ToArray();
         }
 
-        private static async Task<T> ByteArrayToObject<T>(byte[] value) where T : class
+        private static async Task<T> ByteArrayToObjectAsync<T>(byte[] value) where T : class
         {
             using var memoryStream = new MemoryStream();
             var formatter = new BinaryFormatter();

@@ -72,12 +72,12 @@ namespace Helsenorge.Registries
             if (!forceUpdate)
             {
                 communicationPartyDetails = _settings.CachingFormatter == CacheFormatterType.XmlFormatter
-                    ? await CacheExtensions.ReadValueFromCache<CommunicationPartyDetails>(
+                    ? await CacheExtensions.ReadValueFromCacheAsync<CommunicationPartyDetails>(
                         logger,
                         _cache,
                         key,
                         _settings.CachingFormatter).ConfigureAwait(false)
-                    : MapCommunicationPartyDetails(await CacheExtensions.ReadValueFromCache<CommunicationParty>(
+                    : MapCommunicationPartyDetails(await CacheExtensions.ReadValueFromCacheAsync<CommunicationParty>(
                         logger,
                         _cache,
                         key,
@@ -111,7 +111,7 @@ namespace Helsenorge.Registries
                 if (_settings.CachingFormatter == CacheFormatterType.XmlFormatter)
                 {
                     // Store the mapped CommunicationPartyDetails if we are using the XmlFormatter
-                    await CacheExtensions.WriteValueToCache(
+                    await CacheExtensions.WriteValueToCacheAsync(
                         logger,
                         _cache,
                         key,
@@ -121,7 +121,7 @@ namespace Helsenorge.Registries
                 }
                 else
                 {
-                    await CacheExtensions.WriteValueToCache(
+                    await CacheExtensions.WriteValueToCacheAsync(
                         logger,
                         _cache,
                         key,
@@ -162,12 +162,12 @@ namespace Helsenorge.Registries
             if (!forceUpdate)
             {
                 certificateDetails = _settings.CachingFormatter == CacheFormatterType.XmlFormatter
-                    ? await CacheExtensions.ReadValueFromCache<Abstractions.CertificateDetails>(
+                    ? await CacheExtensions.ReadValueFromCacheAsync<Abstractions.CertificateDetails>(
                         logger,
                         _cache,
                         key,
                         _settings.CachingFormatter).ConfigureAwait(false)
-                    : MapCertificateDetails(herId, await CacheExtensions.ReadValueFromCache<AddressService.CertificateDetails>(
+                    : MapCertificateDetails(herId, await CacheExtensions.ReadValueFromCacheAsync<AddressService.CertificateDetails>(
                         logger,
                         _cache,
                         key,
@@ -196,7 +196,7 @@ namespace Helsenorge.Registries
                 //        being .XmlFormatter or .BinaryFormatter.
                 if (_settings.CachingFormatter == CacheFormatterType.XmlFormatter)
                 {
-                    await CacheExtensions.WriteValueToCache(
+                    await CacheExtensions.WriteValueToCacheAsync(
                         logger,
                         _cache,
                         key,
@@ -206,7 +206,7 @@ namespace Helsenorge.Registries
                 }
                 else
                 {
-                    await CacheExtensions.WriteValueToCache(
+                    await CacheExtensions.WriteValueToCacheAsync(
                         logger,
                         _cache,
                         key,
@@ -247,12 +247,12 @@ namespace Helsenorge.Registries
             if (!forceUpdate)
             {
                 certificateDetails = _settings.CachingFormatter == CacheFormatterType.XmlFormatter
-                    ? await CacheExtensions.ReadValueFromCache<Abstractions.CertificateDetails>(
+                    ? await CacheExtensions.ReadValueFromCacheAsync<Abstractions.CertificateDetails>(
                         logger,
                         _cache,
                         key,
                         _settings.CachingFormatter).ConfigureAwait(false)
-                    : MapCertificateDetails(herId, await CacheExtensions.ReadValueFromCache<AddressService.CertificateDetails>(
+                    : MapCertificateDetails(herId, await CacheExtensions.ReadValueFromCacheAsync<AddressService.CertificateDetails>(
                         logger,
                         _cache,
                         key,
@@ -281,7 +281,7 @@ namespace Helsenorge.Registries
                 //        being .XmlFormatter or .BinaryFormatter.
                 if (_settings.CachingFormatter == CacheFormatterType.XmlFormatter)
                 {
-                    await CacheExtensions.WriteValueToCache(
+                    await CacheExtensions.WriteValueToCacheAsync(
                         logger,
                         _cache,
                         key,
@@ -291,7 +291,7 @@ namespace Helsenorge.Registries
                 }
                 else
                 {
-                    await CacheExtensions.WriteValueToCache(
+                    await CacheExtensions.WriteValueToCacheAsync(
                         logger,
                         _cache,
                         key,
