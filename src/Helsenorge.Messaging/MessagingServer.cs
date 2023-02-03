@@ -154,13 +154,13 @@ namespace Helsenorge.Messaging
         {
             _logger.LogInformation("Messaging Server starting up");
 
-            if (!await CanAuthenticateAgainstMessageBroker())
+            if (!await CanAuthenticateAgainstMessageBrokerAsync())
                 throw new MessagingException("Non-successful authentication or connection attempt to the message broker on start-up. This can be caused by incorrect credentials / configuration errors.") { EventId = EventIds.ConnectionToMessageBrokerFailed };
 
-            if (!await HasCommonAncestor(BusCore.Settings.MyHerIds.ToArray()))
+            if (!await HasCommonAncestorAsync(BusCore.Settings.MyHerIds.ToArray()))
                 throw new MessagingException("There must be a common set of ancestor queues when receiving from multiple HER-Ids.");
 
-            var queueNames = await GetCommonAncestor(BusCore.Settings.MyHerIds);
+            var queueNames = await GetCommonAncestorAsync(BusCore.Settings.MyHerIds);
 
             for (var i = 0; i < Settings.BusSettings.Asynchronous.ProcessingTasks; i++)
             {
@@ -442,7 +442,7 @@ namespace Helsenorge.Messaging
             }
         }
 
-        private async Task<bool> HasCommonAncestor(int[] herIds)
+        private async Task<bool> HasCommonAncestorAsync(int[] herIds)
         {
             if (herIds.Count() <= 1)
                 return true;
@@ -483,7 +483,7 @@ namespace Helsenorge.Messaging
             return true;
         }
 
-        private async Task<QueueNames> GetCommonAncestor(IEnumerable<int> herIds)
+        private async Task<QueueNames> GetCommonAncestorAsync(IEnumerable<int> herIds)
         {
             var communicationPartyDetailsList = new List<CommunicationPartyDetails>();
             foreach (var herId in herIds)
@@ -508,7 +508,7 @@ namespace Helsenorge.Messaging
         /// Tries to authenticate against the message broker.
         /// </summary>
         /// <returns>true if authentication is successful, otherwise false.</returns>
-        protected virtual async Task<bool> CanAuthenticateAgainstMessageBroker()
+        protected virtual async Task<bool> CanAuthenticateAgainstMessageBrokerAsync()
         {
             BusConnection connection = null;
             try
