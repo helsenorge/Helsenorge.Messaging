@@ -101,7 +101,7 @@ namespace Helsenorge.Messaging
         /// <returns></returns>
         public async Task SendAndContinueAsync(OutgoingMessage message)
         {
-            var collaborationProtocolMessage = await PreCheck(_logger, message).ConfigureAwait(false);
+            var collaborationProtocolMessage = await PreCheckAsync(_logger, message).ConfigureAwait(false);
 
             switch (collaborationProtocolMessage.DeliveryProtocol)
             {
@@ -125,7 +125,7 @@ namespace Helsenorge.Messaging
         /// <returns>The received XML</returns>
         public async Task<XDocument> SendAndWaitAsync(OutgoingMessage message)
         {
-            var collaborationProtocolMessage = await PreCheck(_logger, message).ConfigureAwait(false);
+            var collaborationProtocolMessage = await PreCheckAsync(_logger, message).ConfigureAwait(false);
 
             switch (collaborationProtocolMessage.DeliveryProtocol)
             {
@@ -147,7 +147,7 @@ namespace Helsenorge.Messaging
         /// <param name="action">The delegate that should be called</param>
         public void RegisterSynchronousReplyMessageReceivedCallback(Func<IncomingMessage, Task> action) => _synchronousServiceBusSender.OnSynchronousReplyMessageReceived = action;
 
-        private async Task<CollaborationProtocolMessage> PreCheck(ILogger logger, OutgoingMessage message)
+        private async Task<CollaborationProtocolMessage> PreCheckAsync(ILogger logger, OutgoingMessage message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
             if (string.IsNullOrEmpty(message.MessageFunction)) throw new ArgumentNullException(nameof(message.MessageFunction));
