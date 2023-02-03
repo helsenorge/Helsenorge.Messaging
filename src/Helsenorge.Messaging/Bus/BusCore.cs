@@ -253,7 +253,7 @@ namespace Helsenorge.Messaging.Bus
 
             try
             {
-                messageSender = await SenderPool.CreateCachedMessageSender(logger, message.To).ConfigureAwait(false);
+                messageSender = await SenderPool.CreateCachedMessageSenderAsync(logger, message.To).ConfigureAwait(false);
                 await messageSender.SendAsync(message).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -269,7 +269,7 @@ namespace Helsenorge.Messaging.Bus
             {
                 if (messageSender != null)
                 {
-                    await SenderPool.ReleaseCachedMessageSender(logger, message.To).ConfigureAwait(false);
+                    await SenderPool.ReleaseCachedMessageSenderAsync(logger, message.To).ConfigureAwait(false);
                 }
             }
         }
