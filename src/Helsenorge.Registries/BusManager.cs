@@ -70,10 +70,10 @@ namespace Helsenorge.Registries.Utilities
 
         [ExcludeFromCodeCoverage] // Requires wire communication.
         private Task<T> Invoke<T>(Func<IServiceBusManagerV2, Task<T>> action, string methodName)
-            => _invoker.Execute(_logger, action, methodName);
+            => _invoker.ExecuteAsync(_logger, action, methodName);
         
         [ExcludeFromCodeCoverage] // Requires wire communication.
         private Task Invoke(Func<IServiceBusManagerV2, Task> action, string methodName)
-            => _invoker.Execute(_logger, action, methodName);
+            => _invoker.ExecuteAsync(_logger, action, methodName);
     }
 }

@@ -390,6 +390,6 @@ namespace Helsenorge.Registries
 
         [ExcludeFromCodeCoverage] // requires wire communication
         private Task<T> Invoke<T>(ILogger logger, Func<ICommunicationPartyService, Task<T>> action, string methodName)
-            => _invoker.Execute(logger, action, methodName);
+            => _invoker.ExecuteAsync(logger, action, methodName);
     }
 }
