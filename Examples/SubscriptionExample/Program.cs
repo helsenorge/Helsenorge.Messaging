@@ -51,7 +51,7 @@ namespace SubscriptionExample
                 var subscription = await busManager.SubscribeAsync(SubscriptionEventSource.AddressRegister, "SubscriptionExample");
 
                 // Create a receiver that will listen to our subscription queue.
-                var receiver = await linkFactoryPool.CreateCachedMessageReceiver(subscription.QueueName);
+                var receiver = await linkFactoryPool.CreateCachedMessageReceiverAsync(subscription.QueueName);
 
                 Console.WriteLine($"Trying to connect to queue: '{subscription.QueueName}'...");
                 if (!await receiver.TryConnectToQueueAsync())

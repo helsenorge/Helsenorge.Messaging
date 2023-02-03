@@ -47,23 +47,23 @@ namespace Helsenorge.Messaging.Bus
         /// <summary>Creates a pooled receiver link of type <see cref="IMessagingReceiver"/>.</summary>
         /// <param name="queue">The path to the queue you want to receive messages from.</param>
         /// <returns>A <see cref="IMessagingReceiver"/></returns>
-        public Task<IMessagingReceiver> CreateCachedMessageReceiver(string queue)
+        public Task<IMessagingReceiver> CreateCachedMessageReceiverAsync(string queue)
             => _receiverPool.CreateCachedMessageReceiver(_logger, queue);
 
         /// <summary>Release a pooled receiver link tied to the 'queue'.</summary>
         /// <param name="queue">The queue address for the link we want to release</param>
-        public Task ReleaseCachedMessageReceiver(string queue)
+        public Task ReleaseCachedMessageReceiverAsync(string queue)
             => _receiverPool.ReleaseCachedMessageReceiver(_logger, queue);
 
         /// <summary>Creates a pooled sender link of type <see cref="IMessagingSender"/>.</summary>
         /// <param name="queue">The path to the queue you want to send messages to.</param>
         /// <returns>A <see cref="IMessagingSender"/></returns>
-        public Task<IMessagingSender> CreateCachedMessageSender(string queue)
+        public Task<IMessagingSender> CreateCachedMessageSenderAsync(string queue)
             => _senderPool.CreateCachedMessageSender(_logger, queue);
 
         /// <summary>Release a pooled sender link tied to the 'queue'.</summary>
         /// <param name="queue">The queue address for the link we want to release</param>
-        public Task ReleaseCachedMessageSender(string queue)
+        public Task ReleaseCachedMessageSenderAsync(string queue)
             => _senderPool.ReleaseCachedMessageSender(_logger, queue);
 
         /// <summary>Creates a <see cref="IMessagingMessage"/>.</summary>
