@@ -37,7 +37,7 @@ namespace Helsenorge.Messaging.Bus
         }
 
         [ExcludeFromCodeCoverage] // Azure service bus implementation
-        protected override Task<IMessagingFactory> CreateEntity(ILogger logger, string id)
+        protected override Task<IMessagingFactory> CreateEntityAsync(ILogger logger, string id)
         {
             if (_alternateMessagingFactor != null) return Task.FromResult(_alternateMessagingFactor);
             var connection = new BusConnection(_settings.ConnectionString, _settings.MessageBrokerDialect, _settings.MaxLinksPerSession, _settings.MaxSessionsPerConnection, logger);
@@ -63,7 +63,7 @@ namespace Helsenorge.Messaging.Bus
                     if(_incrementActiveCount) _incrementActiveCount = false;
                 }
                 var name = string.Format(null, "MessagingFactory{0}", _index);
-                var factory = await Create(logger, name).ConfigureAwait(false);
+                var factory = await CreateAsync(logger, name).ConfigureAwait(false);
 
                 return factory;
             }

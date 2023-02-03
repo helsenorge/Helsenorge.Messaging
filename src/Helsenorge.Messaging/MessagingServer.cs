@@ -200,9 +200,9 @@ namespace Helsenorge.Messaging
             await Task.WhenAll(_tasks.ToArray()).ConfigureAwait(false);
             
             // when all the listeners have shut down, close down the messaging infrastructure
-            await BusCore.SenderPool.Shutdown(_logger).ConfigureAwait(false);
-            await BusCore.ReceiverPool.Shutdown(_logger).ConfigureAwait(false);
-            await BusCore.FactoryPool.Shutdown(_logger).ConfigureAwait(false);
+            await BusCore.SenderPool.ShutdownAsync(_logger).ConfigureAwait(false);
+            await BusCore.ReceiverPool.ShutdownAsync(_logger).ConfigureAwait(false);
+            await BusCore.FactoryPool.ShutdownAsync(_logger).ConfigureAwait(false);
         }
 
         /// <summary>
