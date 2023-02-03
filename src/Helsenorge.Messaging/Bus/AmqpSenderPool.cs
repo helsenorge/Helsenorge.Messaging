@@ -33,13 +33,13 @@ namespace Helsenorge.Messaging.Bus
         /// <param name="logger"></param>
         /// <param name="queueName"></param>
         /// <returns></returns>
-        public async Task<IMessagingSender> CreateCachedMessageSender(ILogger logger, string queueName) => await CreateAsync(logger, queueName).ConfigureAwait(false);
+        public async Task<IMessagingSender> CreateCachedMessageSenderAsync(ILogger logger, string queueName) => await CreateAsync(logger, queueName).ConfigureAwait(false);
 
         /// <summary>
         /// Releases a cached message sender
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="queueName"></param>
-        public async Task ReleaseCachedMessageSender(ILogger logger, string queueName) => await ReleaseAsync(logger, queueName).ConfigureAwait(false);
+        public async Task ReleaseCachedMessageSenderAsync(ILogger logger, string queueName) => await ReleaseAsync(logger, queueName).ConfigureAwait(false);
     }
 }

@@ -603,7 +603,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
             }
             if (_messageReceiver == null)
             {
-                _messageReceiver = await BusCore.ReceiverPool.CreateCachedMessageReceiver(Logger, queueName).ConfigureAwait(false);
+                _messageReceiver = await BusCore.ReceiverPool.CreateCachedMessageReceiverAsync(Logger, queueName).ConfigureAwait(false);
             }
         }
     }
