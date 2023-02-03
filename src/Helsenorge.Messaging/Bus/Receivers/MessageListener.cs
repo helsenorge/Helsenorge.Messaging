@@ -110,23 +110,23 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// </summary>
         /// <param name="listener">Reference to the listener which invoked the callback.</param>
         /// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
-        protected abstract Task NotifyMessageProcessingStarted(MessageListener listener, IncomingMessage message);
+        protected abstract Task NotifyMessageProcessingStartedAsync(MessageListener listener, IncomingMessage message);
         /// <summary>
         /// Called to process message
         /// </summary>
         /// <param name="rawMessage">The message from the queue</param>
         /// <param name="message">The refined message data. All information should now be present</param>
-        protected abstract Task NotifyMessageProcessingReady(IMessagingMessage rawMessage, IncomingMessage message);
+        protected abstract Task NotifyMessageProcessingReadyAsync(IMessagingMessage rawMessage, IncomingMessage message);
         /// <summary>
         /// Called when message processing is complete
         /// </summary>
         /// <param name="message">Reference to the incoming message</param>
-        protected abstract Task NotifyMessageProcessingCompleted(IncomingMessage message);
+        protected abstract Task NotifyMessageProcessingCompletedAsync(IncomingMessage message);
         /// <summary>
         /// Starts the listener
         /// </summary>
         /// <param name="cancellation">Cancellation token that signals when we should stop</param>
-        public async Task Start(CancellationToken cancellation)
+        public async Task StartAsync(CancellationToken cancellation)
         {
             var queueName = BusCore.ExtractQueueName(GetQueueName());
             Logger.LogInformation($"Starting listener on host and queue '{BusCore.HostnameAndPath}/{queueName}'");
@@ -135,7 +135,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
             {
                 try
                 {
-                    await ReadAndProcessMessage().ConfigureAwait(false);
+                    await ReadAndProcessMessageAsync().ConfigureAwait(false);
 
                     if (!_listenerEstablishedConfirmed)
                     {
@@ -168,10 +168,10 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// For async messages, the notification system handles processing before the message is actually removed.
         /// <param name="alwaysRemoveMessage">Used for synchronous handling to force the removal on exceptions</param>
         /// </summary>
-        public async Task<IncomingMessage> ReadAndProcessMessage(bool alwaysRemoveMessage = false)
+        public async Task<IncomingMessage> ReadAndProcessMessageAsync(bool alwaysRemoveMessage = false)
         {
             var queueName = BusCore.ExtractQueueName(GetQueueName());
-            await SetUpReceiver(queueName).ConfigureAwait(false);
+            await SetUpReceiverAsync(queueName).ConfigureAwait(false);
 
             IMessagingMessage message;
             try
@@ -185,9 +185,9 @@ namespace Helsenorge.Messaging.Bus.Receivers
                     EventId = EventIds.Receive
                 };
             }
-            return await HandleRawMessage(message, alwaysRemoveMessage).ConfigureAwait(false);
+            return await HandleRawMessageAsync(message, alwaysRemoveMessage).ConfigureAwait(false);
         }
-        private async Task<IncomingMessage> HandleRawMessage(IMessagingMessage message, bool alwaysRemoveMessage)
+        private async Task<IncomingMessage> HandleRawMessageAsync(IMessagingMessage message, bool alwaysRemoveMessage)
         {
             if (message == null) return null;
             var queueName = BusCore.ExtractQueueName(GetQueueName());
@@ -219,7 +219,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
                     DeliveryCount = message.DeliveryCount,
                     LockedUntil = message.LockedUntil,
                 };
-                await NotifyMessageProcessingStarted(this, incomingMessage).ConfigureAwait(false);
+                await NotifyMessageProcessingStartedAsync(this, incomingMessage).ConfigureAwait(false);
                 
                 SetCorrelationIdAction?.Invoke(incomingMessage.MessageId);
 
@@ -230,7 +230,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
 
                 ValidateMessageHeader(message);
                 // we need the certificates for decryption and certificate use
-                incomingMessage.CollaborationAgreement = await ResolveProfile(message).ConfigureAwait(false);
+                incomingMessage.CollaborationAgreement = await ResolveProfileAsync(message).ConfigureAwait(false);
 
                 var payload = HandlePayload(message, bodyStream, message.ContentType, incomingMessage, out bool contentWasSigned);
                 incomingMessage.ContentWasSigned = contentWasSigned;
@@ -242,10 +242,10 @@ namespace Helsenorge.Messaging.Bus.Receivers
                     }
                     incomingMessage.Payload = payload;
                 }
-                await NotifyMessageProcessingReady(message, incomingMessage).ConfigureAwait(false);
+                await NotifyMessageProcessingReadyAsync(message, incomingMessage).ConfigureAwait(false);
                 BusCore.RemoveProcessedMessageFromQueue(message);
                 Logger.LogRemoveMessageFromQueueNormal(message, queueName);
-                await NotifyMessageProcessingCompleted(incomingMessage).ConfigureAwait(false);
+                await NotifyMessageProcessingCompletedAsync(incomingMessage).ConfigureAwait(false);
                 Logger.LogEndReceive(QueueType, incomingMessage);
                 return incomingMessage;
             }
@@ -346,7 +346,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
             messageReleaseThread.Start(new MessageReleaseThread.ThreadData { Message = message, Logger = Logger });
         }
 
-        private async Task<CollaborationProtocolProfile> ResolveProfile(IMessagingMessage message)
+        private async Task<CollaborationProtocolProfile> ResolveProfileAsync(IMessagingMessage message)
         {
             if(BusCore.MessagingSettings.MessageFunctionsExcludedFromCpaResolve.Contains(message.MessageFunction))
             {
@@ -588,7 +588,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
             return string.IsNullOrEmpty(queueName) == false ? BusCore.ExtractQueueName(queueName) : null;
         }
 
-        private async Task SetUpReceiver(string queueName)
+        private async Task SetUpReceiverAsync(string queueName)
         {
             if (string.IsNullOrEmpty(queueName))
             {

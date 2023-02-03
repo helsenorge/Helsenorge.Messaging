@@ -42,7 +42,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// </summary>
         /// <param name="listener">Reference to the listener which invoked the callback.</param>
         /// <param name="message">Reference to the incoming message. Some fields may not have values since they get populated later in the processing pipeline.</param>
-        protected override Task NotifyMessageProcessingStarted(MessageListener listener, IncomingMessage message)
+        protected override Task NotifyMessageProcessingStartedAsync(MessageListener listener, IncomingMessage message)
         {
             Logger.LogDebug("NotifyMessageProcessingStarted");
             // Not relevant for this implementation
@@ -52,7 +52,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// Called when message processing is complete
         /// </summary>
         /// <param name="message">Reference to the incoming message</param>
-        protected override Task NotifyMessageProcessingCompleted(IncomingMessage message)
+        protected override Task NotifyMessageProcessingCompletedAsync(IncomingMessage message)
         {
             Logger.LogDebug("NotifyMessageProcessingCompleted");
             // Not relevant for this implementation
@@ -63,7 +63,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
         /// </summary>
         /// <param name="rawMessage">The message from the queue</param>
         /// <param name="message">The refined message data. All information should now be present</param>
-        protected override async Task NotifyMessageProcessingReady(IMessagingMessage rawMessage, IncomingMessage message)
+        protected override async Task NotifyMessageProcessingReadyAsync(IMessagingMessage rawMessage, IncomingMessage message)
         {
             Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousMessageReceived), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
             await MessagingNotification.NotifySynchronousMessageReceived(message).ConfigureAwait(false);
