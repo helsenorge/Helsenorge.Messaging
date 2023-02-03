@@ -25,7 +25,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
         }
 
         public bool IsClosed => false;
-        public Task Close() { return Task.CompletedTask; }
+        public Task CloseAsync() { return Task.CompletedTask; }
 
         public IMessagingMessage Receive()
             => Receive(TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));

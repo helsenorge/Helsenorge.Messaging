@@ -110,7 +110,7 @@ namespace Helsenorge.Messaging.Bus
 
         public bool IsClosed { get; private set; }
 
-        public async Task Close()
+        public async Task CloseAsync()
         {
             if (IsClosed)
             {

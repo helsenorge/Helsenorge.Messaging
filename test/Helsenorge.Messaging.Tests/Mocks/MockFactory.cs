@@ -37,7 +37,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
             OtherPartyWithOnlyCpp = new MockCommunicationParty(this, HerIdWithOnlyCpp);
         }
 
-        public Task Close()
+        public Task CloseAsync()
         {
             return Task.CompletedTask;
         }

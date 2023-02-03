@@ -53,7 +53,7 @@ namespace SimpleReceiver
                     await message.CompleteAsync();
                 }
 
-                await receiver.Close().ConfigureAwait(false);
+                await receiver.CloseAsync().ConfigureAwait(false);
                 await connection.CloseAsync();
             }
             catch (Exception e)
@@ -63,7 +63,7 @@ namespace SimpleReceiver
             finally
             {
                 if (receiver != null)
-                    await receiver.Close();
+                    await receiver.CloseAsync();
                 await connection.CloseAsync();
             }
 

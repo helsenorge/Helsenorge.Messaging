@@ -193,7 +193,7 @@ namespace Helsenorge.Messaging.Abstractions
                 {
                     logger.LogDebug(EventIds.MessagingEntityCacheProcessor, "Start-MessagingEntityCache::CloseEntity: Path={Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
 
-                    await entry.Entity.Close().ConfigureAwait(false);
+                    await entry.Entity.CloseAsync().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {

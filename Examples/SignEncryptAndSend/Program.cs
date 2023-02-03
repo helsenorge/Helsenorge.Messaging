@@ -72,7 +72,7 @@ namespace SignEncryptAndSend
             finally
             {
                 if (sender != null)
-                    await sender.Close();
+                    await sender.CloseAsync();
                 await connection.CloseAsync();
             }
         }
