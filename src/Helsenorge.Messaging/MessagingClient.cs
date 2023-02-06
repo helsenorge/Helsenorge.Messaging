@@ -165,7 +165,7 @@ namespace Helsenorge.Messaging
             {
                 // HACK: This whole section inside this if statement is a hack to support communication parties which do not have the process DIALOG_INNBYGGER_TIMERESERVASJON configured.
                 // FIXME: This hack is to be removed in the future and external parties should start to use DIALOG_INNBYGGER_AVTALEUSTENDING and DIALOG_INNBYGGER_AVTALEAVBESTILLING.
-                var communicationParty = await AddressRegistry.FindCommunicationPartyDetailsAsync(logger, message.ToHerId).ConfigureAwait(false);
+                var communicationParty = await AddressRegistry.FindCommunicationPartyDetailsAsync(message.ToHerId).ConfigureAwait(false);
 
                 collaborationProtocolMessage = new CollaborationProtocolMessage
                 {

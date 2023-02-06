@@ -575,7 +575,7 @@ namespace Helsenorge.Messaging.Bus.Receivers
             {
                 try
                 {
-                    _myDetails = BusCore.AddressRegistry.FindCommunicationPartyDetailsAsync(Logger, myHerId).Result;
+                    _myDetails = BusCore.AddressRegistry.FindCommunicationPartyDetailsAsync(myHerId).Result;
                 }
                 catch (Exception ex)
                 {

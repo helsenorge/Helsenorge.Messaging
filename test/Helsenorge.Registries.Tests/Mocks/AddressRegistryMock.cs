@@ -32,7 +32,8 @@ namespace Helsenorge.Registries.Tests.Mocks
         /// <param name="cache"></param>
         public AddressRegistryMock(
             AddressRegistrySettings settings,
-            IDistributedCache cache) : base(settings, cache)
+            IDistributedCache cache,
+            ILogger logger) : base(settings, cache, logger)
         {
         }
         /// <summary>
@@ -62,7 +63,7 @@ namespace Helsenorge.Registries.Tests.Mocks
             _getCertificateDetailsForValidatingSignature = func;
         }
 
-        internal override async Task<CommunicationParty> FindCommunicationPartyDetails(ILogger logger, int herId)
+        internal override async Task<CommunicationParty> FindCommunicationPartyDetails(int herId)
         {
             var xml = _findCommunicationPartyDetails(herId);
             if (xml == null)
@@ -72,7 +73,7 @@ namespace Helsenorge.Registries.Tests.Mocks
             return await Task.FromResult(Utils.Deserialize<CommunicationParty>(xml)).ConfigureAwait(false);
         }
 
-        internal override async Task<CertificateDetails> GetCertificateDetailsForEncryptionInternal(ILogger logger, int herId)
+        internal override async Task<CertificateDetails> GetCertificateDetailsForEncryptionInternal(int herId)
         {
             var xml = _getCertificateDetailsForEncryption(herId);
             if(xml == null)
@@ -82,7 +83,7 @@ namespace Helsenorge.Registries.Tests.Mocks
             return await Task.FromResult(Utils.Deserialize<CertificateDetails>(xml)).ConfigureAwait(false);
         }
 
-        internal override async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureInternal(ILogger logger, int herId)
+        internal override async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureInternal(int herId)
         {
             var xml = _getCertificateDetailsForValidatingSignature(herId);
             if (xml == null)
@@ -92,7 +93,7 @@ namespace Helsenorge.Registries.Tests.Mocks
             return await Task.FromResult(Utils.Deserialize<CertificateDetails>(xml)).ConfigureAwait(false);
         }
 
-        internal override Task PingAsyncInternal(ILogger logger)
+        internal override Task PingAsyncInternal()
         {
             return Task.CompletedTask;
         }

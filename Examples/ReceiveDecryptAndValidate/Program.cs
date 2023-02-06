@@ -27,8 +27,8 @@ namespace ReceiveDecryptAndValidate
         static async Task Main(string[] args)
         {
             var loggerFactory = new LoggerFactory();
-            var logger = loggerFactory.CreateLogger<Program>();
-            var connection = new BusConnection(_connectionString, loggerFactory.CreateLogger<BusConnection>());
+            var logger = loggerFactory.CreateLogger("ReceiveDecryptAndValidate");
+            var connection = new BusConnection(_connectionString, logger);
             IMessagingReceiver receiver = null;
             try
             {
@@ -55,7 +55,7 @@ namespace ReceiveDecryptAndValidate
                         StreamReader streamReader;
                         if (message.ContentType == ContentType.SignedAndEnveloped)
                         {
-                            var publicSignatureCertificate = await addressRegistry.GetCertificateDetailsForValidatingSignatureAsync(logger, 123);
+                            var publicSignatureCertificate = await addressRegistry.GetCertificateDetailsForValidatingSignatureAsync(123);
                             streamReader = new StreamReader(messageProtection.Unprotect(stream, publicSignatureCertificate.Certificate));
                         }
                         else

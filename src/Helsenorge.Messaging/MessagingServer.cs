@@ -449,7 +449,7 @@ namespace Helsenorge.Messaging
 
             var communicationPartyDetailsList = new List<CommunicationPartyDetails>();
             foreach (var herId in herIds)
-                communicationPartyDetailsList.Add(await BusCore.AddressRegistry.FindCommunicationPartyDetailsAsync(_logger, herId));
+                communicationPartyDetailsList.Add(await BusCore.AddressRegistry.FindCommunicationPartyDetailsAsync(herId));
 
             var queueNames = GetCommonAncestor(communicationPartyDetailsList);
 
@@ -487,7 +487,7 @@ namespace Helsenorge.Messaging
         {
             var communicationPartyDetailsList = new List<CommunicationPartyDetails>();
             foreach (var herId in herIds)
-                communicationPartyDetailsList.Add(await BusCore.AddressRegistry.FindCommunicationPartyDetailsAsync(_logger, herId));
+                communicationPartyDetailsList.Add(await BusCore.AddressRegistry.FindCommunicationPartyDetailsAsync(herId));
             return GetCommonAncestor(communicationPartyDetailsList);
         }
 

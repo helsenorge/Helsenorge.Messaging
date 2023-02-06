@@ -93,7 +93,7 @@ namespace Helsenorge.Messaging.Tests
 
             var distributedCache = DistributedCacheFactory.Create();
 
-            AddressRegistry = new AddressRegistryMock(addressRegistrySettings, distributedCache);
+            AddressRegistry = new AddressRegistryMock(addressRegistrySettings, distributedCache, Logger);
             AddressRegistry.SetupFindCommunicationPartyDetails(i =>
             {
                 var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CommunicationDetails_{i}.xml"));

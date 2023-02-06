@@ -30,7 +30,7 @@ namespace Helsenorge.Registries.Tests
         private ILoggerFactory _loggerFactory;
         private ILogger _logger;
 
-        internal static AddressRegistryMock GetDefaultAddressRegistryMock()
+        internal static AddressRegistryMock GetDefaultAddressRegistryMock(ILogger logger)
         {
             var settings = new AddressRegistrySettings()
             {
@@ -45,7 +45,7 @@ namespace Helsenorge.Registries.Tests
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var distributedCache = DistributedCacheFactory.Create();
 
-            var registry = new AddressRegistryMock(settings, distributedCache);
+            var registry = new AddressRegistryMock(settings, distributedCache, logger);
 
             registry.SetupFindCommunicationPartyDetails(i =>
             {
@@ -89,12 +89,12 @@ namespace Helsenorge.Registries.Tests
             _loggerFactory = provider.GetRequiredService<ILoggerFactory>();            
             _logger = _loggerFactory.CreateLogger<AddressRegistryTests>();
             
-            _registry = GetDefaultAddressRegistryMock();
+            _registry = GetDefaultAddressRegistryMock(_logger);
         }
         [TestMethod]
         public void Read_CommunicationDetails_Found()
         {
-            var result = _registry.FindCommunicationPartyDetailsAsync(_logger, 93252).Result;
+            var result = _registry.FindCommunicationPartyDetailsAsync(93252).Result;
 
             Assert.AreEqual("Alexander Dahl", result.Name);
             Assert.AreEqual(93252, result.HerId);
@@ -105,7 +105,7 @@ namespace Helsenorge.Registries.Tests
         [TestMethod]
         public void Read_CommunicationDetails_NotFound()
         {
-            var result = _registry.FindCommunicationPartyDetailsAsync(_logger, 1234).Result;
+            var result = _registry.FindCommunicationPartyDetailsAsync(1234).Result;
 
             Assert.IsNull(result);
         }
@@ -113,7 +113,7 @@ namespace Helsenorge.Registries.Tests
         //[ExpectedException(typeof(RegistriesException))]
         public void Read_CommunicationDetails_Exception()
         {
-            var task = _registry.FindCommunicationPartyDetailsAsync(_logger, -4);
+            var task = _registry.FindCommunicationPartyDetailsAsync(-4);
 
             try
             {
@@ -130,19 +130,27 @@ namespace Helsenorge.Registries.Tests
         {
             var distributedCache = DistributedCacheFactory.Create();
 
-            new AddressRegistry(null, distributedCache);
+            new AddressRegistry(null, distributedCache, _logger);
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_Cache_Null()
         {
-            new AddressRegistry(new AddressRegistrySettings(), null);
+            new AddressRegistry(new AddressRegistrySettings(), null, _logger);
+        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Constructor_Logger_Null()
+        {
+            var distributedCache = DistributedCacheFactory.Create();
+
+            new AddressRegistry(new AddressRegistrySettings(), distributedCache, null);
         }
 
         [TestMethod, Ignore]
         public void Read_GetCertificateDetailsForEncryption_Found()
         {
-            var certificateDetails = _registry.GetCertificateDetailsForEncryptionAsync(_logger, 93252).Result;
+            var certificateDetails = _registry.GetCertificateDetailsForEncryptionAsync(93252).Result;
 
             Assert.IsNotNull(certificateDetails);
             Assert.AreEqual(93252, certificateDetails.HerId);
@@ -152,7 +160,7 @@ namespace Helsenorge.Registries.Tests
         [TestMethod]
         public void Read_GetCertificateDetailsForEncryption_NotFound()
         {
-            var certificateDetails = _registry.GetCertificateDetailsForEncryptionAsync(_logger, 2234).Result;
+            var certificateDetails = _registry.GetCertificateDetailsForEncryptionAsync(2234).Result;
 
             Assert.IsNull(certificateDetails);
         }
@@ -162,7 +170,7 @@ namespace Helsenorge.Registries.Tests
         {
             try
             {
-                var certificateDetails = _registry.GetCertificateDetailsForEncryptionAsync(_logger, -1).Result;
+                var certificateDetails = _registry.GetCertificateDetailsForEncryptionAsync(-1).Result;
             }
             catch (AggregateException ex)
             {
@@ -173,7 +181,7 @@ namespace Helsenorge.Registries.Tests
         [TestMethod, Ignore]
         public void Read_GetCertificateDetailsForValidatingSignature_Found()
         {
-            var certificateDetails = _registry.GetCertificateDetailsForValidatingSignatureAsync(_logger, 93252).Result;
+            var certificateDetails = _registry.GetCertificateDetailsForValidatingSignatureAsync(93252).Result;
 
             Assert.IsNotNull(certificateDetails);
             Assert.AreEqual(93252, certificateDetails.HerId);
@@ -183,7 +191,7 @@ namespace Helsenorge.Registries.Tests
         [TestMethod]
         public void Read_GetCertificateDetailsForValidatingSignature_NotFound()
         {
-            var certificateDetails = _registry.GetCertificateDetailsForValidatingSignatureAsync(_logger, 1234).Result;
+            var certificateDetails = _registry.GetCertificateDetailsForValidatingSignatureAsync(1234).Result;
 
             Assert.IsNull(certificateDetails);
         }
@@ -193,7 +201,7 @@ namespace Helsenorge.Registries.Tests
         {
             try
             {
-                var certificateDetails = _registry.GetCertificateDetailsForValidatingSignatureAsync(_logger, -1).Result;
+                var certificateDetails = _registry.GetCertificateDetailsForValidatingSignatureAsync(-1).Result;
             }
             catch (AggregateException ex)
             {
