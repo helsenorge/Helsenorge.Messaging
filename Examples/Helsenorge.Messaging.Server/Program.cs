@@ -94,7 +94,7 @@ namespace Helsenorge.Messaging.Server
             var collaborationProtocolRegistrySettings = new CollaborationProtocolRegistrySettings();
             configurationRoot.GetSection("CollaborationProtocolRegistrySettings").Bind(collaborationProtocolRegistrySettings);
 
-            var collaborationProtocolRegistry = new CollaborationProtocolRegistry(collaborationProtocolRegistrySettings, distributedCache, addressRegistry);
+            var collaborationProtocolRegistry = new CollaborationProtocolRegistry(collaborationProtocolRegistrySettings, distributedCache, addressRegistry, _logger);
 
             _serverSettings = new ServerSettings();
             configurationRoot.GetSection("ServerSettings").Bind(_serverSettings);

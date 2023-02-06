@@ -78,7 +78,7 @@ namespace Helsenorge.Messaging.Client
             configurationRoot.GetSection("CollaborationProtocolRegistrySettings").Bind(collaborationProtocolRegistrySettings);
 
             var collaborationProtocolRegistry = new CollaborationProtocolRegistry(collaborationProtocolRegistrySettings, 
-                distributedCache, addressRegistry);
+                distributedCache, addressRegistry, _logger);
 
             _clientSettings = new ClientSettings();
             configurationRoot.GetSection("ClientSettings").Bind(_clientSettings);

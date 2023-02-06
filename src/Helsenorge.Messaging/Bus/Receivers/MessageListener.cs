@@ -358,13 +358,13 @@ namespace Helsenorge.Messaging.Bus.Receivers
             if (QueueType == QueueType.Error) return null;
             if (Guid.TryParse(message.CpaId, out Guid id) && (id != Guid.Empty))
             {
-                return await BusCore.CollaborationProtocolRegistry.FindAgreementByIdAsync(Logger, id, message.ToHerId).ConfigureAwait(false);
+                return await BusCore.CollaborationProtocolRegistry.FindAgreementByIdAsync(id, message.ToHerId).ConfigureAwait(false);
             }
             return
                 // try first to find an agreement
-                await BusCore.CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(Logger, message.ToHerId, message.FromHerId).ConfigureAwait(false) ??
+                await BusCore.CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(message.ToHerId, message.FromHerId).ConfigureAwait(false) ??
                 // if we cannot find that, we fallback to protocol (which may return a dummy protocol if things are really missing in AR)
-                await BusCore.CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(Logger, message.FromHerId).ConfigureAwait(false);
+                await BusCore.CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(message.FromHerId).ConfigureAwait(false);
         }
 
         private XDocument HandlePayload(IMessagingMessage originalMessage, Stream bodyStream, string contentType, IncomingMessage incomingMessage, out bool contentWasSigned)
