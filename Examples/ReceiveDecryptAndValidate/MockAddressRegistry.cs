@@ -2,34 +2,32 @@ using System;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Tests.Mocks;
 using Helsenorge.Registries.Abstractions;
-using Microsoft.Extensions.Logging;
 
 namespace ReceiveDecryptAndValidate
 {
     public class MockAddressRegistry : IAddressRegistry
     {
-
-        public Task<CommunicationPartyDetails> FindCommunicationPartyDetailsAsync(ILogger logger, int herId)
+        public Task<CommunicationPartyDetails> FindCommunicationPartyDetailsAsync(int herId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<CommunicationPartyDetails> FindCommunicationPartyDetailsAsync(ILogger logger, int herId, bool forceUpdate)
+        public Task<CommunicationPartyDetails> FindCommunicationPartyDetailsAsync(int herId, bool forceUpdate)
         {
             throw new NotImplementedException();
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(ILogger logger, int herId)
+        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(ILogger logger, int herId, bool forceUpdate)
+        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate)
         {
             throw new NotImplementedException();
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(ILogger logger, int herId)
+        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId)
         {
             return Task.FromResult(new CertificateDetails
             {
@@ -38,12 +36,12 @@ namespace ReceiveDecryptAndValidate
             });
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(ILogger logger, int herId, bool forceUpdate)
+        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate)
         {
             throw new NotImplementedException();
         }
 
-        public Task PingAsync(ILogger logger)
+        public Task PingAsync()
         {
             throw new NotImplementedException();
         }

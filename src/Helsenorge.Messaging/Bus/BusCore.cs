@@ -366,7 +366,7 @@ namespace Helsenorge.Messaging.Bus
 
         private async Task<string> ConstructQueueNameAsync(ILogger logger, int herId, QueueType type)
         {
-            var details = await Core.AddressRegistry.FindCommunicationPartyDetailsAsync(logger, herId).ConfigureAwait(false);
+            var details = await Core.AddressRegistry.FindCommunicationPartyDetailsAsync(herId).ConfigureAwait(false);
             if (details == null)
             {
                 throw new MessagingException("Could not find sender in address registry")

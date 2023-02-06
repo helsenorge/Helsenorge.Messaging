@@ -33,7 +33,7 @@ public static class DummyCollaborationProtocolProfileFactory
 
     public static async Task<CollaborationProtocolProfile> CreateAsync(IAddressRegistry addressRegistry, ILogger logger, int herId, string messageFunction)
     {
-        var communicationParty = await addressRegistry.FindCommunicationPartyDetailsAsync(logger, herId).ConfigureAwait(false);
+        var communicationParty = await addressRegistry.FindCommunicationPartyDetailsAsync(herId).ConfigureAwait(false);
         if(communicationParty == null)
         {
             logger.LogWarning($"Could not get communication party details for HerId {herId}");
@@ -42,8 +42,8 @@ public static class DummyCollaborationProtocolProfileFactory
 
         var deliveryChannel = communicationParty.AsynchronousQueueName;
         return CreateDummyCollaborationProtocolProfile(herId,
-            await addressRegistry.GetCertificateDetailsForEncryptionAsync(logger, herId).ConfigureAwait(false),
-            await addressRegistry.GetCertificateDetailsForValidatingSignatureAsync(logger, herId).ConfigureAwait(false),
+            await addressRegistry.GetCertificateDetailsForEncryptionAsync(herId).ConfigureAwait(false),
+            await addressRegistry.GetCertificateDetailsForValidatingSignatureAsync(herId).ConfigureAwait(false),
             deliveryChannel,
             messageFunction);
     }

@@ -28,8 +28,8 @@ namespace SignEncryptAndSend
         static async Task Main(string[] args)
         {
             var loggerFactory = new LoggerFactory();
-            var logger = loggerFactory.CreateLogger<Program>();
-            var connection = new BusConnection(_connectionString, loggerFactory.CreateLogger<BusConnection>());
+            var logger = loggerFactory.CreateLogger("SignEncryptAndSend");
+            var connection = new BusConnection(_connectionString, logger);
             IMessagingSender sender = null;
             var messageCount = 20;
             try
@@ -54,7 +54,7 @@ namespace SignEncryptAndSend
 
                     var bodyPlainString = $"Hello world! - {i + 1}";
                     var payloadStream = new MemoryStream(Encoding.UTF8.GetBytes(bodyPlainString));
-                    var publicEncryptionCertificate = await addressRegistry.GetCertificateDetailsForEncryptionAsync(logger, 456);
+                    var publicEncryptionCertificate = await addressRegistry.GetCertificateDetailsForEncryptionAsync(456);
                     var encryptedPayloadStream = messageProtection.Protect(payloadStream, publicEncryptionCertificate.Certificate);
 
                     var message = await linkFactory.CreateMessageAsync(123, outgoingMessage, encryptedPayloadStream);
