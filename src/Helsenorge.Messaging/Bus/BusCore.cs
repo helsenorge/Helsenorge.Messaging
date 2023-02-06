@@ -458,8 +458,8 @@ namespace Helsenorge.Messaging.Bus
             }
 
             var profile =
-                await CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(logger, message.FromHerId, message.ToHerId).ConfigureAwait(false) ??
-                await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, message.ToHerId).ConfigureAwait(false);
+                await CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(message.FromHerId, message.ToHerId).ConfigureAwait(false) ??
+                await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(message.ToHerId).ConfigureAwait(false);
             return profile;
         }
     }

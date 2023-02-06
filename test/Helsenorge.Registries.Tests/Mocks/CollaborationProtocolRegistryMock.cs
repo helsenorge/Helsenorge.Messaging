@@ -36,7 +36,8 @@ namespace Helsenorge.Registries.Tests.Mocks
         public CollaborationProtocolRegistryMock(
             CollaborationProtocolRegistrySettings settings,
             IDistributedCache cache,
-            IAddressRegistry addressRegistry) : base(settings, cache, addressRegistry)
+            IAddressRegistry addressRegistry,
+            ILogger logger) : base(settings, cache, addressRegistry, logger)
         {
         }
 
@@ -70,10 +71,9 @@ namespace Helsenorge.Registries.Tests.Mocks
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="logger"></param>
         /// <param name="counterpartyHerId"></param>
         /// <returns></returns>
-        protected override Task<string> FindProtocolForCounterparty(ILogger logger, int counterpartyHerId)
+        protected override Task<string> FindProtocolForCounterparty(int counterpartyHerId)
         {
             try
             {
@@ -88,7 +88,7 @@ namespace Helsenorge.Registries.Tests.Mocks
             }
         }
 
-        internal override Task<CpaXmlDetails> FindAgreementForCounterparty(ILogger logger, int myHerId, int counterpartyHerId)
+        internal override Task<CpaXmlDetails> FindAgreementForCounterparty(int myHerId, int counterpartyHerId)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace Helsenorge.Registries.Tests.Mocks
             }
         }
 
-        internal override Task<CpaXmlDetails> FindAgreementById(ILogger logger, Guid id)
+        internal override Task<CpaXmlDetails> FindAgreementById(Guid id)
         {
             var details = new CpaXmlDetails()
             {
@@ -123,7 +123,7 @@ namespace Helsenorge.Registries.Tests.Mocks
         }
 
         /// <inheritdoc cref="CollaborationProtocolRegistry.PingAsyncInternal"/>
-        protected override Task PingAsyncInternal(ILogger logger, int herId)
+        protected override Task PingAsyncInternal(int herId)
         {
             return Task.CompletedTask;
         }

@@ -110,7 +110,7 @@ namespace Helsenorge.Messaging.Tests
                 return File.Exists(path) == false ? null : XElement.Load(path);
             });
 
-            CollaborationRegistry = new CollaborationProtocolRegistryMock(collaborationRegistrySettings, distributedCache, AddressRegistry);
+            CollaborationRegistry = new CollaborationProtocolRegistryMock(collaborationRegistrySettings, distributedCache, AddressRegistry, Logger);
             CollaborationRegistry.SetupFindProtocolForCounterparty(i =>
             {
                 var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPP_{i}.xml"));
