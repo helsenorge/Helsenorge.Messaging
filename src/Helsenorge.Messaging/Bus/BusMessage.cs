@@ -188,21 +188,7 @@ namespace Helsenorge.Messaging.Bus
             [DebuggerStepThrough]
             set => GetMessageProperties().ReplyTo = value;
         }
-        public DateTime ScheduledEnqueueTimeUtc
-        {
-            // FIXME: DateTime.Now should be DateTime.UtcNow
-            [DebuggerStepThrough]
-            get => _implementation.MessageAnnotations?.Map.ContainsKey(ScheduledEnqueueTimeSymbol) == true
-                ? (DateTime)_implementation.MessageAnnotations[ScheduledEnqueueTimeSymbol]
-            : DateTime.Now;
 
-            [DebuggerStepThrough]
-            set
-            {
-                if (_implementation.MessageAnnotations == null) _implementation.MessageAnnotations = new MessageAnnotations();
-                _implementation.MessageAnnotations[ScheduledEnqueueTimeSymbol] = value;
-            }
-        }
         public TimeSpan TimeToLive
         {
             [DebuggerStepThrough]

@@ -75,10 +75,6 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         string ReplyTo { get; set; }
         /// <summary>
-        /// Gets or sets the time when the message should be made available on the transport layer
-        /// </summary>
-        DateTime ScheduledEnqueueTimeUtc { get; set; }
-        /// <summary>
         /// Gets a value indicating how long this message will be locked on the server
         /// </summary>
         DateTime LockedUntil { get;  }

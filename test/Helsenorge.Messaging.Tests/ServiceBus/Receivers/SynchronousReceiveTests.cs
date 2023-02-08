@@ -188,7 +188,6 @@ namespace Helsenorge.Messaging.Tests.Bus.Receivers
                 CorrelationId = messageId,
                 FromHerId = MockFactory.OtherHerId,
                 ToHerId = MockFactory.HelsenorgeHerId,
-                ScheduledEnqueueTimeUtc = DateTime.UtcNow.AddSeconds(2),
                 TimeToLive = TimeSpan.FromSeconds(15),
                 ReplyTo = MockFactory.OtherParty.SynchronousReply.Name,
                 To = MockFactory.OtherParty.Synchronous.Name,

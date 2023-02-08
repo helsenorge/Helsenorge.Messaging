@@ -224,7 +224,6 @@ namespace Helsenorge.Messaging.Bus
             messagingMessage.TimeToLive = (queueType == QueueType.Asynchronous)
                 ? Settings.Asynchronous.TimeToLive
                 : Settings.Synchronous.TimeToLive;
-            messagingMessage.ScheduledEnqueueTimeUtc = outgoingMessage.ScheduledSendTimeUtc;
             messagingMessage.FromHerId = outgoingMessage.FromHerId;
             messagingMessage.ToHerId = outgoingMessage.ToHerId;
             messagingMessage.ApplicationTimestamp = DateTime.Now;

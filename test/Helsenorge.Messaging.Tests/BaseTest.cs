@@ -190,7 +190,6 @@ namespace Helsenorge.Messaging.Tests
                 CorrelationId = message.MessageId,
                 FromHerId = MockFactory.OtherHerId,
                 ToHerId = MockFactory.HelsenorgeHerId,
-                ScheduledEnqueueTimeUtc = DateTime.UtcNow,
                 TimeToLive = TimeSpan.FromSeconds(15),
             };
         }
