@@ -46,10 +46,6 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         public string PersonalId { get; set; }
         /// <summary>
-        /// Time when the message should be sent
-        /// </summary>
-        public DateTime ScheduledSendTimeUtc { get; set; }
-        /// <summary>
         /// Default constructor
         /// </summary>
         public OutgoingMessage()

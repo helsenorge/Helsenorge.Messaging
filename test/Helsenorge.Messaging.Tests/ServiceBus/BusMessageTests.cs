@@ -38,17 +38,6 @@ namespace Helsenorge.Messaging.Tests.Bus
         }
 
         [TestMethod]
-        public void Should_Return_Set_ScheduledEnqueueTimeUtc_If_ScheduledEnqueueTimeUtc_Set()
-        {
-            DateTime scheduledEnqueueTimeUtc = DateTime.UtcNow.AddDays(1);
-            using (BusMessage message = new BusMessage(new Message()))
-            {
-                message.ScheduledEnqueueTimeUtc = scheduledEnqueueTimeUtc;
-                Assert.AreEqual(scheduledEnqueueTimeUtc, message.ScheduledEnqueueTimeUtc);
-            }
-        }
-
-        [TestMethod]
         public void Should_Return_DeliveryCount_Zero_If_Message_Just_Initialized()
         {
             using (BusMessage message = new BusMessage(new Message()))
@@ -170,7 +159,6 @@ namespace Helsenorge.Messaging.Tests.Bus
             string replyTo = "replyTo_value";
             string to = "to_value";
             TimeSpan ttl = TimeSpan.FromDays(4);
-            DateTime scheduledEnqueueTimeUtc = DateTime.UtcNow;
             byte[] data = new byte[] { 255, 0, 255 };
 
             using (BusMessage message = new BusMessage(new Message(data)))
@@ -186,7 +174,6 @@ namespace Helsenorge.Messaging.Tests.Bus
                 message.ReplyTo = replyTo;
                 message.To = to;
                 message.TimeToLive = ttl;
-                message.ScheduledEnqueueTimeUtc = scheduledEnqueueTimeUtc;
 
                 var clonedMessage = message.Clone();
 
@@ -201,7 +188,6 @@ namespace Helsenorge.Messaging.Tests.Bus
                 Assert.AreEqual(replyTo, clonedMessage.ReplyTo);
                 Assert.AreEqual(to, clonedMessage.To);
                 Assert.AreEqual(ttl, clonedMessage.TimeToLive);
-                Assert.AreEqual(scheduledEnqueueTimeUtc, clonedMessage.ScheduledEnqueueTimeUtc);
 
                 Assert.IsNotNull(((Message)clonedMessage.OriginalObject).Body);
                 Assert.IsInstanceOfType(((Message)clonedMessage.OriginalObject).BodySection, typeof(Data));
@@ -248,7 +234,6 @@ namespace Helsenorge.Messaging.Tests.Bus
             string replyTo = "replyTo_value";
             string to = "to_value";
             TimeSpan ttl = TimeSpan.FromDays(4);
-            DateTime scheduledEnqueueTimeUtc = DateTime.UtcNow;
 
             byte[] data =  new byte[] { 255, 0, 255 };
 
@@ -265,7 +250,6 @@ namespace Helsenorge.Messaging.Tests.Bus
                 message.ReplyTo = replyTo;
                 message.To = to;
                 message.TimeToLive = ttl;
-                message.ScheduledEnqueueTimeUtc = scheduledEnqueueTimeUtc;
 
                 var clonedMessage = message.Clone(includePayload: false);
 
@@ -280,7 +264,6 @@ namespace Helsenorge.Messaging.Tests.Bus
                 Assert.AreEqual(replyTo, clonedMessage.ReplyTo);
                 Assert.AreEqual(to, clonedMessage.To);
                 Assert.AreEqual(ttl, clonedMessage.TimeToLive);
-                Assert.AreEqual(scheduledEnqueueTimeUtc, clonedMessage.ScheduledEnqueueTimeUtc);
 
                 Assert.IsNull(((Message)clonedMessage.OriginalObject).Body);
             }

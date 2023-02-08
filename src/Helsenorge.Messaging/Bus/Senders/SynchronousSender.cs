@@ -39,10 +39,6 @@ namespace Helsenorge.Messaging.Bus.Senders
             /// </summary>
             public DateTime ReplyEnqueuedTimeUtc { get; set; }
             /// <summary>
-            /// Time when the message should be sent
-            /// </summary>
-            public DateTime ScheduledSendTimeUtc { get; internal set; }
-            /// <summary>
             /// The logical id of the message we are sending
             /// </summary>
             public string MessageId { get; internal set; }
@@ -81,7 +77,6 @@ namespace Helsenorge.Messaging.Bus.Senders
                 AddedUtc = DateTime.UtcNow,
                 ToHerId = message.ToHerId,
                 TimedOut = false,
-                ScheduledSendTimeUtc = message.ScheduledSendTimeUtc,
                 MessageId = message.MessageId
             });
 
@@ -115,8 +110,7 @@ namespace Helsenorge.Messaging.Bus.Senders
                                 $"MessageId: {incomingMessage.CorrelationId} " +
                                 $"was received after {(incomingMessage.EnqueuedTimeUtc - messageEntry.AddedUtc).TotalSeconds} seconds " +
                                 $"from HerId: {messageEntry.ToHerId}. " +
-                                $"Added at {messageEntry.AddedUtc} Enqueued at: {incomingMessage.EnqueuedTimeUtc}. " +
-                                $"Sent message Scheduled Send Time at {messageEntry.ScheduledSendTimeUtc}");
+                                $"Added at {messageEntry.AddedUtc} Enqueued at: {incomingMessage.EnqueuedTimeUtc}.");
 
                             _pendingSynchronousRequests.TryRemove(incomingMessage.CorrelationId, out messageEntry);
                         }

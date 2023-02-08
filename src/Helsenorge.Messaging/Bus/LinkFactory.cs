@@ -75,8 +75,6 @@ namespace Helsenorge.Messaging.Bus
                     : message.ReceiptForMessageFunction,
                 ToHerId = message.ToHerId,
                 FromHerId = fromHerId,
-                ScheduledEnqueueTimeUtc = message.ScheduledSendTimeUtc,
-
             };
         }
     }

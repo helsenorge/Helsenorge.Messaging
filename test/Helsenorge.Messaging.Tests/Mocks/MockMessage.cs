@@ -51,7 +51,6 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public string MessageId { get; set; }
         public string GroupId { get; set; }
         public string ReplyTo { get; set; }
-        public DateTime ScheduledEnqueueTimeUtc { get; set; }
         public TimeSpan TimeToLive { get; set; }
         public string To { get; set; }
 
@@ -132,7 +131,6 @@ namespace Helsenorge.Messaging.Tests.Mocks
                 CpaId = CpaId,
                 FromHerId = FromHerId,
                 Properties = Properties,
-                ScheduledEnqueueTimeUtc = ScheduledEnqueueTimeUtc,
                 TimeToLive = TimeToLive,
                 To = To
             };
