@@ -57,6 +57,8 @@ namespace Helsenorge.Messaging.Bus
             new BusOperationBuilder(_logger, "Send").Build(() =>
             {
                 EnsureOpen();
+                originalMessage.ApplicationProperties.AddApplicationProperties(_applicationProperties);
+                originalMessage.ApplicationProperties.Map.Add(BusCore.EnqueuedTimeUtc, DateTime.UtcNow);
                 _link.Send(originalMessage, serverWaitTime);
             }).Perform();
         }
@@ -80,6 +82,7 @@ namespace Helsenorge.Messaging.Bus
             {
                 await EnsureOpenAsync().ConfigureAwait(false);
                 originalMessage.ApplicationProperties.AddApplicationProperties(_applicationProperties);
+                originalMessage.ApplicationProperties.Map.Add(BusCore.EnqueuedTimeUtc, DateTime.UtcNow);
                 await _link.SendAsync(originalMessage).ConfigureAwait(false);
             }).PerformAsync().ConfigureAwait(false);
         }
