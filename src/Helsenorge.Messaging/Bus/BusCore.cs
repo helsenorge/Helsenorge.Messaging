@@ -304,19 +304,19 @@ namespace Helsenorge.Messaging.Bus
             
             if (clonedMessage.Properties.ContainsKey(OriginalMessageIdHeaderKey) == false)
             {
-                clonedMessage.SetApplicationProperty(OriginalMessageIdHeaderKey, originalMessage.MessageId);
+                clonedMessage.SetApplicationPropertyValue(OriginalMessageIdHeaderKey, originalMessage.MessageId);
             }
             if (clonedMessage.Properties.ContainsKey(ReceiverTimestampHeaderKey) == false)
             {
-                clonedMessage.SetApplicationProperty(ReceiverTimestampHeaderKey, DateTime.Now.ToString(DateTimeFormatInfo.InvariantInfo));
+                clonedMessage.SetApplicationPropertyValue(ReceiverTimestampHeaderKey, DateTime.Now.ToString(DateTimeFormatInfo.InvariantInfo));
             }
             if (clonedMessage.Properties.ContainsKey(ErrorConditionHeaderKey) == false)
             {
-                clonedMessage.SetApplicationProperty(ErrorConditionHeaderKey, errorCode);
+                clonedMessage.SetApplicationPropertyValue(ErrorConditionHeaderKey, errorCode);
             }
             if (clonedMessage.Properties.ContainsKey(ErrorDescriptionHeaderKey) == false)
             {
-                clonedMessage.SetApplicationProperty(ErrorDescriptionHeaderKey, errorDescription);
+                clonedMessage.SetApplicationPropertyValue(ErrorDescriptionHeaderKey, errorDescription);
             }
 
             var additionDataValue = "None";
@@ -335,7 +335,7 @@ namespace Helsenorge.Messaging.Bus
 
                 if (clonedMessage.Properties.ContainsKey(ErrorConditionDataHeaderKey) == false)
                 {
-                    clonedMessage.SetApplicationProperty(ErrorConditionDataHeaderKey, additionDataValue);
+                    clonedMessage.SetApplicationPropertyValue(ErrorConditionDataHeaderKey, additionDataValue);
                 }
             }
 

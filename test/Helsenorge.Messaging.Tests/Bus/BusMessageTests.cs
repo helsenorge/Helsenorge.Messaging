@@ -104,9 +104,9 @@ namespace Helsenorge.Messaging.Tests.Bus
             DateTime customProperty3 = DateTime.Now;
 
             using BusMessage message = new BusMessage(new Message());
-            message.SetApplicationProperty("CustomProperty1", customProperty1);
-            message.SetApplicationProperty("CustomProperty2", customProperty2);
-            message.SetApplicationProperty("CustomProperty3", customProperty3);
+            message.SetApplicationPropertyValue("CustomProperty1", customProperty1);
+            message.SetApplicationPropertyValue("CustomProperty2", customProperty2);
+            message.SetApplicationPropertyValue("CustomProperty3", customProperty3);
 
             Assert.AreEqual(customProperty1.ToString(CultureInfo.InvariantCulture), message.Properties["CustomProperty1"]);
             Assert.AreEqual(customProperty2, message.Properties["CustomProperty2"]);

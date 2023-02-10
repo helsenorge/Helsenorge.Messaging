@@ -49,29 +49,29 @@ namespace Helsenorge.Messaging.Bus
         public int FromHerId
         {
             [DebuggerStepThrough]
-            get => GetValue(BusCore.FromHerIdHeaderKey, 0);
+            get => GetApplicationPropertyValue(BusCore.FromHerIdHeaderKey, 0);
             [DebuggerStepThrough]
-            set => SetApplicationProperty(BusCore.FromHerIdHeaderKey, value);
+            set => SetApplicationPropertyValue(BusCore.FromHerIdHeaderKey, value);
         }
         public int ToHerId
         {
             [DebuggerStepThrough]
-            get => GetValue(BusCore.ToHerIdHeaderKey, 0);
+            get => GetApplicationPropertyValue(BusCore.ToHerIdHeaderKey, 0);
             [DebuggerStepThrough]
-            set => SetApplicationProperty(BusCore.ToHerIdHeaderKey, value);
+            set => SetApplicationPropertyValue(BusCore.ToHerIdHeaderKey, value);
         }
         public DateTime ApplicationTimestamp
         {
-            get => GetValue(BusCore.ApplicationTimestampHeaderKey, DateTime.MinValue);
+            get => GetApplicationPropertyValue(BusCore.ApplicationTimestampHeaderKey, DateTime.MinValue);
             [DebuggerStepThrough]
-            set => SetApplicationProperty(BusCore.ApplicationTimestampHeaderKey, value);
+            set => SetApplicationPropertyValue(BusCore.ApplicationTimestampHeaderKey, value);
         }
         public string CpaId
         {
             [DebuggerStepThrough]
-            get => GetValue(BusCore.CpaIdHeaderKey, string.Empty);
+            get => GetApplicationPropertyValue(BusCore.CpaIdHeaderKey, string.Empty);
             [DebuggerStepThrough]
-            set => SetApplicationProperty(BusCore.CpaIdHeaderKey, value);
+            set => SetApplicationPropertyValue(BusCore.CpaIdHeaderKey, value);
         }
         public object OriginalObject => _implementation;
 
@@ -378,18 +378,18 @@ namespace Helsenorge.Messaging.Bus
             }
         }
 
-        public void SetApplicationProperty(string key, string value) => GetApplicationProperties()[key] = value;
-        public void SetApplicationProperty(string key, DateTime value) => GetApplicationProperties()[key] = value.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo);
-        public void SetApplicationProperty(string key, int value) => GetApplicationProperties()[key] = value.ToString(CultureInfo.InvariantCulture);
+        public void SetApplicationPropertyValue(string key, string value) => GetApplicationProperties()[key] = value;
+        public void SetApplicationPropertyValue(string key, DateTime value) => GetApplicationProperties()[key] = value.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo);
+        public void SetApplicationPropertyValue(string key, int value) => GetApplicationProperties()[key] = value.ToString(CultureInfo.InvariantCulture);
 
-        private string GetValue(string key, string value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
+        private string GetApplicationPropertyValue(string key, string value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
             ? GetApplicationProperties()[key].ToString()
             : value;
 
-        private int GetValue(string key, int value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
+        private int GetApplicationPropertyValue(string key, int value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
             ? int.Parse(GetApplicationProperties()[key].ToString())
             : value;
-        private DateTime GetValue(string key, DateTime value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
+        private DateTime GetApplicationPropertyValue(string key, DateTime value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
             ? DateTime.Parse(GetApplicationProperties()[key].ToString(), CultureInfo.InvariantCulture)
             : value;
 
