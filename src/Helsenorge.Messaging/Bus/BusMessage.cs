@@ -27,7 +27,6 @@ namespace Helsenorge.Messaging.Bus
     {
         private readonly Message _implementation;
 
-        public static readonly Symbol EnqueuedTimeSymbol = new Symbol("x-opt-enqueued-time");
         public static readonly Symbol LockedUntilSymbol = new Symbol("x-opt-locked-until");
 
         internal Action CompleteAction { get; set; }
@@ -75,9 +74,11 @@ namespace Helsenorge.Messaging.Bus
         }
         public object OriginalObject => _implementation;
 
-        public DateTime EnqueuedTimeUtc => _implementation.MessageAnnotations?.Map.ContainsKey(EnqueuedTimeSymbol) == true
-        ? (DateTime)_implementation.MessageAnnotations[EnqueuedTimeSymbol]
-        : DateTime.MaxValue;
+        public DateTime EnqueuedTimeUtc
+        {
+            [DebuggerStepThrough]
+            get => GetApplicationPropertyValue(BusCore.EnqueuedTimeUtc, DateTime.MaxValue);
+        }
 
         public DateTime ExpiresAtUtc
         {

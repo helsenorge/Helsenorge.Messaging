@@ -194,7 +194,7 @@ namespace Helsenorge.Messaging
             }
             else if (collaborationProtocolMessage == null)
             {
-                throw new MessagingException($"Invalid delivery protocol. Message Function {message.MessageFunction} might be missing from either CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}.")
+                throw new MessagingException($"Invalid delivery protocol. Message Function {messageFunction} might be missing from either CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}.")
                 {
                     EventId = EventIds.InvalidMessageFunction
                 };

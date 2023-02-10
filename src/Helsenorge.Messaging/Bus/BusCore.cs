@@ -45,6 +45,8 @@ namespace Helsenorge.Messaging.Bus
         /// Header key for ApplicationTimestamp
         /// </summary>
         public const string ApplicationTimestampHeaderKey = "applicationTimeStamp";
+        /// <summary>The header key for EnqueuedTimeUtc</summary>
+        public const string EnqueuedTimeUtc = "enqueuedTimeUtc";
 
         private const string OriginalMessageIdHeaderKey = "originalMessageId";
         private const string ReceiverTimestampHeaderKey = "receiverTimeStamp";

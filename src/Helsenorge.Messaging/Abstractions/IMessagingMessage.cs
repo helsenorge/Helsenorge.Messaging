@@ -35,7 +35,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         string CpaId { get; set; }
         /// <summary>
-        /// Gets the time the message was sent on the transport plaform
+        /// Gets the time the message was sent to the transport plaform
         /// </summary>
         DateTime EnqueuedTimeUtc { get; }
         /// <summary>
