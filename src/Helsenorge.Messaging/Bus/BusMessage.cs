@@ -29,8 +29,6 @@ namespace Helsenorge.Messaging.Bus
 
         public static readonly Symbol EnqueuedTimeSymbol = new Symbol("x-opt-enqueued-time");
         public static readonly Symbol LockedUntilSymbol = new Symbol("x-opt-locked-until");
-        public static readonly Symbol PartitionKeySymbol = new Symbol("x-opt-partition-key");
-        public static readonly Symbol SequenceNumberSymbol = new Symbol("x-opt-sequence-number");
 
         internal Action CompleteAction { get; set; }
         internal Func<Task> CompleteActionAsync { get; set; }
