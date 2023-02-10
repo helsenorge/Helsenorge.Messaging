@@ -49,8 +49,8 @@ namespace Helsenorge.Messaging.Tests.Bus.Receivers
                 wait: () => _errorReceiveCalled,
                 messageModification: (m) =>
                 {
-                    m.SetApplicationProperty("property1", 1);
-                    m.SetApplicationProperty("property2", 1);
+                    m.SetApplicationPropertyValue("property1", 1);
+                    m.SetApplicationPropertyValue("property2", 1);
                 });
         }
         [TestMethod]
