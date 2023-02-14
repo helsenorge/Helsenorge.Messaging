@@ -25,17 +25,16 @@ namespace Helsenorge.Messaging.Bus
         /// <summary>Initializes a new instance of the <see cref="BusConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
         /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
-        public BusConnection(string connectionString, ILogger logger)
-            : this(connectionString, MessageBrokerDialect.RabbitMQ, BusSettings.DefaultMaxLinksPerSession, BusSettings.DefaultMaxSessions, logger)
+        public BusConnection(string connectionString)
+            : this(connectionString, MessageBrokerDialect.RabbitMQ, BusSettings.DefaultMaxLinksPerSession, BusSettings.DefaultMaxSessions)
         {
         }
 
         /// <summary>Initializes a new instance of the <see cref="BusConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
         /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells BusConnection what kind of Message Broker we are communicating with.</param>
-        /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
-        public BusConnection(string connectionString, MessageBrokerDialect messageBrokerDialect, ILogger logger)
-            : this(connectionString, messageBrokerDialect, BusSettings.DefaultMaxLinksPerSession, BusSettings.DefaultMaxSessions, logger)
+        public BusConnection(string connectionString, MessageBrokerDialect messageBrokerDialect)
+            : this(connectionString, messageBrokerDialect, BusSettings.DefaultMaxLinksPerSession, BusSettings.DefaultMaxSessions)
         {
         }
 
@@ -44,19 +43,13 @@ namespace Helsenorge.Messaging.Bus
         /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells BusConnection what kind of Message Broker we are communicating with.</param>
         /// <param name="maxLinksPerSession">The max links that will be allowed per session.</param>
         /// <param name="maxSessionsPerConnection">The max sessions that will be allowed per connection.</param>
-        /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
         /// <exception cref="ArgumentException" />
         /// <exception cref="ArgumentNullException" />
-        public BusConnection(string connectionString, MessageBrokerDialect messageBrokerDialect, int maxLinksPerSession, ushort maxSessionsPerConnection, ILogger logger)
+        public BusConnection(string connectionString, MessageBrokerDialect messageBrokerDialect, int maxLinksPerSession, ushort maxSessionsPerConnection)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
                 throw new ArgumentException(nameof(connectionString));
-            }
-
-            if (logger == null)
-            {
-                throw new ArgumentNullException(nameof(logger));
             }
 
             _address = new Address(connectionString);
