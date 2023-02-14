@@ -20,16 +20,25 @@ namespace SignEncryptAndSend
 {
     class Program
     {
-        private static readonly string _connectionString = "amqps://guest:guest@tb.test.nhn.no:5671";
+        private static string HostName = "tb.test.nhn.no";
+        private static string Exchange = "NHNTestServiceBus";
+        private static string Username = "guest";
+        private static string Password = "guest";
         // More information about routing and addressing on RabbitMQ:
         // https://github.com/rabbitmq/rabbitmq-server/tree/main/deps/rabbitmq_amqp1_0#routing-and-addressing
-        private static readonly string _queue = "/exchange/NHNTESTServiceBus/12345_async";
+        private static readonly string Queue = "/exchange/NHNTESTServiceBus/12345_async";
 
         static async Task Main(string[] args)
         {
             var loggerFactory = new LoggerFactory();
-            var logger = loggerFactory.CreateLogger("SignEncryptAndSend");
-            var connection = new BusConnection(_connectionString, logger);
+            var connectionString = new AmqpConnectionString
+            {
+                HostName = HostName,
+                Exchange = Exchange,
+                UserName = Username,
+                Password = Password,
+            };
+            var connection = new BusConnection(connectionString.ToString());
             IMessagingSender sender = null;
             var messageCount = 20;
             try
@@ -42,7 +51,7 @@ namespace SignEncryptAndSend
                 var addressRegistry = new MockAddressRegistry();
 
                 var linkFactory = new LinkFactory(connection, loggerFactory.CreateLogger<LinkFactory>());
-                sender = linkFactory.CreateSender(_queue);
+                sender = linkFactory.CreateSender(Queue);
                 for (var i = 0; i < messageCount; i++)
                 {
 

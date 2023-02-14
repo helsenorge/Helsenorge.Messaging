@@ -17,25 +17,33 @@ namespace PooledReceiver
 {
     class Program
     {
-        private static readonly string _connectionString = "amqps://guest:guest@tb.test.nhn.no:5671";
+        private static string HostName = "tb.test.nhn.no";
+        private static string Exchange = "NHNTestServiceBus";
+        private static string Username = "guest";
+        private static string Password = "guest";
+
         // More information about routing and addressing on RabbitMQ:
         // https://github.com/rabbitmq/rabbitmq-server/tree/main/deps/rabbitmq_amqp1_0#routing-and-addressing
-        private static readonly string _queue = "/amq/queue/12345_async";
+        private static readonly string Queue = "/amq/queue/12345_async";
 
         static async Task Main(string[] args)
         {
             var loggerFactory = new LoggerFactory();
             var settings = new BusSettings
             {
-                ConnectionString = _connectionString,
-                MessageBrokerDialect = MessageBrokerDialect.RabbitMQ,
-                LinkCredits = 25,
+                ConnectionString = new AmqpConnectionString
+                {
+                    HostName = HostName,
+                    Exchange = Exchange,
+                    UserName = Username,
+                    Password = Password,
+                }
             };
 
             await using var linkFactoryPool = new LinkFactoryPool(loggerFactory.CreateLogger<LinkFactoryPool>(), settings);
             try
             {
-                var receiver = await linkFactoryPool.CreateCachedMessageReceiverAsync(_queue);
+                var receiver = await linkFactoryPool.CreateCachedMessageReceiverAsync(Queue);
                 int i = 0;
                 while (true)
                 {
@@ -64,7 +72,7 @@ namespace PooledReceiver
             }
             finally
             {
-                await linkFactoryPool.ReleaseCachedMessageReceiverAsync(_queue);
+                await linkFactoryPool.ReleaseCachedMessageReceiverAsync(Queue);
             }
         }
     }

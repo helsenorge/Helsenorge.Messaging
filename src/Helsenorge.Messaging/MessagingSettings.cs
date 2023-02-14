@@ -124,7 +124,7 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Gets or sets the connection string
         /// </summary>
-        public string ConnectionString { get; set; }
+        public AmqpConnectionString ConnectionString { get; set; }
         /// <summary>
         /// Provides access to settings related to asynchronous queues
         /// </summary>
@@ -197,7 +197,7 @@ namespace Helsenorge.Messaging
 
         internal void Validate()
         {
-            if (string.IsNullOrEmpty(ConnectionString)) throw new ArgumentNullException(nameof(ConnectionString));
+            if (string.IsNullOrEmpty(ConnectionString?.ToString())) throw new ArgumentNullException(nameof(ConnectionString));
             if (Asynchronous.ProcessingTasks > 0)
                 Asynchronous.Validate();
             if (Synchronous.ProcessingTasks > 0)

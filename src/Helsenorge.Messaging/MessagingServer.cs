@@ -513,7 +513,7 @@ namespace Helsenorge.Messaging
             BusConnection connection = null;
             try
             {
-                connection = new BusConnection(Settings.BusSettings.ConnectionString);
+                connection = new BusConnection(Settings.BusSettings.ConnectionString?.ToString());
                 _ = await connection.EnsureConnectionAsync();
             }
             catch (Exception e)

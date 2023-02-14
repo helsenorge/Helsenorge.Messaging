@@ -70,7 +70,7 @@ namespace Helsenorge.Messaging.Bus
             {
                 if (_hostnameAndPath == null)
                 {
-                    var connectionString = Core?.Settings?.BusSettings?.ConnectionString ?? string.Empty;
+                    var connectionString = Core?.Settings?.BusSettings?.ConnectionString?.ToString() ?? string.Empty;
                     var startIndex = connectionString.IndexOf("@", StringComparison.InvariantCulture);
                     if (startIndex > -1)
                         _hostnameAndPath = connectionString.Substring(startIndex + 1);

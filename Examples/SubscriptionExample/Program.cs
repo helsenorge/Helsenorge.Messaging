@@ -19,9 +19,10 @@ namespace SubscriptionExample
 {
     internal class Program
     {
-        private static string ConnectionString = "amqps://{0}:{1}@tb.test.nhn.no:5671/RegisterEvents";
-        private static string UserName = "<username>";
-        private static string Password = "<password>";
+        private static string HostName = "tb.test.nhn.no";
+        private static string Exchange = "RegisterEvents";
+        private static string Username = "guest";
+        private static string Password = "guest";
 
         private static async Task Main(string[] args)
         {
@@ -34,7 +35,7 @@ namespace SubscriptionExample
                     WcfConfiguration = new WcfConfiguration
                     {
                         Address = "https://ws-web.test.nhn.no/v2/serviceBusManager/Basic",
-                        UserName = UserName,
+                        UserName = Username,
                         Password = Password
                     }
                 };
@@ -42,8 +43,13 @@ namespace SubscriptionExample
 
                 var serviceBusSettings = new BusSettings
                 {
-                    ConnectionString = string.Format(ConnectionString, UserName, Password),
-                    MessageBrokerDialect = MessageBrokerDialect.RabbitMQ
+                    ConnectionString = new AmqpConnectionString
+                    {
+                        HostName = HostName,
+                        Exchange = Exchange,
+                        UserName = Username,
+                        Password = Password,
+                    },
                 };
                 await using var linkFactoryPool = new LinkFactoryPool(loggerFactory.CreateLogger("LinkFactoryPool"), serviceBusSettings);
 
