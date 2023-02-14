@@ -18,6 +18,7 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Helsenorge.Messaging.Bus;
 using Helsenorge.Registries.Tests.Mocks;
 
 namespace Helsenorge.Messaging.Tests
@@ -143,8 +144,11 @@ namespace Helsenorge.Messaging.Tests
                     Thumbprint = TestCertificates.HelsenorgeEncryptionThumbprint,
                 }
             };
-            
-            Settings.BusSettings.ConnectionString = "connection string";
+
+            Settings.BusSettings.ConnectionString = new AmqpConnectionString
+            {
+                HostName = "blabla",
+            };
             Settings.BusSettings.Synchronous.ReplyQueueMapping.Add(Environment.MachineName.ToLower(), "RepliesGoHere");
             // make things easier by only having one processing task per queue
             Settings.BusSettings.Asynchronous.ProcessingTasks = 1;

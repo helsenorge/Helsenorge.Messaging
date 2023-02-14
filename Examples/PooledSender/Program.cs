@@ -19,10 +19,13 @@ namespace PooledSender
 {
     class Program
     {
-        private static readonly string _connectionString = "amqps://guest:guest@tb.test.nhn.no:5671";
+        private static string HostName = "tb.test.nhn.no";
+        private static string Exchange = "NHNTESTServiceBus";
+        private static string Username = "guest";
+        private static string Password = "guest";
         // More information about routing and addressing on RabbitMQ:
         // https://github.com/rabbitmq/rabbitmq-server/tree/main/deps/rabbitmq_amqp1_0#routing-and-addressing
-        private static readonly string _queue = "/exchange/NHNTESTServiceBus/12345_async";
+        private static readonly string Queue = "/exchange/NHNTESTServiceBus/12345_async";
 
         static async Task Main(string[] args)
         {
@@ -32,8 +35,13 @@ namespace PooledSender
                 ApplicationProperties = {{ "X-SystemIdentifier", "ExampleSystemIdentifier" }},
                 BusSettings =
                 {
-                    ConnectionString = _connectionString,
-                    MessageBrokerDialect = MessageBrokerDialect.RabbitMQ,
+                    ConnectionString = new AmqpConnectionString
+                    {
+                        HostName = HostName,
+                        Exchange = Exchange,
+                        UserName = Username,
+                        Password = Password,
+                    },
                 }
             };
 
@@ -41,7 +49,7 @@ namespace PooledSender
             try
             {
                 var messageCount = 20;
-                var sender = await linkFactoryPool.CreateCachedMessageSenderAsync(_queue);
+                var sender = await linkFactoryPool.CreateCachedMessageSenderAsync(Queue);
                 for (int i = 0; i < messageCount; i++)
                 {
                     var outgoingMessage = new OutgoingMessage
@@ -65,7 +73,7 @@ namespace PooledSender
             }
             finally
             {
-                await linkFactoryPool.ReleaseCachedMessageSenderAsync(_queue);
+                await linkFactoryPool.ReleaseCachedMessageSenderAsync(Queue);
             }
         }
     }
