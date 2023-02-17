@@ -16,36 +16,36 @@ namespace Helsenorge.Messaging.Amqp
     /// <summary>
     /// Represents the connection to a Message Broker.
     /// </summary>
-    public class BusConnection
+    public class AmqpConnection
     {
         private ConnectionFactory _connectionFactory;
         private readonly Address _address;
         private IConnection _connection;
 
-        /// <summary>Initializes a new instance of the <see cref="BusConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
+        /// <summary>Initializes a new instance of the <see cref="AmqpConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
         /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
-        public BusConnection(string connectionString)
+        public AmqpConnection(string connectionString)
             : this(connectionString, MessageBrokerDialect.RabbitMQ, BusSettings.DefaultMaxLinksPerSession, BusSettings.DefaultMaxSessions)
         {
         }
 
-        /// <summary>Initializes a new instance of the <see cref="BusConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
+        /// <summary>Initializes a new instance of the <see cref="AmqpConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
         /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells BusConnection what kind of Message Broker we are communicating with.</param>
-        public BusConnection(string connectionString, MessageBrokerDialect messageBrokerDialect)
+        public AmqpConnection(string connectionString, MessageBrokerDialect messageBrokerDialect)
             : this(connectionString, messageBrokerDialect, BusSettings.DefaultMaxLinksPerSession, BusSettings.DefaultMaxSessions)
         {
         }
 
-        /// <summary>Initializes a new instance of the <see cref="BusConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
+        /// <summary>Initializes a new instance of the <see cref="AmqpConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
         /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells BusConnection what kind of Message Broker we are communicating with.</param>
         /// <param name="maxLinksPerSession">The max links that will be allowed per session.</param>
         /// <param name="maxSessionsPerConnection">The max sessions that will be allowed per connection.</param>
         /// <exception cref="ArgumentException" />
         /// <exception cref="ArgumentNullException" />
-        public BusConnection(string connectionString, MessageBrokerDialect messageBrokerDialect, int maxLinksPerSession, ushort maxSessionsPerConnection)
+        public AmqpConnection(string connectionString, MessageBrokerDialect messageBrokerDialect, int maxLinksPerSession, ushort maxSessionsPerConnection)
         {
             if (string.IsNullOrEmpty(connectionString))
             {

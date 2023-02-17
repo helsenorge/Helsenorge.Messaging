@@ -24,7 +24,7 @@ namespace Helsenorge.Messaging.Amqp
         private readonly ILogger _logger;
         private readonly string _name;
 
-        public AmqpReceiver(BusConnection connection, string id, int credit, ILogger logger) : base(connection)
+        public AmqpReceiver(AmqpConnection connection, string id, int credit, ILogger logger) : base(connection)
         {
             if (string.IsNullOrEmpty(id))
             {

@@ -25,7 +25,7 @@ namespace SimpleReceiver
         static async Task Main(string[] args)
         {
             var loggerFactory = new LoggerFactory();
-            var connection = new BusConnection(_connectionString);
+            var connection = new AmqpConnection(_connectionString);
             IMessagingReceiver receiver = null;
             try
             {

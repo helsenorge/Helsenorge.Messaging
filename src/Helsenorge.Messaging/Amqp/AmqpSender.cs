@@ -24,7 +24,7 @@ namespace Helsenorge.Messaging.Amqp
         private readonly IDictionary<string, object> _applicationProperties;
         private readonly string _name;
 
-        public AmqpSender(ILogger logger, BusConnection connection, string id, IDictionary<string, object> applicationProperties = null) : base(connection)
+        public AmqpSender(ILogger logger, AmqpConnection connection, string id, IDictionary<string, object> applicationProperties = null) : base(connection)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             if (string.IsNullOrEmpty(id))

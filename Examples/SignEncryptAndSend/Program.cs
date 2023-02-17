@@ -38,7 +38,7 @@ namespace SignEncryptAndSend
                 UserName = Username,
                 Password = Password,
             };
-            var connection = new BusConnection(connectionString.ToString());
+            var connection = new AmqpConnection(connectionString.ToString());
             IMessagingSender sender = null;
             var messageCount = 20;
             try

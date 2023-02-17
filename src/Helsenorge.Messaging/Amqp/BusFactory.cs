@@ -22,10 +22,10 @@ namespace Helsenorge.Messaging.Amqp
     internal class BusFactory : IMessagingFactory
     {
         private readonly ILogger _logger;
-        private readonly BusConnection _connection;
+        private readonly AmqpConnection _connection;
         private readonly IDictionary<string, object> _applicationProperties;
 
-        public BusFactory(ILogger logger, BusConnection connection, IDictionary<string, object> applicationProperties)
+        public BusFactory(ILogger logger, AmqpConnection connection, IDictionary<string, object> applicationProperties)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
