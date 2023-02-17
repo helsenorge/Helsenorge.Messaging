@@ -41,7 +41,7 @@ namespace Helsenorge.Messaging.Amqp
         {
             if (_alternateMessagingFactor != null) return Task.FromResult(_alternateMessagingFactor);
             var connection = new AmqpConnection(_settings.ConnectionString?.ToString(), _settings.MessageBrokerDialect, _settings.MaxLinksPerSession, _settings.MaxSessionsPerConnection);
-            return Task.FromResult<IMessagingFactory>(new BusFactory(logger, connection, _applicationProperties));
+            return Task.FromResult<IMessagingFactory>(new AmqpFactory(logger, connection, _applicationProperties));
         }
         public async Task<IMessagingMessage> CreateMessageAsync(ILogger logger, Stream stream)
         {
