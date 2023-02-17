@@ -83,6 +83,7 @@ Navneendringer på klasser og interfacer:
 - `IServiceBusManager` &rarr; `IBusManager`
 - `ServiceBusManager` &rarr; `BusManager`
 - `ServiceBusManagerSettings` &rarr; `BusManagerSettings`
+- `IServiceBusFactoryPool` &rarr; `IAmqpFactoryPool`
 
 Navneendringer på egenskaper:
 - `MessagingCore.Core` &rarr; `MessagingCore.BusCore`

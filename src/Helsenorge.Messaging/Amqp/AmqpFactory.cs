@@ -51,7 +51,7 @@ namespace Helsenorge.Messaging.Amqp
             using var memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream).ConfigureAwait(false);
             stream.Close();
-            return new BusMessage(new Message
+            return new AmqpMessage(new Message
             {
                 BodySection = new Data { Binary = memoryStream.ToArray() }
             });

@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace Helsenorge.Messaging.Amqp
 {
     [ExcludeFromCodeCoverage]
-    internal class BusMessage : IMessagingMessage
+    internal class AmqpMessage : IMessagingMessage
     {
         private readonly Message _implementation;
 
@@ -40,7 +40,7 @@ namespace Helsenorge.Messaging.Amqp
         internal Action<bool, bool> ModifyAction { get; set; }
         internal Func<bool, bool, Task> ModifyActionAsync { get; set; }
 
-        public BusMessage(Message implementation)
+        public AmqpMessage(Message implementation)
         {
             _implementation = implementation ?? throw new ArgumentNullException(nameof(implementation));
         }
@@ -304,7 +304,7 @@ namespace Helsenorge.Messaging.Amqp
                 }
             }
 
-            return new BusMessage(clone)
+            return new AmqpMessage(clone)
             {
                 CompleteAction = CompleteAction,
                 CompleteActionAsync = CompleteActionAsync,
