@@ -13,7 +13,7 @@ using Helsenorge.Messaging.Abstractions;
 
 namespace Helsenorge.Messaging.Amqp
 {
-    internal static class BusLoggingExtensions
+    internal static class LoggingExtensions
     {
         private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> StartReceive;
         private static readonly Action<ILogger, QueueType, string, int, int, string, Exception> EndReceive;
@@ -139,7 +139,7 @@ namespace Helsenorge.Messaging.Amqp
             RetryOperationInProgress(logger, message, null);
         }
 
-        static BusLoggingExtensions()
+        static LoggingExtensions()
         {
             StartReceive = LoggerMessage.Define<QueueType, string, int, int, string, string>(
                 LogLevel.Information,
