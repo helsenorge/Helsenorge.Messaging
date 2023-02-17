@@ -12,7 +12,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
-using Helsenorge.Messaging.Bus;
+using Helsenorge.Messaging.Amqp;
 using Microsoft.Extensions.Logging;
 
 namespace SimpleSender

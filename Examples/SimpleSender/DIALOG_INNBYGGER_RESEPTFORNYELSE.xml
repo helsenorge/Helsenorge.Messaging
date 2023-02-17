@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Eksempel på bruk av hodemeldingen sammen med dialogmeldingen -->
+<MsgHead xmlns="http://www.kith.no/xmlstds/msghead/2006-05-24" xmlns:xsd="http://www.w3.org/2001/XMLSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kith.no/xmlstds/msghead/2006-05-24 MsgHead-v1_2.xsd">
+	<MsgInfo>
+		<Type V="DIALOG_INNBYGGER_RESEPTFORNYELSE" DN="Dialog med innbygger - reseptfornyelse"/>
+		<MIGversion>v1.2 2006-05-24</MIGversion>
+		<GenDate>2022-10-22T14:20:00+02:00</GenDate>
+		<MsgId>7c2620d7-2b8e-49d2-bcc8-5bc616c7f22a</MsgId>
+		<Ack DN="Ja" V="J"/>
+		<Sender>
+			<Organisation>
+				<OrganisationName>Direktoratet for e-helse</OrganisationName>
+				<Ident>
+					<Id>115851</Id>
+					<TypeId DN="HER-id" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
+				</Ident>
+				<Organisation>
+					<OrganisationName>Kenneths kommunikasjonspart 4</OrganisationName>
+					<Ident>
+						<Id>8141333</Id>
+						<TypeId DN="HER-id" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
+					</Ident>
+				</Organisation>
+			</Organisation>
+		</Sender>
+		<Receiver>
+			<Organisation>
+				<OrganisationName>Direktoratet for e-helse</OrganisationName>
+				<Ident>
+					<Id>115851</Id>
+					<TypeId DN="HER-id" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
+				</Ident>
+				<Organisation>
+					<OrganisationName>Helsenorge.no</OrganisationName>
+					<Ident>
+						<Id>8093244</Id>
+						<TypeId DN="HER-id" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
+					</Ident>
+				</Organisation>
+			</Organisation>
+		</Receiver>
+		<Patient>
+			<FamilyName>Harboe</FamilyName>
+			<GivenName>trond</GivenName>
+			<Ident>
+				<Id>12057900308</Id> <!-- 12057900308, Gitte Abrahamsen: 09059612015, Stein Lien: 01055492766/Maria Lie: 20021098826 -->
+				<TypeId V="FNR" DN="Fødselsnummer" S="2.16.578.1.12.4.1.1.8116"/>
+			</Ident>
+		</Patient>
+	</MsgInfo>
+	<Document>
+		<ContentDescription>Svar på reseptfornyelse</ContentDescription>
+		<RefDoc>
+			<IssueDate V="2012-11-14T09:30:47.0Z"/>
+			<MsgType V="XML" DN="XML-instans"/>
+			<Content>
+				<Dialogmelding xmlns="http://www.kith.no/xmlstds/dialog/2013-01-23" xmlns:xsd="http://www.w3.org/2001/XMLSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kith.no/xmlstds/dialog/2013-01-23 dialogmelding-v1.1.xsd">
+					<!-- Kommenter ut Notat-feltet hvis man ønsker å teste "mal-formed-xml"... (bug ) -->
+					<Notat>
+						<TemaKodet V="14" DN="Resept er fornyet" S="2.16.578.1.12.4.1.1.7602"/>
+						<TekstNotatInnhold>Din NYE#21.3-resept er sendt som e-resept og du kan hente ut medisin på apotek i morgen.</TekstNotatInnhold>
+						<Foresporsel>
+							<TypeForesp V="RF" DN="Reseptfornying" S="2.16.578.1.12.4.1.1.7601"/>
+							<EmneSporsmal>Reseptfornyelse nyTB (#3)</EmneSporsmal>
+							<Sporsmal>Hei. jeg ønsker å fornye resepten på min Ventoliiine astmaspray.</Sporsmal>
+							<KodetOpplysning V="AP" DN="Hentes på apotek" S="8324"/>
+						</Foresporsel>
+					</Notat>
+				</Dialogmelding>
+			</Content>
+		</RefDoc>
+	</Document>
+	<Document>
+		<RefDoc>
+			<MsgType V="XML" DN="XML-instans"/>
+			<Content>
+				<Resept xsi:schemaLocation="http://www.kith.no/xmlstds/eresept/m1/2010-05-01 ER-M1-2010-05-01.xsd" xmlns:fs="http://www.kith.no/xmlstds/eresept/forskrivning/2010-04-01" xmlns="http://www.kith.no/xmlstds/eresept/m1/2010-05-01" xmlns:fk1="http://www.kith.no/xmlstds/felleskomponent1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+					<Forskrivningsdato>2006-10-06</Forskrivningsdato>
+					<Utloper>2007-10-06</Utloper>
+					<ReseptDokLegemiddel>
+						<Varegruppekode V="L"/>
+						<Antall>1</Antall>
+						<Reiterasjon/>
+						<fs:Forskrivning>
+							<fs:DosVeiledEnkel>String</fs:DosVeiledEnkel>
+							<fs:IngenKombinasjon>true</fs:IngenKombinasjon>
+							<fs:Dosering>
+								<fs:Starttidspunkt V="2008-09-17"/>
+								<fs:Sluttidspunkt V="2009-06-20"/>
+								<fs:Doseringsregel>
+									<fs:DoseresEtter V="V" DN="Vekst"/>
+								</fs:Doseringsregel>
+								<fs:DoseFastTidspunkt>
+									<fs:Mengde V="1" U="kg"/>
+									<fs:Intervall V="10" U="s"/>
+									<fs:GisEksakt>false</fs:GisEksakt>
+								</fs:DoseFastTidspunkt>
+							</fs:Dosering>
+							<fs:LegemiddelMerkevare>
+								<fs:Atc V="Token1" S="2.16.578.1.12.4.1.1.7180" DN="DN1" OT="OT1" />
+								<fs:NavnFormStyrke>Dummy LegemiddelMerkevare</fs:NavnFormStyrke>
+								<fs:Reseptgruppe V="L" DN="DN1" />
+								<fs:LegemiddelformKort V="Token1" S="2.16.578.1.12.4.1.1.7180" DN="DN1" OT="OT1" />
+								<!--<fs:RefVilkar>ID1</fs:RefVilkar>
+							  <fs:RefVilkar>ID12</fs:RefVilkar>
+							  <fs:RefVilkar>ID13</fs:RefVilkar>-->
+								<fs:Preparattype V="Token1" DN="DN1" />
+								<fs:TypeSoknadSlv V="Token1" DN="DN1" />
+								<fs:Opioidsoknad>true</fs:Opioidsoknad>
+								<fs:Id>ID14</fs:Id>
+								<fs:Varenavn>Varenavn1</fs:Varenavn>
+								<fs:LegemiddelformLang>LegemiddelformLang1</fs:LegemiddelformLang>
+							</fs:LegemiddelMerkevare>
+						</fs:Forskrivning>
+					</ReseptDokLegemiddel>
+					<OppdatertFest>2008-09-17T13:22:01</OppdatertFest>
+				</Resept>
+			</Content>
+		</RefDoc>
+	</Document>
+	<Document>
+		<RefDoc>
+			<MsgType V="XML" DN="XML-instans"/>
+			<Content>
+				<Resept xsi:schemaLocation="http://www.kith.no/xmlstds/eresept/m1/2010-05-01 ER-M1-2010-05-01.xsd" xmlns:fs="http://www.kith.no/xmlstds/eresept/forskrivning/2010-04-01" xmlns="http://www.kith.no/xmlstds/eresept/m1/2010-05-01" xmlns:fk1="http://www.kith.no/xmlstds/felleskomponent1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+					<Forskrivningsdato>2006-10-06</Forskrivningsdato>
+					<Utloper>2007-10-06</Utloper>
+					<ReseptDokLegemiddel>
+						<Varegruppekode V="L"/>
+						<Antall>1</Antall>
+						<Reiterasjon/>
+						<fs:Forskrivning>
+							<fs:DosVeiledEnkel>String</fs:DosVeiledEnkel>
+							<fs:IngenKombinasjon>true</fs:IngenKombinasjon>
+							<fs:Dosering>
+								<fs:Starttidspunkt V="2008-09-17"/>
+								<fs:Sluttidspunkt V="2009-06-20"/>
+								<fs:Doseringsregel>
+									<fs:DoseresEtter V="V" DN="Vekst"/>
+								</fs:Doseringsregel>
+								<fs:DoseFastTidspunkt>
+									<fs:Mengde V="1" U="kg"/>
+									<fs:Intervall V="10" U="s"/>
+									<fs:GisEksakt>false</fs:GisEksakt>
+								</fs:DoseFastTidspunkt>
+							</fs:Dosering>
+							<fs:Legemiddelpakning>
+								<fs:Atc V="N03AF01" DN="Karbamazepin" S="2.16.578.1.12.4.1.1.7180"/>
+								<fs:NavnFormStyrke>Dummy Legemiddelpakning</fs:NavnFormStyrke>
+								<fs:Reseptgruppe V="L"/>
+								<fs:LegemiddelformKort V="53" DN="Tablett" S="2.16.578.1.12.4.1.1.7448"/>
+								<fs:Varenr>550962</fs:Varenr>
+							</fs:Legemiddelpakning>
+						</fs:Forskrivning>
+					</ReseptDokLegemiddel>
+					<OppdatertFest>2008-09-17T13:22:01</OppdatertFest>
+				</Resept>
+			</Content>
+		</RefDoc>
+	</Document>
+</MsgHead>

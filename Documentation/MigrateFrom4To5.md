@@ -68,7 +68,7 @@ Følgende metoder er fjernet:
 
 Følgende namespace er endret:
 
-- `Helsenorge.Messaging.ServiceBus` &rarr; `Helsenorge.Messaging.Bus` 
+- `Helsenorge.Messaging.ServiceBus` &rarr; `Helsenorge.Messaging.Amqp` 
 
 #### Navneendring på klasser, interfacer og egenskaper
 

@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using Helsenorge.Messaging.Bus;
+using Helsenorge.Messaging.Amqp;
 
 namespace Helsenorge.Messaging
 {

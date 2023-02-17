@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Eksempel på bruk av hodemeldingen sammen med dialogmeldingen -->
+<MsgHead xmlns="http://www.kith.no/xmlstds/msghead/2006-05-24" xmlns:xsd="http://www.w3.org/2001/XMLSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kith.no/xmlstds/msghead/2006-05-24 MsgHead-v1_2.xsd">
+    <MsgInfo>
+        <Type V="DIALOG_INNBYGGER_EKONTAKT" DN="Dialog med innbygger - eKontakt"/>
+        <MIGversion>v1.2 2006-05-24</MIGversion>
+        <GenDate>2022-10-22T14:15:00.0Z</GenDate>
+        <MsgId>0d77d041-f010-4ec8-9105-f3dda92fc320</MsgId>
+        <Ack DN="Ja" V="J"/>
+        <Sender>
+            <Organisation>
+                <OrganisationName>Direktoratet for e-helse</OrganisationName>
+                <Ident>
+                    <Id>115851</Id>
+                    <TypeId DN="HER-id" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
+                </Ident>
+                <Organisation>
+                    <OrganisationName>Kenneths kommunikasjonspart 4</OrganisationName>
+                    <Ident>
+                        <Id>8141333</Id>
+                        <TypeId DN="HER-id" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
+                    </Ident>
+                </Organisation>
+            </Organisation>
+        </Sender>
+        <Receiver>
+            <Organisation>
+                <OrganisationName>Direktoratet for e-helse</OrganisationName>
+                <Ident>
+                    <Id>115851</Id>
+                    <TypeId DN="HER-id" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
+                </Ident>
+                <Organisation>
+                    <OrganisationName>Helsenorge.no</OrganisationName>
+                    <Ident>
+                        <Id>8093244</Id>
+                        <TypeId DN="HER-id" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
+                    </Ident>
+                </Organisation>
+            </Organisation>
+        </Receiver>
+        <Patient>
+            <FamilyName>Danser</FamilyName>
+            <GivenName>Line</GivenName>
+            <Ident>
+                <Id>13116900216</Id>
+                <TypeId V="FNR" DN="Fødselsnummer" S="2.16.578.1.12.4.1.1.8116"/>
+            </Ident>
+            <TeleCom>
+                <TeleAddress V="mob:99775533"/>
+            </TeleCom>
+        </Patient>
+    </MsgInfo>
+    <Document>
+        <ContentDescription>Bestille attest</ContentDescription>
+        <RefDoc>
+            <IssueDate V="2012-11-14T09:30:47.0Z"/>
+            <MsgType V="XML" DN="XML-instans"/>
+            <Content>
+                <Dialogmelding xmlns="http://www.kith.no/xmlstds/dialog/2013-01-23" xmlns:xsd="http://www.w3.org/2001/XMLSchema.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kith.no/xmlstds/dialog/2013-01-23 dialogmelding-v1.1.xsd">
+                    <Foresporsel>
+                        <TypeForesp V="BA" DN="Bestille attest" S="2.16.578.1.12.4.1.1.7601"/>
+                        <Sporsmal>Hei. Jeg skal ha eksamen neste måned og trenger fornyet legeattest på at jeg har pollenallergi for å få forlenget eksmenstid.</Sporsmal>
+                    </Foresporsel>
+                </Dialogmelding>
+            </Content>
+        </RefDoc>
+    </Document>
+</MsgHead>
