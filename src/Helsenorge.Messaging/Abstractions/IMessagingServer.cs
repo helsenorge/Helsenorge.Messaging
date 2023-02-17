@@ -103,33 +103,33 @@ namespace Helsenorge.Messaging.Abstractions
         /// Registers a delegate that should be called when we receive an error message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterErrorMessageReceivedCallback(Action<IMessagingMessage> action);
+        void RegisterErrorMessageReceivedCallback(Action<IAmqpMessage> action);
         /// <summary>
         /// Registers a delegate that should be called when we receive an error message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterErrorMessageReceivedCallbackAsync(Func<IMessagingMessage, Task> action);
+        void RegisterErrorMessageReceivedCallbackAsync(Func<IAmqpMessage, Task> action);
 
         /// <summary>
         /// Registers a delegate that should be called when we have an handled exception
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterHandledExceptionCallback(Action<IMessagingMessage, Exception> action);
+        void RegisterHandledExceptionCallback(Action<IAmqpMessage, Exception> action);
         /// <summary>
         /// Registers a delegate that should be called when we have an handled exception
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterHandledExceptionCallbackAsync(Func<IMessagingMessage, Exception, Task> action);
+        void RegisterHandledExceptionCallbackAsync(Func<IAmqpMessage, Exception, Task> action);
 
         /// <summary>
         /// Registers a delegate that should be called when we have an unhandled exception
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterUnhandledExceptionCallback(Action<IMessagingMessage, Exception> action);
+        void RegisterUnhandledExceptionCallback(Action<IAmqpMessage, Exception> action);
         /// <summary>
         /// Registers a delegate that should be called when we have an unhandled exception
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterUnhandledExceptionCallbackAsync(Func<IMessagingMessage, Exception, Task> action);
+        void RegisterUnhandledExceptionCallbackAsync(Func<IAmqpMessage, Exception, Task> action);
     }
 }

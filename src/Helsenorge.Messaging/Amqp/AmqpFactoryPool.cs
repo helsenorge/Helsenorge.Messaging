@@ -43,7 +43,7 @@ namespace Helsenorge.Messaging.Amqp
             var connection = new AmqpConnection(_settings.ConnectionString?.ToString(), _settings.MessageBrokerDialect, _settings.MaxLinksPerSession, _settings.MaxSessionsPerConnection);
             return Task.FromResult<IMessagingFactory>(new AmqpFactory(logger, connection, _applicationProperties));
         }
-        public async Task<IMessagingMessage> CreateMessageAsync(ILogger logger, Stream stream)
+        public async Task<IAmqpMessage> CreateMessageAsync(ILogger logger, Stream stream)
         {
             var factory = await FindNextFactoryAsync(logger).ConfigureAwait(false);
             return await factory.CreateMessageAsync(stream).ConfigureAwait(false);

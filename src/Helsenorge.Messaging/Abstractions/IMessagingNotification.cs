@@ -38,7 +38,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// Called to notify that we are ready to process an error message
         /// </summary>
         /// <param name="message"></param>
-        Task NotifyErrorMessageReceivedAsync(IMessagingMessage message);
+        Task NotifyErrorMessageReceivedAsync(IAmqpMessage message);
         /// <summary>
         /// Called to notify that we are starting to process an error message
         /// </summary>
@@ -65,13 +65,13 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="message">Information about the incoming message</param>
         /// <param name="ex">The exception</param>
-        Task NotifyUnhandledExceptionAsync(IMessagingMessage message, Exception ex);
+        Task NotifyUnhandledExceptionAsync(IAmqpMessage message, Exception ex);
 
         /// <summary>
         /// Called to notifiy that we have a handled exception
         /// </summary>
         /// <param name="message">Information about the incoming message</param>
         /// <param name="ex">The exception</param>
-        Task NotifyHandledExceptionAsync(IMessagingMessage message, Exception ex);
+        Task NotifyHandledExceptionAsync(IAmqpMessage message, Exception ex);
     }
 }

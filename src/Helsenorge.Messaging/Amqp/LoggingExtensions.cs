@@ -120,7 +120,7 @@ namespace Helsenorge.Messaging.Amqp
             ExternalReportedError(logger, message, null);
         }
 
-        public static void LogRemoveMessageFromQueueNormal(this ILogger logger, IMessagingMessage message, string queueName)
+        public static void LogRemoveMessageFromQueueNormal(this ILogger logger, IAmqpMessage message, string queueName)
         {
             RemoveMessageFromQueueNormal(logger, message.MessageId, message.FromHerId, queueName, message.CorrelationId, null);
         }

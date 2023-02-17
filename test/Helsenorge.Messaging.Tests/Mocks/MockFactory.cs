@@ -24,8 +24,8 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public MockCommunicationParty OtherParty { get; }
         public MockCommunicationParty OtherPartyWithOnlyCpp { get; }
 
-        public Dictionary<string, List<IMessagingMessage>> Qeueues { get; } = new Dictionary<string, List<IMessagingMessage>>();
-        public List<IMessagingMessage> DeadLetterQueue { get; } = new List<IMessagingMessage>();
+        public Dictionary<string, List<IAmqpMessage>> Qeueues { get; } = new Dictionary<string, List<IAmqpMessage>>();
+        public List<IAmqpMessage> DeadLetterQueue { get; } = new List<IAmqpMessage>();
 
         public bool IsClosed => false;
 
@@ -52,9 +52,9 @@ namespace Helsenorge.Messaging.Tests.Mocks
             return new MockSender(this, id);
         }
 
-        public Task<IMessagingMessage> CreateMessageAsync(Stream stream)
+        public Task<IAmqpMessage> CreateMessageAsync(Stream stream)
         {
-            return Task.FromResult<IMessagingMessage>(new MockMessage(stream));
+            return Task.FromResult<IAmqpMessage>(new MockMessage(stream));
         }
     }
 
@@ -83,12 +83,12 @@ namespace Helsenorge.Messaging.Tests.Mocks
     internal class MockQueue
     {
         public string Name { get; }
-        public List<IMessagingMessage> Messages { get; }
+        public List<IAmqpMessage> Messages { get; }
 
         public MockQueue(string name)
         {
             Name = name;
-            Messages = new List<IMessagingMessage>();
+            Messages = new List<IAmqpMessage>();
         }
     }
 }

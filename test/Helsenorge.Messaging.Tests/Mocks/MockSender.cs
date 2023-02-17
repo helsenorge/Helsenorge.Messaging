@@ -31,15 +31,15 @@ namespace Helsenorge.Messaging.Tests.Mocks
             return Task.CompletedTask;
         }
 
-        public void Send(IMessagingMessage message)
+        public void Send(IAmqpMessage message)
             => SendAsync(message, TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
 
-        public void Send(IMessagingMessage message, TimeSpan serverWaitTime)
+        public void Send(IAmqpMessage message, TimeSpan serverWaitTime)
         {
-            List<IMessagingMessage> queue;
+            List<IAmqpMessage> queue;
             if (_factory.Qeueues.ContainsKey(_id) == false)
             {
-                queue = new List<IMessagingMessage>();
+                queue = new List<IAmqpMessage>();
                 _factory.Qeueues.Add(_id, queue);
             }
             else
@@ -59,15 +59,15 @@ namespace Helsenorge.Messaging.Tests.Mocks
             queue.Add(message);
         }
 
-        public Task SendAsync(IMessagingMessage message)
+        public Task SendAsync(IAmqpMessage message)
             => SendAsync(message, TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
 
-        public Task SendAsync(IMessagingMessage message, TimeSpan serverWaitTime)
+        public Task SendAsync(IAmqpMessage message, TimeSpan serverWaitTime)
         {
-            List<IMessagingMessage> queue;
+            List<IAmqpMessage> queue;
             if (_factory.Qeueues.ContainsKey(_id) == false)
             {
-                queue = new List<IMessagingMessage>();
+                queue = new List<IAmqpMessage>();
                 _factory.Qeueues.Add(_id, queue);
             }
             else

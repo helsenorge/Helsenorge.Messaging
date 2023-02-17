@@ -44,10 +44,10 @@ namespace Helsenorge.Messaging.Amqp
             return session.CreateSender(Name, Connection.GetEntityName(_id, LinkRole.Sender)) as SenderLink;
         }
 
-        public void Send(IMessagingMessage message)
+        public void Send(IAmqpMessage message)
             => Send(message, TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
 
-        public void Send(IMessagingMessage message, TimeSpan serverWaitTime)
+        public void Send(IAmqpMessage message, TimeSpan serverWaitTime)
         {
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
@@ -63,10 +63,10 @@ namespace Helsenorge.Messaging.Amqp
             }).Perform();
         }
 
-        public Task SendAsync(IMessagingMessage message)
+        public Task SendAsync(IAmqpMessage message)
             => SendAsync(message, TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
 
-        public async Task SendAsync(IMessagingMessage message, TimeSpan serverWaitTime)
+        public async Task SendAsync(IAmqpMessage message, TimeSpan serverWaitTime)
         {
             if (message == null)
             {

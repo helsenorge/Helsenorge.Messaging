@@ -58,7 +58,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         /// </summary>
         /// <param name="rawMessage">The message from the queue</param>
         /// <param name="message">The refined message data. All information should now be present</param>
-        protected override async Task NotifyMessageProcessingReadyAsync(IMessagingMessage rawMessage, IncomingMessage message)
+        protected override async Task NotifyMessageProcessingReadyAsync(IAmqpMessage rawMessage, IncomingMessage message)
         {
             if (rawMessage == null) throw new ArgumentNullException(nameof(rawMessage));
             if (message == null) throw new ArgumentNullException(nameof(message));

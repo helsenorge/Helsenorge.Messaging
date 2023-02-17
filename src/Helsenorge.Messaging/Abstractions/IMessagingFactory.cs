@@ -34,6 +34,6 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="stream">Stream containing the information</param>
         /// <returns></returns>
-        Task<IMessagingMessage> CreateMessageAsync(Stream stream);
+        Task<IAmqpMessage> CreateMessageAsync(Stream stream);
     }
 }

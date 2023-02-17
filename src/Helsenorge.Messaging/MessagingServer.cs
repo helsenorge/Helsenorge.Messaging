@@ -55,16 +55,16 @@ namespace Helsenorge.Messaging
         private Func<IncomingMessage, Task> _onSynchronousMessageReceivedCompletedAsync;
         private Func<IncomingMessage, Task> _onSynchronousMessageReceivedStartingAsync;
 
-        private Action<IMessagingMessage> _onErrorMessageReceived;
+        private Action<IAmqpMessage> _onErrorMessageReceived;
         private Action<IncomingMessage> _onErrorMessageReceivedStarting;
-        private Func<IMessagingMessage, Task> _onErrorMessageReceivedAsync;
+        private Func<IAmqpMessage, Task> _onErrorMessageReceivedAsync;
         private Func<IncomingMessage, Task> _onErrorMessageReceivedStartingAsync;
 
 
-        private Action<IMessagingMessage, Exception> _onUnhandledException;
-        private Action<IMessagingMessage, Exception> _onHandledException;
-        private Func<IMessagingMessage, Exception, Task> _onUnhandledExceptionAsync;
-        private Func<IMessagingMessage, Exception, Task> _onHandledExceptionAsync;
+        private Action<IAmqpMessage, Exception> _onUnhandledException;
+        private Action<IAmqpMessage, Exception> _onHandledException;
+        private Func<IAmqpMessage, Exception, Task> _onUnhandledExceptionAsync;
+        private Func<IAmqpMessage, Exception, Task> _onHandledExceptionAsync;
 
         /// <summary>
         /// Constructor
@@ -280,14 +280,14 @@ namespace Helsenorge.Messaging
         /// Registers a delegate that should be called when we receive an error message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterErrorMessageReceivedCallback(Action<IMessagingMessage> action) => _onErrorMessageReceived = action;
+        public void RegisterErrorMessageReceivedCallback(Action<IAmqpMessage> action) => _onErrorMessageReceived = action;
         /// <summary>
         /// Registers a delegate that should be called when we receive an error message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterErrorMessageReceivedCallbackAsync(Func<IMessagingMessage, Task> action) => _onErrorMessageReceivedAsync = action;
+        public void RegisterErrorMessageReceivedCallbackAsync(Func<IAmqpMessage, Task> action) => _onErrorMessageReceivedAsync = action;
 
-        async Task IMessagingNotification.NotifyErrorMessageReceivedAsync(IMessagingMessage message)
+        async Task IMessagingNotification.NotifyErrorMessageReceivedAsync(IAmqpMessage message)
         {
             _logger.LogDebug("NotifyErrorMessageReceived");
             if (_onErrorMessageReceivedAsync != null)
@@ -399,14 +399,14 @@ namespace Helsenorge.Messaging
         /// Registers a delegate that should be called when we have an handled exception
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterHandledExceptionCallback(Action<IMessagingMessage, Exception> action) => _onHandledException = action;
+        public void RegisterHandledExceptionCallback(Action<IAmqpMessage, Exception> action) => _onHandledException = action;
         /// <summary>
         /// Registers a delegate that should be called when we have an handled exception
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterHandledExceptionCallbackAsync(Func<IMessagingMessage, Exception, Task> action) => _onHandledExceptionAsync = action;
+        public void RegisterHandledExceptionCallbackAsync(Func<IAmqpMessage, Exception, Task> action) => _onHandledExceptionAsync = action;
 
-        async Task IMessagingNotification.NotifyHandledExceptionAsync(IMessagingMessage message, Exception ex)
+        async Task IMessagingNotification.NotifyHandledExceptionAsync(IAmqpMessage message, Exception ex)
         {
             _logger.LogDebug("NotifyHandledException");
             if (_onHandledExceptionAsync != null)
@@ -422,14 +422,14 @@ namespace Helsenorge.Messaging
         /// Registers a delegate that should be called when we have an unhandled exception
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterUnhandledExceptionCallback(Action<IMessagingMessage, Exception> action) => _onUnhandledException = action;
+        public void RegisterUnhandledExceptionCallback(Action<IAmqpMessage, Exception> action) => _onUnhandledException = action;
         /// <summary>
         /// Registers a delegate that should be called when we have an unhandled exception
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterUnhandledExceptionCallbackAsync(Func<IMessagingMessage, Exception, Task> action) => _onUnhandledExceptionAsync = action;
+        public void RegisterUnhandledExceptionCallbackAsync(Func<IAmqpMessage, Exception, Task> action) => _onUnhandledExceptionAsync = action;
 
-        async Task IMessagingNotification.NotifyUnhandledExceptionAsync(IMessagingMessage message, Exception ex)
+        async Task IMessagingNotification.NotifyUnhandledExceptionAsync(IAmqpMessage message, Exception ex)
         {
             _logger.LogDebug("NotifyUnhandledException");
             if (_onUnhandledExceptionAsync != null)

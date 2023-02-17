@@ -27,10 +27,10 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public bool IsClosed => false;
         public Task CloseAsync() { return Task.CompletedTask; }
 
-        public IMessagingMessage Receive()
+        public IAmqpMessage Receive()
             => Receive(TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
 
-        public IMessagingMessage Receive(TimeSpan serverWaitTime)
+        public IAmqpMessage Receive(TimeSpan serverWaitTime)
         {
             if (_factory.Qeueues.ContainsKey(_id))
             {
@@ -44,10 +44,10 @@ namespace Helsenorge.Messaging.Tests.Mocks
             return null;
         }
 
-        public Task<IMessagingMessage> ReceiveAsync()
+        public Task<IAmqpMessage> ReceiveAsync()
             => ReceiveAsync(TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
 
-        public async Task<IMessagingMessage> ReceiveAsync(TimeSpan serverWaitTime)
+        public async Task<IAmqpMessage> ReceiveAsync(TimeSpan serverWaitTime)
         {
             if (_factory.Qeueues.ContainsKey(_id))
             {

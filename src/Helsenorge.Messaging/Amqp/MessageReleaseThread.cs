@@ -23,7 +23,7 @@ namespace Helsenorge.Messaging.Amqp
     {
         internal struct ThreadData
         {
-            public IMessagingMessage Message;
+            public IAmqpMessage Message;
             public ILogger Logger;
         }
 
