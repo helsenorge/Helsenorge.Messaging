@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// <summary>
     /// The exception that is thrown when a valid frame header cannot be formed from the incoming byte stream.
     /// </summary>
-    public class FramingErrorException : BusException
+    public class FramingErrorException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FramingErrorException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

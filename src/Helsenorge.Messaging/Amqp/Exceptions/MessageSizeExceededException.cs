@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// <summary>
     /// The exception that is thrown when the peer sent a larger message than is supported on the link.
     /// </summary>
-    public sealed class MessageSizeExceededException : BusException
+    public sealed class MessageSizeExceededException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageSizeExceededException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

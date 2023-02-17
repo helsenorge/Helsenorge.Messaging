@@ -29,12 +29,12 @@ namespace Helsenorge.Messaging.Amqp
             {
                 case SocketException e:
                     stringBuilder.AppendFormat(CultureInfo.InvariantCulture, $" ErrorCode: {e.SocketErrorCode}");
-                    return new BusCommunicationException(stringBuilder.ToString(), exception);
+                    return new AmqpCommunicationException(stringBuilder.ToString(), exception);
 
                 case IOException _:
                     if (exception.InnerException is SocketException socketException)
                         stringBuilder.AppendFormat(CultureInfo.InvariantCulture, $" ErrorCode: {socketException.SocketErrorCode}");
-                    return new BusCommunicationException(stringBuilder.ToString(), exception);
+                    return new AmqpCommunicationException(stringBuilder.ToString(), exception);
 
                 case AmqpException amqpException:
                     return amqpException.Error.ToBusException(amqpException);
@@ -43,10 +43,10 @@ namespace Helsenorge.Messaging.Amqp
                     return amqpException.Error.ToBusException(operationCanceledException);
 
                 case OperationCanceledException _:
-                    return new RecoverableBusException(stringBuilder.ToString(), exception);
+                    return new RecoverableAmqpException(stringBuilder.ToString(), exception);
 
                 case TimeoutException _:
-                    return new BusTimeoutException(stringBuilder.ToString(), exception);
+                    return new AmqpTimeoutException(stringBuilder.ToString(), exception);
             }
 
             return exception;
@@ -55,7 +55,7 @@ namespace Helsenorge.Messaging.Amqp
         public static Exception ToBusException(this Error error, Exception exception)
         {
             return error == null
-                ? new UncategorizedBusException("Unknown error.", exception)
+                ? new UncategorizedAmqpException("Unknown error.", exception)
                 : ToBusException(error.Condition, error.Description, exception);
         }
 
@@ -71,13 +71,13 @@ namespace Helsenorge.Messaging.Amqp
                 || string.Equals(condition, ErrorCode.WindowViolation)
                 || string.Equals(condition, ErrorCode.ConnectionRedirect))
             {
-                return new RecoverableBusException(message, exception);
+                return new RecoverableAmqpException(message, exception);
             }
 
             if (string.Equals(condition, AmqpClientConstants.TimeoutError)
                 || string.Equals(condition, ErrorCode.TransactionTimeout))
             {
-                return new BusTimeoutException(message, exception);
+                return new AmqpTimeoutException(message, exception);
             }
 
             if (string.Equals(condition, ErrorCode.NotFound))
@@ -196,7 +196,7 @@ namespace Helsenorge.Messaging.Amqp
                 return new InternalErrorException(message, exception);
             }
 
-            return new UncategorizedBusException(message, condition, exception);
+            return new UncategorizedAmqpException(message, condition, exception);
         }
     }
 }

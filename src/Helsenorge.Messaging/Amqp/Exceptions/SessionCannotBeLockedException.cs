@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// <summary>
     /// The exception that is thrown when a session cannot be locked.
     /// </summary>
-    public sealed class SessionCannotBeLockedException : BusException
+    public sealed class SessionCannotBeLockedException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SessionCannotBeLockedException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

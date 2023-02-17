@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// <summary>
     /// The exception that is thrown when message transfers exceeds the limit currently allowed on the link.
     /// </summary>
-    public class TransferLimitExceededException : BusException
+    public class TransferLimitExceededException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TransferLimitExceededException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

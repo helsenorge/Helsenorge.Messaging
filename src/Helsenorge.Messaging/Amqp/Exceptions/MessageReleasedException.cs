@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// <summary>
     /// The exception that is thrown when the message has been released by the peer.
     /// </summary>
-    public class MessageReleasedException : BusException
+    public class MessageReleasedException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageReleasedException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

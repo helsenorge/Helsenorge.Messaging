@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// <summary>
     /// The exception that is thrown when user doesn't have access to the entity.
     /// </summary>
-    public sealed class UnauthorizedException : BusException
+    public sealed class UnauthorizedException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UnauthorizedException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

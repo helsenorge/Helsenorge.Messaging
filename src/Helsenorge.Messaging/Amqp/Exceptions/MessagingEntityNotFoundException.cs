@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// <summary>
     /// The exception that is thrown when the Messaging Entity is not found. Verify Entity Exists.
     /// </summary>
-    public sealed class MessagingEntityNotFoundException : BusException
+    public sealed class MessagingEntityNotFoundException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingEntityNotFoundException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }
