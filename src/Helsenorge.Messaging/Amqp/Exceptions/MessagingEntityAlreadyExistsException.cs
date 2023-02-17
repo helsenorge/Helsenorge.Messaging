@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// <summary>
     /// The exception that is thrown when an already existing entity is being re-created.
     /// </summary>
-    public class MessagingEntityAlreadyExistsException : BusException
+    public class MessagingEntityAlreadyExistsException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingEntityAlreadyExistsException"/> class.
@@ -33,7 +33,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

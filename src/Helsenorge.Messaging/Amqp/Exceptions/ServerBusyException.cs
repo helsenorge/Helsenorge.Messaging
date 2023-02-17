@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// <summary>
     /// The exception that is thrown when a server is busy. Callers should wait a while and retry the operation.
     /// </summary>
-    public sealed class ServerBusyException : BusException
+    public sealed class ServerBusyException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerBusyException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => true;
     }
 }

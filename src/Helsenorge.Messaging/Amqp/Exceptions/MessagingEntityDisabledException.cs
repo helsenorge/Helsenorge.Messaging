@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// <summary>
     /// The exception that is thrown when the Messaging Entity is disabled. Enable the entity again using Portal.
     /// </summary>
-    public sealed class MessagingEntityDisabledException : BusException
+    public sealed class MessagingEntityDisabledException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagingEntityDisabledException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

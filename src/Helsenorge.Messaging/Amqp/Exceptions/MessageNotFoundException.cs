@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// <summary>
     /// The exception that is thrown when the requested message is not found.
     /// </summary>
-    public sealed class MessageNotFoundException : BusException
+    public sealed class MessageNotFoundException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageNotFoundException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

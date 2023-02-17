@@ -11,30 +11,30 @@ using System;
 namespace Helsenorge.Messaging.Amqp.Exceptions
 {
     /// <summary>
-    /// The exception that is thrown for signaling general communication errors related to messaging operations.
+    /// An abstract exception class.
     /// </summary>
-    public class BusCommunicationException : BusException
+    public abstract class AmqpException : Exception
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="BusCommunicationException"/> class.
+        /// Returns true if the exception represents an error on an operation that can be retried, otherwise false.
+        /// </summary>
+        public abstract bool CanRetry { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AmqpException"/> class.
         /// </summary>
         /// <param name="message">The error message that explains the reason for this exception.</param>
-        public BusCommunicationException(string message)
-            : this(message, null)
+        protected AmqpException(string message) : base(message)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BusCommunicationException"/> class.
+        /// Initializes a new instance of the <see cref="AmqpException"/> class.
         /// </summary>
         /// <param name="message">The error message that explains the reason for this exception.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
-        public BusCommunicationException(string message, Exception innerException)
-            : base(message, innerException)
+        protected AmqpException(string message, Exception innerException) : base(message, innerException)
         {
         }
-
-        /// <inheritdoc cref="BusException.CanRetry"/>
-        public override bool CanRetry => true;
     }
 }

@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// <summary>
     /// The exception that is thrown when the lock on the message is lost. Callers should call Receive and process the message again.
     /// </summary>
-    public sealed class MessageLockLostException : BusException
+    public sealed class MessageLockLostException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageLockLostException"/> class.
@@ -33,7 +33,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

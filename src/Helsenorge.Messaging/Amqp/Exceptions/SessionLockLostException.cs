@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// <summary>
     /// The exception that is thrown when the lock on the Session has expired.
     /// </summary>
-    public sealed class SessionLockLostException : BusException
+    public sealed class SessionLockLostException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SessionLockLostException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// <summary>
     /// The exception that is thrown when the client attempted to work with a server entity to which it has no access because another client is working with it.
     /// </summary>
-    public class ResourceLockedException : BusException
+    public class ResourceLockedException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceLockedException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

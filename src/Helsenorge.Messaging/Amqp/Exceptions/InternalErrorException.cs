@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// <summary>
     /// The exception that is thrown when an internal error occurred. Operator intervention may be required to resume normal operation.
     /// </summary>
-    public class InternalErrorException : BusException
+    public class InternalErrorException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="InternalErrorException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => true;
     }
 }

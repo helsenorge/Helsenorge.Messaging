@@ -112,7 +112,7 @@ namespace Helsenorge.Messaging.Amqp
 
         private static bool CanRetry(Exception e)
         {
-            return e is BusException serviceBusException &&
+            return e is AmqpException serviceBusException &&
                    serviceBusException.CanRetry;
         }
     }

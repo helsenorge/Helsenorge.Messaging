@@ -14,7 +14,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// The exception that is thrown when the Quota (Entity Max Size or other Connection etc) allocated to the Entity has exceeded. Callers should check the
     /// error message to see which of the Quota exceeded and take appropriate action.
     /// </summary>
-    public sealed class QuotaExceededException : BusException
+    public sealed class QuotaExceededException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="QuotaExceededException"/> class.
@@ -35,7 +35,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }

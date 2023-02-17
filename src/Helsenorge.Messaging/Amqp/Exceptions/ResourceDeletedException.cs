@@ -13,7 +13,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
     /// <summary>
     /// The exception that is thrown when a server entity the client is working with has been deleted.
     /// </summary>
-    public class ResourceDeletedException : BusException
+    public class ResourceDeletedException : AmqpException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceDeletedException"/> class.
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Amqp.Exceptions
         {
         }
 
-        /// <inheritdoc cref="BusException.CanRetry"/>
+        /// <inheritdoc cref="AmqpException.CanRetry"/>
         public override bool CanRetry => false;
     }
 }
