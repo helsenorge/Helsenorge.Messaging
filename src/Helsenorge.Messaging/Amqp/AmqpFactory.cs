@@ -19,13 +19,13 @@ using Microsoft.Extensions.Logging;
 namespace Helsenorge.Messaging.Amqp
 {
     [ExcludeFromCodeCoverage]
-    internal class BusFactory : IMessagingFactory
+    internal class AmqpFactory : IMessagingFactory
     {
         private readonly ILogger _logger;
         private readonly AmqpConnection _connection;
         private readonly IDictionary<string, object> _applicationProperties;
 
-        public BusFactory(ILogger logger, AmqpConnection connection, IDictionary<string, object> applicationProperties)
+        public AmqpFactory(ILogger logger, AmqpConnection connection, IDictionary<string, object> applicationProperties)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
