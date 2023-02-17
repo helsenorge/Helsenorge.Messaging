@@ -49,12 +49,12 @@ namespace Helsenorge.Messaging.Amqp
         public IMessagingSender CreateSender(string queue)
             => new AmqpSender(_logger, _connection, queue, _applicationProperties);
 
-        /// <summary>Creates a <see cref="IMessagingMessage"/>.</summary>
+        /// <summary>Creates a <see cref="IAmqpMessage"/>.</summary>
         /// <param name="fromHerId">The HER-id which is the receipient of the message</param>
         /// <param name="message">The outgoing message as an <see cref="OutgoingMessage"/>.</param>
         /// <param name="payload">The payload as a <see cref="Stream"/> object.</param>
-        /// <returns>Returns a <see cref="IMessagingMessage"/>.</returns>
-        public async Task<IMessagingMessage> CreateMessageAsync(int fromHerId, OutgoingMessage message, Stream payload)
+        /// <returns>Returns a <see cref="IAmqpMessage"/>.</returns>
+        public async Task<IAmqpMessage> CreateMessageAsync(int fromHerId, OutgoingMessage message, Stream payload)
         {
             using var payloadMemoryStream = new MemoryStream();
             await payload.CopyToAsync(payloadMemoryStream);

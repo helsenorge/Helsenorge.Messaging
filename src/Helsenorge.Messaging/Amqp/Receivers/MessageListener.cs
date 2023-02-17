@@ -116,7 +116,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         /// </summary>
         /// <param name="rawMessage">The message from the queue</param>
         /// <param name="message">The refined message data. All information should now be present</param>
-        protected abstract Task NotifyMessageProcessingReadyAsync(IMessagingMessage rawMessage, IncomingMessage message);
+        protected abstract Task NotifyMessageProcessingReadyAsync(IAmqpMessage rawMessage, IncomingMessage message);
         /// <summary>
         /// Called when message processing is complete
         /// </summary>
@@ -173,7 +173,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             var queueName = AmqpCore.ExtractQueueName(GetQueueName());
             await SetUpReceiverAsync(queueName).ConfigureAwait(false);
 
-            IMessagingMessage message;
+            IAmqpMessage message;
             try
             {
                 message = await _messageReceiver.ReceiveAsync(ReadTimeout).ConfigureAwait(false);
@@ -187,7 +187,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             }
             return await HandleRawMessageAsync(message, alwaysRemoveMessage).ConfigureAwait(false);
         }
-        private async Task<IncomingMessage> HandleRawMessageAsync(IMessagingMessage message, bool alwaysRemoveMessage)
+        private async Task<IncomingMessage> HandleRawMessageAsync(IAmqpMessage message, bool alwaysRemoveMessage)
         {
             if (message == null) return null;
             var queueName = AmqpCore.ExtractQueueName(GetQueueName());
@@ -340,13 +340,13 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             return null;
         }
 
-        private void RunMessageReleaseThread(IMessagingMessage message)
+        private void RunMessageReleaseThread(IAmqpMessage message)
         {
             var messageReleaseThread = new Thread(MessageReleaseThread.AwaitRelease);
             messageReleaseThread.Start(new MessageReleaseThread.ThreadData { Message = message, Logger = Logger });
         }
 
-        private async Task<CollaborationProtocolProfile> ResolveProfileAsync(IMessagingMessage message)
+        private async Task<CollaborationProtocolProfile> ResolveProfileAsync(IAmqpMessage message)
         {
             if(AmqpCore.MessagingSettings.MessageFunctionsExcludedFromCpaResolve.Contains(message.MessageFunction))
             {
@@ -367,7 +367,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 await AmqpCore.CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(message.FromHerId).ConfigureAwait(false);
         }
 
-        private XDocument HandlePayload(IMessagingMessage originalMessage, Stream bodyStream, string contentType, IncomingMessage incomingMessage, out bool contentWasSigned)
+        private XDocument HandlePayload(IAmqpMessage originalMessage, Stream bodyStream, string contentType, IncomingMessage incomingMessage, out bool contentWasSigned)
         {
             XDocument payload;
 
@@ -449,7 +449,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             return payload;
         }
 
-        private void ReportErrorOnRemoteCertificate(IMessagingMessage originalMessage, X509Certificate2 certificate,
+        private void ReportErrorOnRemoteCertificate(IAmqpMessage originalMessage, X509Certificate2 certificate,
             CertificateErrors error)
         {
             switch (error)
@@ -486,7 +486,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             return certificate != null ? new[] {certificate.Subject, certificate.Thumbprint} : new string[] { };
         }
 
-        private void ReportErrorOnLocalCertificate(IMessagingMessage originalMessage, X509Certificate2 certificate, CertificateErrors error)
+        private void ReportErrorOnLocalCertificate(IAmqpMessage originalMessage, X509Certificate2 certificate, CertificateErrors error)
         {
             string description;
             EventId id;
@@ -527,7 +527,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 description, certificate?.Subject, certificate?.Thumbprint);
         }
 
-        private void ValidateMessageHeader(IMessagingMessage message)
+        private void ValidateMessageHeader(IAmqpMessage message)
         {
             Logger.LogDebug("Validating message header");
             var missingFields = new List<string>();

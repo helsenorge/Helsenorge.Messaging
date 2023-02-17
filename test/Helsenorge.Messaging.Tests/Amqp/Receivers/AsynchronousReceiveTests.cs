@@ -686,7 +686,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
         }
 
 
-        private static void CheckError(IEnumerable<IMessagingMessage> queue, string errorCondition, string errorDescription, string errorConditionData)
+        private static void CheckError(IEnumerable<IAmqpMessage> queue, string errorCondition, string errorDescription, string errorConditionData)
         {
             var m = queue.First();
             Assert.AreEqual(errorCondition, m.Properties["errorCondition"].ToString());
@@ -702,7 +702,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             Func<IncomingMessage, Task> received, 
             Func<bool> wait,
             Action postValidation,
-            Func<IMessagingMessage, Exception, Task> handledException = null,
+            Func<IAmqpMessage, Exception, Task> handledException = null,
             bool messageProtected = false)
         {
             // create and post message

@@ -203,7 +203,7 @@ namespace Helsenorge.Messaging.Amqp.Senders
             return Task.CompletedTask;
         }
 
-        public Task NotifyErrorMessageReceivedAsync(IMessagingMessage message)
+        public Task NotifyErrorMessageReceivedAsync(IAmqpMessage message)
         {
             return Task.CompletedTask;
         }
@@ -232,12 +232,12 @@ namespace Helsenorge.Messaging.Amqp.Senders
             return Task.CompletedTask;
         }
 
-        public Task NotifyUnhandledExceptionAsync(IMessagingMessage message, Exception ex)
+        public Task NotifyUnhandledExceptionAsync(IAmqpMessage message, Exception ex)
         {
             return Task.CompletedTask;
         }
 
-        public Task NotifyHandledExceptionAsync(IMessagingMessage message, Exception ex)
+        public Task NotifyHandledExceptionAsync(IAmqpMessage message, Exception ex)
         {
             return Task.CompletedTask;
         }

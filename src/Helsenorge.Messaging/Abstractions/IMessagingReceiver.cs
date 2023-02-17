@@ -17,17 +17,17 @@ namespace Helsenorge.Messaging.Abstractions
     public interface IMessagingReceiver : ICachedMessagingEntity
     {
         /// <summary>Receives a message</summary>
-        IMessagingMessage Receive();
+        IAmqpMessage Receive();
         /// <summary>Receives a message</summary>
         /// <param name="serverWaitTime">Timeout applied to receive operation</param>
         /// <returns></returns>
-        IMessagingMessage Receive(TimeSpan serverWaitTime);
+        IAmqpMessage Receive(TimeSpan serverWaitTime);
         /// <summary>Receives a message</summary>
         /// <returns></returns>
-        Task<IMessagingMessage> ReceiveAsync();
+        Task<IAmqpMessage> ReceiveAsync();
         /// <summary>Receives a message</summary>
         /// <param name="serverWaitTime">Timeout applied to receive operation</param>
         /// <returns></returns>
-        Task<IMessagingMessage> ReceiveAsync(TimeSpan serverWaitTime);
+        Task<IAmqpMessage> ReceiveAsync(TimeSpan serverWaitTime);
     }
 }

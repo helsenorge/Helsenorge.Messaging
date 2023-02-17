@@ -16,7 +16,7 @@ using System.Globalization;
 
 namespace Helsenorge.Messaging.Tests.Mocks
 {
-    class MockMessage : IMessagingMessage
+    class MockMessage : IAmqpMessage
     {
         private Stream _stream;
         private int _deliveryCount = 0;
@@ -110,11 +110,11 @@ namespace Helsenorge.Messaging.Tests.Mocks
             return Task.CompletedTask;
         }
 
-        public List<IMessagingMessage> Queue { get; set; }
+        public List<IAmqpMessage> Queue { get; set; }
 
-        public List<IMessagingMessage> DeadLetterQueue { get; set; }
+        public List<IAmqpMessage> DeadLetterQueue { get; set; }
 
-        public IMessagingMessage Clone(bool includePayload = true)
+        public IAmqpMessage Clone(bool includePayload = true)
         {
 
             return new MockMessage(_stream)

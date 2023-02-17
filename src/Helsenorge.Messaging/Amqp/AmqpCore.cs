@@ -246,7 +246,7 @@ namespace Helsenorge.Messaging.Amqp
         /// <param name="logger"></param>
         /// <param name="message">The prepared message</param>
         /// <returns></returns>
-        private async Task SendAsync(ILogger logger, IMessagingMessage message)
+        private async Task SendAsync(ILogger logger, IAmqpMessage message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
@@ -284,7 +284,7 @@ namespace Helsenorge.Messaging.Amqp
         /// <param name="errorDescription">The error description to report</param>
         /// <param name="additionalData">Additional information to include</param>
         /// <returns></returns>
-        private async Task SendErrorAsync(ILogger logger, IMessagingMessage originalMessage, string errorCode, string errorDescription, IEnumerable<string> additionalData) //TODO: Sjekk at SendError fungerer med Http-meldinger
+        private async Task SendErrorAsync(ILogger logger, IAmqpMessage originalMessage, string errorCode, string errorDescription, IEnumerable<string> additionalData) //TODO: Sjekk at SendError fungerer med Http-meldinger
         {
             if (originalMessage == null) throw new ArgumentNullException(nameof(originalMessage));
             if (string.IsNullOrEmpty(errorCode)) throw new ArgumentNullException(nameof(errorCode));
@@ -400,7 +400,7 @@ namespace Helsenorge.Messaging.Amqp
         internal async Task ReportErrorToExternalSenderAsync(
             ILogger logger,
             EventId id,
-            IMessagingMessage originalMessage,
+            IAmqpMessage originalMessage,
             string errorCode,
             string description,
             IEnumerable<string> additionalData,
@@ -416,7 +416,7 @@ namespace Helsenorge.Messaging.Amqp
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="message"></param>
-        internal static void RemoveMessageFromQueueAfterError(ILogger logger, IMessagingMessage message)
+        internal static void RemoveMessageFromQueueAfterError(ILogger logger, IAmqpMessage message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
@@ -428,7 +428,7 @@ namespace Helsenorge.Messaging.Amqp
         /// Removes the message from the queue as part of normal operation
         /// </summary>
         /// <param name="message"></param>
-        internal static void RemoveProcessedMessageFromQueue(IMessagingMessage message)
+        internal static void RemoveProcessedMessageFromQueue(IAmqpMessage message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 

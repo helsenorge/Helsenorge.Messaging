@@ -16,7 +16,7 @@ namespace Helsenorge.Messaging.Abstractions
     /// <summary>
     /// Provides an interface around the messages we send and receive
     /// </summary>
-    public interface IMessagingMessage : IDisposable
+    public interface IAmqpMessage : IDisposable
     {
         /// <summary>
         /// The Her id of the communication party that sent the message
@@ -127,7 +127,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// Creates a clone of the message
         /// </summary>
         /// <returns></returns>
-        IMessagingMessage Clone(bool includePayload = true);
+        IAmqpMessage Clone(bool includePayload = true);
         /// <summary>
         /// Gets a reference to the object that is implementation specific
         /// </summary>

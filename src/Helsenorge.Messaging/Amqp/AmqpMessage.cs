@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace Helsenorge.Messaging.Amqp
 {
     [ExcludeFromCodeCoverage]
-    internal class AmqpMessage : IMessagingMessage
+    internal class AmqpMessage : IAmqpMessage
     {
         private readonly Message _implementation;
 
@@ -222,7 +222,7 @@ namespace Helsenorge.Messaging.Amqp
         }
 
         [DebuggerStepThrough]
-        public IMessagingMessage Clone(bool includePayload = true)
+        public IAmqpMessage Clone(bool includePayload = true)
         {
             var clone = new Message();
 

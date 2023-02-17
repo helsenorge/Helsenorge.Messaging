@@ -18,19 +18,19 @@ namespace Helsenorge.Messaging.Abstractions
     {
         /// <summary>Sends the message</summary>
         /// <param name="message">The message to send</param>
-        void Send(IMessagingMessage message);
+        void Send(IAmqpMessage message);
         /// <summary>Sends the message</summary>
         /// <param name="message">The message to send</param>
         /// <param name="serverWaitTime">Timeout applied to send operation</param>
-        void Send(IMessagingMessage message, TimeSpan serverWaitTime);
+        void Send(IAmqpMessage message, TimeSpan serverWaitTime);
         /// <summary>Sends the message</summary>
         /// <param name="message">The message to send</param>
         /// <returns></returns>
-        Task SendAsync(IMessagingMessage message);
+        Task SendAsync(IAmqpMessage message);
         /// <summary>Sends the message</summary>
         /// <param name="message">The message to send</param>
         /// <param name="serverWaitTime">Timeout applied to send operation</param>
         /// <returns></returns>
-        Task SendAsync(IMessagingMessage message, TimeSpan serverWaitTime);
+        Task SendAsync(IAmqpMessage message, TimeSpan serverWaitTime);
     }
 }

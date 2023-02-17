@@ -45,10 +45,10 @@ namespace Helsenorge.Messaging.Amqp
             return receiver;
         }
 
-        public IMessagingMessage Receive()
+        public IAmqpMessage Receive()
             => Receive(TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
 
-        public IMessagingMessage Receive(TimeSpan serverWaitTime)
+        public IAmqpMessage Receive(TimeSpan serverWaitTime)
         {
             var message = new AmqpOperationBuilder(_logger, "Receive").Build(() =>
             {
@@ -62,10 +62,10 @@ namespace Helsenorge.Messaging.Amqp
             return message;
         }
 
-        public Task<IMessagingMessage> ReceiveAsync()
+        public Task<IAmqpMessage> ReceiveAsync()
             => ReceiveAsync(TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
 
-        public async Task<IMessagingMessage> ReceiveAsync(TimeSpan serverWaitTime)
+        public async Task<IAmqpMessage> ReceiveAsync(TimeSpan serverWaitTime)
         {
             var message = await new AmqpOperationBuilder(_logger, "Receive").Build(async () =>
             {

@@ -46,7 +46,7 @@ namespace Helsenorge.Messaging.Amqp
 
         public async Task CloseAsync() => await _connection.CloseAsync().ConfigureAwait(false);
 
-        public async Task<IMessagingMessage> CreateMessageAsync(Stream stream)
+        public async Task<IAmqpMessage> CreateMessageAsync(Stream stream)
         {
             using var memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream).ConfigureAwait(false);
