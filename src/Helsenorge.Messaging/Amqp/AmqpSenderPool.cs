@@ -16,7 +16,7 @@ namespace Helsenorge.Messaging.Amqp
     {
         private readonly IAmqpFactoryPool _factoryPool;
         
-        public AmqpSenderPool(BusSettings settings,  IAmqpFactoryPool factoryPool) :
+        public AmqpSenderPool(AmqpSettings settings,  IAmqpFactoryPool factoryPool) :
             base("SenderPool", settings.MaxSenders, settings.CacheEntryTimeToLive, settings.MaxCacheEntryTrimCount)
         {
             _factoryPool = factoryPool;

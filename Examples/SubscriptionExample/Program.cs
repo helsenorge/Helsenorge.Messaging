@@ -41,7 +41,7 @@ namespace SubscriptionExample
                 };
                 var busManager = new BusManager(busManagerSettings, loggerFactory.CreateLogger<BusManager>());
 
-                var serviceBusSettings = new BusSettings
+                var serviceBusSettings = new AmqpSettings
                 {
                     ConnectionString = new AmqpConnectionString
                     {

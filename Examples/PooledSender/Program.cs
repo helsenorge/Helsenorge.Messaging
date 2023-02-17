@@ -33,7 +33,7 @@ namespace PooledSender
             var settings = new MessagingSettings
             {
                 ApplicationProperties = {{ "X-SystemIdentifier", "ExampleSystemIdentifier" }},
-                BusSettings =
+                AmqpSettings =
                 {
                     ConnectionString = new AmqpConnectionString
                     {
@@ -45,7 +45,7 @@ namespace PooledSender
                 }
             };
 
-            await using var linkFactoryPool = new LinkFactoryPool(loggerFactory.CreateLogger<LinkFactoryPool>(), settings.BusSettings, settings.ApplicationProperties);
+            await using var linkFactoryPool = new LinkFactoryPool(loggerFactory.CreateLogger<LinkFactoryPool>(), settings.AmqpSettings, settings.ApplicationProperties);
             try
             {
                 var messageCount = 20;

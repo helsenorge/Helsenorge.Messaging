@@ -103,7 +103,7 @@ namespace Helsenorge.Messaging.Server
             var messagingSettings = new MessagingSettings();
             configurationRoot.GetSection("MessagingSettings").Bind(messagingSettings);
 
-            messagingSettings.BusSettings.Synchronous.ReplyQueueMapping.Add(Environment.MachineName, "DUMMY"); // we just need a value, it will never be used
+            messagingSettings.AmqpSettings.Synchronous.ReplyQueueMapping.Add(Environment.MachineName, "DUMMY"); // we just need a value, it will never be used
             messagingSettings.LogPayload = true;
 
             _messagingServer = new MessagingServer(messagingSettings, _loggerFactory, collaborationProtocolRegistry, addressRegistry);

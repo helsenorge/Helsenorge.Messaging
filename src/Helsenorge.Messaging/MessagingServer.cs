@@ -162,15 +162,15 @@ namespace Helsenorge.Messaging
 
             var queueNames = await GetCommonAncestorAsync(AmqpCore.Settings.MyHerIds);
 
-            for (var i = 0; i < Settings.BusSettings.Asynchronous.ProcessingTasks; i++)
+            for (var i = 0; i < Settings.AmqpSettings.Asynchronous.ProcessingTasks; i++)
             {
                 _listeners.Add(new AsynchronousMessageListener(AmqpCore, _loggerFactory.CreateLogger($"AsyncListener_{i}"), this, queueNames));
             }
-            for (var i = 0; i < Settings.BusSettings.Synchronous.ProcessingTasks; i++)
+            for (var i = 0; i < Settings.AmqpSettings.Synchronous.ProcessingTasks; i++)
             {
                 _listeners.Add(new SynchronousMessageListener(AmqpCore, _loggerFactory.CreateLogger($"SyncListener_{i}"), this, queueNames));
             }
-            for (var i = 0; i < Settings.BusSettings.Error.ProcessingTasks; i++)
+            for (var i = 0; i < Settings.AmqpSettings.Error.ProcessingTasks; i++)
             {
                 _listeners.Add(new ErrorMessageListener(AmqpCore, _loggerFactory.CreateLogger($"ErrorListener_{i}"), this, queueNames));
             }
@@ -513,7 +513,7 @@ namespace Helsenorge.Messaging
             AmqpConnection connection = null;
             try
             {
-                connection = new AmqpConnection(Settings.BusSettings.ConnectionString?.ToString());
+                connection = new AmqpConnection(Settings.AmqpSettings.ConnectionString?.ToString());
                 _ = await connection.EnsureConnectionAsync();
             }
             catch (Exception e)

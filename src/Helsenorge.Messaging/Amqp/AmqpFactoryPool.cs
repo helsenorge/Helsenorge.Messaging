@@ -19,12 +19,12 @@ namespace Helsenorge.Messaging.Amqp
     internal class AmqpFactoryPool : AmqpEntityCache<IAmqpFactory>, IAmqpFactoryPool
     {
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
-        private readonly BusSettings _settings;
+        private readonly AmqpSettings _settings;
         private readonly IDictionary<string, object> _applicationProperties;
         private int _index;
         private IAmqpFactory _alternateAmqpFactor;
 
-        public AmqpFactoryPool(BusSettings settings, IDictionary<string, object> applicationProperties = null) :
+        public AmqpFactoryPool(AmqpSettings settings, IDictionary<string, object> applicationProperties = null) :
             base("FactoryPool", settings.MaxFactories, settings.CacheEntryTimeToLive, settings.MaxCacheEntryTrimCount)
         {
             _settings = settings;
