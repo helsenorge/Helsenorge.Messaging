@@ -28,7 +28,7 @@ namespace SimpleSender
         {
             var loggerFactory = new LoggerFactory();
             var connection = new AmqpConnection(_connectionString);
-            IMessagingSender sender = null;
+            IAmqpSender sender = null;
             var messageCount = 20;
             try
             {

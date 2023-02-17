@@ -47,7 +47,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
             return new MockReceiver(this, id);
         }
 
-        public IMessagingSender CreateMessageSender(string id)
+        public IAmqpSender CreateMessageSender(string id)
         {
             return new MockSender(this, id);
         }

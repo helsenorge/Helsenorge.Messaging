@@ -250,7 +250,7 @@ namespace Helsenorge.Messaging.Amqp
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
-            IMessagingSender messageSender = null;
+            IAmqpSender messageSender = null;
 
             try
             {

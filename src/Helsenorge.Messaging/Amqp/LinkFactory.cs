@@ -43,10 +43,10 @@ namespace Helsenorge.Messaging.Amqp
         public IAmqpReceiver CreateReceiver(string queue, int linkCredit = 25)
             => new AmqpReceiver(_connection, queue, linkCredit, _logger);
 
-        /// <summary>Creates a Sender Link of type <see cref="IMessagingSender"/>.</summary>
+        /// <summary>Creates a Sender Link of type <see cref="IAmqpSender"/>.</summary>
         /// <param name="queue">The path to the queue you want to receive messages from.</param>
-        /// <returns>A <see cref="IMessagingSender"/></returns>
-        public IMessagingSender CreateSender(string queue)
+        /// <returns>A <see cref="IAmqpSender"/></returns>
+        public IAmqpSender CreateSender(string queue)
             => new AmqpSender(_logger, _connection, queue, _applicationProperties);
 
         /// <summary>Creates a <see cref="IAmqpMessage"/>.</summary>
