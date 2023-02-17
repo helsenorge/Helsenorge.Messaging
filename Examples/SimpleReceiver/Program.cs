@@ -10,7 +10,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
-using Helsenorge.Messaging.Bus;
+using Helsenorge.Messaging.Amqp;
 using Microsoft.Extensions.Logging;
 
 namespace SimpleReceiver

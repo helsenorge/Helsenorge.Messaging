@@ -9,7 +9,7 @@
 using System;
 using System.Threading.Tasks;
 using Helsenorge.Messaging;
-using Helsenorge.Messaging.Bus;
+using Helsenorge.Messaging.Amqp;
 using Helsenorge.Registries;
 using Helsenorge.Registries.Configuration;
 using Helsenorge.Registries.Utilities;

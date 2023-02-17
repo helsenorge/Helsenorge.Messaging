@@ -18,7 +18,7 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Helsenorge.Messaging.Bus;
+using Helsenorge.Messaging.Amqp;
 using Helsenorge.Registries.Tests.Mocks;
 
 namespace Helsenorge.Messaging.Tests

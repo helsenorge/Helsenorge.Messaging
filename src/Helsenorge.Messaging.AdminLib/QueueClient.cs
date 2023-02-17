@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Helsenorge.Messaging.Bus;
+using Helsenorge.Messaging.Amqp;
 using RabbitMQ.Client;
 
 namespace Helsenorge.Messaging.AdminLib;
