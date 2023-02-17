@@ -438,7 +438,7 @@ namespace Helsenorge.Messaging.Amqp
         /// Registers an alternate messaging factory
         /// </summary>
         /// <param name="factory"></param>
-        public void RegisterAlternateMessagingFactory(IMessagingFactory factory) => FactoryPool.RegisterAlternateMessagingFactoryAsync(factory);
+        public void RegisterAlternateMessagingFactory(IAmqpFactory factory) => FactoryPool.RegisterAlternateMessagingFactoryAsync(factory);
 
         /// <summary>
         /// Find CPA/CPP
