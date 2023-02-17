@@ -14,7 +14,7 @@ namespace Helsenorge.Messaging.Abstractions
     /// <summary>
     /// Provides an interface for receiving messages for a specific implementation
     /// </summary>
-    public interface IMessagingReceiver : ICachedMessagingEntity
+    public interface IAmqpReceiver : ICachedMessagingEntity
     {
         /// <summary>Receives a message</summary>
         IAmqpMessage Receive();

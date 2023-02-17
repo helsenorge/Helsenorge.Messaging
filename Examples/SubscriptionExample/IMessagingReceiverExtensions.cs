@@ -16,7 +16,7 @@ namespace SubscriptionExample
     internal static class IMessagingReceiverExtensions
     {
         // NOTE: A very hacky way of trying to connect to a queue. This can probably be done in a much better way.
-        public static async Task<bool> TryConnectToQueueAsync(this IMessagingReceiver receiver)
+        public static async Task<bool> TryConnectToQueueAsync(this IAmqpReceiver receiver)
         {
             var i = 0;
             while (true)

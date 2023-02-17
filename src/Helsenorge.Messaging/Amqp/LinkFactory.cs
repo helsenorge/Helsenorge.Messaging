@@ -36,11 +36,11 @@ namespace Helsenorge.Messaging.Amqp
             _applicationProperties = applicationProperties ?? new Dictionary<string, object>();
         }
 
-        /// <summary>Creates a Receiver Link of type <see cref="IMessagingReceiver"/>.</summary>
+        /// <summary>Creates a Receiver Link of type <see cref="IAmqpReceiver"/>.</summary>
         /// <param name="queue">The path to the queue you want to receive messages from.</param>
         /// <param name="linkCredit">How many messages should the client buffer client-side.</param>
-        /// <returns>A <see cref="IMessagingReceiver"/></returns>
-        public IMessagingReceiver CreateReceiver(string queue, int linkCredit = 25)
+        /// <returns>A <see cref="IAmqpReceiver"/></returns>
+        public IAmqpReceiver CreateReceiver(string queue, int linkCredit = 25)
             => new AmqpReceiver(_connection, queue, linkCredit, _logger);
 
         /// <summary>Creates a Sender Link of type <see cref="IMessagingSender"/>.</summary>

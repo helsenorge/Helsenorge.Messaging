@@ -44,10 +44,10 @@ namespace Helsenorge.Messaging.Amqp
             _senderPool = new AmqpSenderPool(_settings, _factoryPool);
         }
 
-        /// <summary>Creates a pooled receiver link of type <see cref="IMessagingReceiver"/>.</summary>
+        /// <summary>Creates a pooled receiver link of type <see cref="IAmqpReceiver"/>.</summary>
         /// <param name="queue">The path to the queue you want to receive messages from.</param>
-        /// <returns>A <see cref="IMessagingReceiver"/></returns>
-        public Task<IMessagingReceiver> CreateCachedMessageReceiverAsync(string queue)
+        /// <returns>A <see cref="IAmqpReceiver"/></returns>
+        public Task<IAmqpReceiver> CreateCachedMessageReceiverAsync(string queue)
             => _receiverPool.CreateCachedMessageReceiverAsync(_logger, queue);
 
         /// <summary>Release a pooled receiver link tied to the 'queue'.</summary>

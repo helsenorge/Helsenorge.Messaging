@@ -42,7 +42,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
             return Task.CompletedTask;
         }
 
-        public IMessagingReceiver CreateMessageReceiver(string id, int credit)
+        public IAmqpReceiver CreateMessageReceiver(string id, int credit)
         {
             return new MockReceiver(this, id);
         }
