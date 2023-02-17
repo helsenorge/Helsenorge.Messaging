@@ -14,10 +14,10 @@ namespace Helsenorge.Messaging.Amqp
 {
     internal class AmqpReceiverPool : MessagingEntityCache<IMessagingReceiver>
     {
-        private readonly IBusFactoryPool _factoryPool;
+        private readonly IAmqpFactoryPool _factoryPool;
         private readonly int _credit;
         
-        public AmqpReceiverPool(BusSettings settings, IBusFactoryPool factoryPool) :
+        public AmqpReceiverPool(BusSettings settings, IAmqpFactoryPool factoryPool) :
             base("ReceiverPool", settings.MaxReceivers, settings.CacheEntryTimeToLive, settings.MaxCacheEntryTrimCount)
         {
             _factoryPool = factoryPool;

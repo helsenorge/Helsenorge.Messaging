@@ -16,7 +16,7 @@ using System.Threading;
 
 namespace Helsenorge.Messaging.Amqp
 {
-    internal class BusFactoryPool : MessagingEntityCache<IMessagingFactory>, IBusFactoryPool
+    internal class AmqpFactoryPool : MessagingEntityCache<IMessagingFactory>, IAmqpFactoryPool
     {
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly BusSettings _settings;
@@ -24,7 +24,7 @@ namespace Helsenorge.Messaging.Amqp
         private int _index;
         private IMessagingFactory _alternateMessagingFactor;
 
-        public BusFactoryPool(BusSettings settings, IDictionary<string, object> applicationProperties = null) :
+        public AmqpFactoryPool(BusSettings settings, IDictionary<string, object> applicationProperties = null) :
             base("FactoryPool", settings.MaxFactories, settings.CacheEntryTimeToLive, settings.MaxCacheEntryTrimCount)
         {
             _settings = settings;
