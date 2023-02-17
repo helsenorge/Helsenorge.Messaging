@@ -26,7 +26,7 @@ namespace SimpleReceiver
         {
             var loggerFactory = new LoggerFactory();
             var connection = new AmqpConnection(_connectionString);
-            IMessagingReceiver receiver = null;
+            IAmqpReceiver receiver = null;
             try
             {
                 var linkFactory = new LinkFactory(connection, loggerFactory.CreateLogger<LinkFactory>());

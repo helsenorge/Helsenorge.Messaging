@@ -33,7 +33,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
     public abstract class MessageListener
     {
         private CommunicationPartyDetails _myDetails;
-        private IMessagingReceiver _messageReceiver;
+        private IAmqpReceiver _messageReceiver;
         private bool _listenerEstablishedConfirmed = false;
         protected QueueNames _queueNames;
 

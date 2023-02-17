@@ -79,7 +79,7 @@ namespace Helsenorge.Messaging.Tests
                 return Task.CompletedTask;
             }
 
-            public IMessagingReceiver CreateMessageReceiver(string id, int credit)
+            public IAmqpReceiver CreateMessageReceiver(string id, int credit)
             {
                 return null;
             }

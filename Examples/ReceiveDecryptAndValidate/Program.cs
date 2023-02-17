@@ -38,7 +38,7 @@ namespace ReceiveDecryptAndValidate
                 Password = Password,
             };
             var connection = new AmqpConnection(connectionString.ToString());
-            IMessagingReceiver receiver = null;
+            IAmqpReceiver receiver = null;
             try
             {
                 var certificateStore = new MockCertificateStore();

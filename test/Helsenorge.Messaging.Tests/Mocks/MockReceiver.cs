@@ -13,7 +13,7 @@ using Helsenorge.Messaging.Abstractions;
 
 namespace Helsenorge.Messaging.Tests.Mocks
 {
-    internal class MockReceiver : IMessagingReceiver
+    internal class MockReceiver : IAmqpReceiver
     {
         private readonly MockFactory _factory;
         private readonly string _id;

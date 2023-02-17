@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Amqp
 {
-    internal class AmqpReceiverPool : MessagingEntityCache<IMessagingReceiver>
+    internal class AmqpReceiverPool : MessagingEntityCache<IAmqpReceiver>
     {
         private readonly IAmqpFactoryPool _factoryPool;
         private readonly int _credit;
@@ -24,7 +24,7 @@ namespace Helsenorge.Messaging.Amqp
             _credit = settings.LinkCredits;
         }
 
-        protected override async Task<IMessagingReceiver> CreateEntityAsync(ILogger logger, string id)
+        protected override async Task<IAmqpReceiver> CreateEntityAsync(ILogger logger, string id)
         {
             var factory = await _factoryPool.FindNextFactoryAsync(logger).ConfigureAwait(false);
             return factory.CreateMessageReceiver(id, _credit);
@@ -36,7 +36,7 @@ namespace Helsenorge.Messaging.Amqp
         /// <param name="logger"></param>
         /// <param name="queueName"></param>
         /// <returns></returns>
-        public async Task<IMessagingReceiver> CreateCachedMessageReceiverAsync(ILogger logger, string queueName) => await CreateAsync(logger, queueName).ConfigureAwait(false);
+        public async Task<IAmqpReceiver> CreateCachedMessageReceiverAsync(ILogger logger, string queueName) => await CreateAsync(logger, queueName).ConfigureAwait(false);
 
         /// <summary>
         /// Releases a cached message receiver

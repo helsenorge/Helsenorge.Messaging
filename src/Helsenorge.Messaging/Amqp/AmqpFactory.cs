@@ -32,7 +32,7 @@ namespace Helsenorge.Messaging.Amqp
             _applicationProperties = applicationProperties;
         }
 
-        public IMessagingReceiver CreateMessageReceiver(string id, int credit)
+        public IAmqpReceiver CreateMessageReceiver(string id, int credit)
         {
             return new AmqpReceiver(_connection, id, credit, _logger);
         }
