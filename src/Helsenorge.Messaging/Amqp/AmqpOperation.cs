@@ -16,7 +16,7 @@ namespace Helsenorge.Messaging.Amqp
     /// <summary>
     /// The base class for Bus Operations.
     /// </summary>
-    internal abstract class BusOperationBase
+    internal abstract class AmqpOperationBase
     {
         private readonly ILogger _logger;
         private readonly string _operationName;
@@ -30,7 +30,7 @@ namespace Helsenorge.Messaging.Amqp
         private readonly int _maxRetryCount;
         private readonly ITimeManager _timeManager;
 
-        protected BusOperationBase(BusOperationBuilder builder)
+        protected AmqpOperationBase(AmqpOperationBuilder builder)
         {
             _logger = builder.Logger;
             _operationName = builder.OperationName;
@@ -117,11 +117,11 @@ namespace Helsenorge.Messaging.Amqp
         }
     }
 
-    internal class BusOperation<T> : BusOperationBase
+    internal class AmqpOperation<T> : AmqpOperationBase
     {
         private readonly Func<T> _func;
 
-        internal BusOperation(BusOperationBuilder builder, Func<T> func) : base(builder)
+        internal AmqpOperation(AmqpOperationBuilder builder, Func<T> func) : base(builder)
         {
             _func = func;
         }
@@ -142,11 +142,11 @@ namespace Helsenorge.Messaging.Amqp
         }
     }
 
-    internal class BusAsyncOperation<T> : BusOperationBase
+    internal class AmqpAsyncOperation<T> : AmqpOperationBase
     {
         private readonly Func<Task<T>> _func;
 
-        internal BusAsyncOperation(BusOperationBuilder builder, Func<Task<T>> func) : base(builder)
+        internal AmqpAsyncOperation(AmqpOperationBuilder builder, Func<Task<T>> func) : base(builder)
         {
             _func = func;
         }
@@ -167,11 +167,11 @@ namespace Helsenorge.Messaging.Amqp
         }
     }
 
-    internal class BusOperation : BusOperationBase
+    internal class AmqpOperation : AmqpOperationBase
     {
         private readonly Action _func;
 
-        internal BusOperation(BusOperationBuilder builder, Action func) : base(builder)
+        internal AmqpOperation(AmqpOperationBuilder builder, Action func) : base(builder)
         {
             _func = func;
         }
@@ -193,11 +193,11 @@ namespace Helsenorge.Messaging.Amqp
         }
     }
 
-    internal class BusAsyncOperation : BusOperationBase
+    internal class AmqpAsyncOperation : AmqpOperationBase
     {
         private readonly Func<Task> _func;
 
-        internal BusAsyncOperation(BusOperationBuilder builder, Func<Task> func) : base(builder)
+        internal AmqpAsyncOperation(AmqpOperationBuilder builder, Func<Task> func) : base(builder)
         {
             _func = func;
         }

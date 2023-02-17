@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Amqp
 {
-    internal class BusOperationBuilder
+    internal class AmqpOperationBuilder
     {
         public static readonly TimeSpan DefaultOperationTimeout = TimeSpan.FromMinutes(1);
         public static readonly TimeSpan DefaultRetryMinBackoff = TimeSpan.Zero;
@@ -29,7 +29,7 @@ namespace Helsenorge.Messaging.Amqp
         public ILogger Logger;
         public string OperationName;
 
-        public BusOperationBuilder(ILogger logger, string operationName)
+        public AmqpOperationBuilder(ILogger logger, string operationName)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             OperationName = operationName ?? throw new ArgumentNullException(nameof(operationName));
@@ -47,28 +47,28 @@ namespace Helsenorge.Messaging.Amqp
             }
         }
 
-        public BusAsyncOperation<T> Build<T>(Func<Task<T>> func)
+        public AmqpAsyncOperation<T> Build<T>(Func<Task<T>> func)
         {
             Validate();
-            return new BusAsyncOperation<T>(this, func);
+            return new AmqpAsyncOperation<T>(this, func);
         }
 
-        public BusAsyncOperation Build(Func<Task> func)
+        public AmqpAsyncOperation Build(Func<Task> func)
         {
             Validate();
-            return new BusAsyncOperation(this, func);
+            return new AmqpAsyncOperation(this, func);
         }
 
-        public BusOperation<T> Build<T>(Func<T> func)
+        public AmqpOperation<T> Build<T>(Func<T> func)
         {
             Validate();
-            return new BusOperation<T>(this, func);
+            return new AmqpOperation<T>(this, func);
         }
 
-        public BusOperation Build(Action func)
+        public AmqpOperation Build(Action func)
         {
             Validate();
-            return new BusOperation(this, func);
+            return new AmqpOperation(this, func);
         }
     }
 }

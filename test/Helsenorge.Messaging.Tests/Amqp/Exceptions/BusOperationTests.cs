@@ -62,7 +62,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Exceptions
             var attempts = 0;
 
             var exception = await Assert.ThrowsAsync(resultingExceptionType, () =>
-                new BusOperationBuilder(_loggerMock.Object, e.GetType().Name)
+                new AmqpOperationBuilder(_loggerMock.Object, e.GetType().Name)
                 {
                     TimeManager = _timeManager,
                     MaxRetryCount = 5,
@@ -93,7 +93,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Exceptions
             var attempts = 0;
 
             var exception = await Assert.ThrowsAsync(resultingExceptionType, () =>
-                new BusOperationBuilder(_loggerMock.Object, e.GetType().Name)
+                new AmqpOperationBuilder(_loggerMock.Object, e.GetType().Name)
                 {
                     TimeManager = _timeManager
                 }.Build(() =>

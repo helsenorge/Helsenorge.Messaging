@@ -54,7 +54,7 @@ namespace Helsenorge.Messaging.Amqp
             if (!(message.OriginalObject is Message originalMessage))
                 throw new InvalidOperationException("OriginalObject is not a Message");
 
-            new BusOperationBuilder(_logger, "Send").Build(() =>
+            new AmqpOperationBuilder(_logger, "Send").Build(() =>
             {
                 EnsureOpen();
                 originalMessage.ApplicationProperties.AddApplicationProperties(_applicationProperties);
@@ -78,7 +78,7 @@ namespace Helsenorge.Messaging.Amqp
                 throw new InvalidOperationException("OriginalObject is not a Message");
             }
 
-            await new BusOperationBuilder(_logger, "SendAsync").Build(async () =>
+            await new AmqpOperationBuilder(_logger, "SendAsync").Build(async () =>
             {
                 await EnsureOpenAsync().ConfigureAwait(false);
                 originalMessage.ApplicationProperties.AddApplicationProperties(_applicationProperties);
