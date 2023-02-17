@@ -25,17 +25,17 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         /// <summary>
         /// Initializes a new instance of the <see cref="AsynchronousMessageListener"/> class.
         /// </summary>
-        /// <param name="busCore">An instance of <see cref="BusCore"/> which has the common infrastructure to talk to the Message Bus.</param>
+        /// <param name="amqpCore">An instance of <see cref="AmqpCore"/> which has the common infrastructure to talk to the Message Bus.</param>
         /// <param name="logger">An instance of <see cref="ILogger"/>, used to log diagnostics information.</param>
         /// <param name="messagingNotification">An instance of <see cref="IMessagingNotification"/> which holds reference to callbacks back to the client that owns this instance of the <see cref="MessageListener"/>.</param>
         /// <param name="queueNames">The Queue Names associated with the client.</param>
         internal AsynchronousMessageListener(
-            BusCore busCore,
+            AmqpCore amqpCore,
             ILogger logger,
             IMessagingNotification messagingNotification,
-            QueueNames queueNames) : base(busCore, logger, messagingNotification, queueNames)
+            QueueNames queueNames) : base(amqpCore, logger, messagingNotification, queueNames)
         {
-            ReadTimeout = BusCore.Settings.Asynchronous.ReadTimeout;
+            ReadTimeout = AmqpCore.Settings.Asynchronous.ReadTimeout;
         }
 
         /// <summary>

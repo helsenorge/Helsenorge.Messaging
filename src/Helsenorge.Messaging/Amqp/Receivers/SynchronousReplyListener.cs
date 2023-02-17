@@ -20,7 +20,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         /// <summary>
         /// Specifies the name of the queue this listener is reading from
         /// </summary>
-        protected override string GetQueueName() => BusCore.Settings.Synchronous.FindReplyQueueForMe();
+        protected override string GetQueueName() => AmqpCore.Settings.Synchronous.FindReplyQueueForMe();
         /// <summary>
         /// Specifies what type of queue this listener is processing
         /// </summary>
@@ -29,12 +29,12 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         /// <summary>
         /// Initializes a new instance of the <see cref="SynchronousReplyListener"/> class.
         /// </summary>
-        /// <param name="busCore">An instance of <see cref="BusCore"/> which has the common infrastructure to talk to the Message Bus.</param>
+        /// <param name="amqpCore">An instance of <see cref="AmqpCore"/> which has the common infrastructure to talk to the Message Bus.</param>
         /// <param name="logger">An instance of <see cref="ILogger"/>, used to log diagnostics information.</param>
         /// <param name="messagingNotification">An instance of <see cref="IMessagingNotification"/> which holds reference to callbacks back to the client that owns this instance of the <see cref="MessageListener"/>.</param>
-        internal SynchronousReplyListener(BusCore busCore, ILogger logger, IMessagingNotification messagingNotification) : base(busCore, logger, messagingNotification)
+        internal SynchronousReplyListener(AmqpCore amqpCore, ILogger logger, IMessagingNotification messagingNotification) : base(amqpCore, logger, messagingNotification)
         {
-            ReadTimeout = BusCore.Settings.Synchronous.ReadTimeout;
+            ReadTimeout = AmqpCore.Settings.Synchronous.ReadTimeout;
         }
 
         /// <summary>

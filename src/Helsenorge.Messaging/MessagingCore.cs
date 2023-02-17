@@ -40,7 +40,7 @@ namespace Helsenorge.Messaging
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             CollaborationProtocolRegistry = collaborationProtocolRegistry ?? throw new ArgumentNullException(nameof(collaborationProtocolRegistry));
             AddressRegistry = addressRegistry ?? throw new ArgumentNullException(nameof(addressRegistry));
-            BusCore = new BusCore(this);
+            AmqpCore = new AmqpCore(this);
 
             Settings.Validate();
 
@@ -71,7 +71,7 @@ namespace Helsenorge.Messaging
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             CollaborationProtocolRegistry = collaborationProtocolRegistry ?? throw new ArgumentNullException(nameof(collaborationProtocolRegistry));
             AddressRegistry = addressRegistry ?? throw new ArgumentNullException(nameof(addressRegistry));
-            BusCore = new BusCore(this);
+            AmqpCore = new AmqpCore(this);
 
             Settings.Validate();
 
@@ -113,7 +113,7 @@ namespace Helsenorge.Messaging
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             CollaborationProtocolRegistry = collaborationProtocolRegistry ?? throw new ArgumentNullException(nameof(collaborationProtocolRegistry));
             AddressRegistry = addressRegistry ?? throw new ArgumentNullException(nameof(addressRegistry));
-            BusCore = new BusCore(this);
+            AmqpCore = new AmqpCore(this);
 
             Settings.Validate();
 
@@ -166,7 +166,7 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Provides access to bus specific functionality
         /// </summary>
-        public BusCore BusCore { get; }
+        public AmqpCore AmqpCore { get; }
 
         internal ICertificateStore GetDefaultCertificateStore()
         {

@@ -58,7 +58,7 @@ namespace Helsenorge.Messaging.Amqp
             {
                 EnsureOpen();
                 originalMessage.ApplicationProperties.AddApplicationProperties(_applicationProperties);
-                originalMessage.ApplicationProperties.Map.Add(BusCore.EnqueuedTimeUtc, DateTime.UtcNow);
+                originalMessage.ApplicationProperties.Map.Add(AmqpCore.EnqueuedTimeUtc, DateTime.UtcNow);
                 _link.Send(originalMessage, serverWaitTime);
             }).Perform();
         }
@@ -82,7 +82,7 @@ namespace Helsenorge.Messaging.Amqp
             {
                 await EnsureOpenAsync().ConfigureAwait(false);
                 originalMessage.ApplicationProperties.AddApplicationProperties(_applicationProperties);
-                originalMessage.ApplicationProperties.Map.Add(BusCore.EnqueuedTimeUtc, DateTime.UtcNow);
+                originalMessage.ApplicationProperties.Map.Add(AmqpCore.EnqueuedTimeUtc, DateTime.UtcNow);
                 await _link.SendAsync(originalMessage).ConfigureAwait(false);
             }).PerformAsync().ConfigureAwait(false);
         }
