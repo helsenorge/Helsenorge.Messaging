@@ -14,9 +14,9 @@ using System;
 using System.Collections.Generic;
 using System.Security.Authentication;
 using System.Threading.Tasks;
-using Amqp;
 using Amqp.Framing;
 using Xunit;
+using AmqpException = Amqp.AmqpException;
 
 namespace Helsenorge.Messaging.Tests.Amqp.Exceptions
 {

@@ -14,6 +14,7 @@ using System.Globalization;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
+using AmqpException = Amqp.AmqpException;
 
 namespace Helsenorge.Messaging.Amqp
 {
