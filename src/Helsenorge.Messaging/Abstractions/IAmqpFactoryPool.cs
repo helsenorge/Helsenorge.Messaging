@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Abstractions
 {
-    internal interface IBusFactoryPool
+    internal interface IAmqpFactoryPool
     {
         Task<IMessagingFactory> FindNextFactoryAsync(ILogger logger);
         void RegisterAlternateMessagingFactoryAsync(IMessagingFactory factory);

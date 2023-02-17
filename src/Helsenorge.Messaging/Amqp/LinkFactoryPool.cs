@@ -25,7 +25,7 @@ namespace Helsenorge.Messaging.Amqp
         private readonly ILogger _logger;
         private readonly BusSettings _settings;
         private readonly IDictionary<string, object> _applicationProperties;
-        private readonly BusFactoryPool _factoryPool;
+        private readonly AmqpFactoryPool _factoryPool;
         private readonly AmqpReceiverPool _receiverPool;
         private readonly AmqpSenderPool _senderPool;
 
@@ -39,7 +39,7 @@ namespace Helsenorge.Messaging.Amqp
             _settings = settings;
             _applicationProperties = applicationProperties ?? new Dictionary<string, object>();
 
-            _factoryPool = new BusFactoryPool(_settings, _applicationProperties);
+            _factoryPool = new AmqpFactoryPool(_settings, _applicationProperties);
             _receiverPool = new AmqpReceiverPool(_settings, _factoryPool);
             _senderPool = new AmqpSenderPool(_settings, _factoryPool);
         }

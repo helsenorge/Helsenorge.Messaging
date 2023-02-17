@@ -52,9 +52,9 @@ namespace Helsenorge.Messaging.Tests
             }
         }
 
-        private class BusFactoryPoolMock : BusFactoryPool
+        private class AmqpFactoryPoolMock : AmqpFactoryPool
         {
-            public BusFactoryPoolMock(uint capacity, ushort timeToLiveInSeconds, ushort maxTrimCountPerRecycle)
+            public AmqpFactoryPoolMock(uint capacity, ushort timeToLiveInSeconds, ushort maxTrimCountPerRecycle)
                 : base(new BusSettings(new MessagingSettings())
                 {
                     MaxFactories = capacity,
@@ -112,7 +112,7 @@ namespace Helsenorge.Messaging.Tests
         [TestMethod]
         public async Task BusFactoryPool_DoNotIncrementActiveCountBeyond1()
         {
-            var factoryPool = new BusFactoryPoolMock(5, 0, 24);
+            var factoryPool = new AmqpFactoryPoolMock(5, 0, 24);
             for (int i = 0; i < 5; i++)
             {
                 await factoryPool.FindNextFactoryAsync(Logger);

@@ -87,7 +87,7 @@ namespace Helsenorge.Messaging.Amqp
         /// </summary>
         private MessagingCore Core { get; }
 
-        internal IBusFactoryPool FactoryPool { get; }
+        internal IAmqpFactoryPool FactoryPool { get; }
         internal AmqpSenderPool SenderPool { get; }
         internal AmqpReceiverPool ReceiverPool { get; }
 
@@ -107,7 +107,7 @@ namespace Helsenorge.Messaging.Amqp
             }
             else
             {
-                FactoryPool = new BusFactoryPool(core.Settings.BusSettings, core.Settings.ApplicationProperties);
+                FactoryPool = new AmqpFactoryPool(core.Settings.BusSettings, core.Settings.ApplicationProperties);
             }
             
             SenderPool = new AmqpSenderPool(core.Settings.BusSettings, FactoryPool);
