@@ -12,8 +12,8 @@ Alle `async` metoder har nå endelsen Async. F.eks `MessagingServer.Start` er n�
   - Datatypen er endret fra `int` til `List<int>`
 - `MessagingSettings.ConnectionString` er endret til datatypen AmqpConnectionString. Denne implementasjonen forenkler byggingen av en connection string.
 - `CollaborationProtocolRegistrySettings.MyHerId` er fjernet
-- `MessagingSettings.ServiceBus` &rarr; `MessagingSettings.BusSettings`
-- Standardverdien tilhørende `MessagingSettings.BusSettings.MessageBrokerDialect` er endret fra `MessageBrokerDialect.ServiceBus`
+- `MessagingSettings.ServiceBus` &rarr; `MessagingSettings.AmqpSettings`
+- Standardverdien tilhørende `MessagingSettings.AmqpSettings.MessageBrokerDialect` er endret fra `MessageBrokerDialect.ServiceBus`
   til `MessageBrokerDialect.RabbitMQ`
 
 ### Navneendring og endring av datatype for egenskapen MessagingSettings.MyHerId
