@@ -78,11 +78,11 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
 
             var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint));
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyAProtection);
-            Client.BusCore.RegisterAlternateMessagingFactory(MockFactory);
+            Client.AmqpCore.RegisterAlternateMessagingFactory(MockFactory);
 
             var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint));
             Server = new MockMessagingServer(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyBProtection);
-            Server.BusCore.RegisterAlternateMessagingFactory(MockFactory);
+            Server.AmqpCore.RegisterAlternateMessagingFactory(MockFactory);
 
             CollaborationRegistry.SetupFindAgreementForCounterparty(i =>
             {

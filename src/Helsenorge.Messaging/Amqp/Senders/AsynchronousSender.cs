@@ -17,16 +17,16 @@ namespace Helsenorge.Messaging.Amqp.Senders
     /// </summary>
     internal class AsynchronousSender
     {
-        private readonly BusCore _busCore;
+        private readonly AmqpCore _amqpCore;
     
-        public AsynchronousSender(BusCore busCore)
+        public AsynchronousSender(AmqpCore amqpCore)
         {
-            _busCore = busCore;
+            _amqpCore = amqpCore;
         }
 
         public async Task SendAsync(ILogger logger, OutgoingMessage message)
         {
-            await _busCore.SendAsync(logger, message, QueueType.Asynchronous).ConfigureAwait(false);
+            await _amqpCore.SendAsync(logger, message, QueueType.Asynchronous).ConfigureAwait(false);
         }
     }
 }

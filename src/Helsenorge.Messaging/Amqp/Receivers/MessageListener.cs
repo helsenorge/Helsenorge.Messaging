@@ -75,7 +75,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         /// <summary>
         /// Reference to service bus related setting
         /// </summary>
-        protected BusCore BusCore { get; }
+        protected AmqpCore AmqpCore { get; }
 
         /// <summary>
         /// Gets a reference to the server
@@ -89,18 +89,18 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageListener"/> class.
         /// </summary>
-        /// <param name="busCore">An instance of <see cref="Bus.BusCore"/> which has the common infrastructure to talk to the Message Bus.</param>
+        /// <param name="amqpCore">An instance of <see cref="Bus.BusCore"/> which has the common infrastructure to talk to the Message Bus.</param>
         /// <param name="logger">An instance of <see cref="ILogger"/>, used to log diagnostics information.</param>
         /// <param name="messagingNotification">An instance of <see cref="IMessagingNotification"/> which holds reference to callbacks back to the client that owns this instance of the <see cref="MessageListener"/>.</param>
         /// <param name="queueNames">The Queue Names associated with the client.</param>
         protected MessageListener(
-            BusCore busCore,
+            AmqpCore amqpCore,
             ILogger logger,
             IMessagingNotification messagingNotification,
             QueueNames queueNames = null)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            BusCore = busCore ?? throw new ArgumentNullException(nameof(busCore));
+            AmqpCore = amqpCore ?? throw new ArgumentNullException(nameof(amqpCore));
             MessagingNotification = messagingNotification;
             _queueNames = queueNames;
         }
@@ -128,8 +128,8 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         /// <param name="cancellation">Cancellation token that signals when we should stop</param>
         public async Task StartAsync(CancellationToken cancellation)
         {
-            var queueName = BusCore.ExtractQueueName(GetQueueName());
-            Logger.LogInformation($"Starting listener on host and queue '{BusCore.HostnameAndPath}/{queueName}'");
+            var queueName = AmqpCore.ExtractQueueName(GetQueueName());
+            Logger.LogInformation($"Starting listener on host and queue '{AmqpCore.HostnameAndPath}/{queueName}'");
 
             while (cancellation.IsCancellationRequested == false)
             {
@@ -139,7 +139,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
 
                     if (!_listenerEstablishedConfirmed)
                     {
-                        Logger.LogInformation($"Listener established on host and queue '{BusCore.HostnameAndPath}/{queueName}'");
+                        Logger.LogInformation($"Listener established on host and queue '{AmqpCore.HostnameAndPath}/{queueName}'");
                         _listenerEstablishedConfirmed = true;
                     }
 
@@ -147,7 +147,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 }
                 catch (Exception ex) // protect the main message pump
                 {
-                    Logger.LogException($"Generic service bus error at '{BusCore.HostnameAndPath}/{queueName}'", ex);
+                    Logger.LogException($"Generic service bus error at '{AmqpCore.HostnameAndPath}/{queueName}'", ex);
                     // if there are problems with the message bus, we don't get interval of the ReadTimeout
                     // pause a bit so that we don't take over the whole system
                     await Task.Delay(5000, cancellation)
@@ -156,8 +156,8 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 }
                 finally
                 {
-                    if (BusCore.Settings.LogReadTime)
-                        Logger.LogInformation($"Last Read Time UTC: '{LastReadTimeUtc.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo)}' on host and queue: '{BusCore.HostnameAndPath}/{queueName}'");
+                    if (AmqpCore.Settings.LogReadTime)
+                        Logger.LogInformation($"Last Read Time UTC: '{LastReadTimeUtc.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo)}' on host and queue: '{AmqpCore.HostnameAndPath}/{queueName}'");
                 }
             }
         }
@@ -170,7 +170,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         /// </summary>
         public async Task<IncomingMessage> ReadAndProcessMessageAsync(bool alwaysRemoveMessage = false)
         {
-            var queueName = BusCore.ExtractQueueName(GetQueueName());
+            var queueName = AmqpCore.ExtractQueueName(GetQueueName());
             await SetUpReceiverAsync(queueName).ConfigureAwait(false);
 
             IMessagingMessage message;
@@ -190,7 +190,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         private async Task<IncomingMessage> HandleRawMessageAsync(IMessagingMessage message, bool alwaysRemoveMessage)
         {
             if (message == null) return null;
-            var queueName = BusCore.ExtractQueueName(GetQueueName());
+            var queueName = AmqpCore.ExtractQueueName(GetQueueName());
             Stream bodyStream = null;
             bool disposeMessage = true;
 
@@ -223,7 +223,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 
                 SetCorrelationIdAction?.Invoke(incomingMessage.MessageId);
 
-                Logger.LogStartReceive(QueueType, incomingMessage, $"Message received from host and queue: {BusCore.HostnameAndPath}/{queueName}");
+                Logger.LogStartReceive(QueueType, incomingMessage, $"Message received from host and queue: {AmqpCore.HostnameAndPath}/{queueName}");
 
                 // we cannot dispose of the stream before we have potentially cloned the message for error use
                 bodyStream = message.GetBody();
@@ -236,14 +236,14 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 incomingMessage.ContentWasSigned = contentWasSigned;
                 if (payload != null)
                 {
-                    if (BusCore.LogPayload)
+                    if (AmqpCore.LogPayload)
                     {
                         Logger.LogDebug(payload.ToString());
                     }
                     incomingMessage.Payload = payload;
                 }
                 await NotifyMessageProcessingReadyAsync(message, incomingMessage).ConfigureAwait(false);
-                BusCore.RemoveProcessedMessageFromQueue(message);
+                AmqpCore.RemoveProcessedMessageFromQueue(message);
                 Logger.LogRemoveMessageFromQueueNormal(message, queueName);
                 await NotifyMessageProcessingCompletedAsync(incomingMessage).ConfigureAwait(false);
                 Logger.LogEndReceive(QueueType, incomingMessage);
@@ -255,42 +255,42 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                   $"FromHerId: {message.FromHerId} ToHerId: {message.ToHerId} CpaId: {message.CpaId} " +
                   $"CorrelationId: {message.CorrelationId} Certificate thumbprint: {ex.AdditionalInformation}");
 
-                await BusCore.ReportErrorToExternalSenderAsync(Logger, ex.EventId, message, ex.ErrorCode, ex.Description, ex.AdditionalInformation).ConfigureAwait(false);
+                await AmqpCore.ReportErrorToExternalSenderAsync(Logger, ex.EventId, message, ex.ErrorCode, ex.Description, ex.AdditionalInformation).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (SecurityException ex)
             {
-                await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.RemoteCertificate, message, "transport:invalid-certificate", ex.Message, null, ex).ConfigureAwait(false);
+                await AmqpCore.ReportErrorToExternalSenderAsync(Logger, EventIds.RemoteCertificate, message, "transport:invalid-certificate", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (HeaderValidationException ex)
             {
-                await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.MissingField, message, "transport:invalid-field-value", ex.Message, ex.Fields).ConfigureAwait(false);
+                await AmqpCore.ReportErrorToExternalSenderAsync(Logger, EventIds.MissingField, message, "transport:invalid-field-value", ex.Message, ex.Fields).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (XmlSchemaValidationException ex) // reportable error from message handler (application)
             {
-                await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.NotXml, message, "transport:not-well-formed-xml", ex.Message, null, ex).ConfigureAwait(false);
+                await AmqpCore.ReportErrorToExternalSenderAsync(Logger, EventIds.NotXml, message, "transport:not-well-formed-xml", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (ReceivedDataMismatchException ex) // reportable error from message handler (application)
             {
-                await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.DataMismatch, message, "transport:invalid-field-value", ex.Message, new[] { ex.ExpectedValue, ex.ReceivedValue }, ex).ConfigureAwait(false);
+                await AmqpCore.ReportErrorToExternalSenderAsync(Logger, EventIds.DataMismatch, message, "transport:invalid-field-value", ex.Message, new[] { ex.ExpectedValue, ex.ReceivedValue }, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (NotifySenderException ex) // reportable error from message handler (application)
             {
-                await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.ApplicationReported, message, "transport:internal-error", ex.Message, null, ex).ConfigureAwait(false);
+                await AmqpCore.ReportErrorToExternalSenderAsync(Logger, EventIds.ApplicationReported, message, "transport:internal-error", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (SenderHerIdMismatchException ex) // reportable error from message handler (application)
             {
-                await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.DataMismatch, message, "abuse:spoofing-attack", ex.Message, null, ex).ConfigureAwait(false);
+                await AmqpCore.ReportErrorToExternalSenderAsync(Logger, EventIds.DataMismatch, message, "abuse:spoofing-attack", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (PayloadDeserializationException ex) // from parsing to XML, reportable exception
             {
-                await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.ApplicationReported, message, "transport:not-well-formed-xml", ex.Message, null, ex).ConfigureAwait(false);
+                await AmqpCore.ReportErrorToExternalSenderAsync(Logger, EventIds.ApplicationReported, message, "transport:not-well-formed-xml", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (AggregateException ex) when (ex.InnerException is MessagingException && ((MessagingException)ex.InnerException).EventId.Id == EventIds.Send.Id)
@@ -300,12 +300,12 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             }
             catch (UnsupportedMessageException ex)  // reportable error from message handler (application)
             {
-                await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.ApplicationReported, message, "transport:unsupported-message", ex.Message, null, ex).ConfigureAwait(false);
+                await AmqpCore.ReportErrorToExternalSenderAsync(Logger, EventIds.ApplicationReported, message, "transport:unsupported-message", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (InvalidHerIdException ex)
             {
-                await BusCore.ReportErrorToExternalSenderAsync(Logger, EventIds.InvalidHerId, message, "transport:invalid-field-value", ex.Message, new [] { "FromHerId", $"{ex.HerId}" }, ex).ConfigureAwait(false);
+                await AmqpCore.ReportErrorToExternalSenderAsync(Logger, EventIds.InvalidHerId, message, "transport:invalid-field-value", ex.Message, new [] { "FromHerId", $"{ex.HerId}" }, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (Exception ex) // unknown error
@@ -322,7 +322,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
 
                 if (alwaysRemoveMessage)
                 {
-                    BusCore.RemoveMessageFromQueueAfterError(Logger, message);
+                    AmqpCore.RemoveMessageFromQueueAfterError(Logger, message);
                 }
                 await MessagingNotification.NotifyUnhandledExceptionAsync(message, ex).ConfigureAwait(false);
 
@@ -348,23 +348,23 @@ namespace Helsenorge.Messaging.Amqp.Receivers
 
         private async Task<CollaborationProtocolProfile> ResolveProfileAsync(IMessagingMessage message)
         {
-            if(BusCore.MessagingSettings.MessageFunctionsExcludedFromCpaResolve.Contains(message.MessageFunction))
+            if(AmqpCore.MessagingSettings.MessageFunctionsExcludedFromCpaResolve.Contains(message.MessageFunction))
             {
                 // MessageFunction is defined in exception list, return a dummy CollaborationProtocolProfile
-                return await DummyCollaborationProtocolProfileFactory.CreateAsync(BusCore.AddressRegistry, Logger, message.FromHerId, message.MessageFunction);
+                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AmqpCore.AddressRegistry, Logger, message.FromHerId, message.MessageFunction);
             }
 
             // if we receive an error message then CPA isn't needed because we're not decrypting the message and then the CPA info isn't needed
             if (QueueType == QueueType.Error) return null;
             if (Guid.TryParse(message.CpaId, out Guid id) && (id != Guid.Empty))
             {
-                return await BusCore.CollaborationProtocolRegistry.FindAgreementByIdAsync(id, message.ToHerId).ConfigureAwait(false);
+                return await AmqpCore.CollaborationProtocolRegistry.FindAgreementByIdAsync(id, message.ToHerId).ConfigureAwait(false);
             }
             return
                 // try first to find an agreement
-                await BusCore.CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(message.ToHerId, message.FromHerId).ConfigureAwait(false) ??
+                await AmqpCore.CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(message.ToHerId, message.FromHerId).ConfigureAwait(false) ??
                 // if we cannot find that, we fallback to protocol (which may return a dummy protocol if things are really missing in AR)
-                await BusCore.CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(message.FromHerId).ConfigureAwait(false);
+                await AmqpCore.CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(message.FromHerId).ConfigureAwait(false);
         }
 
         private XDocument HandlePayload(IMessagingMessage originalMessage, Stream bodyStream, string contentType, IncomingMessage incomingMessage, out bool contentWasSigned)
@@ -380,7 +380,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 payload = new NoMessageProtection().Unprotect(bodyStream, null)?.ToXDocument();
 
                 // Log a warning if the message is in plain text.
-                if (BusCore.Settings.LogMessagesNotSignedAndEnvelopedAsWarning && isPlainText)
+                if (AmqpCore.Settings.LogMessagesNotSignedAndEnvelopedAsWarning && isPlainText)
                     Logger.LogWarning($"ContentType of message is '{contentType}'.");
             }
             else
@@ -398,33 +398,33 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 // invalid certificates are flagged to the application layer processing the decrypted message.
                 // with the decrypted content, they may have a chance to figure out who sent it
 
-                var validator = BusCore.CertificateValidator;
+                var validator = AmqpCore.CertificateValidator;
                 var stopwatch = new Stopwatch();
-                Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, BusCore.MessageProtection.EncryptionCertificate.Thumbprint, BusCore.MessageProtection.EncryptionCertificate.Subject, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId);
+                Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, AmqpCore.MessageProtection.EncryptionCertificate.Thumbprint, AmqpCore.MessageProtection.EncryptionCertificate.Subject, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId);
                 stopwatch.Start();
                 // validate the local encryption certificate and, if present, the local legacy encryption certificate 
                 incomingMessage.DecryptionError = validator == null
                     ? CertificateErrors.None
-                    : validator.Validate(BusCore.MessageProtection.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
+                    : validator.Validate(AmqpCore.MessageProtection.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
                 stopwatch.Stop();
-                Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, BusCore.MessageProtection.EncryptionCertificate.Thumbprint, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+                Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, AmqpCore.MessageProtection.EncryptionCertificate.Thumbprint, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
                 // in earlier versions of Helsenorge.Messaging we removed the message, but we should rather
                 // want it to be dead lettered since this is a temp issue that should be fixed locally.
-                ReportErrorOnLocalCertificate(originalMessage, BusCore.MessageProtection.EncryptionCertificate, incomingMessage.DecryptionError);
+                ReportErrorOnLocalCertificate(originalMessage, AmqpCore.MessageProtection.EncryptionCertificate, incomingMessage.DecryptionError);
 
-                if(BusCore.MessageProtection.LegacyEncryptionCertificate != null)
+                if(AmqpCore.MessageProtection.LegacyEncryptionCertificate != null)
                 {
-                    Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, BusCore.MessageProtection.LegacyEncryptionCertificate.Thumbprint, BusCore.MessageProtection.LegacyEncryptionCertificate.Subject, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId);
+                    Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, AmqpCore.MessageProtection.LegacyEncryptionCertificate.Thumbprint, AmqpCore.MessageProtection.LegacyEncryptionCertificate.Subject, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId);
                     stopwatch.Restart();
                     // this is optional information that should only be in effect durin a short transition period
                     incomingMessage.LegacyDecryptionError = validator == null
                         ? CertificateErrors.None
-                        : validator.Validate(BusCore.MessageProtection.LegacyEncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
+                        : validator.Validate(AmqpCore.MessageProtection.LegacyEncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
                     stopwatch.Stop();
-                    Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, BusCore.MessageProtection.LegacyEncryptionCertificate.Thumbprint, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+                    Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, AmqpCore.MessageProtection.LegacyEncryptionCertificate.Thumbprint, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
                     // if someone forgets to remove the legacy configuration, we log an error message but don't remove it
-                    ReportErrorOnLocalCertificate(originalMessage, BusCore.MessageProtection.LegacyEncryptionCertificate, incomingMessage.LegacyDecryptionError);
+                    ReportErrorOnLocalCertificate(originalMessage, AmqpCore.MessageProtection.LegacyEncryptionCertificate, incomingMessage.LegacyDecryptionError);
                 }
 
                 var signature = incomingMessage.CollaborationAgreement?.SignatureCertificate;
@@ -439,10 +439,10 @@ namespace Helsenorge.Messaging.Amqp.Receivers
 
                 ReportErrorOnRemoteCertificate(originalMessage, signature, incomingMessage.SignatureError);
 
-                Logger.LogBeforeDecryptingPayload(originalMessage.MessageFunction, signature?.Thumbprint, BusCore.MessageProtection.EncryptionCertificate.Thumbprint, originalMessage.FromHerId, originalMessage.ToHerId, originalMessage.MessageId);
+                Logger.LogBeforeDecryptingPayload(originalMessage.MessageFunction, signature?.Thumbprint, AmqpCore.MessageProtection.EncryptionCertificate.Thumbprint, originalMessage.FromHerId, originalMessage.ToHerId, originalMessage.MessageId);
                 stopwatch.Restart();
                 // decrypt the message and validate the signatureS
-                payload = BusCore.MessageProtection.Unprotect(bodyStream, signature)?.ToXDocument();
+                payload = AmqpCore.MessageProtection.Unprotect(bodyStream, signature)?.ToXDocument();
                 Logger.LogAfterDecryptingPayload(originalMessage.MessageFunction, originalMessage.FromHerId, originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
                 stopwatch.Stop();
             }
@@ -536,11 +536,11 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             // but we have no idea who the sender is because the information is missing
             if (message.ToHerId == 0)
             {
-                missingFields.Add(BusCore.ToHerIdHeaderKey);
+                missingFields.Add(AmqpCore.ToHerIdHeaderKey);
             }
             if(message.FromHerId == 0)
             {
-                missingFields.Add(BusCore.FromHerIdHeaderKey);
+                missingFields.Add(AmqpCore.FromHerIdHeaderKey);
             }
             if (string.IsNullOrEmpty(message.MessageFunction))
             {
@@ -548,7 +548,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             }
             if (message.ApplicationTimestamp == DateTime.MinValue)
             {
-                missingFields.Add(BusCore.ApplicationTimestampHeaderKey);
+                missingFields.Add(AmqpCore.ApplicationTimestampHeaderKey);
             }
             if (string.IsNullOrEmpty(message.ContentType))
             {
@@ -575,7 +575,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             {
                 try
                 {
-                    _myDetails = BusCore.AddressRegistry.FindCommunicationPartyDetailsAsync(myHerId).Result;
+                    _myDetails = AmqpCore.AddressRegistry.FindCommunicationPartyDetailsAsync(myHerId).Result;
                 }
                 catch (Exception ex)
                 {
@@ -585,7 +585,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             if (_myDetails == null) return null;
 
             var queueName = action(_myDetails);
-            return string.IsNullOrEmpty(queueName) == false ? BusCore.ExtractQueueName(queueName) : null;
+            return string.IsNullOrEmpty(queueName) == false ? AmqpCore.ExtractQueueName(queueName) : null;
         }
 
         private async Task SetUpReceiverAsync(string queueName)
@@ -603,7 +603,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             }
             if (_messageReceiver == null)
             {
-                _messageReceiver = await BusCore.ReceiverPool.CreateCachedMessageReceiverAsync(Logger, queueName).ConfigureAwait(false);
+                _messageReceiver = await AmqpCore.ReceiverPool.CreateCachedMessageReceiverAsync(Logger, queueName).ConfigureAwait(false);
             }
         }
     }

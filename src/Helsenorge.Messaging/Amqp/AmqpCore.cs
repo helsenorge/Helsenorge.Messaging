@@ -23,7 +23,7 @@ namespace Helsenorge.Messaging.Amqp
     /// <summary>
     /// Provides a number of functions used by both the Gateway (sending) and message listeners
     /// </summary>
-    public class BusCore
+    public class AmqpCore
     {
         /// <summary>
         /// Label used when error message contains a SOAP fault
@@ -96,7 +96,7 @@ namespace Helsenorge.Messaging.Amqp
         /// </summary>
         /// <param name="core">A reference to the core messaging system</param>
         /// <exception cref="ArgumentNullException"></exception>
-        internal BusCore(MessagingCore core)
+        internal AmqpCore(MessagingCore core)
         {
             Core = core ?? throw new ArgumentNullException(nameof(core));
             

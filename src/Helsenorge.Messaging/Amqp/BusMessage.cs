@@ -48,36 +48,36 @@ namespace Helsenorge.Messaging.Amqp
         public int FromHerId
         {
             [DebuggerStepThrough]
-            get => GetApplicationPropertyValue(BusCore.FromHerIdHeaderKey, 0);
+            get => GetApplicationPropertyValue(AmqpCore.FromHerIdHeaderKey, 0);
             [DebuggerStepThrough]
-            set => SetApplicationPropertyValue(BusCore.FromHerIdHeaderKey, value);
+            set => SetApplicationPropertyValue(AmqpCore.FromHerIdHeaderKey, value);
         }
         public int ToHerId
         {
             [DebuggerStepThrough]
-            get => GetApplicationPropertyValue(BusCore.ToHerIdHeaderKey, 0);
+            get => GetApplicationPropertyValue(AmqpCore.ToHerIdHeaderKey, 0);
             [DebuggerStepThrough]
-            set => SetApplicationPropertyValue(BusCore.ToHerIdHeaderKey, value);
+            set => SetApplicationPropertyValue(AmqpCore.ToHerIdHeaderKey, value);
         }
         public DateTime ApplicationTimestamp
         {
-            get => GetApplicationPropertyValue(BusCore.ApplicationTimestampHeaderKey, DateTime.MinValue);
+            get => GetApplicationPropertyValue(AmqpCore.ApplicationTimestampHeaderKey, DateTime.MinValue);
             [DebuggerStepThrough]
-            set => SetApplicationPropertyValue(BusCore.ApplicationTimestampHeaderKey, value);
+            set => SetApplicationPropertyValue(AmqpCore.ApplicationTimestampHeaderKey, value);
         }
         public string CpaId
         {
             [DebuggerStepThrough]
-            get => GetApplicationPropertyValue(BusCore.CpaIdHeaderKey, string.Empty);
+            get => GetApplicationPropertyValue(AmqpCore.CpaIdHeaderKey, string.Empty);
             [DebuggerStepThrough]
-            set => SetApplicationPropertyValue(BusCore.CpaIdHeaderKey, value);
+            set => SetApplicationPropertyValue(AmqpCore.CpaIdHeaderKey, value);
         }
         public object OriginalObject => _implementation;
 
         public DateTime EnqueuedTimeUtc
         {
             [DebuggerStepThrough]
-            get => GetApplicationPropertyValue(BusCore.EnqueuedTimeUtc, DateTime.MaxValue);
+            get => GetApplicationPropertyValue(AmqpCore.EnqueuedTimeUtc, DateTime.MaxValue);
         }
 
         public DateTime ExpiresAtUtc
