@@ -19,7 +19,7 @@ using Microsoft.Extensions.Logging;
 namespace Helsenorge.Messaging.Amqp
 {
     [ExcludeFromCodeCoverage]
-    internal class AmqpFactory : IMessagingFactory
+    internal class AmqpFactory : IAmqpFactory
     {
         private readonly ILogger _logger;
         private readonly AmqpConnection _connection;

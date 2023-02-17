@@ -16,13 +16,13 @@ using System.Threading;
 
 namespace Helsenorge.Messaging.Amqp
 {
-    internal class AmqpFactoryPool : MessagingEntityCache<IMessagingFactory>, IAmqpFactoryPool
+    internal class AmqpFactoryPool : MessagingEntityCache<IAmqpFactory>, IAmqpFactoryPool
     {
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly BusSettings _settings;
         private readonly IDictionary<string, object> _applicationProperties;
         private int _index;
-        private IMessagingFactory _alternateMessagingFactor;
+        private IAmqpFactory _alternateAmqpFactor;
 
         public AmqpFactoryPool(BusSettings settings, IDictionary<string, object> applicationProperties = null) :
             base("FactoryPool", settings.MaxFactories, settings.CacheEntryTimeToLive, settings.MaxCacheEntryTrimCount)
@@ -31,24 +31,24 @@ namespace Helsenorge.Messaging.Amqp
             _applicationProperties = applicationProperties;
         }
 
-        public void RegisterAlternateMessagingFactoryAsync(IMessagingFactory alternateMessagingFactory)
+        public void RegisterAlternateMessagingFactoryAsync(IAmqpFactory alternateAmqpFactory)
         {
-            _alternateMessagingFactor = alternateMessagingFactory;
+            _alternateAmqpFactor = alternateAmqpFactory;
         }
 
         [ExcludeFromCodeCoverage] // Azure service bus implementation
-        protected override Task<IMessagingFactory> CreateEntityAsync(ILogger logger, string id)
+        protected override Task<IAmqpFactory> CreateEntityAsync(ILogger logger, string id)
         {
-            if (_alternateMessagingFactor != null) return Task.FromResult(_alternateMessagingFactor);
+            if (_alternateAmqpFactor != null) return Task.FromResult(_alternateAmqpFactor);
             var connection = new AmqpConnection(_settings.ConnectionString?.ToString(), _settings.MessageBrokerDialect, _settings.MaxLinksPerSession, _settings.MaxSessionsPerConnection);
-            return Task.FromResult<IMessagingFactory>(new AmqpFactory(logger, connection, _applicationProperties));
+            return Task.FromResult<IAmqpFactory>(new AmqpFactory(logger, connection, _applicationProperties));
         }
         public async Task<IAmqpMessage> CreateMessageAsync(ILogger logger, Stream stream)
         {
             var factory = await FindNextFactoryAsync(logger).ConfigureAwait(false);
             return await factory.CreateMessageAsync(stream).ConfigureAwait(false);
         }
-        public async Task<IMessagingFactory> FindNextFactoryAsync(ILogger logger)
+        public async Task<IAmqpFactory> FindNextFactoryAsync(ILogger logger)
         {
             await _semaphore.WaitAsync().ConfigureAwait(false);
             try

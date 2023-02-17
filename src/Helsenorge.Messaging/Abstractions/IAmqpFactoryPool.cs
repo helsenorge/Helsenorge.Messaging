@@ -14,8 +14,8 @@ namespace Helsenorge.Messaging.Abstractions
 {
     internal interface IAmqpFactoryPool
     {
-        Task<IMessagingFactory> FindNextFactoryAsync(ILogger logger);
-        void RegisterAlternateMessagingFactoryAsync(IMessagingFactory factory);
+        Task<IAmqpFactory> FindNextFactoryAsync(ILogger logger);
+        void RegisterAlternateMessagingFactoryAsync(IAmqpFactory factory);
         Task ShutdownAsync(ILogger logger);
         Task<IAmqpMessage> CreateMessageAsync(ILogger logger, Stream stream);
     }

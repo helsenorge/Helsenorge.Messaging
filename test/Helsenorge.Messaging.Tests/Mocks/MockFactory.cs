@@ -13,7 +13,7 @@ using Helsenorge.Messaging.Abstractions;
 
 namespace Helsenorge.Messaging.Tests.Mocks
 {
-    internal class MockFactory : IMessagingFactory
+    internal class MockFactory : IAmqpFactory
     {
         public const int HelsenorgeHerId = 93238;
         public const int HerIdWithOnlyCpp = 91462;

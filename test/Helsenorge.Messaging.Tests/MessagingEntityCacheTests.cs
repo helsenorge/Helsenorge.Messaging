@@ -64,13 +64,13 @@ namespace Helsenorge.Messaging.Tests
             {
             }
 
-            protected override Task<IMessagingFactory> CreateEntityAsync(ILogger logger, string id)
+            protected override Task<IAmqpFactory> CreateEntityAsync(ILogger logger, string id)
             {
-                return Task.FromResult<IMessagingFactory>(new MessagingFactoryMock());
+                return Task.FromResult<IAmqpFactory>(new AmqpFactoryMock());
             }
         }
 
-        private class MessagingFactoryMock : IMessagingFactory
+        private class AmqpFactoryMock : IAmqpFactory
         {
             public bool IsClosed { get; } = false;
 
