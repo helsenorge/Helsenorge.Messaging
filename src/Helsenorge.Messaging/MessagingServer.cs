@@ -510,10 +510,10 @@ namespace Helsenorge.Messaging
         /// <returns>true if authentication is successful, otherwise false.</returns>
         protected virtual async Task<bool> CanAuthenticateAgainstMessageBrokerAsync()
         {
-            BusConnection connection = null;
+            AmqpConnection connection = null;
             try
             {
-                connection = new BusConnection(Settings.BusSettings.ConnectionString?.ToString());
+                connection = new AmqpConnection(Settings.BusSettings.ConnectionString?.ToString());
                 _ = await connection.EnsureConnectionAsync();
             }
             catch (Exception e)

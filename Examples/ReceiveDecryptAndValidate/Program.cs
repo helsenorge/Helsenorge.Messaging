@@ -37,7 +37,7 @@ namespace ReceiveDecryptAndValidate
                 UserName = Username,
                 Password = Password,
             };
-            var connection = new BusConnection(connectionString.ToString());
+            var connection = new AmqpConnection(connectionString.ToString());
             IMessagingReceiver receiver = null;
             try
             {

@@ -17,14 +17,14 @@ namespace Helsenorge.Messaging.Amqp
     internal abstract class CachedAmpqSessionEntity<TLink> : ICachedMessagingEntity
         where TLink : Link
     {
-        protected readonly BusConnection Connection;
+        protected readonly AmqpConnection Connection;
         protected ISession _session;
         protected TLink _link;
         
         private readonly SemaphoreSlim _mySemaphoreSlim = new SemaphoreSlim(1);
         private readonly object _lockObject = new object();
 
-        protected CachedAmpqSessionEntity(BusConnection connection)
+        protected CachedAmpqSessionEntity(AmqpConnection connection)
         {
             Connection = connection ?? throw new ArgumentNullException(nameof(connection));
         }
