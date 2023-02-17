@@ -20,7 +20,7 @@ namespace Helsenorge.Messaging.Abstractions
     /// Operations are thread safe
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class MessagingEntityCache<T> where T : class, ICachedMessagingEntity
+    public abstract class AmqpEntityCache<T> where T : class, ICachedAmqpEntity
     {
         /// <summary>
         /// Represents an entry in the cache
@@ -75,7 +75,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// <param name="capacity">Max number of items the cache will hold before we start recycling process.</param>
         /// <param name="timeToLiveInSeconds">The time to live since <see cref="CacheEntry{T}.LastUsed"/> before an entry is considered prime to be recycled.</param>
         /// <param name="maxTrimCountPerRecycle">The max cache entries our recycling process will handle each time it is triggered.</param>
-        protected MessagingEntityCache(string name, uint capacity, ushort timeToLiveInSeconds, ushort maxTrimCountPerRecycle)
+        protected AmqpEntityCache(string name, uint capacity, ushort timeToLiveInSeconds, ushort maxTrimCountPerRecycle)
         {
             if (timeToLiveInSeconds > MaxTimeToLiveInSeconds)
                 throw new ArgumentOutOfRangeException(nameof(timeToLiveInSeconds), $"Argument cannot exceed {MaxTimeToLiveInSeconds}.");

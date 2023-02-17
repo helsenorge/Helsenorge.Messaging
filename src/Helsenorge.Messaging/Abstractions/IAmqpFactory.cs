@@ -14,7 +14,7 @@ namespace Helsenorge.Messaging.Abstractions
     /// <summary>
     /// Provides an interface for creating messaging entities
     /// </summary>
-    public interface IAmqpFactory : ICachedMessagingEntity
+    public interface IAmqpFactory : ICachedAmqpEntity
     {
         /// <summary>
         /// Creates a receiver

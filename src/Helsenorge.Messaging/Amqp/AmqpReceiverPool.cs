@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Amqp
 {
-    internal class AmqpReceiverPool : MessagingEntityCache<IAmqpReceiver>
+    internal class AmqpReceiverPool : AmqpEntityCache<IAmqpReceiver>
     {
         private readonly IAmqpFactoryPool _factoryPool;
         private readonly int _credit;
