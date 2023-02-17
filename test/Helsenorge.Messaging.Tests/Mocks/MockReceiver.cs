@@ -28,7 +28,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public Task CloseAsync() { return Task.CompletedTask; }
 
         public IAmqpMessage Receive()
-            => Receive(TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
+            => Receive(TimeSpan.FromMilliseconds(AmqpSettings.DefaultTimeoutInMilliseconds));
 
         public IAmqpMessage Receive(TimeSpan serverWaitTime)
         {
@@ -45,7 +45,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
         }
 
         public Task<IAmqpMessage> ReceiveAsync()
-            => ReceiveAsync(TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
+            => ReceiveAsync(TimeSpan.FromMilliseconds(AmqpSettings.DefaultTimeoutInMilliseconds));
 
         public async Task<IAmqpMessage> ReceiveAsync(TimeSpan serverWaitTime)
         {

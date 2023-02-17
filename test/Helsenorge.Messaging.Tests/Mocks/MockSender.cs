@@ -32,7 +32,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
         }
 
         public void Send(IAmqpMessage message)
-            => SendAsync(message, TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
+            => SendAsync(message, TimeSpan.FromMilliseconds(AmqpSettings.DefaultTimeoutInMilliseconds));
 
         public void Send(IAmqpMessage message, TimeSpan serverWaitTime)
         {
@@ -60,7 +60,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
         }
 
         public Task SendAsync(IAmqpMessage message)
-            => SendAsync(message, TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
+            => SendAsync(message, TimeSpan.FromMilliseconds(AmqpSettings.DefaultTimeoutInMilliseconds));
 
         public Task SendAsync(IAmqpMessage message, TimeSpan serverWaitTime)
         {

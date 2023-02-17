@@ -145,15 +145,15 @@ namespace Helsenorge.Messaging.Tests
                 }
             };
 
-            Settings.BusSettings.ConnectionString = new AmqpConnectionString
+            Settings.AmqpSettings.ConnectionString = new AmqpConnectionString
             {
                 HostName = "blabla",
             };
-            Settings.BusSettings.Synchronous.ReplyQueueMapping.Add(Environment.MachineName.ToLower(), "RepliesGoHere");
+            Settings.AmqpSettings.Synchronous.ReplyQueueMapping.Add(Environment.MachineName.ToLower(), "RepliesGoHere");
             // make things easier by only having one processing task per queue
-            Settings.BusSettings.Asynchronous.ProcessingTasks = 1;
-            Settings.BusSettings.Synchronous.ProcessingTasks = 1;
-            Settings.BusSettings.Error.ProcessingTasks = 1;
+            Settings.AmqpSettings.Asynchronous.ProcessingTasks = 1;
+            Settings.AmqpSettings.Synchronous.ProcessingTasks = 1;
+            Settings.AmqpSettings.Error.ProcessingTasks = 1;
 
             MockFactory = new MockFactory(otherHerId);
             CertificateValidator = new MockCertificateValidator();

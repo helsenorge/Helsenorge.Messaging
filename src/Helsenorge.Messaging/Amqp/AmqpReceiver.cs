@@ -46,7 +46,7 @@ namespace Helsenorge.Messaging.Amqp
         }
 
         public IAmqpMessage Receive()
-            => Receive(TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
+            => Receive(TimeSpan.FromMilliseconds(AmqpSettings.DefaultTimeoutInMilliseconds));
 
         public IAmqpMessage Receive(TimeSpan serverWaitTime)
         {
@@ -63,7 +63,7 @@ namespace Helsenorge.Messaging.Amqp
         }
 
         public Task<IAmqpMessage> ReceiveAsync()
-            => ReceiveAsync(TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
+            => ReceiveAsync(TimeSpan.FromMilliseconds(AmqpSettings.DefaultTimeoutInMilliseconds));
 
         public async Task<IAmqpMessage> ReceiveAsync(TimeSpan serverWaitTime)
         {

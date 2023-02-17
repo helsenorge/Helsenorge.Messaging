@@ -26,7 +26,7 @@ namespace Helsenorge.Messaging.Amqp
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
         /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
         public AmqpConnection(string connectionString)
-            : this(connectionString, MessageBrokerDialect.RabbitMQ, BusSettings.DefaultMaxLinksPerSession, BusSettings.DefaultMaxSessions)
+            : this(connectionString, MessageBrokerDialect.RabbitMQ, AmqpSettings.DefaultMaxLinksPerSession, AmqpSettings.DefaultMaxSessions)
         {
         }
 
@@ -34,7 +34,7 @@ namespace Helsenorge.Messaging.Amqp
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
         /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells BusConnection what kind of Message Broker we are communicating with.</param>
         public AmqpConnection(string connectionString, MessageBrokerDialect messageBrokerDialect)
-            : this(connectionString, messageBrokerDialect, BusSettings.DefaultMaxLinksPerSession, BusSettings.DefaultMaxSessions)
+            : this(connectionString, messageBrokerDialect, AmqpSettings.DefaultMaxLinksPerSession, AmqpSettings.DefaultMaxSessions)
         {
         }
 
@@ -62,11 +62,11 @@ namespace Helsenorge.Messaging.Amqp
             }
 
             _connectionFactory = new ConnectionFactory();
-            if (maxLinksPerSession != BusSettings.DefaultMaxLinksPerSession)
+            if (maxLinksPerSession != AmqpSettings.DefaultMaxLinksPerSession)
             {
                 _connectionFactory.AMQP.MaxLinksPerSession = maxLinksPerSession;
             }
-            if (maxSessionsPerConnection != BusSettings.DefaultMaxSessions)
+            if (maxSessionsPerConnection != AmqpSettings.DefaultMaxSessions)
             {
                 _connectionFactory.AMQP.MaxSessionsPerConnection = maxSessionsPerConnection;
             }

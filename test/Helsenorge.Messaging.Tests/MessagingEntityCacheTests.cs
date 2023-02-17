@@ -55,7 +55,7 @@ namespace Helsenorge.Messaging.Tests
         private class AmqpFactoryPoolMock : AmqpFactoryPool
         {
             public AmqpFactoryPoolMock(uint capacity, ushort timeToLiveInSeconds, ushort maxTrimCountPerRecycle)
-                : base(new BusSettings(new MessagingSettings())
+                : base(new AmqpSettings(new MessagingSettings())
                 {
                     MaxFactories = capacity,
                     CacheEntryTimeToLive = timeToLiveInSeconds,

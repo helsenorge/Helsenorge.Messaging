@@ -29,7 +29,7 @@ namespace PooledReceiver
         static async Task Main(string[] args)
         {
             var loggerFactory = new LoggerFactory();
-            var settings = new BusSettings
+            var settings = new AmqpSettings
             {
                 ConnectionString = new AmqpConnectionString
                 {

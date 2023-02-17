@@ -45,7 +45,7 @@ namespace Helsenorge.Messaging.Amqp
         }
 
         public void Send(IAmqpMessage message)
-            => Send(message, TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
+            => Send(message, TimeSpan.FromMilliseconds(AmqpSettings.DefaultTimeoutInMilliseconds));
 
         public void Send(IAmqpMessage message, TimeSpan serverWaitTime)
         {
@@ -64,7 +64,7 @@ namespace Helsenorge.Messaging.Amqp
         }
 
         public Task SendAsync(IAmqpMessage message)
-            => SendAsync(message, TimeSpan.FromMilliseconds(BusSettings.DefaultTimeoutInMilliseconds));
+            => SendAsync(message, TimeSpan.FromMilliseconds(AmqpSettings.DefaultTimeoutInMilliseconds));
 
         public async Task SendAsync(IAmqpMessage message, TimeSpan serverWaitTime)
         {

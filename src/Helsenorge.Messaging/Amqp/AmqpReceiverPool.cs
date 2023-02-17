@@ -17,7 +17,7 @@ namespace Helsenorge.Messaging.Amqp
         private readonly IAmqpFactoryPool _factoryPool;
         private readonly int _credit;
         
-        public AmqpReceiverPool(BusSettings settings, IAmqpFactoryPool factoryPool) :
+        public AmqpReceiverPool(AmqpSettings settings, IAmqpFactoryPool factoryPool) :
             base("ReceiverPool", settings.MaxReceivers, settings.CacheEntryTimeToLive, settings.MaxCacheEntryTrimCount)
         {
             _factoryPool = factoryPool;
