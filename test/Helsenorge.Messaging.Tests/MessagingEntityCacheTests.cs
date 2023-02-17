@@ -20,7 +20,7 @@ namespace Helsenorge.Messaging.Tests
     [TestClass]
     public class MessagingEntityCacheTests : BaseTest
     {
-        private class EntityItem : ICachedMessagingEntity
+        private class EntityItem : ICachedAmqpEntity
         {
             private bool _isClosed;
             readonly string _path;
@@ -40,7 +40,7 @@ namespace Helsenorge.Messaging.Tests
             public string Path => _path;
         }
 
-        private class MockCache : MessagingEntityCache<EntityItem>
+        private class MockCache : AmqpEntityCache<EntityItem>
         {
             public MockCache(string name, uint capacity, ushort timeToLiveInSeconds, ushort maxTrimCountPerRecycle) : base(name, capacity, timeToLiveInSeconds, maxTrimCountPerRecycle)
             {

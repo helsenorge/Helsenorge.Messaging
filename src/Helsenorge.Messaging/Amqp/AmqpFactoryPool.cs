@@ -16,7 +16,7 @@ using System.Threading;
 
 namespace Helsenorge.Messaging.Amqp
 {
-    internal class AmqpFactoryPool : MessagingEntityCache<IAmqpFactory>, IAmqpFactoryPool
+    internal class AmqpFactoryPool : AmqpEntityCache<IAmqpFactory>, IAmqpFactoryPool
     {
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly BusSettings _settings;

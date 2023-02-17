@@ -10,9 +10,9 @@
 namespace Helsenorge.Messaging.Abstractions
 {
     /// <summary>
-    /// Interface for items in <see cref="MessagingEntityCache{T}"/>
+    /// Interface for items in <see cref="AmqpEntityCache{T}"/>
     /// </summary>
-    public interface ICachedMessagingEntity
+    public interface ICachedAmqpEntity
     {
         /// <summary>
         /// Checks if the item is closed

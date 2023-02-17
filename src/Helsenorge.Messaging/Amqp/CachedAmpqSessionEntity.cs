@@ -14,7 +14,7 @@ using Helsenorge.Messaging.Abstractions;
 
 namespace Helsenorge.Messaging.Amqp
 {
-    internal abstract class CachedAmpqSessionEntity<TLink> : ICachedMessagingEntity
+    internal abstract class CachedAmpqSessionEntity<TLink> : ICachedAmqpEntity
         where TLink : Link
     {
         protected readonly AmqpConnection Connection;
