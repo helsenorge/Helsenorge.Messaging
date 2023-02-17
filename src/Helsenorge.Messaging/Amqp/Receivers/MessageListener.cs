@@ -215,7 +215,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                     Release = message.Release,
                     ReleaseAsync = message.RelaseAsync,
                     // FIXME: This will be moved to the interface IMessagingMessage in version 5.0
-                    FirstAquirer = (message as BusMessage)?.FirstAcquirer ?? false,
+                    FirstAquirer = (message as AmqpMessage)?.FirstAcquirer ?? false,
                     DeliveryCount = message.DeliveryCount,
                     LockedUntil = message.LockedUntil,
                 };

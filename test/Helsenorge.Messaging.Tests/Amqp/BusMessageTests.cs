@@ -22,7 +22,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
         [TestMethod]
         public void Should_Return_TimeSpan_MaxValue_If_TimeToLive_Not_Set()
         {
-            using (BusMessage message = new BusMessage(new Message()))
+            using (AmqpMessage message = new AmqpMessage(new Message()))
                 Assert.AreEqual(TimeSpan.MaxValue, message.TimeToLive);
         }
 
@@ -30,7 +30,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
         public void Should_Return_Set_TimeToLive_If_TimeToLive_Set()
         {
             TimeSpan ttl = TimeSpan.FromDays(4);
-            using (BusMessage message = new BusMessage(new Message()))
+            using (AmqpMessage message = new AmqpMessage(new Message()))
             {
                 message.TimeToLive = ttl;
                 Assert.AreEqual(ttl, message.TimeToLive);
@@ -40,21 +40,21 @@ namespace Helsenorge.Messaging.Tests.Amqp
         [TestMethod]
         public void Should_Return_DeliveryCount_Zero_If_Message_Just_Initialized()
         {
-            using (BusMessage message = new BusMessage(new Message()))
+            using (AmqpMessage message = new AmqpMessage(new Message()))
                 Assert.AreEqual(0, message.DeliveryCount);
         }
 
         [TestMethod]
         public void Should_Return_EnqueuedTimeUtc_DateTime_MaxValue_If_Message_Just_Initialized()
         {
-            using (BusMessage message = new BusMessage(new Message()))
+            using (AmqpMessage message = new AmqpMessage(new Message()))
                 Assert.AreEqual(DateTime.MaxValue, message.EnqueuedTimeUtc);
         }
 
         [TestMethod]
         public void Should_Return_ExpiresAtUtc_DateTime_MaxValue_If_Message_Just_Initialized()
         {
-            using (BusMessage message = new BusMessage(new Message()))
+            using (AmqpMessage message = new AmqpMessage(new Message()))
                 Assert.AreEqual(DateTime.MaxValue, message.ExpiresAtUtc);
         }
 
@@ -62,14 +62,14 @@ namespace Helsenorge.Messaging.Tests.Amqp
         public void Should_Return_Same_Amqp_Message_On_OriginalObject_As_Passed_To_Constructor()
         {
             Message originalObject = new Message();
-            using (BusMessage message = new BusMessage(originalObject))
+            using (AmqpMessage message = new AmqpMessage(originalObject))
                 Assert.AreSame(originalObject, message.OriginalObject);
         }
 
         [TestMethod]
         public void Should_Return_Size_Zero_If_Payload_NotSet()
         {
-            using (BusMessage message = new BusMessage(new Message()))
+            using (AmqpMessage message = new AmqpMessage(new Message()))
                 Assert.AreEqual(0, message.Size);
         }
 
@@ -81,7 +81,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
             DateTime utcNow = DateTime.UtcNow;
             DateTime applicationTimeStamp = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day, utcNow.Hour, utcNow.Minute, utcNow.Second);
             string cpaId = "cpaId_value";
-            using (BusMessage message = new BusMessage(new Message()))
+            using (AmqpMessage message = new AmqpMessage(new Message()))
             {
                 message.ToHerId = toHerId;
                 message.FromHerId = fromHerId;
@@ -103,7 +103,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
             string customProperty2 = "Value 2";
             DateTime customProperty3 = DateTime.Now;
 
-            using BusMessage message = new BusMessage(new Message());
+            using AmqpMessage message = new AmqpMessage(new Message());
             message.SetApplicationPropertyValue("CustomProperty1", customProperty1);
             message.SetApplicationPropertyValue("CustomProperty2", customProperty2);
             message.SetApplicationPropertyValue("CustomProperty3", customProperty3);
@@ -126,7 +126,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
             string replyTo = "replyTo_value";
             string to = "to_value";
 
-            using (BusMessage message = new BusMessage(new Message()))
+            using (AmqpMessage message = new AmqpMessage(new Message()))
             {
                 message.ContentType = contentType;
                 message.CorrelationId = correlationId;
@@ -161,7 +161,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
             TimeSpan ttl = TimeSpan.FromDays(4);
             byte[] data = new byte[] { 255, 0, 255 };
 
-            using (BusMessage message = new BusMessage(new Message(data)))
+            using (AmqpMessage message = new AmqpMessage(new Message(data)))
             {
                 message.ToHerId = toHerId;
                 message.FromHerId = fromHerId;
@@ -203,7 +203,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
         public void Should_Return_Cloned_Message_When_Payload_Is_Stream()
         {
             using MemoryStream data = new MemoryStream(new byte[] { 255, 0, 255 });
-            using BusMessage message = new BusMessage(new Message(data));
+            using AmqpMessage message = new AmqpMessage(new Message(data));
             var clonedMessage = message.Clone();
 
             Assert.IsNotNull(((Message)clonedMessage.OriginalObject).Body);
@@ -237,7 +237,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
 
             byte[] data =  new byte[] { 255, 0, 255 };
 
-            using (BusMessage message = new BusMessage(new Message(data)))
+            using (AmqpMessage message = new AmqpMessage(new Message(data)))
             {
                 message.ToHerId = toHerId;
                 message.FromHerId = fromHerId;
@@ -275,7 +275,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
             var toHerId = 123;
             var fromHerId = 456;
 
-            using var originalMessage = new BusMessage(new Message());
+            using var originalMessage = new AmqpMessage(new Message());
             originalMessage.ToHerId = toHerId;
             originalMessage.FromHerId = fromHerId;
 
