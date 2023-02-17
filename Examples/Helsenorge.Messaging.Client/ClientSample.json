@@ -16,7 +16,7 @@
     "ApplicationProperties": {
       "X-SystemIdentifier": "SomeSystemIdentifier"
     },
-    "BusSettings": {
+    "AmqpSettings": {
       "ConnectionString": "???",
       "MessageBrokerDialect": "RabbitMQ",
       "Synchronous": {

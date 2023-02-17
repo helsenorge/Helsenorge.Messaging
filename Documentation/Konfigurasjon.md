@@ -25,7 +25,7 @@ Dette er et eksempel på hvordan en slik fil kan se ut.
             "X-SystemIdentifier": "SomeSystemIdentifier"
         },
         "IgnoreCertificateErrorOnSend": "false",
-        "BusSettings": {
+        "AmqpSettings": {
             "ConnectionString": "",
             "MaxReceivers": 5,
             "MaxSenders": 10,

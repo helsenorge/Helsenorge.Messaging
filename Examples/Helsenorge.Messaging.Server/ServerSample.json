@@ -13,7 +13,7 @@
     },
     "MessagingSettings": {
         "MyHerIds": [ "6789" ],
-        "BusSettings": {
+        "AmqpSettings": {
             "ConnectionString": "???",
             "MessageBrokerDialect": "RabbitMQ"
         },
