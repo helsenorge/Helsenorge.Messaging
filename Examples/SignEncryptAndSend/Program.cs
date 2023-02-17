@@ -39,7 +39,7 @@ namespace SignEncryptAndSend
                 Password = Password,
             };
             var connection = new AmqpConnection(connectionString.ToString());
-            IMessagingSender sender = null;
+            IAmqpSender sender = null;
             var messageCount = 20;
             try
             {

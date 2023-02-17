@@ -28,7 +28,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="id">Id representing the receiver</param>
         /// <returns></returns>
-        IMessagingSender CreateMessageSender(string id);
+        IAmqpSender CreateMessageSender(string id);
         /// <summary>
         /// Creates an empty message
         /// </summary>

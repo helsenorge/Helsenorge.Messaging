@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Amqp
 {
-    internal class AmqpSenderPool : MessagingEntityCache<IMessagingSender>
+    internal class AmqpSenderPool : MessagingEntityCache<IAmqpSender>
     {
         private readonly IAmqpFactoryPool _factoryPool;
         
@@ -21,7 +21,7 @@ namespace Helsenorge.Messaging.Amqp
         {
             _factoryPool = factoryPool;
         }
-        protected override async Task<IMessagingSender> CreateEntityAsync(ILogger logger, string id)
+        protected override async Task<IAmqpSender> CreateEntityAsync(ILogger logger, string id)
         {
             var factory = await _factoryPool.FindNextFactoryAsync(logger).ConfigureAwait(false);
             return factory.CreateMessageSender(id);
@@ -33,7 +33,7 @@ namespace Helsenorge.Messaging.Amqp
         /// <param name="logger"></param>
         /// <param name="queueName"></param>
         /// <returns></returns>
-        public async Task<IMessagingSender> CreateCachedMessageSenderAsync(ILogger logger, string queueName) => await CreateAsync(logger, queueName).ConfigureAwait(false);
+        public async Task<IAmqpSender> CreateCachedMessageSenderAsync(ILogger logger, string queueName) => await CreateAsync(logger, queueName).ConfigureAwait(false);
 
         /// <summary>
         /// Releases a cached message sender

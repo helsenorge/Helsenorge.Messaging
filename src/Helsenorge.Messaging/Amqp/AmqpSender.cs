@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 namespace Helsenorge.Messaging.Amqp
 {
     [ExcludeFromCodeCoverage]
-    internal class AmqpSender : CachedAmpqSessionEntity<SenderLink>, IMessagingSender
+    internal class AmqpSender : CachedAmpqSessionEntity<SenderLink>, IAmqpSender
     {
         private readonly ILogger _logger;
         private readonly string _id;

@@ -14,7 +14,7 @@ namespace Helsenorge.Messaging.Abstractions
     /// <summary>
     /// Provides an interface for sending a message for a specific implementation
     /// </summary>
-    public interface IMessagingSender : ICachedMessagingEntity
+    public interface IAmqpSender : ICachedMessagingEntity
     {
         /// <summary>Sends the message</summary>
         /// <param name="message">The message to send</param>

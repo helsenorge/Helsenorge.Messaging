@@ -84,7 +84,7 @@ namespace Helsenorge.Messaging.Tests
                 return null;
             }
 
-            public IMessagingSender CreateMessageSender(string id)
+            public IAmqpSender CreateMessageSender(string id)
             {
                 return null;
             }

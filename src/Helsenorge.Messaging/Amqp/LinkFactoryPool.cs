@@ -55,10 +55,10 @@ namespace Helsenorge.Messaging.Amqp
         public Task ReleaseCachedMessageReceiverAsync(string queue)
             => _receiverPool.ReleaseCachedMessageReceiverAsync(_logger, queue);
 
-        /// <summary>Creates a pooled sender link of type <see cref="IMessagingSender"/>.</summary>
+        /// <summary>Creates a pooled sender link of type <see cref="IAmqpSender"/>.</summary>
         /// <param name="queue">The path to the queue you want to send messages to.</param>
-        /// <returns>A <see cref="IMessagingSender"/></returns>
-        public Task<IMessagingSender> CreateCachedMessageSenderAsync(string queue)
+        /// <returns>A <see cref="IAmqpSender"/></returns>
+        public Task<IAmqpSender> CreateCachedMessageSenderAsync(string queue)
             => _senderPool.CreateCachedMessageSenderAsync(_logger, queue);
 
         /// <summary>Release a pooled sender link tied to the 'queue'.</summary>
