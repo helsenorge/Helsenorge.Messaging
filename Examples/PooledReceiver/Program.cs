@@ -29,15 +29,16 @@ namespace PooledReceiver
         static async Task Main(string[] args)
         {
             var loggerFactory = new LoggerFactory();
+            var connectionString = new AmqpConnectionString
+            {
+                HostName = HostName,
+                Exchange = Exchange,
+                UserName = Username,
+                Password = Password,
+            };
             var settings = new AmqpSettings
             {
-                ConnectionString = new AmqpConnectionString
-                {
-                    HostName = HostName,
-                    Exchange = Exchange,
-                    UserName = Username,
-                    Password = Password,
-                }
+                ConnectionString = connectionString.ToString(),
             };
 
             await using var linkFactoryPool = new LinkFactoryPool(loggerFactory.CreateLogger<LinkFactoryPool>(), settings);

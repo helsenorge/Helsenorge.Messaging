@@ -145,10 +145,7 @@ namespace Helsenorge.Messaging.Tests
                 }
             };
 
-            Settings.AmqpSettings.ConnectionString = new AmqpConnectionString
-            {
-                HostName = "blabla",
-            };
+            Settings.AmqpSettings.ConnectionString = "blabla";
             Settings.AmqpSettings.Synchronous.ReplyQueueMapping.Add(Environment.MachineName.ToLower(), "RepliesGoHere");
             // make things easier by only having one processing task per queue
             Settings.AmqpSettings.Asynchronous.ProcessingTasks = 1;

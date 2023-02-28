@@ -124,7 +124,7 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Gets or sets the connection string
         /// </summary>
-        public AmqpConnectionString ConnectionString { get; set; }
+        public string ConnectionString { get; set; }
         /// <summary>
         /// Provides access to settings related to asynchronous queues
         /// </summary>
