@@ -30,18 +30,19 @@ namespace PooledSender
         static async Task Main(string[] args)
         {
             var loggerFactory = new LoggerFactory();
+            var connectionString = new AmqpConnectionString
+            {
+                HostName = HostName,
+                Exchange = Exchange,
+                UserName = Username,
+                Password = Password,
+            };
             var settings = new MessagingSettings
             {
                 ApplicationProperties = {{ "X-SystemIdentifier", "ExampleSystemIdentifier" }},
                 AmqpSettings =
                 {
-                    ConnectionString = new AmqpConnectionString
-                    {
-                        HostName = HostName,
-                        Exchange = Exchange,
-                        UserName = Username,
-                        Password = Password,
-                    },
+                    ConnectionString = connectionString.ToString(),
                 }
             };
 

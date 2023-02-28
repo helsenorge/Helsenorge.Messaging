@@ -41,15 +41,16 @@ namespace SubscriptionExample
                 };
                 var busManager = new BusManager(busManagerSettings, loggerFactory.CreateLogger<BusManager>());
 
+                var connectionString = new AmqpConnectionString
+                {
+                    HostName = HostName,
+                    Exchange = Exchange,
+                    UserName = Username,
+                    Password = Password,
+                };
                 var serviceBusSettings = new AmqpSettings
                 {
-                    ConnectionString = new AmqpConnectionString
-                    {
-                        HostName = HostName,
-                        Exchange = Exchange,
-                        UserName = Username,
-                        Password = Password,
-                    },
+                    ConnectionString = connectionString.ToString(),
                 };
                 await using var linkFactoryPool = new LinkFactoryPool(loggerFactory.CreateLogger("LinkFactoryPool"), serviceBusSettings);
 
