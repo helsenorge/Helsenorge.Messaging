@@ -87,12 +87,12 @@ Følgende namespace er endret:
 #### Navneendring på klasser, interfacer og egenskaper
 
 Navneendringer på klasser og interfacer:
-- `IMessagingMessage` &arr; `IAmqpMessage`
-- `IMessagingFactory` &arr; `IAmqpFactory`
-- `IMessagingReceiver` &arr; `IAmqpReceiver`
-- `IMessagingSender` &arr; `IAmqpSender`
-- `ICachedMessagingEntity` &arr; `ICachedAmqpEntity`
-- `MessagingEntityCache` &arr; `AmqpEntityCache`
+- `IMessagingMessage` &rarr; `IAmqpMessage`
+- `IMessagingFactory` &rarr; `IAmqpFactory`
+- `IMessagingReceiver` &rarr; `IAmqpReceiver`
+- `IMessagingSender` &rarr; `IAmqpSender`
+- `ICachedMessagingEntity` &rarr; `ICachedAmqpEntity`
+- `MessagingEntityCache` &rarr; `AmqpEntityCache`
 - `ServiceBusSettings` &rarr; `AmqpSettings`
 - `ServiceBusConnection` &rarr; `AmqpConnection`
 - `ServiceBusCore` &rarr; `AmqpCore`
