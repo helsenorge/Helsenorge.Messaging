@@ -38,6 +38,7 @@ Metodene har blitt utvidet med parameteret `myHerId` av type `int` (uthevet i fe
 - FindAgreementByIdAsync(ILogger, Guid, bool) &rarr; FindAgreementByIdAsync(Guid, **_int_**, bool)
 - FindAgreementForCounterpartyAsync(ILogger, int) &rarr; FindAgreementForCounterpartyAsync(**_int_**, int)
 - FindAgreementForCounterpartyAsync(ILogger, int, bool) &rarr; FindAgreementForCounterpartyAsync(ILogger, **_int_**, int, bool)
+- GetCollaborationProtocolProfileAsync(ILogger, Guid, bool) &rarr; GetCollaborationProtocolProfileAsync(Guid, bool)
 
 ### Endringer på interfacet IAddressRegistry og klassen AddressRegistry
 
