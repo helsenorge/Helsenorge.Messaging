@@ -57,40 +57,16 @@ ILogger argumentet har blitt fjernet fra metodene og er flyttet som en avhengigh
 ServiceBusHttpClient har vært merket som `Obsolete` i gjennom versjon 4.0 av biblioteket og fjernes nå i forbindelse med at støtte
 for produktet Microsoft ServiceBus fases ut. Lignende funksjonalitet eksisterer ikke over AMQP 1.0 for RabbitMQ. 
 
-#### Metodene RenewLock{Async} er fjernet fra IMessagingMessage og IncomingMessage
 
-Disse var avhengig av funksjonalitet som lå i klassen ServiceBusHttpClient og hadde kun relevans mot en MS ServiceBus instans.
-I tillegg dette var funksjonaliteten svært ustabil.
-
-Følgende metoder er fjernet:
-
-- `IMessagingMessage.RenewLock()`
-- `IMessagingMessage.RenewLockAsync()`
-- `IncomingMessage.RenewLock()`
-- `IncomingMessage.RenewLockAsync()`
-
-#### Andre endringer på IMessagingMessage
-
-Følgende metoder og egenskaper har endringer:
-
-Endret:
-- `IMessagingMessage.GetValue()` &rarr; `IMessagingMessage.GetApplicationPropertyValue()`
-- `IMessagingMessage.SetApplicationProperty()` &rarr; `IMessagingMessage.SetApplicationPropertyValue()`
-
-Fjernet:
-- `IMessagingMessage.ScheduledEnqueTimeUtc`
-- `IMessagingMessage.RenewLock()`
-- `IMessagingMessage.RenewLockAsync()`
-
-#### Navneendring på namespace 
+#### Navneendring på namespace
 
 Følgende namespace er endret:
 
-- `Helsenorge.Messaging.ServiceBus` &rarr; `Helsenorge.Messaging.Amqp` 
+- `Helsenorge.Messaging.ServiceBus` &rarr; `Helsenorge.Messaging.Amqp`
 
 #### Navneendring på klasser, interfacer og egenskaper
 
-Navneendringer på klasser og interfacer:
+Følgende klasser og interfacer har navneendringer på klasser og interfacer:
 - `IMessagingMessage` &rarr; `IAmqpMessage`
 - `IMessagingFactory` &rarr; `IAmqpFactory`
 - `IMessagingReceiver` &rarr; `IAmqpReceiver`
@@ -111,12 +87,30 @@ Navneendringer på klasser og interfacer:
 - `ServiceBusManagerSettings` &rarr; `BusManagerSettings`
 - `IServiceBusFactoryPool` &rarr; `IAmqpFactoryPool`
 
-Navneendringer på egenskaper:
+Følgende egenskaper har navneendringer:
 - `MessagingCore.Core` &rarr; `MessagingCore.AmqpCore`
 - `MessagingSettings.MyHerId` &rarr; `MessagingSettings.MyHerIds`
 - `MessagingSettings.ServiceBus` &rarr; `MessagingSettings.AmqpSettings`
 
 
+#### Endringer på interfacet IAmqpMessage (tidligere IMessagingMessage) og klassen IncomingMessage
+
+Disse var avhengig av funksjonalitet som lå i klassen ServiceBusHttpClient og hadde kun relevans mot en MS ServiceBus instans.
+I tillegg dette var funksjonaliteten svært ustabil.
+
+Følgende metoder er fjernet:
+
+- `IAmqpMessage.RenewLock()`
+- `IAmqpMessage.RenewLockAsync()`
+- `IAmqpMessage.ScheduledEnqueTimeUtc`
+- `IncomingMessage.RenewLock()`
+- `IncomingMessage.RenewLockAsync()`
+
+Følgende metoder har navneendringer:
+
+- `IAmqpMessage.GetValue()` &rarr; `IAmqpMessage.GetApplicationPropertyValue()`
+- `IAmqpMessage.SetApplicationProperty()` &rarr; `IAmqpMessage.SetApplicationPropertyValue()`
+
 #### Message broker kompatibilitet
 
-Helsenorge.Messaging 5.0 er fortsatt kompatibel med MS ServiceBus i tillegg til RabbitMQ.
+Helsenorge.Messaging 5.0 er fortsatt kompatibel med MS ServiceBus i tillegg til RabbitMQ, og benytter AMQP1.0 protokollene for både MS ServiceBus og RabbitMQ.
