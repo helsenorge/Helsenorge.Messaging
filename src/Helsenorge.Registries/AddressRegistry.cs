@@ -36,6 +36,7 @@ namespace Helsenorge.Registries
         /// </summary>
         /// <param name="settings">Options for this instance</param>
         /// <param name="cache">Cache implementation to use</param>
+        /// <param name="logger">The ILogger object used to log diagnostics.</param>
         public AddressRegistry(
             AddressRegistrySettings settings,
             IDistributedCache cache,
@@ -54,7 +55,7 @@ namespace Helsenorge.Registries
         /// <summary>
         /// Returns communication details for a specific counterparty
         /// </summary>
-        /// <param name="herId">Her id of counterpary</param>
+        /// <param name="herId">HER-Id of counter party</param>
         /// <returns>Communication details if found, otherwise null</returns>
         public async Task<CommunicationPartyDetails> FindCommunicationPartyDetailsAsync(int herId)
         {
@@ -107,7 +108,7 @@ namespace Helsenorge.Registries
         }
 
         /// <summary>
-        /// Returns encryption ceritficate for a specific communcation party.
+        /// Returns encryption certificate for a specific communication party.
         /// </summary>
         /// <param name="herId">Her-ID of the communication party</param>
         /// <returns></returns>
@@ -117,7 +118,7 @@ namespace Helsenorge.Registries
         }
 
         /// <summary>
-        /// Returns encryption ceritficate for a specific communcation party.
+        /// Returns encryption certificate for a specific communication party.
         /// </summary>
         /// <param name="herId">Her-ID of the communication party</param>
         /// <param name="forceUpdate">Set to true to force cache update.</param>
@@ -239,7 +240,7 @@ namespace Helsenorge.Registries
             => Invoke(_logger, x => x.GetCertificateDetailsForValidatingSignatureAsync(herId), "GetCertificateDetailsForValidatingSignatureAsync");
 
         /// <inheritdoc cref="PingAsync"/>
-        /// <remarks>Makes the acutal call to the registry. It's a virtual method to make it mockable for unit tests.</remarks>
+        /// <remarks>Makes the actual call to the registry. It's a virtual method to make it mockable for unit tests.</remarks>
         [ExcludeFromCodeCoverage]
         internal virtual Task PingAsyncInternal()
             => Invoke(_logger, x => x.PingAsync(), "PingAsync");
