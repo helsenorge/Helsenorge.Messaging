@@ -127,13 +127,13 @@ namespace Helsenorge.Registries
         {
             var key = $"AR_GetCertificateDetailsForEncryption{herId}";
 
-            var certificateDetails = forceUpdate ? null : await CacheExtensions.ReadValueFromCacheAsync<Abstractions.CertificateDetails>(
+            var certificateDetails = forceUpdate ? null : await CacheExtensions.ReadValueFromCacheAsync<CertificateDetails>(
                         _logger,
                         _cache,
                         key).ConfigureAwait(false);
             if (certificateDetails == null)
             {
-                AddressService.CertificateDetails certificateDetailsRegistry = null;
+                AddressService.CertificateDetails certificateDetailsRegistry;
                 try
                 {
                     certificateDetailsRegistry = await GetCertificateDetailsForEncryptionInternal(herId).ConfigureAwait(false);
@@ -175,13 +175,13 @@ namespace Helsenorge.Registries
         {
             var key = $"AR_GetCertificateDetailsForValidationSignature{herId}";
 
-            var certificateDetails = forceUpdate ? null : await CacheExtensions.ReadValueFromCacheAsync<Abstractions.CertificateDetails>(
+            var certificateDetails = forceUpdate ? null : await CacheExtensions.ReadValueFromCacheAsync<CertificateDetails>(
                         _logger,
                         _cache,
                         key).ConfigureAwait(false);
             if (certificateDetails == null)
             {
-                AddressService.CertificateDetails certificateDetailsRegistry = null;
+                AddressService.CertificateDetails certificateDetailsRegistry;
                 try
                 {
                     certificateDetailsRegistry = await GetCertificateDetailsForValidatingSignatureInternal(herId).ConfigureAwait(false);
@@ -218,7 +218,7 @@ namespace Helsenorge.Registries
         /// <param name="herId">Her id of communication party</param>
         /// <returns></returns>
         [ExcludeFromCodeCoverage] // requires wire communication
-        internal virtual Task<AddressService.CommunicationParty> FindCommunicationPartyDetails(int herId)
+        internal virtual Task<CommunicationParty> FindCommunicationPartyDetails(int herId)
             => Invoke(_logger, x => x.GetCommunicationPartyDetailsAsync(herId), "GetCommunicationPartyDetailsAsync");
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace Helsenorge.Registries
         internal virtual Task PingAsyncInternal()
             => Invoke(_logger, x => x.PingAsync(), "PingAsync");
 
-        private static CommunicationPartyDetails MapCommunicationPartyDetails(AddressService.CommunicationParty communicationParty)
+        private static CommunicationPartyDetails MapCommunicationPartyDetails(CommunicationParty communicationParty)
         {
             if (communicationParty == null)
                 return null;
@@ -276,12 +276,12 @@ namespace Helsenorge.Registries
             return details;
         }
 
-        private static Abstractions.CertificateDetails MapCertificateDetails(int herId, AddressService.CertificateDetails certificateDetails)
+        private static CertificateDetails MapCertificateDetails(int herId, AddressService.CertificateDetails certificateDetails)
         {
             if (certificateDetails == null)
                 return null;
 
-            return new Abstractions.CertificateDetails
+            return new CertificateDetails
             {
                 HerId = herId,
                 Certificate = new X509Certificate2(certificateDetails.Certificate),
@@ -290,7 +290,7 @@ namespace Helsenorge.Registries
         }
 
         [ExcludeFromCodeCoverage] // requires wire communication
-        private Task<T> Invoke<T>(ILogger logger, Func<AddressService.ICommunicationPartyService, Task<T>> action, string methodName)
+        private Task<T> Invoke<T>(ILogger logger, Func<ICommunicationPartyService, Task<T>> action, string methodName)
             => _invoker.ExecuteAsync(logger, action, methodName);
     }
 }
