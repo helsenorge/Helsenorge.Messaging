@@ -164,7 +164,7 @@ namespace Helsenorge.Messaging.Server
 
         private static void CreateLogger(IConfigurationRoot configurationRoot)
         {
-            LogManager.Configuration = new XmlLoggingConfiguration("nlog.config");
+            LogManager.Configuration = new XmlLoggingConfiguration("NLog.config");
             LogManager.ThrowConfigExceptions = true;
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddLogging(loggingBuilder =>
