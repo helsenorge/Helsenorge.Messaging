@@ -27,12 +27,6 @@ namespace Helsenorge.Registries
         public TimeSpan CachingInterval { get; set; } = new TimeSpan(1, 0, 0);
 
         /// <summary>
-        /// Gets or sets the type of formatter to use when caching.
-        /// </summary>
-        public Utilities.CacheFormatterType CachingFormatter { get; set; } =
-            Utilities.CacheFormatterType.BinaryFormatter;
-
-        /// <summary>
         /// Use online certificate revocation list (CRL) check. Default true.
         /// </summary>
         public bool UseOnlineRevocationCheck { get; set; } = true;

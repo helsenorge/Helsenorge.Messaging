@@ -20,8 +20,7 @@ namespace Helsenorge.Registries.Utilities
         public static async Task<T> ReadValueFromCacheAsync<T>(
             ILogger logger,
             IDistributedCache cache,
-            string key,
-            CacheFormatterType formatter = CacheFormatterType.BinaryFormatter)
+            string key)
             where T : class
         {
             try
@@ -31,7 +30,7 @@ namespace Helsenorge.Registries.Utilities
                 if (cached is null)
                     return default;
 
-                return await ByteArrayToObjectAsync<T>(cached, formatter).ConfigureAwait(false);
+                return await ByteArrayToObjectAsync<T>(cached).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -44,8 +43,7 @@ namespace Helsenorge.Registries.Utilities
             ILogger logger,
             IDistributedCache cache,
             string key, object value,
-            TimeSpan expires,
-            CacheFormatterType formatter = CacheFormatterType.BinaryFormatter)
+            TimeSpan expires)
         {
             if (expires == TimeSpan.Zero) return;
             if (value == null) return;
@@ -57,7 +55,7 @@ namespace Helsenorge.Registries.Utilities
 
             try
             {
-                await cache.SetAsync(key, ObjectToByteArray(value, formatter), options).ConfigureAwait(false);
+                await cache.SetAsync(key, ObjectToByteArray(value), options).ConfigureAwait(false);
                 logger.LogDebug("WriteValueToCache key {0} complete", key);
             }
             catch (Exception ex)
@@ -66,56 +64,19 @@ namespace Helsenorge.Registries.Utilities
             }
         }
 
-        private static byte[] ObjectToByteArray(object value, CacheFormatterType formatter)
+        private static byte[] ObjectToByteArray(object value)
         {
             if (value.GetType() == typeof(byte[])) return value as byte[];
 
-            switch (formatter)
-            {
-                case CacheFormatterType.BinaryFormatter:
-                    return ObjectToByteArray(value);
-                case CacheFormatterType.XmlFormatter:
-                    return XmlCacheFormatter.Serialize(value);
-                default:
-                    throw new ArgumentException("Invalid cache formatter");
-            }
+            return XmlCacheFormatter.Serialize(value);
         }
 
-        private static async Task<T> ByteArrayToObjectAsync<T>(byte[] value, CacheFormatterType formatter)
+        private static async Task<T> ByteArrayToObjectAsync<T>(byte[] value)
             where T : class
         {
             if (typeof(T) == typeof(byte[])) return value as T;
 
-            switch (formatter)
-            {
-                case CacheFormatterType.BinaryFormatter:
-                    return await ByteArrayToObjectAsync<T>(value);
-                case CacheFormatterType.XmlFormatter:
-                    return await XmlCacheFormatter.DeserializeAsync<T>(value);
-                default:
-                    throw new ArgumentException("Invalid cache formatter");
-            }
-        }
-
-        private static byte[] ObjectToByteArray(object value)
-        {
-            var formatter = new BinaryFormatter();
-            using var memoryStream = new MemoryStream();
-#pragma warning disable SYSLIB0011
-            formatter.Serialize(memoryStream, value);
-#pragma warning restore SYSLIB0011
-            return memoryStream.ToArray();
-        }
-
-        private static async Task<T> ByteArrayToObjectAsync<T>(byte[] value) where T : class
-        {
-            using var memoryStream = new MemoryStream();
-            var formatter = new BinaryFormatter();
-            await memoryStream.WriteAsync(value, 0, value.Length).ConfigureAwait(false);
-            memoryStream.Seek(0, SeekOrigin.Begin);
-#pragma warning disable SYSLIB0011
-            return formatter.Deserialize(memoryStream) as T;
-#pragma warning restore SYSLIB0011
+            return await XmlCacheFormatter.DeserializeAsync<T>(value);
         }
     }
 }

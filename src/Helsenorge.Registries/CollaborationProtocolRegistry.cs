@@ -7,7 +7,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -72,12 +71,12 @@ namespace Helsenorge.Registries
             _logger.LogDebug($"FindProtocolForCounterpartyAsync {counterpartyHerId}");
 
             var key = $"CPA_FindProtocolForCounterpartyAsync_{counterpartyHerId}";
-            var result = await CacheExtensions.ReadValueFromCacheAsync<CollaborationProtocolProfile>(_logger, _cache, key, _settings.CachingFormatter).ConfigureAwait(false);
+            var result = await CacheExtensions.ReadValueFromCacheAsync<CollaborationProtocolProfile>(_logger, _cache, key).ConfigureAwait(false);
             var xmlString = string.Empty;
 
             if (result != null)
             {
-                var errors = CertificateErrors.None; 
+                var errors = CertificateErrors.None;
                 errors |= CertificateValidator.Validate(result.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
                 errors |= CertificateValidator.Validate(result.SignatureCertificate, X509KeyUsageFlags.NonRepudiation);
                 // if the certificates are valid, only then do we return a value from the cache
@@ -113,7 +112,7 @@ namespace Helsenorge.Registries
                 result = doc.Root == null ? null : CollaborationProtocolProfile.CreateFromPartyInfoElement(doc.Root.Element(_ns + "PartyInfo"));
             }
 
-            await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, result, _settings.CachingInterval, _settings.CachingFormatter).ConfigureAwait(false);
+            await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, result, _settings.CachingInterval).ConfigureAwait(false);
             return result;
         }
 
@@ -138,7 +137,7 @@ namespace Helsenorge.Registries
             _logger.LogDebug($"FindAgreementByIdAsync {id}");
 
             var key = $"CPA_FindAgreementByIdAsync_{id}";
-            var result = forceUpdate ? null : await CacheExtensions.ReadValueFromCacheAsync<CollaborationProtocolProfile>(_logger, _cache, key, _settings.CachingFormatter).ConfigureAwait(false);
+            var result = forceUpdate ? null : await CacheExtensions.ReadValueFromCacheAsync<CollaborationProtocolProfile>(_logger, _cache, key).ConfigureAwait(false);
 
             if (result != null)
             {
@@ -178,7 +177,7 @@ namespace Helsenorge.Registries
             result = CollaborationProtocolProfile.CreateFromPartyInfoElement(node);
             result.CpaId = id;
 
-            await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, result, _settings.CachingInterval, _settings.CachingFormatter).ConfigureAwait(false);
+            await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, result, _settings.CachingInterval).ConfigureAwait(false);
             return result;
         }
 
@@ -202,7 +201,7 @@ namespace Helsenorge.Registries
         {
 
             var key = $"CPA_FindAgreementForCounterpartyAsync_{myHerId}_{counterpartyHerId}";
-            var result = forceUpdate ? null : await CacheExtensions.ReadValueFromCacheAsync<CollaborationProtocolProfile>(_logger, _cache, key, _settings.CachingFormatter).ConfigureAwait(false);
+            var result = forceUpdate ? null : await CacheExtensions.ReadValueFromCacheAsync<CollaborationProtocolProfile>(_logger, _cache, key).ConfigureAwait(false);
 
             if (result != null)
             {
@@ -240,7 +239,7 @@ namespace Helsenorge.Registries
             result = CollaborationProtocolProfile.CreateFromPartyInfoElement(node);
             result.CpaId = Guid.Parse(doc.Root.Attribute(_ns + "cpaid").Value);
             
-            await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, result, _settings.CachingInterval, _settings.CachingFormatter).ConfigureAwait(false);
+            await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, result, _settings.CachingInterval).ConfigureAwait(false);
             return result;
         }
 
@@ -262,7 +261,7 @@ namespace Helsenorge.Registries
         public async Task<CollaborationProtocolProfile> GetCollaborationProtocolProfileAsync(Guid id, bool forceUpdate = false)
         {
             var key = $"CPA_GetCollaborationProtocolProfileAsync_{id}";
-            var result = forceUpdate ? null : await CacheExtensions.ReadValueFromCacheAsync<CollaborationProtocolProfile>(_logger, _cache, key, _settings.CachingFormatter).ConfigureAwait(false);
+            var result = forceUpdate ? null : await CacheExtensions.ReadValueFromCacheAsync<CollaborationProtocolProfile>(_logger, _cache, key).ConfigureAwait(false);
 
             if (result != null)
             {
@@ -300,7 +299,7 @@ namespace Helsenorge.Registries
             if (result != null)
                 result.CppId = id;
 
-            await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, result, _settings.CachingInterval, _settings.CachingFormatter).ConfigureAwait(false);
+            await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, result, _settings.CachingInterval).ConfigureAwait(false);
             return result;
         }
 

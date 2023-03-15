@@ -71,27 +71,14 @@ namespace Helsenorge.Registries
         {
             var key = $"AR_FindCommunicationPartyDetailsAsync_{herId}";
 
-            CommunicationPartyDetails communicationPartyDetails = null;
-            // FIXME: Next major release, simplify the code which juggles cache reads depending on CacheFormatterType
-            //        being .XmlFormatter or .BinaryFormatter.
-            if (!forceUpdate)
-            {
-                communicationPartyDetails = _settings.CachingFormatter == CacheFormatterType.XmlFormatter
-                    ? await CacheExtensions.ReadValueFromCacheAsync<CommunicationPartyDetails>(
+            var communicationPartyDetails = forceUpdate ? null : await CacheExtensions.ReadValueFromCacheAsync<CommunicationPartyDetails>(
                         _logger,
                         _cache,
-                        key,
-                        _settings.CachingFormatter).ConfigureAwait(false)
-                    : MapCommunicationPartyDetails(await CacheExtensions.ReadValueFromCacheAsync<AddressService.CommunicationParty>(
-                        _logger,
-                        _cache,
-                        key,
-                        _settings.CachingFormatter).ConfigureAwait(false));
-            }
+                        key).ConfigureAwait(false);
 
             if (communicationPartyDetails == null)
             {
-                AddressService.CommunicationParty communicationParty = null;
+                CommunicationParty communicationParty = null;
                 try
                 {
                     communicationParty = await FindCommunicationPartyDetails(herId).ConfigureAwait(false);
@@ -111,29 +98,9 @@ namespace Helsenorge.Registries
                 }
 
                 communicationPartyDetails = MapCommunicationPartyDetails(communicationParty);
-                // FIXME: Next major release, simplify the code which juggles cache writes depending on CacheFormatterType
-                //        being .XmlFormatter or .BinaryFormatter.
-                if (_settings.CachingFormatter == CacheFormatterType.XmlFormatter)
-                {
-                    // Store the mapped CommunicationPartyDetails if we are using the XmlFormatter
-                    await CacheExtensions.WriteValueToCacheAsync(
-                        _logger,
-                        _cache,
-                        key,
-                        communicationPartyDetails,
-                        _settings.CachingInterval,
-                        _settings.CachingFormatter).ConfigureAwait(false);
-                }
-                else
-                {
-                    await CacheExtensions.WriteValueToCacheAsync(
-                        _logger,
-                        _cache,
-                        key,
-                        communicationParty,
-                        _settings.CachingInterval,
-                        _settings.CachingFormatter).ConfigureAwait(false);
-                }
+
+                // Cache the mapped CommunicationPartyDetails.
+                await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, communicationPartyDetails, _settings.CachingInterval).ConfigureAwait(false);
             }
 
             return communicationPartyDetails;
@@ -159,24 +126,10 @@ namespace Helsenorge.Registries
         {
             var key = $"AR_GetCertificateDetailsForEncryption{herId}";
 
-            Abstractions.CertificateDetails certificateDetails = null;
-            // FIXME: Next major release, simplify the code which juggles cache reads depending on CacheFormatterType
-            //        being .XmlFormatter or .BinaryFormatter.
-            if (!forceUpdate)
-            {
-                certificateDetails = _settings.CachingFormatter == CacheFormatterType.XmlFormatter
-                    ? await CacheExtensions.ReadValueFromCacheAsync<Abstractions.CertificateDetails>(
+            var certificateDetails = forceUpdate ? null : await CacheExtensions.ReadValueFromCacheAsync<Abstractions.CertificateDetails>(
                         _logger,
                         _cache,
-                        key,
-                        _settings.CachingFormatter).ConfigureAwait(false)
-                    : MapCertificateDetails(herId, await CacheExtensions.ReadValueFromCacheAsync<AddressService.CertificateDetails>(
-                        _logger,
-                        _cache,
-                        key,
-                        _settings.CachingFormatter).ConfigureAwait(false));
-            }
-
+                        key).ConfigureAwait(false);
             if (certificateDetails == null)
             {
                 AddressService.CertificateDetails certificateDetailsRegistry = null;
@@ -194,29 +147,8 @@ namespace Helsenorge.Registries
                 }
 
                 certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
-
-                // FIXME: Next major release, simplify the code which juggles cache writes depending on CacheFormatterType
-                //        being .XmlFormatter or .BinaryFormatter.
-                if (_settings.CachingFormatter == CacheFormatterType.XmlFormatter)
-                {
-                    await CacheExtensions.WriteValueToCacheAsync(
-                        _logger,
-                        _cache,
-                        key,
-                        certificateDetails,
-                        _settings.CachingInterval,
-                        _settings.CachingFormatter).ConfigureAwait(false);
-                }
-                else
-                {
-                    await CacheExtensions.WriteValueToCacheAsync(
-                        _logger,
-                        _cache,
-                        key,
-                        certificateDetailsRegistry,
-                        _settings.CachingInterval,
-                        _settings.CachingFormatter).ConfigureAwait(false);
-                }
+                // Cache the mapped CertificateDetails.
+                await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, certificateDetails, _settings.CachingInterval).ConfigureAwait(false);
             }
 
             return certificateDetails;
@@ -242,24 +174,10 @@ namespace Helsenorge.Registries
         {
             var key = $"AR_GetCertificateDetailsForValidationSignature{herId}";
 
-            Abstractions.CertificateDetails certificateDetails = null;
-            // FIXME: Next major release, simplify the code which juggles cache reads depending on CacheFormatterType
-            //        being .XmlFormatter or .BinaryFormatter.
-            if (!forceUpdate)
-            {
-                certificateDetails = _settings.CachingFormatter == CacheFormatterType.XmlFormatter
-                    ? await CacheExtensions.ReadValueFromCacheAsync<Abstractions.CertificateDetails>(
+            var certificateDetails = forceUpdate ? null : await CacheExtensions.ReadValueFromCacheAsync<Abstractions.CertificateDetails>(
                         _logger,
                         _cache,
-                        key,
-                        _settings.CachingFormatter).ConfigureAwait(false)
-                    : MapCertificateDetails(herId, await CacheExtensions.ReadValueFromCacheAsync<AddressService.CertificateDetails>(
-                        _logger,
-                        _cache,
-                        key,
-                        _settings.CachingFormatter).ConfigureAwait(false));
-            }
-
+                        key).ConfigureAwait(false);
             if (certificateDetails == null)
             {
                 AddressService.CertificateDetails certificateDetailsRegistry = null;
@@ -277,29 +195,13 @@ namespace Helsenorge.Registries
                 }
 
                 certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
-
-                // FIXME: Next major release, simplify the code which juggles cache writes depending on CacheFormatterType
-                //        being .XmlFormatter or .BinaryFormatter.
-                if (_settings.CachingFormatter == CacheFormatterType.XmlFormatter)
-                {
-                    await CacheExtensions.WriteValueToCacheAsync(
-                        _logger,
-                        _cache,
-                        key,
-                        certificateDetails,
-                        _settings.CachingInterval,
-                        _settings.CachingFormatter).ConfigureAwait(false);
-                }
-                else
-                {
-                    await CacheExtensions.WriteValueToCacheAsync(
-                        _logger,
-                        _cache,
-                        key,
-                        certificateDetailsRegistry,
-                        _settings.CachingInterval,
-                        _settings.CachingFormatter).ConfigureAwait(false);
-                }
+                // Cache the mapped CertificateDetails.
+                await CacheExtensions.WriteValueToCacheAsync(
+                    _logger,
+                    _cache,
+                    key,
+                    certificateDetails,
+                    _settings.CachingInterval).ConfigureAwait(false);
             }
 
             return certificateDetails;

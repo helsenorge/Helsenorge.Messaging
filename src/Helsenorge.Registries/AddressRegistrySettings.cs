@@ -25,11 +25,5 @@ namespace Helsenorge.Registries
         /// The amount of time values should be cached
         /// </summary>
         public TimeSpan CachingInterval { get; set; } = new TimeSpan(1, 0, 0);
-
-        /// <summary>
-        /// Gets or sets the type of formatter to use when caching.
-        /// </summary>
-        public Utilities.CacheFormatterType CachingFormatter { get; set; } =
-            Utilities.CacheFormatterType.BinaryFormatter;
     }
 }

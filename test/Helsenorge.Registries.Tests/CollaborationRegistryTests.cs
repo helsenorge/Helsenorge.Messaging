@@ -116,39 +116,6 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
-        public void Read_CollaborationProfile_OldCPPA()
-        {
-            var profile = _registry.FindProtocolForCounterpartyAsync(93238).Result;
-            Assert.AreEqual(profile.CpaId, Guid.Empty);
-            Assert.AreEqual("Digitale innbyggertjenester", profile.Name);
-            Assert.AreEqual(15, profile.Roles.Count);
-            Assert.IsNotNull(profile.SignatureCertificate);
-            Assert.IsNotNull(profile.EncryptionCertificate);
-
-            var role = profile.Roles[0];
-            Assert.AreEqual("DIALOG_INNBYGGER_DIGITALBRUKERreceiver", role.RoleName);
-            Assert.AreEqual("1.1", role.ProcessSpecification.VersionString);
-            Assert.AreEqual(new Version(1, 1), role.ProcessSpecification.Version);
-            Assert.AreEqual("Dialog_Innbygger_Digitalbruker", role.ProcessSpecification.Name);
-
-
-            Assert.AreEqual(2, role.ReceiveMessages.Count);
-            Assert.AreEqual(2, role.SendMessages.Count);
-            var message = role.ReceiveMessages[0];
-            Assert.AreEqual("DIALOG_INNBYGGER_DIGITALBRUKER", message.Name);
-            // This test uses old CPPA XML (Service) where Action name is the MessageFunction
-            Assert.AreEqual("DIALOG_INNBYGGER_DIGITALBRUKER", message.Action); 
-            Assert.AreEqual("sb.test.nhn.no/DigitalDialog/93238_async", message.DeliveryChannel);
-            Assert.AreEqual(DeliveryProtocol.Amqp, message.DeliveryProtocol);
-
-            var part = message.Parts.First();
-            Assert.AreEqual(1, part.MaxOccurrence);
-            Assert.AreEqual(0, part.MinOccurrence);
-            Assert.AreEqual("http://www.kith.no/xmlstds/msghead/2006-05-24", part.XmlNamespace);
-            Assert.AreEqual("MsgHead-v1_2.xsd", part.XmlSchema);
-        }
-
-        [TestMethod]
         public void Read_CollaborationProfile_NotFound()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(93252).Result;
@@ -190,27 +157,6 @@ namespace Helsenorge.Registries.Tests
             });
             profile = _registry.FindProtocolForCounterpartyAsync(93238).Result;
             Assert.IsNotNull(profile);
-        }
-
-        [TestMethod]
-        public void Read_CollaborationProfile_FromCache_OldCachedData()
-        {
-            _registry.CertificateValidator = new MockCertificateValidator();
-            // FindAgreementForCounterpartyAsync reads data from old cache
-            // Old cache of CollaborationProtocolMessage does not contain Action
-            var profileOldCache = _registry.FindProtocolForCounterpartyAsync(93239).Result;
-            // Tests the fallback when reading from old cache
-            // AppRec is a Action and in old cache this is mapped to Name and Action is null
-            var messageForSender = profileOldCache.FindMessageForSender("APPREC");
-            Assert.AreEqual("APPREC", messageForSender.Name);
-            Assert.IsNull(messageForSender.Action);
-            // Tests MessageFunction not in CPA still returns null
-            var messageForReceiver = profileOldCache.FindMessageForReceiver("DIALOG_INNBYGGER_MELDINGSFORMIDLING");
-            Assert.IsNull(messageForReceiver);
-            // Tests fallback for finding MessageParts for AppRec
-            var messagePartsApprec = profileOldCache.FindMessagePartsForReceiveAppRec("DIALOG_INNBYGGER_EKONSULTASJON");
-            Assert.AreEqual(2, messagePartsApprec.Count());
-            Assert.AreEqual("AppRec-v1_1.xsd", messagePartsApprec.First().XmlSchema);
         }
 
         [TestMethod]
@@ -260,27 +206,6 @@ namespace Helsenorge.Registries.Tests
             });
             profile = _registry.FindAgreementForCounterpartyAsync(5678, 93252).Result;
             Assert.IsNotNull(profile);
-        }
-
-        [TestMethod]
-        public void Read_CollaborationAgreement_FromCache_OldCachedData()
-        {
-            _registry.CertificateValidator = new MockCertificateValidator();
-            // FindAgreementForCounterpartyAsync reads data from old cache
-            // Old cache of CollaborationProtocolMessage does not contain Action
-            var profileOldCache = _registry.FindAgreementForCounterpartyAsync(93238, 93253).Result;
-            // Tests the fallback when reading from old cache
-            // AppRec is a Action and in old cache this is mapped to Name and Action is null
-            var messageForSender = profileOldCache.FindMessageForSender("APPREC");
-            Assert.AreEqual("APPREC", messageForSender.Name);
-            Assert.IsNull(messageForSender.Action);
-            // Tests MessageFunction not in CPA still returns null
-            var messageForReceiver = profileOldCache.FindMessageForReceiver("DIALOG_INNBYGGER_MELDINGSFORMIDLING");
-            Assert.IsNull(messageForReceiver);
-            // Tests fallback for finding MessageParts for AppRec
-            var messagePartsApprec = profileOldCache.FindMessagePartsForReceiveAppRec("DIALOG_INNBYGGER_EKONSULTASJON");
-            Assert.AreEqual(2, messagePartsApprec.Count());
-            Assert.AreEqual("AppRec-v1_1.xsd", messagePartsApprec.First().XmlSchema);
         }
 
         [TestMethod]
