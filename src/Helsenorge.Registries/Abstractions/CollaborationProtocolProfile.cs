@@ -24,6 +24,12 @@ namespace Helsenorge.Registries.Abstractions
     {
         private static XNamespace NameSpace = "http://www.oasis-open.org/committees/ebxml-cppa/schema/cpp-cpa-2_0.xsd";
 
+        /// <summary>
+        /// Returns a <see cref="CollaborationProtocolProfile"/> parsed from the PartyInfo element.
+        /// </summary>
+        /// <param name="partyInfo">An <see cref="XElement"/> containing the PartyInfo element.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">Returns a <see cref="CollaborationProtocolProfile"/>.</exception>
         public static CollaborationProtocolProfile CreateFromPartyInfoElement(XElement partyInfo)
         {
             if (partyInfo == null) throw new ArgumentNullException(nameof(partyInfo));
@@ -115,9 +121,9 @@ namespace Helsenorge.Registries.Abstractions
         /// </summary>
         public Guid CppId { get; set; }
         /// <summary>
-        /// A list of roles that the other party provides. This can also be thougth of as services. 
-        /// In practice it means what message types they support. The messaging system can support a vast array of different message types, but only a fraction may be 
-        /// supported by any given counterparty
+        /// A list of roles that the other party provides. This can also be thought of as services.
+        /// In practice it means what message types they support. The messaging system can support a vast array of different message types, but only a fraction may be
+        /// supported by any given counterparty.
         /// </summary>
         public IList<CollaborationProtocolRole> Roles { get; set; }
         /// <summary>
@@ -132,10 +138,10 @@ namespace Helsenorge.Registries.Abstractions
         public X509Certificate2 EncryptionCertificate { get; set; }
 
         /// <summary>
-        /// Finds message deatils for a specific message. 
+        /// Finds message details for a specific message.
         /// This information is required to build the correct XML document the party can consume
         /// </summary>
-        /// <param name="messageName">i.e. DIALOG_INNBYGER_EKONTAKT, DIALOG_INNBYGGER_KOORDINATOR, etc.</param>
+        /// <param name="messageName">i.e. DIALOG_INNBYGGER_EKONTAKT, DIALOG_INNBYGGER_KOORDINATOR, etc.</param>
         /// <returns></returns>
         public IEnumerable<CollaborationProtocolMessagePart> FindMessagePartsForReceiveMessage(string messageName)
         {
@@ -145,7 +151,7 @@ namespace Helsenorge.Registries.Abstractions
             return message?.Parts;
         }
         /// <summary>
-        /// Finds message deatils for a specific message. 
+        /// Finds message details for a specific message.
         /// This information is required to build the correct XML document the party can consume
         /// </summary>
         /// <param name="messageName">i.e. DIALOG_INNBYGER_EKONTAKT, DIALOG_INNBYGGER_KOORDINATOR, etc.</param>
@@ -159,7 +165,7 @@ namespace Helsenorge.Registries.Abstractions
         }
         /// <summary>
         /// This information is required to build the correct XML document the party can consume
-        /// Finds message deatils for a receipt message for a specific message. 
+        /// Finds message details for a receipt message for a specific message.
         /// </summary>
         /// <param name="messageName">i.e. DIALOG_INNBYGER_EKONTAKT, DIALOG_INNBYGGER_KOORDINATOR, etc.</param>
         /// <returns></returns>
@@ -170,7 +176,7 @@ namespace Helsenorge.Registries.Abstractions
             return FindMessagePartsForSenderOrReceiverAppRec(messageName, (r) => r.ReceiveMessages);
         }
         /// <summary>
-        /// Finds message deatils for a receipt message for a specific message. 
+        /// Finds message details for a receipt message for a specific message.
         /// This information is required to build the correct XML document the party can consume
         /// </summary>
         /// <param name="messageName">i.e. DIALOG_INNBYGER_EKONTAKT, DIALOG_INNBYGGER_KOORDINATOR, etc.</param>
