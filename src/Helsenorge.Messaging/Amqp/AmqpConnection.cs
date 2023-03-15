@@ -22,15 +22,14 @@ namespace Helsenorge.Messaging.Amqp
         private readonly Address _address;
         private IConnection _connection;
 
-        /// <summary>Initializes a new instance of the <see cref="AmqpConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
+        /// <summary>Initializes a new instance of the <see cref="AmqpConnection" /> class with the given connection string and a <see cref="ILogger"/> object.</summary>
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
-        /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
         public AmqpConnection(string connectionString)
             : this(connectionString, MessageBrokerDialect.RabbitMQ, AmqpSettings.DefaultMaxLinksPerSession, AmqpSettings.DefaultMaxSessions)
         {
         }
 
-        /// <summary>Initializes a new instance of the <see cref="AmqpConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
+        /// <summary>Initializes a new instance of the <see cref="AmqpConnection" /> class with the given connection string and a <see cref="ILogger"/> object.</summary>
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
         /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells BusConnection what kind of Message Broker we are communicating with.</param>
         public AmqpConnection(string connectionString, MessageBrokerDialect messageBrokerDialect)
@@ -38,7 +37,7 @@ namespace Helsenorge.Messaging.Amqp
         {
         }
 
-        /// <summary>Initializes a new instance of the <see cref="AmqpConnection" /> class with the givem connection string and a <see cref="ILogger"/> object.</summary>
+        /// <summary>Initializes a new instance of the <see cref="AmqpConnection" /> class with the given connection string and a <see cref="ILogger"/> object.</summary>
         /// <param name="connectionString">The connection used to connect to Message Broker.</param>
         /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells BusConnection what kind of Message Broker we are communicating with.</param>
         /// <param name="maxLinksPerSession">The max links that will be allowed per session.</param>
