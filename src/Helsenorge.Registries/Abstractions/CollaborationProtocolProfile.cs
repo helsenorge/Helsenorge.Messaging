@@ -28,17 +28,16 @@ namespace Helsenorge.Registries.Abstractions
         {
             if (partyInfo == null) throw new ArgumentNullException(nameof(partyInfo));
 
-            var collaboratoionProtocolProfile = new CollaborationProtocolProfile
+            var collaborationProtocolProfile = new CollaborationProtocolProfile
             {
                 Roles = new List<CollaborationProtocolRole>(),
                 Name = partyInfo.Attribute(NameSpace + "partyName").Value,
-
                 HerId = partyInfo.Element(NameSpace + "PartyId").Value.ToInt()
             };
 
             foreach (var role in partyInfo.Elements(NameSpace + "CollaborationRole"))
             {
-                collaboratoionProtocolProfile.Roles.Add(CollaborationProtocolRole.CreateFromCollaborationRole(role, partyInfo));
+                collaborationProtocolProfile.Roles.Add(CollaborationProtocolRole.CreateFromCollaborationRole(role, partyInfo));
             }
 
             XNamespace xmlSig = "http://www.w3.org/2000/09/xmldsig#";
@@ -49,14 +48,14 @@ namespace Helsenorge.Registries.Abstractions
 
                 if (certificate.HasKeyUsage(X509KeyUsageFlags.KeyEncipherment))
                 {
-                    collaboratoionProtocolProfile.EncryptionCertificate = certificate;
+                    collaborationProtocolProfile.EncryptionCertificate = certificate;
                 }
                 else if (certificate.HasKeyUsage(X509KeyUsageFlags.NonRepudiation))
                 {
-                    collaboratoionProtocolProfile.SignatureCertificate = certificate;
+                    collaborationProtocolProfile.SignatureCertificate = certificate;
                 }
             }
-            return collaboratoionProtocolProfile;
+            return collaborationProtocolProfile;
         }
 
         // These are used during serialization and deserialization since X509Certificate2 and X509Certificate are no longer serializable in .net core.
@@ -77,11 +76,11 @@ namespace Helsenorge.Registries.Abstractions
         [OnSerializing]
         internal void OnSerializing(StreamingContext context)
         {
-            _encryptionCertificateBase64String = EncryptionCertificate == null 
-                ? null 
+            _encryptionCertificateBase64String = EncryptionCertificate == null
+                ? null
                 : Convert.ToBase64String(EncryptionCertificate.Export(X509ContentType.Cert));
-            _signatureCertificateBase64String = SignatureCertificate == null 
-                ? null 
+            _signatureCertificateBase64String = SignatureCertificate == null
+                ? null
                 : Convert.ToBase64String(SignatureCertificate.Export(X509ContentType.Cert));
         }
 
@@ -91,11 +90,11 @@ namespace Helsenorge.Registries.Abstractions
         [OnDeserialized]
         internal void OnDeserialized(StreamingContext context)
         {
-            EncryptionCertificate = string.IsNullOrWhiteSpace(_encryptionCertificateBase64String) 
-                ? null 
+            EncryptionCertificate = string.IsNullOrWhiteSpace(_encryptionCertificateBase64String)
+                ? null
                 : new X509Certificate2(Convert.FromBase64String(_encryptionCertificateBase64String));
-            SignatureCertificate = string.IsNullOrWhiteSpace(_signatureCertificateBase64String) 
-                ? null 
+            SignatureCertificate = string.IsNullOrWhiteSpace(_signatureCertificateBase64String)
+                ? null
                 : new X509Certificate2(Convert.FromBase64String(_signatureCertificateBase64String));
         }
 
@@ -198,7 +197,7 @@ namespace Helsenorge.Registries.Abstractions
 
             if (messages == null)
             {
-                return Roles.SelectMany(role => role.SendMessages).FirstOrDefault((m) => 
+                return Roles.SelectMany(role => role.SendMessages).FirstOrDefault((m) =>
                     (m.Action != null && m.Action.Equals(messageName, StringComparison.OrdinalIgnoreCase)) ||
                     (m.Name != null && m.Name.Equals(messageName, StringComparison.OrdinalIgnoreCase)));
             }
@@ -241,7 +240,7 @@ namespace Helsenorge.Registries.Abstractions
                 return null;
 
             var messages = sendOrReceive(role);
-            
+
             // then we find the Apprec message in the same role
             var message = messages.FirstOrDefault((m) =>
                 (m.Action != null && m.Action.Equals("APPREC", StringComparison.OrdinalIgnoreCase)) ||
