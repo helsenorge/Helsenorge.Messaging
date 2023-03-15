@@ -26,9 +26,9 @@ namespace Helsenorge.Messaging.Amqp
         private readonly IDictionary<string, object> _applicationProperties;
 
         /// <summary>Initializes a new instance of the <see cref="LinkFactory" /> class with a <see cref="AmqpConnection"/> and a <see cref="ILogger{LinkFactory}"/>.</summary>
-        /// <param name="connection">A <see cref="AmqpConnection"/> that represents the connection to ServiecBus.</param>
+        /// <param name="connection">A <see cref="AmqpConnection"/> that represents the connection to the message broker.</param>
         /// <param name="logger">A <see cref="ILogger{LinkFactory}"/> which will be used to log errors and information.</param>
-        /// <param name="applicationProperties">A Dictionary with additional application properties which will be added to <see cref="Amqp.Message"/>.</param>
+        /// <param name="applicationProperties">A Dictionary with additional application properties which will be added to <see cref="Message"/>.</param>
         public LinkFactory(AmqpConnection connection, ILogger<LinkFactory> logger, IDictionary<string, object> applicationProperties = null)
         {
             _connection = connection;
@@ -50,7 +50,7 @@ namespace Helsenorge.Messaging.Amqp
             => new AmqpSender(_logger, _connection, queue, _applicationProperties);
 
         /// <summary>Creates a <see cref="IAmqpMessage"/>.</summary>
-        /// <param name="fromHerId">The HER-id which is the receipient of the message</param>
+        /// <param name="fromHerId">The HER-id which is the recipient of the message</param>
         /// <param name="message">The outgoing message as an <see cref="OutgoingMessage"/>.</param>
         /// <param name="payload">The payload as a <see cref="Stream"/> object.</param>
         /// <returns>Returns a <see cref="IAmqpMessage"/>.</returns>
