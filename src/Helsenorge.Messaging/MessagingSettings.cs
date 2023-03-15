@@ -10,12 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using Amqp;
 using Helsenorge.Messaging.Amqp;
 
 namespace Helsenorge.Messaging
 {
     /// <summary>
-    /// Specfies settings for the messaging system
+    /// Specifies settings for the messaging system
     /// </summary>
     public class MessagingSettings
     {
@@ -53,7 +54,7 @@ namespace Helsenorge.Messaging
         public bool LogPayload { get; set; }
 
         /// <summary>
-        /// A Dictionary with additional application properties which will be added to <see cref="Amqp.Message"/>.
+        /// A Dictionary with additional application properties which will be added to <see cref="Message"/>.
         /// </summary>
         public IDictionary<string, object> ApplicationProperties { get; } = new Dictionary<string, object>();
 
@@ -69,7 +70,7 @@ namespace Helsenorge.Messaging
         public MessagingEncryptionType MessagingEncryptionType { get; set; } = MessagingEncryptionType.AES256;
 
         /// <summary>
-        /// Default contructor
+        /// Default constructor
         /// </summary>
         public MessagingSettings()
         {
