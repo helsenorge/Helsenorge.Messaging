@@ -44,7 +44,8 @@ namespace Helsenorge.Registries
         /// </summary>
         /// <param name="settings">Options for this instance</param>
         /// <param name="cache">Cache implementation to use</param>
-        /// <param name="adressRegistry">AdressRegistry implementation to use</param>
+        /// <param name="addressRegistry">AddressRegistry implementation to use</param>
+        /// <param name="logger">The ILogger object used to log diagnostics.</param>
         public CollaborationProtocolRegistry(
             CollaborationProtocolRegistrySettings settings,
             IDistributedCache cache,
@@ -237,13 +238,13 @@ namespace Helsenorge.Registries
 
             result = CollaborationProtocolProfile.CreateFromPartyInfoElement(node);
             result.CpaId = Guid.Parse(doc.Root.Attribute(_ns + "cpaid").Value);
-            
+
             await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, result, _settings.CachingInterval).ConfigureAwait(false);
             return result;
         }
 
         /// <inheritdoc cref="PingAsync"/>
-        [Obsolete("This metod will be replaced in the future.")]
+        [Obsolete("This method will be replaced in the future.")]
         public async Task PingAsync(int herId)
         {
             await PingAsyncInternal(herId).ConfigureAwait(false);
