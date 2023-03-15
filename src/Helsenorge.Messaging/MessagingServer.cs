@@ -21,10 +21,22 @@ using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging
 {
+    /// <summary>
+    /// A record containing queue names/paths.
+    /// </summary>
     public record QueueNames
     {
+        /// <summary>
+        /// Name/path of the 'Async' queue.
+        /// </summary>
         public string Async { get; set; }
+        /// <summary>
+        /// Name / relative path of the 'Sync' queue.
+        /// </summary>
         public string Sync { get; set; }
+        /// <summary>
+        /// Name / relative path of the 'Error' queue.
+        /// </summary>
         public string Error { get; set; }
     }
 
