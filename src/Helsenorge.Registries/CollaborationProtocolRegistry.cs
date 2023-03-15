@@ -17,7 +17,6 @@ using Helsenorge.Registries.Abstractions;
 using Helsenorge.Registries.Utilities;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using Helsenorge.Registries.AddressService;
 
 namespace Helsenorge.Registries
 {
@@ -32,7 +31,7 @@ namespace Helsenorge.Registries
         private readonly SoapServiceInvoker _invoker;
         private readonly CollaborationProtocolRegistrySettings _settings;
         private readonly IDistributedCache _cache;
-        private readonly IAddressRegistry _adressRegistry;
+        private readonly IAddressRegistry _addressRegistry;
         private readonly ILogger _logger;
 
         /// <summary>
@@ -49,17 +48,17 @@ namespace Helsenorge.Registries
         public CollaborationProtocolRegistry(
             CollaborationProtocolRegistrySettings settings,
             IDistributedCache cache,
-            IAddressRegistry adressRegistry,
+            IAddressRegistry addressRegistry,
             ILogger logger)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (cache == null) throw new ArgumentNullException(nameof(cache));
-            if (adressRegistry == null) throw new ArgumentNullException(nameof(adressRegistry));
+            if (addressRegistry == null) throw new ArgumentNullException(nameof(addressRegistry));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
             _settings = settings;
             _cache = cache;
-            _adressRegistry = adressRegistry;
+            _addressRegistry = addressRegistry;
             _logger = logger;
             _invoker = new SoapServiceInvoker(settings.WcfConfiguration);
             CertificateValidator = new CertificateValidator(_settings.UseOnlineRevocationCheck);
@@ -104,7 +103,7 @@ namespace Helsenorge.Registries
             }
             if (string.IsNullOrEmpty(xmlString))
             {
-                return await DummyCollaborationProtocolProfileFactory.CreateAsync(_adressRegistry, _logger, counterpartyHerId, null);
+                return await DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, counterpartyHerId, null);
             }
             else
             {
@@ -165,7 +164,7 @@ namespace Helsenorge.Registries
                     Data = { { "CpaId", id } }
                 };
             }
-        
+
             if (string.IsNullOrEmpty(details?.CollaborationProtocolAgreementXml)) return null;
             var doc = XDocument.Parse(details.CollaborationProtocolAgreementXml);
             if (doc.Root == null) return null;
@@ -319,10 +318,6 @@ namespace Helsenorge.Registries
 
         [ExcludeFromCodeCoverage] // requires wire communication
         private Task<T> Invoke<T>(ILogger logger, Func<CPAService.ICPPAService, Task<T>> action, string methodName)
-            => _invoker.ExecuteAsync(logger, action, methodName);
-
-        [ExcludeFromCodeCoverage] // requires wire communication
-        private Task<T> Invoke<T>(ILogger logger, Func<ICommunicationPartyService, Task<T>> action, string methodName)
             => _invoker.ExecuteAsync(logger, action, methodName);
     }
 }
