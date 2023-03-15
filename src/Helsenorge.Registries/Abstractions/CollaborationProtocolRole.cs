@@ -75,13 +75,13 @@ namespace Helsenorge.Registries.Abstractions
             {
                 ReceiveMessages = new List<CollaborationProtocolMessage>(),
                 SendMessages = new List<CollaborationProtocolMessage>(),
-                RoleName = element.Element(NameSpace + "Role")?.Attribute(NameSpace + "name").Value
+                RoleName = element.Element(NameSpace + "Role")?.Attribute(NameSpace + "name")?.Value
              };
 
             var processSpecification = new ProcessSpecification
             {
-                Name = element.Element(NameSpace + "ProcessSpecification")?.Attribute(NameSpace + "name").Value,
-                VersionString = element.Element(NameSpace + "ProcessSpecification")?.Attribute(NameSpace + "version").Value
+                Name = element.Element(NameSpace + "ProcessSpecification")?.Attribute(NameSpace + "name")?.Value,
+                VersionString = element.Element(NameSpace + "ProcessSpecification")?.Attribute(NameSpace + "version")?.Value
             };
             role.ProcessSpecification = processSpecification;
 
