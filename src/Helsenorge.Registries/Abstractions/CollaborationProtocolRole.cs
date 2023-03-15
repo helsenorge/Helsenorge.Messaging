@@ -13,7 +13,7 @@ using System.Xml.Linq;
 namespace Helsenorge.Registries.Abstractions
 {
     /// <summary>
-    /// A role can be thought of as the party providing a specific service. The CollaborationRole links the role to the ProcessSpecification and messages allowed 
+    /// A role can be thought of as the party providing a specific service. The CollaborationRole links the role to the ProcessSpecification and messages allowed
     /// These are defined in 2 formats; the first example is an older format and the second a newer format that better defines the messages and roles
     /// </summary>
     /// <example>
@@ -59,6 +59,13 @@ namespace Helsenorge.Registries.Abstractions
     {
         private static XNamespace NameSpace = "http://www.oasis-open.org/committees/ebxml-cppa/schema/cpp-cpa-2_0.xsd";
 
+        /// <summary>
+        /// Returns a <see cref="CollaborationProtocolRole"/> parsed from Role, ProcessSpecification, etc.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="partyInfo"></param>
+        /// <returns>Returns a <see cref="CollaborationProtocolRole"/>.</returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static CollaborationProtocolRole CreateFromCollaborationRole(XContainer element, XElement partyInfo)
         {
             if (element == null) throw new ArgumentNullException(nameof(element));
