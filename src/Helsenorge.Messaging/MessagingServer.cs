@@ -51,7 +51,7 @@ namespace Helsenorge.Messaging
         private readonly ConcurrentBag<MessageListener> _listeners = new ConcurrentBag<MessageListener>();
         private readonly ConcurrentBag<Task> _tasks = new ConcurrentBag<Task>();
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-        private bool _disposed = false;
+        private bool _disposed;
 
         private Action<IncomingMessage> _onAsynchronousMessageReceived;
         private Action<MessageListener, IncomingMessage> _onAsynchronousMessageReceivedStarting;
@@ -210,7 +210,7 @@ namespace Helsenorge.Messaging
 
             _cancellationTokenSource.Cancel();
             await Task.WhenAll(_tasks.ToArray()).ConfigureAwait(false);
-            
+
             // when all the listeners have shut down, close down the messaging infrastructure
             await AmqpCore.SenderPool.ShutdownAsync(_logger).ConfigureAwait(false);
             await AmqpCore.ReceiverPool.ShutdownAsync(_logger).ConfigureAwait(false);
