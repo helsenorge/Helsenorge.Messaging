@@ -89,7 +89,7 @@ namespace Helsenorge.Messaging
             SigningCertificate.Validate();
             AmqpSettings.Validate();
         }
-    
+
     }
     /// <summary>
     /// Defines settings for service bus
@@ -198,7 +198,7 @@ namespace Helsenorge.Messaging
 
         internal void Validate()
         {
-            if (string.IsNullOrEmpty(ConnectionString?.ToString())) throw new ArgumentNullException(nameof(ConnectionString));
+            if (string.IsNullOrEmpty(ConnectionString)) throw new ArgumentNullException(nameof(ConnectionString));
             if (Asynchronous.ProcessingTasks > 0)
                 Asynchronous.Validate();
             if (Synchronous.ProcessingTasks > 0)
