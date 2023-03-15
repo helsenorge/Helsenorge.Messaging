@@ -33,7 +33,10 @@ namespace Helsenorge.Messaging.Amqp.Receivers
     {
         private CommunicationPartyDetails _myDetails;
         private IAmqpReceiver _messageReceiver;
-        private bool _listenerEstablishedConfirmed = false;
+        private bool _listenerEstablishedConfirmed;
+        /// <summary>
+        /// The available queues for this instance.
+        /// </summary>
         protected QueueNames _queueNames;
 
         /// <summary>
@@ -88,7 +91,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         /// <summary>
         /// Initializes a new instance of the <see cref="MessageListener"/> class.
         /// </summary>
-        /// <param name="amqpCore">An instance of <see cref="Bus.BusCore"/> which has the common infrastructure to talk to the Message Bus.</param>
+        /// <param name="amqpCore">An instance of <see cref="AmqpCore"/> which has the common infrastructure to talk to the Message Bus.</param>
         /// <param name="logger">An instance of <see cref="ILogger"/>, used to log diagnostics information.</param>
         /// <param name="messagingNotification">An instance of <see cref="IMessagingNotification"/> which holds reference to callbacks back to the client that owns this instance of the <see cref="MessageListener"/>.</param>
         /// <param name="queueNames">The Queue Names associated with the client.</param>
@@ -162,8 +165,8 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         }
         /// <summary>
         /// Reads and process a message from the queue
-        /// If message processing doesn't fail, the message is removed from the queue before result is returned. 
-        /// For sync messages, leaving the message on the queue will block further processing. Not good. 
+        /// If message processing doesn't fail, the message is removed from the queue before result is returned.
+        /// For sync messages, leaving the message on the queue will block further processing. Not good.
         /// For async messages, the notification system handles processing before the message is actually removed.
         /// <param name="alwaysRemoveMessage">Used for synchronous handling to force the removal on exceptions</param>
         /// </summary>
@@ -313,9 +316,9 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 Logger.LogError(EventIds.UnknownError, null, $"Message processing failed. Keeping lock until it times out and we can try again. Message expires at UTC {message.ExpiresAtUtc}");
                 Logger.LogException("Unknown error", ex);
                 // if something unknown goes wrong, we want to retry the message after a delay
-                // we don't call Complete() or Abandon() since that will cause the message to be availble again
+                // we don't call Complete() or Abandon() since that will cause the message to be available again
                 // chances are that the failure may still be around
-                // the Defer() method requires us to store the sequence id, but we don't have a place to store it 
+                // the Defer() method requires us to store the sequence id, but we don't have a place to store it
                 // the option then is to let the lock time-out. This will happen after a couple of minutes and the
                 // message becomes available again. 10 retries = 10 timeouts before it gets added to DLQ
 
@@ -385,12 +388,12 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             else
             {
                 contentWasSigned = true;
-                // if we receive enrypted messages on the error queue, we have no idea what to do with them
+                // if we receive encrypted messages on the error queue, we have no idea what to do with them
                 // Since this can be message we sent, it's encrypted with their certificate and we don't have that private key
                 if (QueueType == QueueType.Error) return null;
 
-                // TODO: The whole part of validating the local certificates below should probably be move into 
-                // the IMessageProtection implementation, but since there are some constraints to properties on 
+                // TODO: The whole part of validating the local certificates below should probably be move into
+                // the IMessageProtection implementation, but since there are some constraints to properties on
                 // IMessagingMessage we'll keep it here for now
 
                 // in receive mode, we try to decrypt and validate content even if the certificates are invalid
@@ -401,7 +404,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 var stopwatch = new Stopwatch();
                 Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, AmqpCore.MessageProtection.EncryptionCertificate.Thumbprint, AmqpCore.MessageProtection.EncryptionCertificate.Subject, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId);
                 stopwatch.Start();
-                // validate the local encryption certificate and, if present, the local legacy encryption certificate 
+                // validate the local encryption certificate and, if present, the local legacy encryption certificate
                 incomingMessage.DecryptionError = validator == null
                     ? CertificateErrors.None
                     : validator.Validate(AmqpCore.MessageProtection.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
@@ -409,13 +412,13 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, AmqpCore.MessageProtection.EncryptionCertificate.Thumbprint, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
                 // in earlier versions of Helsenorge.Messaging we removed the message, but we should rather
                 // want it to be dead lettered since this is a temp issue that should be fixed locally.
-                ReportErrorOnLocalCertificate(originalMessage, AmqpCore.MessageProtection.EncryptionCertificate, incomingMessage.DecryptionError);
+                ReportErrorOnLocalCertificate(AmqpCore.MessageProtection.EncryptionCertificate, incomingMessage.DecryptionError);
 
                 if(AmqpCore.MessageProtection.LegacyEncryptionCertificate != null)
                 {
                     Logger.LogBeforeValidatingCertificate(originalMessage.MessageFunction, AmqpCore.MessageProtection.LegacyEncryptionCertificate.Thumbprint, AmqpCore.MessageProtection.LegacyEncryptionCertificate.Subject, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId);
                     stopwatch.Restart();
-                    // this is optional information that should only be in effect durin a short transition period
+                    // this is optional information that should only be in effect during a short transition period
                     incomingMessage.LegacyDecryptionError = validator == null
                         ? CertificateErrors.None
                         : validator.Validate(AmqpCore.MessageProtection.LegacyEncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
@@ -474,7 +477,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 case CertificateErrors.RevokedUnknown:
                     throw new CertificateException(error, "transport:revoked-certificate", "Unable to determine revocation status",
                         EventIds.RemoteCertificateRevocation, AdditionalInformation(certificate));
-                default: // since the value is bitcoded
+                default: // since the value is bit-coded
                     throw new CertificateException(error, "transport:invalid-certificate", "More than one error with certificate",
                         EventIds.RemoteCertificate, AdditionalInformation(certificate));
             }
@@ -563,7 +566,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
 
 
         /// <summary>
-        /// Utilty method that helps us determine the name of specific queue
+        /// Utility method that helps us determine the name of specific queue
         /// </summary>
         /// <param name="myHerId"></param>
         /// <param name="action"></param>
