@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -220,7 +219,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                     LockedUntil = message.LockedUntil,
                 };
                 await NotifyMessageProcessingStartedAsync(this, incomingMessage).ConfigureAwait(false);
-                
+
                 SetCorrelationIdAction?.Invoke(incomingMessage.MessageId);
 
                 Logger.LogStartReceive(QueueType, incomingMessage, $"Message received from host and queue: {AmqpCore.HostnameAndPath}/{queueName}");
@@ -424,7 +423,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                     Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, AmqpCore.MessageProtection.LegacyEncryptionCertificate.Thumbprint, "KeyEncipherment", originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
                     // if someone forgets to remove the legacy configuration, we log an error message but don't remove it
-                    ReportErrorOnLocalCertificate(originalMessage, AmqpCore.MessageProtection.LegacyEncryptionCertificate, incomingMessage.LegacyDecryptionError);
+                    ReportErrorOnLocalCertificate(AmqpCore.MessageProtection.LegacyEncryptionCertificate, incomingMessage.LegacyDecryptionError);
                 }
 
                 var signature = incomingMessage.CollaborationAgreement?.SignatureCertificate;
@@ -437,7 +436,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 stopwatch.Stop();
                 Logger.LogAfterValidatingCertificate(originalMessage.MessageFunction, signature?.Thumbprint, "NonRepudiation", originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
-                ReportErrorOnRemoteCertificate(originalMessage, signature, incomingMessage.SignatureError);
+                ReportErrorOnRemoteCertificate(signature, incomingMessage.SignatureError);
 
                 Logger.LogBeforeDecryptingPayload(originalMessage.MessageFunction, signature?.Thumbprint, AmqpCore.MessageProtection.EncryptionCertificate.Thumbprint, originalMessage.FromHerId, originalMessage.ToHerId, originalMessage.MessageId);
                 stopwatch.Restart();
@@ -449,7 +448,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             return payload;
         }
 
-        private void ReportErrorOnRemoteCertificate(IAmqpMessage originalMessage, X509Certificate2 certificate,
+        private void ReportErrorOnRemoteCertificate(X509Certificate2 certificate,
             CertificateErrors error)
         {
             switch (error)
@@ -461,7 +460,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                     throw new CertificateException(error, "transport:missing-certificate", "Certificate is missing",
                         EventIds.RemoteCertificateStartDate, AdditionalInformation(certificate));
                 case CertificateErrors.StartDate:
-                    throw new CertificateException(error, "transport:expired-certificate", "Invalid start date", 
+                    throw new CertificateException(error, "transport:expired-certificate", "Invalid start date",
                         EventIds.RemoteCertificateStartDate, AdditionalInformation(certificate));
                 case CertificateErrors.EndDate:
                     throw new CertificateException(error, "transport:expired-certificate", "Invalid end date",
@@ -486,7 +485,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             return certificate != null ? new[] {certificate.Subject, certificate.Thumbprint} : new string[] { };
         }
 
-        private void ReportErrorOnLocalCertificate(IAmqpMessage originalMessage, X509Certificate2 certificate, CertificateErrors error)
+        private void ReportErrorOnLocalCertificate(X509Certificate2 certificate, CertificateErrors error)
         {
             string description;
             EventId id;
@@ -518,7 +517,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                     description = "Certificate is missing";
                     id = EventIds.LocalCertificate;
                     break;
-                default: // since the value is bitcoded
+                default: // since the value is bit-coded
                     description = "More than one error with certificate";
                     id = EventIds.LocalCertificate;
                     break;
