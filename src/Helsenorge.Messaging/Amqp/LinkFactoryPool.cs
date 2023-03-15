@@ -32,7 +32,7 @@ namespace Helsenorge.Messaging.Amqp
         /// <summary>Initializes a new instance of the <see cref="LinkFactoryPool" /> class with a <see cref="AmqpSettings"/> and a <see cref="ILogger"/>.</summary>
         /// <param name="settings">A <see cref="AmqpSettings"/> instance that contains the settings.</param>
         /// <param name="logger">An <see cref="ILogger"/> instance which will be used to log errors and information.</param>
-        /// <param name="applicationProperties">A Dictionary with additional application properties which will be added to <see cref="Amqp.Message"/>.</param>
+        /// <param name="applicationProperties">A Dictionary with additional application properties which will be added to <see cref="Message"/>.</param>
         public LinkFactoryPool(ILogger logger, AmqpSettings settings, IDictionary<string, object> applicationProperties = null)
         {
             _logger = logger;
