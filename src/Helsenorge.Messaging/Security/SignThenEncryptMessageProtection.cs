@@ -61,20 +61,27 @@ namespace Helsenorge.Messaging.Security
         /// <returns>A <see cref="Stream"/> containing the signed and encrypted data.</returns>
         public override Stream Protect(Stream data, X509Certificate2 encryptionCertificate)
         {
+            return Protect(data, encryptionCertificate, SigningCertificate);
+        }
+
+        /// <inheritdoc/>
+        public override Stream Protect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate)
+        {
             if (data == null) throw new ArgumentNullException(nameof(data));
             if (encryptionCertificate == null) throw new ArgumentNullException(nameof(encryptionCertificate));
+            if (signingCertificate == null) throw new ArgumentNullException(nameof(signingCertificate));
 
             byte[] dataAsBytes = new byte[data.Length];
             data.Read(dataAsBytes, 0, (int)data.Length);
 
-            return new MemoryStream(Protect(dataAsBytes, encryptionCertificate));
+            return new MemoryStream(Protect(dataAsBytes, encryptionCertificate, signingCertificate));
         }
 
-        private byte[] Protect(byte[] data, X509Certificate2 encryptionCertificate)
+        private byte[] Protect(byte[] data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate)
         {
             // first we sign the message
             var signedCms = new SignedCms(new ContentInfo(data));
-            var signer = new CmsSigner(SigningCertificate);
+            var signer = new CmsSigner(signingCertificate);
             if (_includeOption.HasValue)
             {
                 signer.IncludeOption = _includeOption.Value;

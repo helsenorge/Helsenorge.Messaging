@@ -46,6 +46,12 @@ namespace Helsenorge.Messaging.Security
             return data;
         }
 
+        /// <inheritdoc/>
+        public Stream Protect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate)
+        {
+            return data;
+        }
+
         /// <summary>
         /// Decrypts and then verifies the signature of the content in <paramref name="data"/>.
         /// </summary>

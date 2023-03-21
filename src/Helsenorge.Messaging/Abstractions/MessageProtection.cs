@@ -59,6 +59,12 @@ namespace Helsenorge.Messaging.Abstractions
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
+        public virtual Stream Protect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Decrypts and then verifies the signature of the content in <paramref name="data"/>.
         /// </summary>
