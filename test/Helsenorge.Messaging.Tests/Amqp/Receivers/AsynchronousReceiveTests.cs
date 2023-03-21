@@ -679,6 +679,13 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                 return data;
             }
 
+            public Stream Protect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate)
+            {
+                if (data == null) throw new ArgumentNullException(nameof(data));
+
+                return data;
+            }
+
             public Stream Unprotect(Stream data, X509Certificate2 signingCertificate)
             {
                 throw new SecurityException("Invalid certificate");

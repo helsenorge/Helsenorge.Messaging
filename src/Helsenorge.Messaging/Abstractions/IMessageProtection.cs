@@ -47,6 +47,15 @@ namespace Helsenorge.Messaging.Abstractions
         Stream Protect(Stream data, X509Certificate2 encryptionCertificate);
 
         /// <summary>
+        /// Signs and then encrypts the contents of <paramref name="data"/>.
+        /// </summary>
+        /// <param name="data">A <see cref="Stream"/> containing the data that will be signed and then encrypted.</param>
+        /// <param name="encryptionCertificate">The public key <see cref="X509Certificate2"/> which will be used to encrypt the data.</param>
+        /// <param name="signingCertificate">The private key <see cref="X509Certificate2"/>which will be used to sign the data.</param>
+        /// <returns>A <see cref="Stream"/> containing the signed and encrypted data.</returns>
+        Stream Protect(Stream data, X509Certificate2 encryptionCertificate, X509Certificate2 signingCertificate);
+
+        /// <summary>
         /// Decrypts and then verifies the signature of the content in <paramref name="data"/>.
         /// </summary>
         /// <param name="data">A <see cref="Stream"/> containing the data which be decrypted and then the signature will be verified.</param>
