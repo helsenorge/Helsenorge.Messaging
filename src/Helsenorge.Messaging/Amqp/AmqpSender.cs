@@ -82,7 +82,7 @@ namespace Helsenorge.Messaging.Amqp
             {
                 await EnsureOpenAsync().ConfigureAwait(false);
                 originalMessage.ApplicationProperties.AddApplicationProperties(_applicationProperties);
-                originalMessage.ApplicationProperties.Map.Add(AmqpCore.EnqueuedTimeUtc, DateTime.UtcNow);
+                originalMessage.ApplicationProperties.SetEnqueuedTimeUtc(DateTime.UtcNow);
                 await _link.SendAsync(originalMessage).ConfigureAwait(false);
             }).PerformAsync().ConfigureAwait(false);
         }
