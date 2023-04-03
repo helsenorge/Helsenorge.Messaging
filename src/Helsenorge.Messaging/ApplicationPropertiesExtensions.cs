@@ -24,9 +24,9 @@ namespace Helsenorge.Messaging
         public static void SetEnqueuedTimeUtc(this ApplicationProperties applicationProperties, DateTime utcTime)
         {
             if (applicationProperties.Map.ContainsKey(AmqpCore.EnqueuedTimeUtc))
-                applicationProperties.Map[AmqpCore.EnqueuedTimeUtc] = utcTime;
+                applicationProperties.Map[AmqpCore.EnqueuedTimeUtc] = utcTime.ToString("s");
             else
-                applicationProperties.Map.Add(AmqpCore.EnqueuedTimeUtc, utcTime);
+                applicationProperties.Map.Add(AmqpCore.EnqueuedTimeUtc, utcTime.ToString("s"));
         }
     }
 }
