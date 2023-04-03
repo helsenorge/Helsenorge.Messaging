@@ -42,7 +42,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public DateTime ApplicationTimestamp { get; set; }
         public string CpaId { get; set; }
         public DateTime EnqueuedTimeUtc { get; } = DateTime.UtcNow;
-        public DateTime ExpiresAtUtc { get; } = DateTime.Now.AddMinutes(5);
+        public DateTime ExpiresAtUtc { get; } = DateTime.UtcNow.AddMinutes(5);
         public IDictionary<string, object> Properties { get; private set; }
         public long Size => _stream.Length;
         public string ContentType { get; set; }
