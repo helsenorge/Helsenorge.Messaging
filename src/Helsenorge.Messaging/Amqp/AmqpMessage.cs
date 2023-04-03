@@ -390,9 +390,15 @@ namespace Helsenorge.Messaging.Amqp
         private int GetApplicationPropertyValue(string key, int value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
             ? int.Parse(GetApplicationProperties()[key].ToString())
             : value;
-        private DateTime GetApplicationPropertyValue(string key, DateTime value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
-            ? DateTime.Parse(GetApplicationProperties()[key].ToString(), CultureInfo.InvariantCulture)
-            : value;
+        private DateTime GetApplicationPropertyValue(string key, DateTime value)
+        {
+            if (GetApplicationProperties()?.Map.ContainsKey(key) == false)
+                return value;
+
+            return DateTime.TryParse(GetApplicationProperties()[key].ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDateTime)
+                    ? parsedDateTime
+                    : value;
+        }
 
         static object ValidateIdentifier(object id)
         {
