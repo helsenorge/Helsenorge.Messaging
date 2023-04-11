@@ -6,6 +6,8 @@ dokumentert i dette migreringsdokumentet.
 
 Alle `async` metoder har nå endelsen Async. F.eks `MessagingServer.Start` er nå endret til `MessagingServer.StartAsync`.
 
+Støtte for `BinaryFormatter` er nå fullstendig fjernet. NB: Dersom du har en fysisk cache (database) vil denne cachen måtte slettes før man deployer Helsenorge.Messaging 5.0.
+
 ### Konfigurasjonsrelaterte endringer
 
 - `MessagingSettings.MyHerId` &rarr; `MessagingSettings.MyHerIds`
