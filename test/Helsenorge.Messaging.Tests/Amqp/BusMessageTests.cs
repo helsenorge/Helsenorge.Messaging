@@ -101,7 +101,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
             int customProperty1 = 1;
             int customPropert1Change = 4;
             string customProperty2 = "Value 2";
-            DateTime customProperty3 = DateTime.Now;
+            DateTime customProperty3 = DateTime.UtcNow;
 
             using AmqpMessage message = new AmqpMessage(new Message());
             message.SetApplicationPropertyValue("CustomProperty1", customProperty1);

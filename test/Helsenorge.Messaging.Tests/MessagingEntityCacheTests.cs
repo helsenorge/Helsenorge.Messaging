@@ -304,7 +304,7 @@ namespace Helsenorge.Messaging.Tests
 
             // path3 will be the one that will be reclaimed
             var entry = _cache.Entries["path3"];
-            entry.LastUsed = DateTime.Now.AddSeconds(-15);
+            entry.LastUsed = DateTime.UtcNow.AddSeconds(-15);
 
             await _cache.CreateAsync(Logger, "path6");
 
@@ -326,7 +326,7 @@ namespace Helsenorge.Messaging.Tests
             // path3 will be the one that will be reclaimed
             var entry = _cache.Entries["path3"];
             await _cache.ReleaseAsync(Logger, "path3"); // we are done with path 3
-            entry.LastUsed = DateTime.Now.AddSeconds(-15);
+            entry.LastUsed = DateTime.UtcNow.AddSeconds(-15);
 
             await _cache.CreateAsync(Logger, "path6");
             await _cache.CreateAsync(Logger, "path7");
@@ -350,14 +350,14 @@ namespace Helsenorge.Messaging.Tests
 
             // path3 will be the one that will be reclaimed
             var entry = _cache.Entries["path3"];
-            entry.LastUsed = DateTime.Now.AddSeconds(-15);
+            entry.LastUsed = DateTime.UtcNow.AddSeconds(-15);
 
             await _cache.CreateAsync(Logger, "path6"); // create a new entry so that we have to free up another
             await _cache.ReleaseAsync(Logger, "path3"); // we are done with path 3
             await _cache.ReleaseAsync(Logger, "path2");
 
             // path2 will be bumped since it was LastUsed 5 seconds earlier than path3
-            _cache.Entries["path2"].LastUsed = DateTime.Now.AddSeconds(-20);
+            _cache.Entries["path2"].LastUsed = DateTime.UtcNow.AddSeconds(-20);
 
             await _cache.CreateAsync(Logger, "path3");
             Assert.AreEqual(1, entry.ActiveCount, "ActiveCount");
