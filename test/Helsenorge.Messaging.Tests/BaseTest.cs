@@ -185,7 +185,7 @@ namespace Helsenorge.Messaging.Tests
             return new MockMessage(GenericResponse)
             {
                 MessageFunction = message.MessageFunction,
-                ApplicationTimestamp = DateTime.Now,
+                ApplicationTimestamp = DateTime.UtcNow,
                 ContentType = ContentType.SignedAndEnveloped,
                 MessageId = Guid.NewGuid().ToString("D"),
                 CorrelationId = message.MessageId,

@@ -121,7 +121,7 @@ namespace Helsenorge.Messaging.Abstractions
                     entry = new CacheEntry<T>()
                     {
                         ActiveCount = 1,
-                        LastUsed = DateTime.Now,
+                        LastUsed = DateTime.UtcNow,
                         Entity = await CreateEntityAsync(logger, path).ConfigureAwait(false),
                         Path = path,
                     };
@@ -135,7 +135,7 @@ namespace Helsenorge.Messaging.Abstractions
 
                 if(_incrementActiveCount)
                     entry.ActiveCount++;
-                entry.LastUsed = DateTime.Now;
+                entry.LastUsed = DateTime.UtcNow;
                 logger.LogDebug(EventIds.MessagingEntityCacheProcessor, $"MessagingEntityCache::Create: Updating entry for {path} ActiveCount={entry.ActiveCount}");
 
                 // if this entity previously was closed, we need to create a new instance
@@ -248,7 +248,7 @@ namespace Helsenorge.Messaging.Abstractions
                     orderby v.LastUsed ascending
                     where v.Entity != null
                           && v.Entity.IsClosed == false
-                          && v.LastUsed < DateTime.Now.AddSeconds(-_timeToLiveInSeconds)
+                          && v.LastUsed < DateTime.UtcNow.AddSeconds(-_timeToLiveInSeconds)
                           && v.ActiveCount == 0
                     select v).Take(count).ToList();
 

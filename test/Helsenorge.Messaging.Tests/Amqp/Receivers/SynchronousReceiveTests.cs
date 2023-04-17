@@ -165,11 +165,11 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
         /// <param name="check"></param>
         private static void Wait(int timeout, Func<bool> check)
         {
-            var max = DateTime.Now.Add(TimeSpan.FromSeconds(timeout));
+            var max = DateTime.UtcNow.Add(TimeSpan.FromSeconds(timeout));
 
             while (true)
             {
-                if (DateTime.Now > max) throw new TimeoutException();
+                if (DateTime.UtcNow > max) throw new TimeoutException();
 
                 if (check()) return;
                 System.Threading.Thread.Sleep(50);
@@ -182,7 +182,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             return new MockMessage(GenericResponse)
             {
                 MessageFunction = "DIALOG_INNBYGGER_EKONTAKT",
-                ApplicationTimestamp = DateTime.Now,
+                ApplicationTimestamp = DateTime.UtcNow,
                 ContentType = ContentType.SignedAndEnveloped,
                 MessageId = messageId,
                 CorrelationId = messageId,

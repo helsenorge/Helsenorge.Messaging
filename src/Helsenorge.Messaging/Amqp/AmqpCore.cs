@@ -228,7 +228,7 @@ namespace Helsenorge.Messaging.Amqp
                 : Settings.Synchronous.TimeToLive;
             messagingMessage.FromHerId = outgoingMessage.FromHerId;
             messagingMessage.ToHerId = outgoingMessage.ToHerId;
-            messagingMessage.ApplicationTimestamp = DateTime.Now;
+            messagingMessage.ApplicationTimestamp = DateTime.UtcNow;
 
             if(profile.CpaId != Guid.Empty)
             {
@@ -310,7 +310,7 @@ namespace Helsenorge.Messaging.Amqp
             }
             if (clonedMessage.Properties.ContainsKey(ReceiverTimestampHeaderKey) == false)
             {
-                clonedMessage.SetApplicationPropertyValue(ReceiverTimestampHeaderKey, DateTime.Now.ToString(DateTimeFormatInfo.InvariantInfo));
+                clonedMessage.SetApplicationPropertyValue(ReceiverTimestampHeaderKey, DateTime.UtcNow.ToString(DateTimeFormatInfo.InvariantInfo));
             }
             if (clonedMessage.Properties.ContainsKey(ErrorConditionHeaderKey) == false)
             {
