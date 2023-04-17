@@ -87,9 +87,7 @@ namespace Helsenorge.Messaging.Amqp
             return new AmqpMessage(innerMessage)
             {
                 MessageId = message.MessageId,
-                MessageFunction = string.IsNullOrWhiteSpace(message.ReceiptForMessageFunction)
-                    ? message.MessageFunction
-                    : message.ReceiptForMessageFunction,
+                MessageFunction = message.MessageFunction,
                 ToHerId = message.ToHerId,
                 FromHerId = fromHerId,
             };
