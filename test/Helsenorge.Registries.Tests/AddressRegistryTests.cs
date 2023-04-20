@@ -271,5 +271,27 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(serviceDetails.LdapUrl, deserialized.LdapUrl);
             Assert.AreEqual(cert.Thumbprint, deserializedCert.Thumbprint);
         }
+
+        [TestMethod]
+        public void Serialize_Abstractions_CertificateDetails()
+        {
+            var keys = ECDsa.Create();
+            var request = new CertificateRequest("CN=foo", keys, HashAlgorithmName.SHA256);
+            var cert = request.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
+
+            var serviceDetails = new Abstractions.CertificateDetails
+            {
+                Certificate = cert,
+                HerId = 1234,
+                LdapUrl = "ldap://CN=foo",
+            };
+
+            var serialized = XmlCacheFormatter.Serialize(serviceDetails);
+            var deserialized = XmlCacheFormatter.DeserializeAsync<Abstractions.CertificateDetails>(serialized).Result;
+            var deserializedCert = deserialized.Certificate;
+            Assert.AreEqual(cert.Thumbprint, deserializedCert.Thumbprint);
+            Assert.AreEqual(serviceDetails.HerId, deserialized.HerId);
+            Assert.AreEqual(cert.Thumbprint, deserializedCert.Thumbprint);
+        }
     }
 }
