@@ -24,6 +24,10 @@ måtte slettes før man deployer Helsenorge.Messaging 5.0.
 
 For å avhjelpe oppbygging av Connection String fra kode har klassen AmqpConnectionString blitt lagt til.
 
+### EnqueuedTimeUtc
+Egenskapen `EnqueuedTimeUtc` var en AMQP MessageAnnotation som ble satt av ServiceBus. Denne settes nå på klientside
+rett før utsending av melding og er flyttet AMQP ApplicationProperties.
+
 ### Navneendring og endring av datatype for egenskapen MessagingSettings.MyHerId
 
 Egenskapen `MyHerId` på klassen `MessagingSettings` har endret navn til `MyHerIds`, i tillegg har datatypen blitt endret
