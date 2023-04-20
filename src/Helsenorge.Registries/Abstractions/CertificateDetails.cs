@@ -21,7 +21,7 @@ namespace Helsenorge.Registries.Abstractions
         public int HerId { get; set; }
 
         /// <summary>
-        /// The certificate of the communcation party represented as a byte array.
+        /// The certificate of the communication party represented as a byte array.
         /// </summary>
         public X509Certificate2 Certificate { get; set; }
 
