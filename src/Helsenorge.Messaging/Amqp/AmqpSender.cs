@@ -58,7 +58,7 @@ namespace Helsenorge.Messaging.Amqp
             {
                 EnsureOpen();
                 originalMessage.ApplicationProperties.AddApplicationProperties(_applicationProperties);
-                originalMessage.ApplicationProperties.Map.Add(AmqpCore.EnqueuedTimeUtc, DateTime.UtcNow);
+                originalMessage.ApplicationProperties.SetEnqueuedTimeUtc(DateTime.UtcNow);
                 _link.Send(originalMessage, serverWaitTime);
             }).Perform();
         }
