@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Tests.Mocks;
 using Helsenorge.Registries.Abstractions;
@@ -42,6 +43,11 @@ namespace ReceiveDecryptAndValidate
         }
 
         public Task PingAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<CommunicationPartyDetails>> SearchByIdAsync(string id, bool forceUpdate = false)
         {
             throw new NotImplementedException();
         }

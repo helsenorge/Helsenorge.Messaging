@@ -6,6 +6,7 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -65,5 +66,13 @@ namespace Helsenorge.Registries.Abstractions
         /// Tries to Ping the AddressRegistry Service to verify a connection.
         /// </summary>
         Task PingAsync();
+
+        /// <summary>
+        /// Searches for Communication Parties using organization number or HER-id.
+        /// </summary>
+        /// <param name="id">HER-id or Organization number.</param>
+        /// <param name="forceUpdate">Set to true to force an update of the cache.</param>
+        /// <returns>Returns a list of CommunicationPartyDetails.</returns>
+        Task<IEnumerable<CommunicationPartyDetails>> SearchByIdAsync(string id, bool forceUpdate = false);
     }
 }
