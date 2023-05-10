@@ -38,8 +38,26 @@ namespace Helsenorge.Registries.Abstractions
         /// </summary>
         public int ParentHerId { get; set; }
         /// <summary>
+        /// The ENH-ID of the parent organization  (ENH-ID = organisasjonsnummer)
+        /// </summary>
+        public int ParentOrganizationNumber  { get; set; }
+        /// <summary>
         /// Name of the communication party's parent
         /// </summary>
         public string ParentName { get; set; }
+        /// <summary>
+        /// Set to true if communication party is active, otherwise false.
+        /// </summary>
+        public bool Active { get; set; }
+        /// <summary>
+        /// Returns true if the communication party can receive EDI message, otherwise false.
+        /// </summary>
+        /// <remarks>This will return true if this expression is true: Type == Service || Type == Person</remarks>
+        public bool IsValidCommunicationParty { get;  set; }
+        /// <summary>
+        /// Type of Communication Party: Service, Person, Organization, Department, or all of the above
+        /// </summary>
+        public CommunicationPartyTypeEnum Type { get; set; }
     }
+
 }

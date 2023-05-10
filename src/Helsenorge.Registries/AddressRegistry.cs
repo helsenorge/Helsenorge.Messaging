@@ -255,7 +255,11 @@ namespace Helsenorge.Registries
                 Name = !string.IsNullOrEmpty(communicationParty.DisplayName) ? communicationParty.DisplayName : communicationParty.Name,
                 HerId = communicationParty.HerId,
                 ParentHerId = communicationParty.ParentHerId,
-                ParentName = communicationParty.ParentName
+                ParentOrganizationNumber = communicationParty.ParentOrganizationNumber,
+                ParentName = communicationParty.ParentName,
+                Active = communicationParty.Active,
+                IsValidCommunicationParty = communicationParty.IsValidCommunicationParty,
+                Type = (CommunicationPartyTypeEnum)communicationParty.Type,
             };
 
             foreach (var address in communicationParty.ElectronicAddresses)
