@@ -17,6 +17,8 @@ using Microsoft.Extensions.Logging;
 using System.Security.Cryptography.X509Certificates;
 using Helsenorge.Registries.AddressService;
 using CertificateDetails = Helsenorge.Registries.Abstractions.CertificateDetails;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Helsenorge.Registries
 {
@@ -208,6 +210,45 @@ namespace Helsenorge.Registries
             return certificateDetails;
         }
 
+        /// <inheritdoc/>
+        public async Task<IEnumerable<CommunicationPartyDetails>> SearchByIdAsync(string id, bool forceUpdate = false)
+        {
+            var key = $"AR_SearchByIdAsync{id}";
+
+            var communicationPartyDetails = forceUpdate ? null : await CacheExtensions.ReadValueFromCacheAsync<IEnumerable<CommunicationPartyDetails>>(
+                        _logger,
+                        _cache,
+                        key).ConfigureAwait(false);
+
+            if (communicationPartyDetails == null)
+            {
+                CommunicationParty[] communicationParties;
+                try
+                {
+                    communicationParties = await SearchByIdInternalAsync(id);
+                }
+                catch (FaultException ex)
+                {
+                    throw new RegistriesException(ex.Message, ex)
+                    {
+                        EventId = EventIds.CerificateDetails,
+                        Data = { { "Id", id } }
+                    };
+                }
+
+                communicationPartyDetails = MapCommunicationPartyDetailsList(communicationParties);
+                // Cache the mapped IEnumerable<CommunicationPartyDetails>.
+                await CacheExtensions.WriteValueToCacheAsync(
+                    _logger,
+                    _cache,
+                    key,
+                    communicationPartyDetails,
+                    _settings.CachingInterval).ConfigureAwait(false);
+            }
+
+            return communicationPartyDetails;
+        }
+
         /// <inheritdoc cref="IAddressRegistry.PingAsync"/>
         public Task PingAsync()
             => PingAsyncInternal();
@@ -244,6 +285,18 @@ namespace Helsenorge.Registries
         [ExcludeFromCodeCoverage]
         internal virtual Task PingAsyncInternal()
             => Invoke(_logger, x => x.PingAsync(), "PingAsync");
+
+        internal virtual Task<CommunicationParty[]> SearchByIdInternalAsync(string id)
+            => Invoke(_logger, x => x.SearchByIdAsync(id), "SearchByIdAsync");
+
+        private static IEnumerable<CommunicationPartyDetails> MapCommunicationPartyDetailsList(CommunicationParty[] communicationParties)
+        {
+            var list = new List<CommunicationPartyDetails>();
+            foreach (var communicationParty in communicationParties)
+                list.Add(MapCommunicationPartyDetails(communicationParty));
+
+            return list;
+        }
 
         private static CommunicationPartyDetails MapCommunicationPartyDetails(CommunicationParty communicationParty)
         {

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Tests.Mocks;
 using Helsenorge.Registries.Abstractions;
@@ -42,6 +43,11 @@ namespace SignEncryptAndSend
         }
 
         public Task PingAsync()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<IEnumerable<CommunicationPartyDetails>> SearchByIdAsync(string id, bool forceUpdate = false)
         {
             throw new System.NotImplementedException();
         }
