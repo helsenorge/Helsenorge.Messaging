@@ -17,6 +17,9 @@ namespace Helsenorge.Registries.Utilities
 {
     internal static class CacheExtensions
     {
+        /// <summary>
+        /// Reads a value with the specified key from cache.
+        /// </summary>
         public static async Task<T> ReadValueFromCacheAsync<T>(
             ILogger logger,
             IDistributedCache cache,
@@ -39,6 +42,9 @@ namespace Helsenorge.Registries.Utilities
             }
         }
 
+        /// <summary>
+        /// Writes the supplied value to cache using the specified key.
+        /// </summary>
         public static async Task WriteValueToCacheAsync(
             ILogger logger,
             IDistributedCache cache,
