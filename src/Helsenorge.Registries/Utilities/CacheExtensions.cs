@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Registries.Utilities
 {
-    internal static class CacheExtensions
+    public static class CacheExtensions
     {
         /// <summary>
         /// Reads a value with the specified key from cache.
