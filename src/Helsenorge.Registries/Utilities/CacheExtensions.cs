@@ -7,14 +7,15 @@
  */
 
 using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Registries.Utilities
 {
+    /// <summary>
+    /// Extension methods for IDistributedCache
+    /// </summary>
     public static class CacheExtensions
     {
         /// <summary>
