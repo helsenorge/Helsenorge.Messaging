@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Tests.Mocks;
 using Helsenorge.Registries.Abstractions;
-using Microsoft.Extensions.Logging;
 
 namespace SignEncryptAndSend
 {
@@ -48,6 +47,11 @@ namespace SignEncryptAndSend
         }
 
         public Task<IEnumerable<CommunicationPartyDetails>> SearchByIdAsync(string id, bool forceUpdate = false)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<OrganizationDetails> GetOrganizationDetailsAsync(int herId, bool forceUpdate = false)
         {
             throw new System.NotImplementedException();
         }

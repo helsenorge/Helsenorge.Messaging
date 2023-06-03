@@ -51,5 +51,10 @@ namespace ReceiveDecryptAndValidate
         {
             throw new NotImplementedException();
         }
+
+        public Task<OrganizationDetails> GetOrganizationDetailsAsync(int herId, bool forceUpdate = false)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
