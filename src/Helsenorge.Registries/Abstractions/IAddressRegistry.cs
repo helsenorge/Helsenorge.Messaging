@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Helsenorge.Registries.AddressService;
 using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Registries.Abstractions
@@ -74,5 +75,13 @@ namespace Helsenorge.Registries.Abstractions
         /// <param name="forceUpdate">Set to true to force an update of the cache.</param>
         /// <returns>Returns a list of CommunicationPartyDetails.</returns>
         Task<IEnumerable<CommunicationPartyDetails>> SearchByIdAsync(string id, bool forceUpdate = false);
+
+        /// <summary>
+        /// Returns information about an organization.
+        /// </summary>
+        /// <param name="herId">HER-id of the organization.</param>
+        /// <param name="forceUpdate">Set to true to force cache update.</param>
+        /// <returns></returns>
+        Task<OrganizationDetails> GetOrganizationDetailsAsync(int herId, bool forceUpdate = false);
     }
 }

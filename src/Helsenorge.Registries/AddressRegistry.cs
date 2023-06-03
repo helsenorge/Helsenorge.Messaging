@@ -19,6 +19,8 @@ using Helsenorge.Registries.AddressService;
 using CertificateDetails = Helsenorge.Registries.Abstractions.CertificateDetails;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Code = Helsenorge.Registries.Abstractions.Code;
 
 namespace Helsenorge.Registries
 {
@@ -100,7 +102,7 @@ namespace Helsenorge.Registries
                     };
                 }
 
-                communicationPartyDetails = MapCommunicationPartyDetails(communicationParty);
+                communicationPartyDetails = MapCommunicationPartyTo<CommunicationPartyDetails>(communicationParty);
 
                 // Cache the mapped CommunicationPartyDetails.
                 await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, communicationPartyDetails, _settings.CachingInterval).ConfigureAwait(false);
@@ -236,7 +238,7 @@ namespace Helsenorge.Registries
                     };
                 }
 
-                communicationPartyDetails = MapCommunicationPartyDetailsList(communicationParties);
+                communicationPartyDetails = MapCommunicationPartyListTo<CommunicationPartyDetails>(communicationParties);
                 // Cache the mapped IEnumerable<CommunicationPartyDetails>.
                 await CacheExtensions.WriteValueToCacheAsync(
                     _logger,
@@ -247,6 +249,46 @@ namespace Helsenorge.Registries
             }
 
             return communicationPartyDetails;
+        }
+
+        /// <inheritdoc cref="IAddressRegistry.GetOrganizationDetailsAsync"/>
+        public async Task<OrganizationDetails> GetOrganizationDetailsAsync(int herId, bool forceUpdate = false)
+        {
+            var key = $"AR_GetOrganizationDetailsAsync{herId}";
+
+            var organizationDetails = forceUpdate ? null : await CacheExtensions.ReadValueFromCacheAsync<OrganizationDetails>(
+                _logger,
+                _cache,
+                key).ConfigureAwait(false);
+
+            if (organizationDetails != null)
+                return organizationDetails;
+
+            Organization organization;
+            try
+            {
+                organization = await GetOrganizationDetailsInternalAsync(herId);
+            }
+            catch (FaultException ex)
+            {
+                throw new RegistriesException(ex.Message, ex)
+                {
+                    EventId = EventIds.CerificateDetails,
+                    Data = { { "HerId", herId } }
+                };
+            }
+
+            organizationDetails = MapOrganizationDetails(organization);
+
+            // Cache the mapped OrganizationDetails.
+            await CacheExtensions.WriteValueToCacheAsync(
+                _logger,
+                _cache,
+                key,
+                organizationDetails,
+                _settings.CachingInterval).ConfigureAwait(false);
+
+            return organizationDetails;
         }
 
         /// <inheritdoc cref="IAddressRegistry.PingAsync"/>
@@ -289,21 +331,77 @@ namespace Helsenorge.Registries
         internal virtual Task<CommunicationParty[]> SearchByIdInternalAsync(string id)
             => Invoke(_logger, x => x.SearchByIdAsync(id), "SearchByIdAsync");
 
-        private static IEnumerable<CommunicationPartyDetails> MapCommunicationPartyDetailsList(CommunicationParty[] communicationParties)
-        {
-            var list = new List<CommunicationPartyDetails>();
-            foreach (var communicationParty in communicationParties)
-                list.Add(MapCommunicationPartyDetails(communicationParty));
+        internal virtual Task<Organization> GetOrganizationDetailsInternalAsync(int herId)
+            => Invoke(_logger, x => x.GetOrganizationDetailsAsync(herId), "GetOrganizationDetailsAsync");
 
-            return list;
+        private static ServiceDetails MapServiceDetails(Service service)
+        {
+            if (service == null)
+                return null;
+
+            var serviceDetails = MapCommunicationPartyTo<ServiceDetails>(service);
+            serviceDetails.Code = new Code
+            {
+                OID = service.Code.OID,
+                Value = service.Code.CodeValue,
+                Text = service.Code.CodeText,
+            };
+            serviceDetails.Description = service.Description;
+            serviceDetails.LocationDescription = service.LocationDescription;
+
+            return serviceDetails;
         }
 
-        private static CommunicationPartyDetails MapCommunicationPartyDetails(CommunicationParty communicationParty)
+        private static IEnumerable<ServiceDetails> MapServiceDetailsList(IEnumerable<Service> services)
+        {
+            return services?.Select(MapServiceDetails);
+        }
+
+        private static Code MapCode(AddressService.Code code)
+        {
+            if (code == null)
+                return null;
+
+            return new Code
+            {
+                OID = code.OID,
+                Value = code.CodeValue,
+                Text = code.CodeText,
+            };
+        }
+
+        private static IEnumerable<Code> MapCodeList(IEnumerable<AddressService.Code> codes)
+        {
+            return codes?.Select(MapCode);
+        }
+
+        private static OrganizationDetails MapOrganizationDetails(Organization organization)
+        {
+            if (organization == null)
+                return null;
+
+            var organizationDetails = MapCommunicationPartyTo<OrganizationDetails>(organization);
+            organizationDetails.OrganizationNumber = organization.OrganizationNumber;
+            organizationDetails.BusinessType = MapCode(organization.BusinessType);
+            organizationDetails.IndustryCodes = MapCodeList(organization.IndustryCodes);
+            organizationDetails.Services = MapServiceDetailsList(organization.Services);
+
+            return organizationDetails;
+        }
+
+        private static IEnumerable<T> MapCommunicationPartyListTo<T>(IEnumerable<CommunicationParty> communicationParties)
+            where T : CommunicationPartyDetails, new()
+        {
+            return communicationParties?.Select(MapCommunicationPartyTo<T>);
+        }
+
+        private static T MapCommunicationPartyTo<T>(CommunicationParty communicationParty)
+            where T : CommunicationPartyDetails, new()
         {
             if (communicationParty == null)
                 return null;
 
-            var details = new CommunicationPartyDetails
+            var details = new T
             {
                 Name = !string.IsNullOrEmpty(communicationParty.DisplayName) ? communicationParty.DisplayName : communicationParty.Name,
                 HerId = communicationParty.HerId,
