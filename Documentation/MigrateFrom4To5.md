@@ -62,6 +62,20 @@ ILogger argumentet har blitt fjernet fra metodene og er flyttet som en avhengigh
 - GetCertificateDetailsForValidatingSignatureAsync(ILogger, int herId, bool forceUpdate) &rarr; GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate)
 - PingAsync(ILogger) &rarr; PingAsync()
 
+To nye metoder er lagt til:
+
+- SearchByIdAsync(string id, bool forceUpdate = false)
+- GetOrganizationDetailsAsync(int herId, bool forceUpdate = false)
+
+### Endringer på klassen CommunicationPartyDetails
+
+Fire nye egenskaper er lagt til:
+
+- ParentOrganizationNumber: Forelderen sitt organisasjonsnummer.
+- Active: Satt til true om kommunikasjonsparten er aktiv, ellers false.
+- IsValidCommunicationParty: Satt til true dersom kommunikasjonsparten kan motta EDI meldinger.
+- Type: Angir hva slags type kommunikasjonspart dette er, Service, Person, Organization, Department, eller alle.
+
 ### ServiceBusHttpClient er fjernet
 
 ServiceBusHttpClient har vært merket som `Obsolete` i gjennom versjon 4.0 av biblioteket og fjernes nå i forbindelse med
