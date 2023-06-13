@@ -10,16 +10,18 @@ Dette biblioteket støtter oppunder basisbehovet for en kommunikasjonsløsning v
 1. [Forutsetninger](Documentation/Forutsetninger.md "Forutsetninger")
 2. [Registre](Documentation/Registre.md "Registere")
 3. [CPP og CPA](Documentation/CPPA.md "CPP og CPA")
-4. [Sending av meldinger](Documentation/SendeMeldinger.md "Sending av meldinger")
-5. [Mottak av meldinger](Documentation/MottaMeldinger.md "Mottak av meldinger")
-6. [Feilhåndtering og logging](Documentation/FeilOgLogging.md "Feilhåndtering og logging")
-7. [Kryptering og Signering](Documentation/KrypteringOgSignering.md "Kryptering og Signering")
-8. [Konfigurasjon](Documentation/Konfigurasjon.md "Konfigurasjon")
-9. [Nuget](Documentation/Nuget.md "Nuget")
-10. [Eksempler](Documentation/Eksempler.md "Eksempler")
-11. [Biztalk](Documentation/Biztalk.md "Biztalk")
-12. [Migrere fra 3.0 til 4.0](Documentation/MigrateFrom3To4.md)
-13. [Migrere fra 4.0 til 5.0](Documentation/MigrateFrom4To5.md)
+4. [Oppdatering av proxy-klasser ved oppdatert WSDL](Documentation/OppdaterProxyKlasser.md)
+5. [Sending av meldinger](Documentation/SendeMeldinger.md "Sending av meldinger")
+6. [Mottak av meldinger](Documentation/MottaMeldinger.md "Mottak av meldinger")
+7. [Feilhåndtering og logging](Documentation/FeilOgLogging.md "Feilhåndtering og logging")
+8. [Kryptering og Signering](Documentation/KrypteringOgSignering.md "Kryptering og Signering")
+9. [Konfigurasjon](Documentation/Konfigurasjon.md "Konfigurasjon")
+10. [Nuget](Documentation/Nuget.md "Nuget")
+11. [Eksempler](Documentation/Eksempler.md "Eksempler")
+12. [Biztalk](Documentation/Biztalk.md "Biztalk")
+13. [Migrere fra 3.0 til 4.0](Documentation/MigrateFrom3To4.md)
+14. [Migrere fra 4.0 til 5.0](Documentation/MigrateFrom4To5.md)
+
 
 ## Contributing
 We are welcoming contributors!
