@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29709.97
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Messaging", "src\Helsenorge.Messaging\Helsenorge.Messaging.csproj", "{A0BA02E7-C2EA-496B-85ED-10ACD42B4DE8}"
 EndProject
@@ -26,55 +26,56 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{C78E1F1C-6AE6-4E64-8211-90EEC7A5FCAD}"
-ProjectSection(SolutionItems) = preProject
-	readme.md = readme.md
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		readme.md = readme.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{D65E8495-DAAD-46D6-8053-8D911A5C24F3}"
-ProjectSection(SolutionItems) = preProject
-	Documentation\Biztalk.md = Documentation\Biztalk.md
-	Documentation\CPPA.md = Documentation\CPPA.md
-	Documentation\Feilkoder.md = Documentation\Feilkoder.md
-	Documentation\FeilOgLogging.md = Documentation\FeilOgLogging.md
-	Documentation\Forutsetninger.md = Documentation\Forutsetninger.md
-	Documentation\Konfigurasjon.md = Documentation\Konfigurasjon.md
-	Documentation\KrypteringOgSignering.md = Documentation\KrypteringOgSignering.md
-	Documentation\MottaMeldinger.md = Documentation\MottaMeldinger.md
-	Documentation\Registre.md = Documentation\Registre.md
-	Documentation\SendeMeldinger.md = Documentation\SendeMeldinger.md
-	Documentation\Testmiljøer.md = Documentation\Testmiljøer.md
-	Documentation\Eksempler.md = Documentation\Eksempler.md
-	Documentation\MigrateFrom3To4.md = Documentation\MigrateFrom3To4.md
-	Documentation\MigrateFrom4To5.md = Documentation\MigrateFrom4To5.md
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		Documentation\Biztalk.md = Documentation\Biztalk.md
+		Documentation\CPPA.md = Documentation\CPPA.md
+		Documentation\Eksempler.md = Documentation\Eksempler.md
+		Documentation\Feilkoder.md = Documentation\Feilkoder.md
+		Documentation\FeilOgLogging.md = Documentation\FeilOgLogging.md
+		Documentation\Forutsetninger.md = Documentation\Forutsetninger.md
+		Documentation\Konfigurasjon.md = Documentation\Konfigurasjon.md
+		Documentation\KrypteringOgSignering.md = Documentation\KrypteringOgSignering.md
+		Documentation\MigrateFrom3To4.md = Documentation\MigrateFrom3To4.md
+		Documentation\MigrateFrom4To5.md = Documentation\MigrateFrom4To5.md
+		Documentation\MottaMeldinger.md = Documentation\MottaMeldinger.md
+		OppdaterProxyKlasser.md = OppdaterProxyKlasser.md
+		Documentation\Registre.md = Documentation\Registre.md
+		Documentation\SendeMeldinger.md = Documentation\SendeMeldinger.md
+		Documentation\Testmiljøer.md = Documentation\Testmiljøer.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{0539614B-FB26-4204-B08C-D044A8DEAA41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleSender", "Examples\SimpleSender\SimpleSender.csproj", "{D86E01D4-983C-4F30-A69D-8C80A927D16E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleSender", "Examples\SimpleSender\SimpleSender.csproj", "{D86E01D4-983C-4F30-A69D-8C80A927D16E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleReceiver", "Examples\SimpleReceiver\SimpleReceiver.csproj", "{413014B4-E40D-4D41-8068-8509995F3814}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleReceiver", "Examples\SimpleReceiver\SimpleReceiver.csproj", "{413014B4-E40D-4D41-8068-8509995F3814}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging.Server", "Examples\Helsenorge.Messaging.Server\Helsenorge.Messaging.Server.csproj", "{F8228F1E-51B0-4643-B4B2-CE59491853E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Messaging.Server", "Examples\Helsenorge.Messaging.Server\Helsenorge.Messaging.Server.csproj", "{F8228F1E-51B0-4643-B4B2-CE59491853E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging.Client", "Examples\Helsenorge.Messaging.Client\Helsenorge.Messaging.Client.csproj", "{FE928A0E-5B57-4893-8010-DDC54DC1B752}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Messaging.Client", "Examples\Helsenorge.Messaging.Client\Helsenorge.Messaging.Client.csproj", "{FE928A0E-5B57-4893-8010-DDC54DC1B752}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PooledSender", "Examples\PooledSender\PooledSender.csproj", "{7633D728-A132-4BF7-B440-E7E0E8521740}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PooledSender", "Examples\PooledSender\PooledSender.csproj", "{7633D728-A132-4BF7-B440-E7E0E8521740}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PooledReceiver", "Examples\PooledReceiver\PooledReceiver.csproj", "{1288380E-F454-4DBF-ABFE-4BFB7ADFB29C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PooledReceiver", "Examples\PooledReceiver\PooledReceiver.csproj", "{1288380E-F454-4DBF-ABFE-4BFB7ADFB29C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignEncryptAndSend", "Examples\SignEncryptAndSend\SignEncryptAndSend.csproj", "{F44A0630-B04A-4DDA-9536-E7AA3C80708A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignEncryptAndSend", "Examples\SignEncryptAndSend\SignEncryptAndSend.csproj", "{F44A0630-B04A-4DDA-9536-E7AA3C80708A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReceiveDecryptAndValidate", "Examples\ReceiveDecryptAndValidate\ReceiveDecryptAndValidate.csproj", "{DFF66B90-787E-4FAD-B830-9236ADC21983}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReceiveDecryptAndValidate", "Examples\ReceiveDecryptAndValidate\ReceiveDecryptAndValidate.csproj", "{DFF66B90-787E-4FAD-B830-9236ADC21983}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubscriptionExample", "Examples\SubscriptionExample\SubscriptionExample.csproj", "{D49E63C8-DF43-45A9-804B-9B71E1DF5314}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubscriptionExample", "Examples\SubscriptionExample\SubscriptionExample.csproj", "{D49E63C8-DF43-45A9-804B-9B71E1DF5314}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging.AdminLib", "src\Helsenorge.Messaging.AdminLib\Helsenorge.Messaging.AdminLib.csproj", "{7FC8311D-C4CE-4947-AC16-5E5C40FE9919}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Messaging.AdminLib", "src\Helsenorge.Messaging.AdminLib\Helsenorge.Messaging.AdminLib.csproj", "{7FC8311D-C4CE-4947-AC16-5E5C40FE9919}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helsenorge.Messaging.AdminLib.Tests", "test\Helsenorge.Messaging.AdminLib.Tests\Helsenorge.Messaging.AdminLib.Tests.csproj", "{C6DD033F-80EF-4961-A07A-F35496C39821}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Messaging.AdminLib.Tests", "test\Helsenorge.Messaging.AdminLib.Tests\Helsenorge.Messaging.AdminLib.Tests.csproj", "{C6DD033F-80EF-4961-A07A-F35496C39821}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepublishExample", "Examples\RepublishExample\RepublishExample.csproj", "{A59DE6F3-4F4B-4CB5-95CD-AFA81A5A31CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RepublishExample", "Examples\RepublishExample\RepublishExample.csproj", "{A59DE6F3-4F4B-4CB5-95CD-AFA81A5A31CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchByIdAndGetOrganizationDetailsExample", "Examples\SearchByIdAndGetOrganizationDetailsExample\SearchByIdAndGetOrganizationDetailsExample.csproj", "{E1AEDDAF-6397-474F-9F8D-827FE1D5CD84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchByIdAndGetOrganizationDetailsExample", "Examples\SearchByIdAndGetOrganizationDetailsExample\SearchByIdAndGetOrganizationDetailsExample.csproj", "{E1AEDDAF-6397-474F-9F8D-827FE1D5CD84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -155,9 +156,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{5D87F89A-6AF1-438B-B483-F5B5D8778C85} = {C78E1F1C-6AE6-4E64-8211-90EEC7A5FCAD}
 		{E5E73A1E-1589-4B95-A894-B27029F5707C} = {5D87F89A-6AF1-438B-B483-F5B5D8778C85}
 		{FB9DDD90-D5A5-4F25-8C81-4E6C9B4A18EE} = {E5E73A1E-1589-4B95-A894-B27029F5707C}
-		{5D87F89A-6AF1-438B-B483-F5B5D8778C85} = {C78E1F1C-6AE6-4E64-8211-90EEC7A5FCAD}
 		{D65E8495-DAAD-46D6-8053-8D911A5C24F3} = {C78E1F1C-6AE6-4E64-8211-90EEC7A5FCAD}
 		{D86E01D4-983C-4F30-A69D-8C80A927D16E} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
 		{413014B4-E40D-4D41-8068-8509995F3814} = {0539614B-FB26-4204-B08C-D044A8DEAA41}
