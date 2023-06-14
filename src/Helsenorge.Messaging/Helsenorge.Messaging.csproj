@@ -15,7 +15,7 @@
   <ItemGroup>
     <PackageReference Include="AMQPNetLite" Version="2.4.6" />
     <PackageReference Include="AMQPNetLite.Serialization" Version="2.4.6" />
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="6.0.2" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="6.0.3" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
