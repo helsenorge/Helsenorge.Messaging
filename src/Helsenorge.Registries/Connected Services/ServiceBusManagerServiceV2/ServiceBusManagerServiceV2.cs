@@ -8,6 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+#pragma warning disable 1591
+
 namespace Helsenorge.Registries
 {
     using System.Runtime.Serialization;
