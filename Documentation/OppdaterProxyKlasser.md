@@ -9,3 +9,4 @@ Her beskrives det hvordan dette kan utføres via VS CLI eksemplifisert gjennom S
 2. Åpne Visual Studio CLI: Visual Studio > Tools > Command Line > Developer Command Prompt
 3. Naviger til ServiceBusManagerServfolder: `cd "src\Helsenorge.Registries\Connected Services\ServiceBusManagerServiceV2"`
 4. Kjør scriptet:	`GenerateClientServicebusManangerServiceV2.cmd` 
+5. I toppen av den autogenererte filen legg til `#pragma warning disable 1591`. Dette for å unngå klager på manglende dokumentasjon.
