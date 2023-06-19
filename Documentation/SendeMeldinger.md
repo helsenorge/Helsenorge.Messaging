@@ -9,13 +9,17 @@ Den synkrone håndteringen tar utgangspunkt i at hver prosess/maskin har sin ege
 Når vi sender er en synkron melding, så setter vi eksplisitt hvilken kø svaret skal tilbake på.    
 Koblingen mellom maskin og kønavn settes opp i konfigurasjonen.
 
+```json
+{
     "Synchronous": {
         "CallTimeout":  "00:00:15",
         "ReplyQueueMapping": {
             "MACHINE-NAME": "11111_syncreply"
-            }
+        }
     }
- 
+}
+ ```
+
 Siden synkrone meldinger har begrenset levetid og alle trådene som venter er blokkert, så er koden skrevet slik at de samarbeider. Alle tråder som venter, henter meldinger fra køen og legger de i et internt minnebuffer. Før en tråd sjekker køen, så sjekker de om en annen tråd har hentet den de er interessert i. 
 
 Basert på denne strukturne, så **må MessagingClient brukes som singleton**.
@@ -37,7 +41,7 @@ var outgoingMessage = new OutgoingMessage()
     Payload = new XDocument(),
     MessageFunction = "DUMMY_MESSAGE_FUNCTION",
     MessageId = Guid.NewGuid().ToString("D"),
-    ScheduledSendTimeUtc = DateTime.Now,
+    ScheduledSendTimeUtc = DateTime.UtcNow,
     PersonalId = "12345",
 };
 
