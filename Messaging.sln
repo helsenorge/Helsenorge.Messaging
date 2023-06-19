@@ -47,6 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		Documentation\Registre.md = Documentation\Registre.md
 		Documentation\SendeMeldinger.md = Documentation\SendeMeldinger.md
 		Documentation\Testmiljøer.md = Documentation\Testmiljøer.md
+		Documentation\Troubleshooting.md = Documentation\Troubleshooting.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{0539614B-FB26-4204-B08C-D044A8DEAA41}"
