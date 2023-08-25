@@ -171,7 +171,7 @@ namespace Helsenorge.Messaging.Security
         private EnvelopedCms GetEnvelope(byte[] rawContent)
         {
             if (_messagingEncryptionType == MessagingEncryptionType.AES256)
-                return new EnvelopedCms(new ContentInfo(rawContent));
+                return new EnvelopedCms(new ContentInfo(rawContent), new AlgorithmIdentifier(new Oid("2.16.840.1.101.3.4.1.42")));
             else if (_messagingEncryptionType == MessagingEncryptionType.TripleDES)
                 return new EnvelopedCms(new ContentInfo(rawContent), new AlgorithmIdentifier(new Oid("1.2.840.113549.3.7")));
 
