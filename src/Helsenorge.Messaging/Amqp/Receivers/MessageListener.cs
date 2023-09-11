@@ -379,7 +379,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             {
                 contentWasSigned = false;
                 // no certificates to validate
-                payload = new NoMessageProtection().Unprotect(bodyStream, null)?.ToXDocument();
+                payload = new NoMessageProtection().Unprotect(bodyStream, null, Logger)?.ToXDocument();
 
                 // Log a warning if the message is in plain text.
                 if (AmqpCore.Settings.LogMessagesNotSignedAndEnvelopedAsWarning && isPlainText)

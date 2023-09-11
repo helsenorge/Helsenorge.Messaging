@@ -7,6 +7,7 @@
  */
 
 using Helsenorge.Messaging.Abstractions;
+using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 
@@ -24,7 +25,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
             return data;
         }
 
-        public override Stream Unprotect(Stream data, X509Certificate2 signingCertificate)
+        public override Stream Unprotect(Stream data, X509Certificate2 signingCertificate, ILogger logger)
         {
             return data;
         }
