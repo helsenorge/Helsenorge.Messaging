@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Helsenorge.Messaging.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.Security
 {
@@ -57,8 +58,9 @@ namespace Helsenorge.Messaging.Security
         /// </summary>
         /// <param name="data">A <see cref="Stream"/> containing the data which be decrypted and then the signature will be verified.</param>
         /// <param name="signingCertificate">Not relevant for this implemenation</param>
+        /// <param name="logger"></param>
         /// <returns>A <see cref="Stream"/> containing the data in decrypted form.</returns>
-        public Stream Unprotect(Stream data, X509Certificate2 signingCertificate)
+        public Stream Unprotect(Stream data, X509Certificate2 signingCertificate, ILogger logger)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
 
