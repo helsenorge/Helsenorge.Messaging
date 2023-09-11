@@ -65,7 +65,7 @@ namespace ReceiveDecryptAndValidate
                         if (message.ContentType == ContentType.SignedAndEnveloped)
                         {
                             var publicSignatureCertificate = await addressRegistry.GetCertificateDetailsForValidatingSignatureAsync(123);
-                            streamReader = new StreamReader(messageProtection.Unprotect(stream, publicSignatureCertificate.Certificate));
+                            streamReader = new StreamReader(messageProtection.Unprotect(stream, publicSignatureCertificate.Certificate, loggerFactory.CreateLogger<SignThenEncryptMessageProtection>()));
                         }
                         else
                         {

@@ -444,7 +444,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 Logger.LogBeforeDecryptingPayload(originalMessage.MessageFunction, signature?.Thumbprint, AmqpCore.MessageProtection.EncryptionCertificate.Thumbprint, originalMessage.FromHerId, originalMessage.ToHerId, originalMessage.MessageId);
                 stopwatch.Restart();
                 // decrypt the message and validate the signatureS
-                payload = AmqpCore.MessageProtection.Unprotect(bodyStream, signature)?.ToXDocument();
+                payload = AmqpCore.MessageProtection.Unprotect(bodyStream, signature, Logger)?.ToXDocument();
                 Logger.LogAfterDecryptingPayload(originalMessage.MessageFunction, originalMessage.FromHerId, originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
                 stopwatch.Stop();
             }

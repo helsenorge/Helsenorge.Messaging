@@ -15,6 +15,7 @@ using System.Security.Cryptography.Pkcs;
 using System.Text;
 using Helsenorge.Messaging.Abstractions;
 using System.Security.Cryptography;
+using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.Security
 {
@@ -103,18 +104,19 @@ namespace Helsenorge.Messaging.Security
         /// </summary>
         /// <param name="data">A <see cref="Stream"/> containing the data which be decrypted and then the signature will be verified.</param>
         /// <param name="signingCertificate">The public key <see cref="X509Certificate2"/> which will be used to validate the signature of the message data.</param>
+        /// <param name="logger"></param>
         /// <returns>A <see cref="Stream"/> containing the data in decrypted form.</returns>
-        public override Stream Unprotect(Stream data, X509Certificate2 signingCertificate)
+        public override Stream Unprotect(Stream data, X509Certificate2 signingCertificate, ILogger logger)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
 
             byte[] dataAsBytes = new byte[data.Length];
             data.Read(dataAsBytes, 0, (int)data.Length);
 
-            return new MemoryStream(Unprotect(dataAsBytes, signingCertificate));
+            return new MemoryStream(Unprotect(dataAsBytes, signingCertificate, logger));
         }
 
-        private byte[] Unprotect(byte[] data, X509Certificate2 signingCertificate)
+        private byte[] Unprotect(byte[] data, X509Certificate2 signingCertificate, ILogger logger)
         {
             X509Certificate2Collection encryptionCertificates = new X509Certificate2Collection(EncryptionCertificate);
             if (LegacyEncryptionCertificate != null)
@@ -125,6 +127,9 @@ namespace Helsenorge.Messaging.Security
             envelopedCms.Decode(data);
             try
             {
+                var encryptionOid = envelopedCms.ContentEncryptionAlgorithm.Oid;
+                logger.LogInformation($"Decrypting EnvelopedCms with ContentEncryptionAlgorithm: {encryptionOid.FriendlyName} : {encryptionOid.Value}");
+
                 envelopedCms.Decrypt(envelopedCms.RecipientInfos[0], encryptionCertificates);
             }
             catch (System.Security.Cryptography.CryptographicException ce)
