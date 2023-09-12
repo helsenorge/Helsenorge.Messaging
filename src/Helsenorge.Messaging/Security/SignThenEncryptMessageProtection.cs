@@ -130,8 +130,8 @@ namespace Helsenorge.Messaging.Security
             envelopedCms.Decode(data);
             try
             {
-                var encryptionOid = envelopedCms.ContentEncryptionAlgorithm.Oid;
-                _logger.LogInformation($"Decrypting EnvelopedCms with ContentEncryptionAlgorithm: {encryptionOid.FriendlyName} : {encryptionOid.Value}");
+                var encryptionOid = envelopedCms?.ContentEncryptionAlgorithm?.Oid;
+                _logger.LogInformation($"Decrypting EnvelopedCms with ContentEncryptionAlgorithm: {encryptionOid?.FriendlyName ?? "null"} : {encryptionOid?.Value ?? "null"}");
 
                 envelopedCms.Decrypt(envelopedCms.RecipientInfos[0], encryptionCertificates);
             }
