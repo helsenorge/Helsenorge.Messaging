@@ -379,7 +379,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             {
                 contentWasSigned = false;
                 // no certificates to validate
-                payload = new NoMessageProtection().Unprotect(bodyStream, null, Logger)?.ToXDocument();
+                payload = new NoMessageProtection().Unprotect(bodyStream, null)?.ToXDocument();
 
                 // Log a warning if the message is in plain text.
                 if (AmqpCore.Settings.LogMessagesNotSignedAndEnvelopedAsWarning && isPlainText)
@@ -444,7 +444,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 Logger.LogBeforeDecryptingPayload(originalMessage.MessageFunction, signature?.Thumbprint, AmqpCore.MessageProtection.EncryptionCertificate.Thumbprint, originalMessage.FromHerId, originalMessage.ToHerId, originalMessage.MessageId);
                 stopwatch.Restart();
                 // decrypt the message and validate the signatureS
-                payload = AmqpCore.MessageProtection.Unprotect(bodyStream, signature, Logger)?.ToXDocument();
+                payload = AmqpCore.MessageProtection.Unprotect(bodyStream, signature)?.ToXDocument();
                 Logger.LogAfterDecryptingPayload(originalMessage.MessageFunction, originalMessage.FromHerId, originalMessage.ToHerId, originalMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
                 stopwatch.Stop();
             }

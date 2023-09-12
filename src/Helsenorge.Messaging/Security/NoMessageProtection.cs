@@ -58,9 +58,8 @@ namespace Helsenorge.Messaging.Security
         /// </summary>
         /// <param name="data">A <see cref="Stream"/> containing the data which be decrypted and then the signature will be verified.</param>
         /// <param name="signingCertificate">Not relevant for this implemenation</param>
-        /// <param name="logger"></param>
         /// <returns>A <see cref="Stream"/> containing the data in decrypted form.</returns>
-        public Stream Unprotect(Stream data, X509Certificate2 signingCertificate, ILogger logger)
+        public Stream Unprotect(Stream data, X509Certificate2 signingCertificate)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
 

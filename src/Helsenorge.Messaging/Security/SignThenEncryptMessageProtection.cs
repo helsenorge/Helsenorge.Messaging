@@ -24,6 +24,7 @@ namespace Helsenorge.Messaging.Security
     /// </summary>
     public class SignThenEncryptMessageProtection : MessageProtection
     {
+        private readonly ILogger _logger;
         private readonly X509IncludeOption? _includeOption;
         private readonly MessagingEncryptionType _messagingEncryptionType;
 
@@ -32,6 +33,7 @@ namespace Helsenorge.Messaging.Security
         /// </summary>
         /// <param name="signingCertificate">Certificcate that will be used to sign data</param>
         /// <param name="encryptionCertificate">Certificate that will be used to encrypt data</param>
+        /// <param name="logger"></param>
         /// <param name="legacyEncryptionCertificate">A legacy certificate that can be used when swapping certificates.</param>
         /// <param name="includeOption">Controls how much of the signer certificate's certificate chain should be
         /// embedded in the signed message. If not specified, the default <see cref="X509IncludeOption.ExcludeRoot"/>
@@ -40,11 +42,13 @@ namespace Helsenorge.Messaging.Security
         public SignThenEncryptMessageProtection(
             X509Certificate2 signingCertificate,
             X509Certificate2 encryptionCertificate,
+            ILogger logger,
             X509Certificate2 legacyEncryptionCertificate = null,
             X509IncludeOption? includeOption = default,
             MessagingEncryptionType messagingEncryptionType = MessagingEncryptionType.AES256)
             : base (signingCertificate, encryptionCertificate, legacyEncryptionCertificate)
         {
+            _logger = logger;
             _includeOption = includeOption;
             _messagingEncryptionType = messagingEncryptionType;
         }
@@ -104,19 +108,18 @@ namespace Helsenorge.Messaging.Security
         /// </summary>
         /// <param name="data">A <see cref="Stream"/> containing the data which be decrypted and then the signature will be verified.</param>
         /// <param name="signingCertificate">The public key <see cref="X509Certificate2"/> which will be used to validate the signature of the message data.</param>
-        /// <param name="logger"></param>
         /// <returns>A <see cref="Stream"/> containing the data in decrypted form.</returns>
-        public override Stream Unprotect(Stream data, X509Certificate2 signingCertificate, ILogger logger)
+        public override Stream Unprotect(Stream data, X509Certificate2 signingCertificate)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
 
             byte[] dataAsBytes = new byte[data.Length];
             data.Read(dataAsBytes, 0, (int)data.Length);
 
-            return new MemoryStream(Unprotect(dataAsBytes, signingCertificate, logger));
+            return new MemoryStream(Unprotect(dataAsBytes, signingCertificate));
         }
 
-        private byte[] Unprotect(byte[] data, X509Certificate2 signingCertificate, ILogger logger)
+        private byte[] Unprotect(byte[] data, X509Certificate2 signingCertificate)
         {
             X509Certificate2Collection encryptionCertificates = new X509Certificate2Collection(EncryptionCertificate);
             if (LegacyEncryptionCertificate != null)
@@ -128,7 +131,7 @@ namespace Helsenorge.Messaging.Security
             try
             {
                 var encryptionOid = envelopedCms.ContentEncryptionAlgorithm.Oid;
-                logger.LogInformation($"Decrypting EnvelopedCms with ContentEncryptionAlgorithm: {encryptionOid.FriendlyName} : {encryptionOid.Value}");
+                _logger.LogInformation($"Decrypting EnvelopedCms with ContentEncryptionAlgorithm: {encryptionOid.FriendlyName} : {encryptionOid.Value}");
 
                 envelopedCms.Decrypt(envelopedCms.RecipientInfos[0], encryptionCertificates);
             }

@@ -25,7 +25,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
             return data;
         }
 
-        public override Stream Unprotect(Stream data, X509Certificate2 signingCertificate, ILogger logger)
+        public override Stream Unprotect(Stream data, X509Certificate2 signingCertificate)
         {
             return data;
         }

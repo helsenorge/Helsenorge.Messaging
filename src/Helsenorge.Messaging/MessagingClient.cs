@@ -40,7 +40,7 @@ namespace Helsenorge.Messaging
             MessagingSettings settings,
             ILoggerFactory loggerFactory,
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
-            IAddressRegistry addressRegistry) : base(settings, collaborationProtocolRegistry, addressRegistry)
+            IAddressRegistry addressRegistry) : base(settings, collaborationProtocolRegistry, addressRegistry, loggerFactory)
         {
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _logger = _loggerFactory.CreateLogger(nameof(MessagingClient));
@@ -61,7 +61,7 @@ namespace Helsenorge.Messaging
             ILoggerFactory loggerFactory,
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
             IAddressRegistry addressRegistry,
-            ICertificateStore certificateStore) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore)
+            ICertificateStore certificateStore) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore, loggerFactory)
         {
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _logger = _loggerFactory.CreateLogger(nameof(MessagingClient));
@@ -86,7 +86,7 @@ namespace Helsenorge.Messaging
             IAddressRegistry addressRegistry,
             ICertificateStore certificateStore,
             ICertificateValidator certificateValidator,
-            IMessageProtection messageProtection) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore, certificateValidator, messageProtection)
+            IMessageProtection messageProtection) : base(settings, collaborationProtocolRegistry, addressRegistry, certificateStore, certificateValidator, messageProtection, loggerFactory)
         {
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             _logger = _loggerFactory.CreateLogger(nameof(MessagingClient));

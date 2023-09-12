@@ -46,7 +46,7 @@ namespace SignEncryptAndSend
                 var certificateStore = new MockCertificateStore();
                 var signatureCertificate = certificateStore.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint);
                 var encryptionCertificate = certificateStore.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint);
-                var messageProtection = new SignThenEncryptMessageProtection(signatureCertificate, encryptionCertificate);
+                var messageProtection = new SignThenEncryptMessageProtection(signatureCertificate, encryptionCertificate, loggerFactory.CreateLogger<SignThenEncryptMessageProtection>());
 
                 var addressRegistry = new MockAddressRegistry();
 

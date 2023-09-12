@@ -44,7 +44,7 @@ namespace ReceiveDecryptAndValidate
                 var certificateStore = new MockCertificateStore();
                 var signatureCertificate = certificateStore.GetCertificate(TestCertificates.CounterpartySignatureThumbprint);
                 var encryptionCertificate = certificateStore.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint);
-                var messageProtection = new SignThenEncryptMessageProtection(signatureCertificate, encryptionCertificate);
+                var messageProtection = new SignThenEncryptMessageProtection(signatureCertificate, encryptionCertificate, loggerFactory.CreateLogger<SignThenEncryptMessageProtection>());
 
                 var addressRegistry = new MockAddressRegistry();
 
@@ -65,7 +65,7 @@ namespace ReceiveDecryptAndValidate
                         if (message.ContentType == ContentType.SignedAndEnveloped)
                         {
                             var publicSignatureCertificate = await addressRegistry.GetCertificateDetailsForValidatingSignatureAsync(123);
-                            streamReader = new StreamReader(messageProtection.Unprotect(stream, publicSignatureCertificate.Certificate, loggerFactory.CreateLogger<SignThenEncryptMessageProtection>()));
+                            streamReader = new StreamReader(messageProtection.Unprotect(stream, publicSignatureCertificate.Certificate));
                         }
                         else
                         {

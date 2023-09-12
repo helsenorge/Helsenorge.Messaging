@@ -61,8 +61,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="data">A <see cref="Stream"/> containing the data which be decrypted and then the signature will be verified.</param>
         /// <param name="signingCertificate">The public key <see cref="X509Certificate2"/> which will be used to validate the signature of the message data.</param>
-        /// <param name="logger"></param>
         /// <returns>A <see cref="Stream"/> containing the data in decrypted form.</returns>
-        Stream Unprotect(Stream data, X509Certificate2 signingCertificate, ILogger logger);
+        Stream Unprotect(Stream data, X509Certificate2 signingCertificate);
     }
 }
