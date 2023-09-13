@@ -44,7 +44,7 @@ namespace ReceiveDecryptAndValidate
                 var certificateStore = new MockCertificateStore();
                 var signatureCertificate = certificateStore.GetCertificate(TestCertificates.CounterpartySignatureThumbprint);
                 var encryptionCertificate = certificateStore.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint);
-                var messageProtection = new SignThenEncryptMessageProtection(signatureCertificate, encryptionCertificate);
+                var messageProtection = new SignThenEncryptMessageProtection(signatureCertificate, encryptionCertificate, loggerFactory.CreateLogger<SignThenEncryptMessageProtection>());
 
                 var addressRegistry = new MockAddressRegistry();
 

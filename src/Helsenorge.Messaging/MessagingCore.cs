@@ -15,6 +15,7 @@ using Helsenorge.Messaging.Security;
 using Helsenorge.Messaging.Amqp;
 using Helsenorge.Registries;
 using Helsenorge.Registries.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging
 {
@@ -23,23 +24,30 @@ namespace Helsenorge.Messaging
     /// </summary>
     public abstract class MessagingCore
     {
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly ILogger _logger;
+
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="settings">Set of options to use</param>
         /// <param name="collaborationProtocolRegistry">Reference to the collaboration protocol registry</param>
         /// <param name="addressRegistry">Reference to the address registry</param>
+        /// <param name="loggerFactory"></param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         protected MessagingCore(
             MessagingSettings settings,
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
-            IAddressRegistry addressRegistry)
+            IAddressRegistry addressRegistry,
+            ILoggerFactory loggerFactory)
             : this(settings)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
             CollaborationProtocolRegistry = collaborationProtocolRegistry ?? throw new ArgumentNullException(nameof(collaborationProtocolRegistry));
             AddressRegistry = addressRegistry ?? throw new ArgumentNullException(nameof(addressRegistry));
+            _loggerFactory = loggerFactory;
+            _logger = _loggerFactory.CreateLogger<MessagingCore>();
             AmqpCore = new AmqpCore(this);
 
             Settings.Validate();
@@ -59,13 +67,15 @@ namespace Helsenorge.Messaging
         /// Reference to a custom implementation of <see cref="ICertificateStore"/>, if not set the library will default to Windows Certificate Store.
         /// Setting this argument to null will throw an <see cref="ArgumentNullException"/>.
         /// </param>
+        /// <param name="loggerFactory"></param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         protected MessagingCore(
             MessagingSettings settings,
             ICollaborationProtocolRegistry collaborationProtocolRegistry,
             IAddressRegistry addressRegistry,
-            ICertificateStore certificateStore)
+            ICertificateStore certificateStore,
+            ILoggerFactory loggerFactory)
             : this(settings)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
@@ -76,6 +86,8 @@ namespace Helsenorge.Messaging
             Settings.Validate();
 
             CertificateStore = certificateStore ?? throw new ArgumentNullException(nameof(certificateStore));
+            _loggerFactory = loggerFactory;
+            _logger = _loggerFactory.CreateLogger<MessagingCore>();
             CertificateValidator = GetDefaultCertificateValidator();
             MessageProtection = GetDefaultMessageProtection();
         }
@@ -99,6 +111,7 @@ namespace Helsenorge.Messaging
         /// Reference to custom implementation of <see cref="IMessageProtection"/>, if not set the library will default to standard behavior which relies on
         /// certificates retrieved from <see cref="ICertificateStore"/>. Setting this parameter to null will throw an <see cref="ArgumentNullException"/>.
         /// </param>
+        /// <param name="loggerFactory"></param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         protected MessagingCore(
@@ -107,7 +120,8 @@ namespace Helsenorge.Messaging
             IAddressRegistry addressRegistry,
             ICertificateStore certificateStore,
             ICertificateValidator certificateValidator,
-            IMessageProtection messageProtection)
+            IMessageProtection messageProtection,
+            ILoggerFactory loggerFactory)
             : this(settings)
         {
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));
@@ -120,11 +134,13 @@ namespace Helsenorge.Messaging
             CertificateStore = certificateStore;
             CertificateValidator = certificateValidator;
             MessageProtection = messageProtection ?? throw new ArgumentNullException(nameof(messageProtection));
+            _loggerFactory = loggerFactory;
+            _logger = _loggerFactory.CreateLogger<MessagingCore>();
         }
 
         private MessagingCore(MessagingSettings settings)
         {
-            if(settings?.ApplicationProperties == null) return;
+            if (settings?.ApplicationProperties == null) return;
 
             // Populate MessagingSettings.ApplicationProperties with additional System Information.
             var systemInformationProperties = GetSystemInformation();
@@ -151,12 +167,12 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Returns the current instance of <see cref="ICertificateStore"/>.
         /// </summary>
-        internal ICertificateStore CertificateStore { get;  }
+        internal ICertificateStore CertificateStore { get; }
 
         /// <summary>
         /// Returns the current instance of <see cref="IMessageProtection"/>.
         /// </summary>
-        internal IMessageProtection MessageProtection { get; set;  }
+        internal IMessageProtection MessageProtection { get; set; }
 
         /// <summary>
         /// Returns the current instance of <see cref="ICertificateValidator"/>.
@@ -180,7 +196,7 @@ namespace Helsenorge.Messaging
             var legacyEncryptionCertificate = Settings.LegacyDecryptionCertificate == null ? null : CertificateStore.GetCertificate(Settings.LegacyDecryptionCertificate.Thumbprint);
 
 #pragma warning disable CS0618
-            return new SignThenEncryptMessageProtection(signingCertificate, encryptionCertificate, legacyEncryptionCertificate, messagingEncryptionType: Settings.MessagingEncryptionType);
+            return new SignThenEncryptMessageProtection(signingCertificate, encryptionCertificate, _logger, legacyEncryptionCertificate, messagingEncryptionType: Settings.MessagingEncryptionType);
 #pragma warning restore CS0618
         }
 
@@ -199,7 +215,7 @@ namespace Helsenorge.Messaging
                 systemInformation.Add("X-ExecutingAssemblyVersion", assemblyName.Version?.ToString());
 
                 var targetFramework = Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName;
-                if(!string.IsNullOrWhiteSpace(targetFramework))
+                if (!string.IsNullOrWhiteSpace(targetFramework))
                     systemInformation.Add("X-TargetFramework", targetFramework);
             }
             catch
