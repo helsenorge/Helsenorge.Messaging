@@ -15,6 +15,7 @@ using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Security;
 using Helsenorge.Messaging.Tests.Mocks;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Helsenorge.Messaging.Tests.Security
@@ -23,10 +24,13 @@ namespace Helsenorge.Messaging.Tests.Security
     public class SignThenEncryptMessageProtectionTests
     {
         private XDocument _content;
+        private ILogger _logger;
         [TestInitialize]
         public void Setup()
         {
             _content = new XDocument(new XElement("SomeDummyXml"));
+            var mockProvider = new MockLoggerProvider(null);
+            _logger = mockProvider.CreateLogger("Test logger");
         }
 
         [TestMethod]
@@ -35,10 +39,10 @@ namespace Helsenorge.Messaging.Tests.Security
         {
             MemoryStream contentStream = new MemoryStream(Encoding.UTF8.GetBytes(_content.ToString()));
 
-            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint));
+            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint), _logger);
             var stream = partyAProtection.Protect(contentStream, TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint));
 
-            var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint));
+            var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint), _logger);
             var result = partyBProtection.Unprotect(
                 stream, 
                 TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint));
@@ -52,12 +56,13 @@ namespace Helsenorge.Messaging.Tests.Security
         {
             MemoryStream contentStream = new MemoryStream(Encoding.UTF8.GetBytes(_content.ToString()));
 
-            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint));
+            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint), _logger);
             var stream = partyAProtection.Protect(contentStream, TestCertificates.GetCertificate(TestCertificates.HelsenorgeLegacyEncryptionThumbprint));
 
             var partyBProtection = new SignThenEncryptMessageProtection(
                 TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint),
                 TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint),
+                _logger,
                 TestCertificates.GetCertificate(TestCertificates.HelsenorgeLegacyEncryptionThumbprint));  // Legacy certificate
             var result = partyBProtection.Unprotect(stream, TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint));
 
@@ -73,10 +78,10 @@ namespace Helsenorge.Messaging.Tests.Security
             var wrongCertificate = new X509Certificate2(Convert.FromBase64String(wrongCertificateBase64));
             MemoryStream contentStream = new MemoryStream(Encoding.UTF8.GetBytes(_content.ToString()));
 
-            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint));
+            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint), _logger);
             var stream = partyAProtection.Protect(contentStream, TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint));
             
-            var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint));
+            var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint), _logger);
             var result = partyBProtection.Unprotect(stream, wrongCertificate);
         }
 
@@ -87,11 +92,11 @@ namespace Helsenorge.Messaging.Tests.Security
         {
             MemoryStream contentStream = new MemoryStream(Encoding.UTF8.GetBytes(_content.ToString()));
 
-            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint));
+            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint), _logger);
             // Random encryption certificate -> TestCertificates.CounterpartyPublicEncryption
             var stream = partyAProtection.Protect(contentStream, TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint));
 
-            var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint));
+            var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint), _logger);
             var result = partyBProtection.Unprotect(stream, TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint));
         }
 
@@ -99,7 +104,7 @@ namespace Helsenorge.Messaging.Tests.Security
         [ExpectedException(typeof(ArgumentNullException))]
         public void Protect_Data_ArgumentNullException()
         {
-            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint));
+            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint), _logger);
             partyAProtection.Protect(null, TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint));
         }
 
@@ -109,7 +114,7 @@ namespace Helsenorge.Messaging.Tests.Security
         {
             MemoryStream contentStream = new MemoryStream(Encoding.UTF8.GetBytes(_content.ToString()));
 
-            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint));
+            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint), _logger);
             partyAProtection.Protect(contentStream, null);
         }
 
@@ -117,7 +122,7 @@ namespace Helsenorge.Messaging.Tests.Security
         [ExpectedException(typeof(ArgumentNullException))]
         public void Protect_Signature_ArgumentNullException()
         {
-            new SignThenEncryptMessageProtection(null, TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint));
+            new SignThenEncryptMessageProtection(null, TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint), _logger);
         }
 
         [TestMethod]
@@ -125,7 +130,7 @@ namespace Helsenorge.Messaging.Tests.Security
         [TestCategory("X509Chain")]
         public void Unprotect_Data_ArgumentNullException()
         {
-            var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint));
+            var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint), _logger);
             partyBProtection.Unprotect(null, TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint));
         }
 
@@ -134,7 +139,7 @@ namespace Helsenorge.Messaging.Tests.Security
         [TestCategory("X509Chain")]
         public void Unprotect_Encryption_ArgumentNullException()
         {
-            new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), null);
+            new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), null, _logger);
         }
 
         [TestMethod]
@@ -143,10 +148,10 @@ namespace Helsenorge.Messaging.Tests.Security
         {
             MemoryStream contentStream = new MemoryStream(Encoding.UTF8.GetBytes(_content.ToString()));
 
-            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint));
+            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint), _logger);
             var stream = partyAProtection.Protect(contentStream, TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint));
 
-            var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint));
+            var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint), _logger);
             var result = partyBProtection.Unprotect(stream, null);
 
             Assert.AreEqual(_content.ToString(), result.ToXDocument().ToString());

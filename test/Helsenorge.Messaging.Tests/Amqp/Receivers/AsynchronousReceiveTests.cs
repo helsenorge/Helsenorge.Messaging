@@ -76,11 +76,11 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
         {
             Exception receiveException = null;
 
-            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint));
+            var partyAProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint), Logger);
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyAProtection);
             Client.AmqpCore.RegisterAlternateMessagingFactory(MockFactory);
 
-            var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint));
+            var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint), Logger);
             Server = new MockMessagingServer(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore, CertificateValidator, partyBProtection);
             Server.AmqpCore.RegisterAlternateMessagingFactory(MockFactory);
 
@@ -793,7 +793,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
         
         private MockMessage CreateAsynchronousMessageProtected()
         {
-            var messageProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint));
+            var messageProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.HelsenorgeEncryptionThumbprint), Logger);
             var messageId = Guid.NewGuid().ToString("D");
             var path = Path.Combine("Files", "Helsenorge_Message.xml");
             var file = File.Exists(path) ? new XDocument(XElement.Load(path)) : null;

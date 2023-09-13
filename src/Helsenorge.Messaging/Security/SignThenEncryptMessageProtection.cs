@@ -15,6 +15,7 @@ using System.Security.Cryptography.Pkcs;
 using System.Text;
 using Helsenorge.Messaging.Abstractions;
 using System.Security.Cryptography;
+using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.Security
 {
@@ -23,6 +24,7 @@ namespace Helsenorge.Messaging.Security
     /// </summary>
     public class SignThenEncryptMessageProtection : MessageProtection
     {
+        private readonly ILogger _logger;
         private readonly X509IncludeOption? _includeOption;
         private readonly MessagingEncryptionType _messagingEncryptionType;
 
@@ -31,6 +33,7 @@ namespace Helsenorge.Messaging.Security
         /// </summary>
         /// <param name="signingCertificate">Certificcate that will be used to sign data</param>
         /// <param name="encryptionCertificate">Certificate that will be used to encrypt data</param>
+        /// <param name="logger"></param>
         /// <param name="legacyEncryptionCertificate">A legacy certificate that can be used when swapping certificates.</param>
         /// <param name="includeOption">Controls how much of the signer certificate's certificate chain should be
         /// embedded in the signed message. If not specified, the default <see cref="X509IncludeOption.ExcludeRoot"/>
@@ -39,11 +42,13 @@ namespace Helsenorge.Messaging.Security
         public SignThenEncryptMessageProtection(
             X509Certificate2 signingCertificate,
             X509Certificate2 encryptionCertificate,
+            ILogger logger,
             X509Certificate2 legacyEncryptionCertificate = null,
             X509IncludeOption? includeOption = default,
             MessagingEncryptionType messagingEncryptionType = MessagingEncryptionType.AES256)
             : base (signingCertificate, encryptionCertificate, legacyEncryptionCertificate)
         {
+            _logger = logger;
             _includeOption = includeOption;
             _messagingEncryptionType = messagingEncryptionType;
         }
@@ -125,6 +130,9 @@ namespace Helsenorge.Messaging.Security
             envelopedCms.Decode(data);
             try
             {
+                var encryptionOid = envelopedCms?.ContentEncryptionAlgorithm?.Oid;
+                _logger.LogInformation($"Decrypting EnvelopedCms with ContentEncryptionAlgorithm: {encryptionOid?.FriendlyName ?? "null"} : {encryptionOid?.Value ?? "null"}");
+
                 envelopedCms.Decrypt(envelopedCms.RecipientInfos[0], encryptionCertificates);
             }
             catch (System.Security.Cryptography.CryptographicException ce)
