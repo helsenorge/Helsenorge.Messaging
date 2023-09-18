@@ -9,12 +9,12 @@
 using Helsenorge.Messaging.Amqp;
 using Helsenorge.Messaging.Amqp.Exceptions;
 using Microsoft.Extensions.Logging;
-using Moq;
 using System;
 using System.Collections.Generic;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using Amqp.Framing;
+using Helsenorge.Messaging.Tests.Mocks;
 using Xunit;
 using AmqpException = Amqp.AmqpException;
 
@@ -52,8 +52,15 @@ namespace Helsenorge.Messaging.Tests.Amqp.Exceptions
             new object[]{new AmqpException(new Error(AmqpClientConstants.MessageNotFoundError)), typeof(MessageNotFoundException) }
         };
 
-        private readonly Mock<ILogger> _loggerMock = new Mock<ILogger>();
+        private MockLoggerProvider _mockLoggerProvider = new MockLoggerProvider(null);
+        private readonly ILogger _logger;
         private readonly TestTimeManager _timeManager = new TestTimeManager();
+
+
+        public BusOperationTests()
+        {
+            _logger = _mockLoggerProvider.CreateLogger("TestLogger");
+        }
 
         [Theory]
         [MemberData(nameof(RecoverableExceptions))]
@@ -62,7 +69,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Exceptions
             var attempts = 0;
 
             var exception = await Assert.ThrowsAsync(resultingExceptionType, () =>
-                new AmqpOperationBuilder(_loggerMock.Object, e.GetType().Name)
+                new AmqpOperationBuilder(_logger, e.GetType().Name)
                 {
                     TimeManager = _timeManager,
                     MaxRetryCount = 5,
@@ -93,7 +100,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Exceptions
             var attempts = 0;
 
             var exception = await Assert.ThrowsAsync(resultingExceptionType, () =>
-                new AmqpOperationBuilder(_loggerMock.Object, e.GetType().Name)
+                new AmqpOperationBuilder(_logger, e.GetType().Name)
                 {
                     TimeManager = _timeManager
                 }.Build(() =>
