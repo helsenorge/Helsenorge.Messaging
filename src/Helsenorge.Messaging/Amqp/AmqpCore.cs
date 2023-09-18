@@ -14,6 +14,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
+using Helsenorge.Messaging.Amqp.Receivers;
 using Helsenorge.Registries;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -352,14 +353,19 @@ namespace Helsenorge.Messaging.Amqp
         /// Gets the queue name that we can use on messages from a more extensive name
         /// </summary>
         /// <param name="queueAddress">The full name</param>
+        /// <param name="herId">HerId</param>
         /// <returns>The short name</returns>
-        internal string ExtractQueueName(string queueAddress)
+        internal string ExtractQueueName(string queueAddress, int herId = -1)
         {
             // the information stored in the address service includes the full address for the service
             // sb.test.nhn.no/DigitalDialog/91468_async
             // we only want the last part
 
-            if (string.IsNullOrEmpty(queueAddress)) throw new ArgumentNullException(nameof(queueAddress), $"Queue address null or empty string. Verify that the Communication Party is set up with a queue address in the Address Registry. Parameter name: {nameof(queueAddress)}");
+            if (string.IsNullOrEmpty(queueAddress))
+            {
+                throw new QueueAddressNullOrEmptyStringException(
+                    $"Queue address null or empty string. Verify that the Communication Party is set up with a queue address in the Address Registry. HerId: {herId}");
+            }
 
             var i = queueAddress.LastIndexOf('/');
             return queueAddress.Substring(i + 1);
@@ -378,9 +384,9 @@ namespace Helsenorge.Messaging.Amqp
 
             return type switch
             {
-                QueueType.Asynchronous => ExtractQueueName(details.AsynchronousQueueName),
-                QueueType.Synchronous => ExtractQueueName(details.SynchronousQueueName),
-                QueueType.Error => ExtractQueueName(details.ErrorQueueName),
+                QueueType.Asynchronous => ExtractQueueName(details.AsynchronousQueueName, herId),
+                QueueType.Synchronous => ExtractQueueName(details.SynchronousQueueName, herId),
+                QueueType.Error => ExtractQueueName(details.ErrorQueueName, herId),
                 _ => throw new InvalidOperationException($"Queue type '{type}' is not supported"),
             };
         }
