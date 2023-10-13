@@ -364,7 +364,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 {
                     return await AmqpCore.CollaborationProtocolRegistry.FindAgreementByIdAsync(id, message.ToHerId).ConfigureAwait(false);
                 }
-                //Hack to allow for wrong cpa-ids
+                //Continue if not able to find CPA by Id
                 catch (RegistriesException ex)
                 {
                     Logger.LogInformation($"Tried to fetch Cpa from CpaID, continuing as if there wasn't a CpaId. Error message: {ex.Message}");
