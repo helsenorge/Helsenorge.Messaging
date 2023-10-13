@@ -365,9 +365,9 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                     return await AmqpCore.CollaborationProtocolRegistry.FindAgreementByIdAsync(id, message.ToHerId).ConfigureAwait(false);
                 }
                 //Hack to allow for wrong cpa-ids
-                catch (RegistriesException ex) when (ex.Message.Contains("CpaID does not exist")) 
+                catch (RegistriesException ex)
                 {
-                    Logger.LogInformation("Tried to fetch Cpa from CpaID, but it returned 'CpaID does not exist'. Continuing as if there wasn't a CpaId");
+                    Logger.LogInformation($"Tried to fetch Cpa from CpaID, continuing as if there wasn't a CpaId. Error message: {ex.Message}");
                 }
             }
             return
