@@ -360,7 +360,15 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             if (QueueType == QueueType.Error) return null;
             if (Guid.TryParse(message.CpaId, out Guid id) && (id != Guid.Empty))
             {
-                return await AmqpCore.CollaborationProtocolRegistry.FindAgreementByIdAsync(id, message.ToHerId).ConfigureAwait(false);
+                try
+                {
+                    return await AmqpCore.CollaborationProtocolRegistry.FindAgreementByIdAsync(id, message.ToHerId).ConfigureAwait(false);
+                }
+                //Continue if not able to find CPA by Id
+                catch (RegistriesException ex)
+                {
+                    Logger.LogInformation($"Tried to fetch Cpa from CpaID, continuing as if there wasn't a CpaId. Error message: {ex.Message}");
+                }
             }
             return
                 // try first to find an agreement
