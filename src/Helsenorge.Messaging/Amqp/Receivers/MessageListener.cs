@@ -367,7 +367,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 //Hack to allow for wrong cpa-ids
                 catch (RegistriesException ex) when (ex.Message.Contains("CpaID does not exist")) 
                 {
-                    Logger.LogInformation("Tried to fetch CPP from CPA-ID, but it returned 'CpaID does not exist'. Continuing as if there wasn't a CPA-ID");
+                    Logger.LogInformation("Tried to fetch Cpa from CpaID, but it returned 'CpaID does not exist'. Continuing as if there wasn't a CpaId");
                 }
             }
             return
