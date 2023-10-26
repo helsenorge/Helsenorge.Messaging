@@ -10,6 +10,7 @@ using Helsenorge.Registries.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.ServiceModel;
 using System.Threading.Tasks;
@@ -40,16 +41,19 @@ namespace Helsenorge.Registries.Utilities
 
             try
             {
+                var stopwatch = Stopwatch.StartNew();
                 factory = GetChannelFactory<TContract>();
                 channel = factory.CreateChannel();
 
                 logger.LogInformation("Start-ServiceCall: {OperationName} {Address}",
                     operationName, factory.Endpoint.Address.Uri.AbsoluteUri);
+                stopwatch.Start();
 
                 response = await action(channel).ConfigureAwait(false);
 
-                logger.LogInformation("End-ServiceCall: {OperationName} {Address}",
-                    operationName, factory.Endpoint.Address.Uri.AbsoluteUri);
+                stopwatch.Stop();
+                logger.LogInformation("End-ServiceCall: {OperationName} {Address} ExecutionTime: {ElapsedMilliseconds} ms",
+                    operationName, factory.Endpoint.Address.Uri.AbsoluteUri, stopwatch.ElapsedMilliseconds);
 
                 var communicatonObject = (channel as ICommunicationObject);
                 communicatonObject?.Close();
@@ -89,16 +93,19 @@ namespace Helsenorge.Registries.Utilities
 
             try
             {
+                var stopwatch = Stopwatch.StartNew();
                 factory = GetChannelFactory<TContract>();
                 channel = factory.CreateChannel();
 
                 logger.LogInformation("Start-ServiceCall: {OperationName} {Address}",
                     operationName, factory.Endpoint.Address.Uri.AbsoluteUri);
+                stopwatch.Start();
 
                 await action(channel).ConfigureAwait(false);
 
-                logger.LogInformation("End-ServiceCall: {OperationName} {Address}",
-                    operationName, factory.Endpoint.Address.Uri.AbsoluteUri);
+                stopwatch.Stop();
+                logger.LogInformation("End-ServiceCall: {OperationName} {Address} ExecutionTime: {ElapsedMilliseconds} ms",
+                    operationName, factory.Endpoint.Address.Uri.AbsoluteUri, stopwatch.ElapsedMilliseconds);
 
                 var communicatonObject = (channel as ICommunicationObject);
                 communicatonObject?.Close();
