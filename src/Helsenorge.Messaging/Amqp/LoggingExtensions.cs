@@ -10,15 +10,16 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
+using System.Diagnostics;
 
 namespace Helsenorge.Messaging.Amqp
 {
     internal static class LoggingExtensions
     {
         private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> StartReceive;
-        private static readonly Action<ILogger, QueueType, string, int, int, string, Exception> EndReceive;
+        private static readonly Action<ILogger, QueueType, string, int, int, string, long, Exception> EndReceive;
         private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> StartSend;
-        private static readonly Action<ILogger, QueueType, string, int, int, string, Exception> EndSend;
+        private static readonly Action<ILogger, QueueType, string, int, int, string, long, Exception> EndSend;
         private static readonly Action<ILogger, string, int, int, string, string, Exception> ResponseTime;
         private static readonly Action<ILogger, string, string, int, Exception> LogTimeout;
 
@@ -47,22 +48,22 @@ namespace Helsenorge.Messaging.Amqp
         {
             StartReceive(logger, queueType, message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId, additionalData, null);
         }
-        public static void LogEndReceive(this ILogger logger, QueueType queueType, IncomingMessage message)
+        public static void LogEndReceive(this ILogger logger, QueueType queueType, IncomingMessage message, long elapsedMilliseconds)
         {
-            EndReceive(logger, queueType, message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId, null);
+            EndReceive(logger, queueType, message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId, elapsedMilliseconds, null);
         }
 
         public static void LogStartSend(this ILogger logger, QueueType queueType, string function, int fromHerId, int toHerId, string messageId, string additionalData, XDocument xml)
         {
-            StartSend(logger, queueType, function, fromHerId, toHerId, messageId, additionalData,  null);
+            StartSend(logger, queueType, function, fromHerId, toHerId, messageId, additionalData, null);
             if (xml != null)
             {
                 logger.LogDebug(xml.ToString());
             }
         }
-        public static void LogEndSend(this ILogger logger, QueueType queueType, string function, int fromHerId, int toHerId, string messageId)
+        public static void LogEndSend(this ILogger logger, QueueType queueType, string function, int fromHerId, int toHerId, string messageId, long elapsedMilliseconds)
         {
-            EndSend(logger, queueType, function, fromHerId, toHerId, messageId, null);
+            EndSend(logger, queueType, function, fromHerId, toHerId, messageId, elapsedMilliseconds, null);
         }
 
         public static void LogResponseTime(this ILogger logger, string messageFunction, int fromHerId, int toHerId, string messageId, string responseTimeMs)
@@ -146,20 +147,20 @@ namespace Helsenorge.Messaging.Amqp
                 EventIds.ServiceBusReceive,
                 "Start-ServiceBusReceive{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} Additional Data: {AdditionalData}");
 
-            EndReceive = LoggerMessage.Define<QueueType, string, int, int, string>(
+            EndReceive = LoggerMessage.Define<QueueType, string, int, int, string, long>(
                 LogLevel.Information,
                 EventIds.ServiceBusReceive,
-                "End-ServiceBusReceive{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId}");
+                "End-ServiceBusReceive{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} ExecutionTime: {elapsedMilliseconds} ms");
 
             StartSend = LoggerMessage.Define<QueueType, string, int, int, string, string>(
                 LogLevel.Information,
                 EventIds.ServiceBusSend,
                 "Start-ServiceBusSend{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} Additional Data: {AdditionalData}");
 
-            EndSend = LoggerMessage.Define<QueueType, string, int, int, string>(
+            EndSend = LoggerMessage.Define<QueueType, string, int, int, string, long>(
                 LogLevel.Information,
                 EventIds.ServiceBusSend,
-                "End-ServiceBusSend{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId}");
+                "End-ServiceBusSend{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} ExecutionTime: {elapsedMilliseconds} ms");
 
             ResponseTime = LoggerMessage.Define<string, int, int, string, string>(
                LogLevel.Information,

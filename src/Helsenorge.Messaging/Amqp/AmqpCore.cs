@@ -211,6 +211,7 @@ namespace Helsenorge.Messaging.Amqp
 
             logger.LogBeforeFactoryPoolCreateMessage(outgoingMessage.MessageFunction, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
             // Create an empty message
+            stopwatch.Restart();
             var messagingMessage = await FactoryPool.CreateMessageAsync(logger, stream).ConfigureAwait(false);
             logger.LogAfterFactoryPoolCreateMessage(outgoingMessage.MessageFunction, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
 
@@ -238,7 +239,8 @@ namespace Helsenorge.Messaging.Amqp
 
             await SendAsync(logger, messagingMessage).ConfigureAwait(false);
 
-            logger.LogEndSend(queueType, messagingMessage.MessageFunction, messagingMessage.FromHerId, messagingMessage.ToHerId, messagingMessage.MessageId);
+            stopwatch.Stop();
+            logger.LogEndSend(queueType, messagingMessage.MessageFunction, messagingMessage.FromHerId, messagingMessage.ToHerId, messagingMessage.MessageId, stopwatch.ElapsedMilliseconds);
         }
 
         /// <summary>
@@ -287,6 +289,7 @@ namespace Helsenorge.Messaging.Amqp
         /// <returns></returns>
         private async Task SendErrorAsync(ILogger logger, IAmqpMessage originalMessage, string errorCode, string errorDescription, IEnumerable<string> additionalData) //TODO: Sjekk at SendError fungerer med Http-meldinger
         {
+            var stopwatch = Stopwatch.StartNew();
             if (originalMessage == null) throw new ArgumentNullException(nameof(originalMessage));
             if (string.IsNullOrEmpty(errorCode)) throw new ArgumentNullException(nameof(errorCode));
             if (string.IsNullOrEmpty(errorDescription)) throw new ArgumentNullException(nameof(errorDescription));
@@ -346,7 +349,8 @@ namespace Helsenorge.Messaging.Amqp
 
             logger.LogStartSend(QueueType.Error, clonedMessage.MessageFunction, clonedMessage.FromHerId, clonedMessage.ToHerId, clonedMessage.MessageId, additionDataValue, null);
             await SendAsync(logger, clonedMessage).ConfigureAwait(false);
-            logger.LogEndSend(QueueType.Error, clonedMessage.MessageFunction, clonedMessage.FromHerId, clonedMessage.ToHerId, clonedMessage.MessageId);
+            stopwatch.Stop();
+            logger.LogEndSend(QueueType.Error, clonedMessage.MessageFunction, clonedMessage.FromHerId, clonedMessage.ToHerId, clonedMessage.MessageId, stopwatch.ElapsedMilliseconds);
         }
 
         /// <summary>

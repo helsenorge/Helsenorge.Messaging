@@ -198,6 +198,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
 
             try
             {
+                var stopwatch = Stopwatch.StartNew();
                 if(message.LockedUntil.ToUniversalTime() != DateTime.MinValue && message.LockedUntil.ToUniversalTime() <= DateTime.UtcNow)
                 {
                     Logger.LogInformation($"MessageListener::ReadAndProcessMessage - Ignoring message, lock expired at: {message.LockedUntil.ToUniversalTime()}");
@@ -248,7 +249,8 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 AmqpCore.RemoveProcessedMessageFromQueue(message);
                 Logger.LogRemoveMessageFromQueueNormal(message, queueName);
                 await NotifyMessageProcessingCompletedAsync(incomingMessage).ConfigureAwait(false);
-                Logger.LogEndReceive(QueueType, incomingMessage);
+                Logger.LogEndReceive(QueueType, incomingMessage, stopwatch.ElapsedMilliseconds);
+                stopwatch.Stop();
                 return incomingMessage;
             }
             catch (CertificateException ex)
