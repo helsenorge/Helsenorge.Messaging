@@ -241,7 +241,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 {
                     if (AmqpCore.LogPayload)
                     {
-                        Logger.LogDebug(payload.ToString());
+                        Logger.LogDebug("Raw payload: " + payload.ToString().Replace("\"\"","\""));
                     }
                     incomingMessage.Payload = payload;
                 }
