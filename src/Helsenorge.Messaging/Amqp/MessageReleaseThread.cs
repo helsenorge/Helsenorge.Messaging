@@ -38,8 +38,13 @@ namespace Helsenorge.Messaging.Amqp
             try
             {
                 logger.LogInformation($"Start-MessageReleaseThread-AwaitRelease: MessageId: {messageId} MessageFunction: {messageFunction} DeliveryCount: {message.DeliveryCount}");
-
+                var maximumThreadSleep = 300000;
                 var lockedUntil = message.LockedUntil;
+                if (lockedUntil == DateTime.MinValue)
+                {
+                    lockedUntil = DateTime.UtcNow.AddMinutes(1);
+                }
+
                 var millisecondsBuffer = 300;
                 var millisecondsDelay = (int)lockedUntil.Subtract(DateTime.UtcNow).TotalMilliseconds - millisecondsBuffer;
 
@@ -47,6 +52,11 @@ namespace Helsenorge.Messaging.Amqp
 
                 if (millisecondsDelay > 0)
                 {
+                    if (millisecondsDelay > maximumThreadSleep)
+                    {
+                        millisecondsDelay = maximumThreadSleep;
+                    }
+
                     Thread.Sleep(millisecondsDelay);
                 }
 
