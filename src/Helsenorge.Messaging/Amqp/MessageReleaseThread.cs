@@ -39,11 +39,11 @@ namespace Helsenorge.Messaging.Amqp
             {
                 logger.LogInformation($"Start-MessageReleaseThread-AwaitRelease: MessageId: {messageId} MessageFunction: {messageFunction} DeliveryCount: {message.DeliveryCount}");
 
-                var millisecondsDelay = TimeSpan.FromMinutes(1).TotalMilliseconds;
+                var millisecondsDelay = TimeSpan.FromMinutes(1);
 
-                logger.LogDebug($"MessageReleaseThread-AwaitRelease: MessageId: {messageId}. Awaiting {millisecondsDelay} before releasing message.");
+                logger.LogDebug($"MessageReleaseThread-AwaitRelease: MessageId: {messageId}. Awaiting {millisecondsDelay.TotalMilliseconds} ms before releasing message.");
 
-                Thread.Sleep((int)millisecondsDelay);
+                Thread.Sleep(millisecondsDelay);
 
                 message.Modify(deliveryFailed: true);
 
