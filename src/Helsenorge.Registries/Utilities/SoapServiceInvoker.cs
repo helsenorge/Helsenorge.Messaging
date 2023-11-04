@@ -136,17 +136,20 @@ namespace Helsenorge.Registries.Utilities
         [ExcludeFromCodeCoverage] // requires wire communication
         internal ChannelFactory<TContract> GetChannelFactory<TContract>()
         {
-            if (!FactoryCache.TryGetValue(typeof(TContract), out var factoryObject))
+            // First, try to retrieve ChannelFactory from cache without locking.
+            if (FactoryCache.TryGetValue(typeof(TContract), out var factoryObject))
+                return (ChannelFactory<TContract>)factoryObject;
+
+            // If a ChannelFactory was not found, then lock and try again.
+            lock (_lockerObject)
             {
-                lock (_lockerObject)
-                {
-                    if (!FactoryCache.TryGetValue(typeof(TContract), out factoryObject))
-                    {
-                        var factory = new ConfigurationChannelFactory<TContract>(_wcfConfiguration);
-                        FactoryCache.TryAdd(typeof(TContract), factory);
-                        factoryObject = factory;
-                    }
-                }
+                // Try to retrieve ChannelFactory from cache again, in case another thread already added it.
+                if (FactoryCache.TryGetValue(typeof(TContract), out factoryObject))
+                    return (ChannelFactory<TContract>)factoryObject;
+
+                var factory = new ConfigurationChannelFactory<TContract>(_wcfConfiguration);
+                FactoryCache.TryAdd(typeof(TContract), factory);
+                factoryObject = factory;
             }
             return (ChannelFactory<TContract>)factoryObject;
         }
