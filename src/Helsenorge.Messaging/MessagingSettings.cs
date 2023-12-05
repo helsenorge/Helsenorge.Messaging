@@ -59,6 +59,11 @@ namespace Helsenorge.Messaging
         public IDictionary<string, object> ApplicationProperties { get; } = new Dictionary<string, object>();
 
         /// <summary>
+        /// Indicates if we should NOT add metadata from payload into application properties. default: true
+        /// </summary>
+        public bool SkipAddingPayloadMetadataIntoApplicationProperties  { get; set; }
+
+        /// <summary>
         /// Skip CPA lookup for message functions in this list. Instead use an internal dummy CPA.
         /// </summary>
         public List<string> MessageFunctionsExcludedFromCpaResolve { get; set; } = new List<string>();

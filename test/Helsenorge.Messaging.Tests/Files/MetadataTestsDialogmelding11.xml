@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- Eksempel på helsefaglig dialog ettersending av informasjon vedrørende henvisning -->
+<MsgHead xmlns="http://www.kith.no/xmlstds/msghead/2006-05-24" xmlns:xsd="http://www.w3.org/2001/XMLSchema.xsd" xmlns:fk1="http://www.kith.no/xmlstds/felleskomponent1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kith.no/xmlstds/msghead/2006-05-24 MsgHead-v1_2.xsd">
+	<MsgInfo>
+		<Type V="DIALOG_HELSEFAGLIG" DN="Helsefaglig dialog"/>
+		<MIGversion>v1.2 2006-05-24</MIGversion>
+		<GenDate>2017-06-12T09:35:22</GenDate>
+		<MsgId>de1a95c0-4d0c-11e7-9598-0800200c9a66</MsgId>
+		<ConversationRef>
+			<RefToParent>d14ea2f3-d796-4d7b-8271-a4480d2b4035</RefToParent>
+			<RefToConversation>a14ea2f3-d796-4d7b-8271-a4480d2b4037</RefToConversation>
+		</ConversationRef>
+		<Sender>
+			<Organisation>
+				<OrganisationName>Kattskinnet legesenter</OrganisationName>
+				<Ident>
+					<Id>9999</Id>
+					<TypeId V="HPR" DN="Hpr nummer"/>
+				</Ident>				
+				<Ident>
+					<Id>56704</Id>
+					<TypeId V="HER" DN="HER-id" S="2.16.578.1.12.4.1.1.9051"/>
+				</Ident>	
+				<HealthcareProfessional>
+					<RoleToPatient DN="Fastlege" V="6" S="2.16.578.1.12.4.1.1.9034"/>
+					<FamilyName>Lin</FamilyName>
+					<GivenName>Rita</GivenName>
+					<Ident>
+						<Id>258521</Id>
+						<TypeId DN="HER-id" V="HER" S="2.16.578.1.12.4.1.1.9051"/>
+					</Ident>
+				</HealthcareProfessional>
+			</Organisation>
+		</Sender>
+		<Receiver>
+			<Organisation>
+				<OrganisationName>ST OLAVS HOSPITAL HF</OrganisationName>
+				<Ident>
+					<Id>59</Id>
+					<TypeId V="HER" DN="HER-id" S="2.16.578.1.12.4.1.1.9051"/>
+				</Ident>
+				<Organisation>
+					<OrganisationName>Ortopedisk kirurgi</OrganisationName>
+					<Ident>
+						<Id>90998</Id>
+						<TypeId V="HER" DN="HER-id" S="2.16.578.1.12.4.1.1.9051"/>
+					</Ident>
+				</Organisation>
+			</Organisation>
+		</Receiver>
+		<Patient>
+			<FamilyName>Danser</FamilyName>
+			<GivenName>Line</GivenName>
+			<Ident>
+				<Id>13116900216</Id>
+				<TypeId V="FNR" DN="Fødselsnummer" S="2.16.578.1.12.4.1.1.8116"/>
+			</Ident>
+		</Patient>
+	</MsgInfo>
+	<Document>
+		<RefDoc>
+			<IssueDate V="2017-06-12T09:23:47"/>
+			<MsgType V="XML" DN="XML-instans"/>
+			<Content>
+				<Dialogmelding xmlns="http://www.kith.no/xmlstds/dialog/2013-01-23" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kith.no/xmlstds/dialog/2013-01-23 dialogmelding-v1.1.xsd">
+					<Notat>
+						<TemaKodet V="6" DN="Henvendelse om pasient" S="2.16.578.1.12.4.1.1.7322"/>
+						<Tema>EKG tatt i dag</Tema>
+						<TekstNotatInnhold>Pasienten er henvist til
+							kardiologisk poliklinikk for utredning med spørsmål om cardial årsak og mulig angina pectoris.
+							Ettersender EKG tatt i dag uten funn. Se vedlegg.						</TekstNotatInnhold>
+						<RollerRelatertNotat>
+							<RoleToPatient DN="Fastlege" V="6" S="2.16.578.1.12.4.1.1.9034"/>
+							<HealthcareProfessional>
+								<FamilyName>Lin</FamilyName>
+								<GivenName>Rita</GivenName>
+								<Ident>
+									<fk1:Id>258521</fk1:Id>
+									<fk1:TypeId V="HPR" DN="HPR-nummer" S="2.16.578.1.12.4.1.1.8116"/>
+								</Ident>
+								<TeleCom>
+									<fk1:TeleAddress V="tel:12345678"/>
+								</TeleCom>
+							</HealthcareProfessional>
+						</RollerRelatertNotat>
+					</Notat>
+				</Dialogmelding>
+			</Content>
+		</RefDoc>
+	</Document>
+	<Document>
+		<RefDoc>
+			<IssueDate V="2017-06-12T08:45:11"/>
+			<MsgType V="A" DN="Vedlegg"/>
+			<MimeType>application/pdf</MimeType>
+			<Description>EKG-2017-06-12</Description>
+			<Content>
+				<Base64Container xsi:schemaLocation="http://www.kith.no/xmlstds/base64container kith-base64.xsd" xmlns="http://www.kith.no/xmlstds/base64container" xmlns:xsi="http://www.w3.org/2001/XMLSchemainstance">
+					<!-- Inkludert vedlegg -->
+					TG90c2FuZExvdHNPZkF0dGFjaG1lbnRUZXh0w4bDmMOF
+				</Base64Container>
+			</Content>
+		</RefDoc>
+	</Document>
+	<Document>
+		<RefDoc>
+			<IssueDate V="2017-06-12T10:45:11"/>
+			<MsgType V="A" DN="Vedlegg"/>
+			<MimeType>application/pdf</MimeType>
+			<Description>EKG-2017-06-12</Description>
+			<FileReference>https://someurl.com/myfile.pdf</FileReference>
+		</RefDoc>
+	</Document>
+	<Document>
+		<RefDoc>
+			<IssueDate V="2017-06-12T08:45:11"/>
+			<MsgType V="A" DN="Vedlegg"/>
+			<MimeType>application/pdf</MimeType>
+			<Description>EKG-2017-06-12</Description>
+			<Content>
+				<Base64Container xsi:schemaLocation="http://www.kith.no/xmlstds/base64container kith-base64.xsd" xmlns="http://www.kith.no/xmlstds/base64container" xmlns:xsi="http://www.w3.org/2001/XMLSchemainstance">
+					<!-- Inkludert vedlegg -->
+					TG90c2FuZExvdHNPZkF0dGFjaG1lbnRUZXh0w4bDmMOFDQpMb3RzYW5kTG90c09m
+					QXR0YWNobWVudFRleHTDhsOYw4UNCkxvdHNhbmRMb3RzT2ZBdHRhY2htZW50VGV4
+					dMOGw5jDhQ==
+				</Base64Container>
+			</Content>
+		</RefDoc>
+	</Document>
+</MsgHead>

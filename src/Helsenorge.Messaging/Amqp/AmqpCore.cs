@@ -13,6 +13,7 @@ using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Amqp.Receivers;
 using Helsenorge.Registries;
@@ -232,6 +233,8 @@ namespace Helsenorge.Messaging.Amqp
             messagingMessage.ToHerId = outgoingMessage.ToHerId;
             messagingMessage.ApplicationTimestamp = DateTime.UtcNow;
 
+            ExtractAndAddMetaDataPropertiesIfEnabled(messagingMessage, outgoingMessage.Payload, logger);
+
             if(profile.CpaId != Guid.Empty)
             {
                 messagingMessage.CpaId = profile.CpaId.ToString("D");
@@ -241,6 +244,28 @@ namespace Helsenorge.Messaging.Amqp
 
             stopwatch.Stop();
             logger.LogEndSend(queueType, messagingMessage.MessageFunction, messagingMessage.FromHerId, messagingMessage.ToHerId, messagingMessage.MessageId, stopwatch.ElapsedMilliseconds);
+        }
+
+        private void ExtractAndAddMetaDataPropertiesIfEnabled(IAmqpMessage amqpMessage, XDocument payload, ILogger logger)
+        {
+            if (Core.Settings.SkipAddingPayloadMetadataIntoApplicationProperties) return;
+
+            try
+            {
+                var sw = Stopwatch.StartNew();
+                logger.LogInformation($"Before-AddingPayloadMetadata: {amqpMessage.MessageFunction} FromHerId: {amqpMessage.FromHerId} ToHerId: {amqpMessage.ToHerId}  MessageId: {amqpMessage.MessageId}");
+                var metaDataProperties = MetadataHelper.ExtractMessageProperties(payload) ?? new Dictionary<string, string>();
+                foreach (var metaDataProperty in metaDataProperties)
+                {
+                    amqpMessage.SetApplicationPropertyValue(metaDataProperty.Key, metaDataProperty.Value);
+                }
+                sw.Stop();
+                logger.LogInformation($"After-AddingPayloadMetadata: {amqpMessage.MessageFunction} FromHerId: {amqpMessage.FromHerId} ToHerId: {amqpMessage.ToHerId}  MessageId: {amqpMessage.MessageId} Elapsed:{sw.ElapsedMilliseconds}");
+            }
+            catch (Exception e)
+            {
+                logger.LogWarning(e, $"Exception when AddingPayloadMetadata: {amqpMessage.MessageFunction} FromHerId: {amqpMessage.FromHerId} ToHerId: {amqpMessage.ToHerId}  MessageId: {amqpMessage.MessageId}");
+            }
         }
 
         /// <summary>
