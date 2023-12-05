@@ -232,6 +232,12 @@ namespace Helsenorge.Messaging.Amqp
             messagingMessage.ToHerId = outgoingMessage.ToHerId;
             messagingMessage.ApplicationTimestamp = DateTime.UtcNow;
 
+            var metaDataProperties = MetadataHelper.ExtractMessageProperties(outgoingMessage.Payload);
+            foreach (var metaDataProperty in metaDataProperties)
+            {
+                messagingMessage.SetApplicationPropertyValue(metaDataProperty.Key, metaDataProperty.Value);
+            }
+
             if(profile.CpaId != Guid.Empty)
             {
                 messagingMessage.CpaId = profile.CpaId.ToString("D");

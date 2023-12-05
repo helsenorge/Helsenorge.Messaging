@@ -1,0 +1,42 @@
+<AppRec xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.kith.no/xmlstds/apprec/2004-11-21">
+    <MsgType V="APPREC" />
+    <MIGversion>1.0 2004-11-21</MIGversion>
+    <GenDate>2020-09-16T12:52:17.0009763Z</GenDate>
+    <Id>A76D8934-D4BA-4A22-8F5D-5DF5E3FC5756</Id>
+    <Sender>
+        <Role V="REQ" />
+        <HCP>
+            <Inst>
+                <Name>ST OLAVS HOSPITAL HF</Name>
+                <Id>59</Id>
+                <TypeId V="HER" DN="HER-id" />
+                <Dept>
+                    <Name>Ortopedisk kirurgi</Name>
+                    <Id>90998</Id>
+                    <TypeId V="HER" DN="HER-id" />
+                </Dept>
+            </Inst>
+        </HCP>
+    </Sender>
+    <Receiver>
+        <Role V="RECEIVER" />
+        <HCP>
+            <Inst>
+                <Name>Kattskinnet legesenter</Name>
+                <Id>56704</Id>
+                <TypeId V="HER" DN="HER-id" />
+                <Dept>
+                    <Name>Rita Lin</Name>
+                    <Id>258521</Id>
+                    <TypeId V="HER" DN="HER-id" />
+                </Dept>
+            </Inst>
+        </HCP>
+    </Receiver>
+    <Status V="1" DN="OK" />
+    <OriginalMsgId>
+        <MsgType V="DIALOG_HELSEFAGLIG" DN="Helsefaglig dialog" />
+        <IssueDate>2017-06-12T09:35:22</IssueDate>
+        <Id>de1a95c0-4d0c-11e7-9598-0800200c9a66</Id>
+    </OriginalMsgId>
+</AppRec>
