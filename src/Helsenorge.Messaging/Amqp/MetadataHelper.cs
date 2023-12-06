@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -9,6 +8,9 @@ using System.Xml.XPath;
 
 namespace Helsenorge.Messaging.Amqp;
 
+/// <summary>
+/// Helper class to extract insensitive data from xml business messages
+/// </summary>
 public static class MetadataHelper
 {
     private static XmlNamespaceManager _manager;
@@ -32,6 +34,15 @@ public static class MetadataHelper
         _manager.AddNamespace(B, Base64Container);
     }
 
+    /// <summary>
+    /// Extracting properties from XML
+    /// Implemented support for:
+    ///  - MsgHead 1.2 - http://www.kith.no/xmlstds/msghead/2006-05-24
+    ///  - Apprec 1.0 - http://www.kith.no/xmlstds/apprec/2004-11-21
+    ///  - Apprec 1.1 - http://www.kith.no/xmlstds/apprec/2012-02-15
+    /// </summary>
+    /// <param name="payload"></param>
+    /// <returns></returns>
     public static IDictionary<string, string> ExtractMessageProperties(XDocument payload)
     {
         var el = payload?.Root;
@@ -48,6 +59,10 @@ public static class MetadataHelper
                 properties = ExtractMessagePropertiesFromApprec(el, A10);
             else if (defaultNamespace == Apprec11)
                 properties = ExtractMessagePropertiesFromApprec(el, A11);
+            else
+            {
+                properties = ExtractMessagePropertiesFromUnspecified(el);
+            }
         }
         catch
         {
@@ -55,6 +70,13 @@ public static class MetadataHelper
         }
 
         return properties.ToDictionary(x => x.Key, v => v.Value);
+    }
+
+    private static IEnumerable<KeyValuePair<string,string>> ExtractMessagePropertiesFromUnspecified(XElement el)
+    {
+        var mainNs = el.GetDefaultNamespace()?.NamespaceName;
+        if (!string.IsNullOrWhiteSpace(mainNs))
+            yield return new KeyValuePair<string, string>(MetadataKeys.MessageInfoSchemaNamespace, mainNs);
     }
 
     private static IEnumerable<KeyValuePair<string, string>> ExtractMessagePropertiesFromApprec(XElement el, string prefix)
@@ -207,24 +229,4 @@ public static class MetadataHelper
     {
         return GetElement(expression, el)?.Attribute(attribute);
     }
-}
-
-public static class MetadataKeys
-{
-    public const string MessageInfoMsgType = "X-MessageInfo-Type";
-    public const string MessageInfoMsgId = "X-MessageInfo-MsgId";
-    public const string MessageInfoRefToParent = "X-MessageInfo-RefToParent";
-    public const string MessageInfoRefConversation = "X-MessageInfo-RefToConversatin";
-    public const string MessageInfoSchemaNamespace = "X-MessageInfo-SchemaNamespace";
-    public const string MessageInfoOriginalMsgId = "X-MessageInfo-OriginalMsgId";
-    public const string MessageInfoOriginalMsgType = "X-MessageInfo-OriginalMsgType";
-
-    public const string SenderLvl1Id = "X-Sender-Lvl1Id";
-    public const string SenderLvl2Id = "X-Sender-Lvl2Id";
-    public const string ReceiverLvl1Id = "X-Receiver-Lvl1Id";
-    public const string ReceiverLvl2Id = "X-Receiver-Lvl2Id";
-
-    public const string AttachmentInfoCount = "X-AttachmentInfo-Count";
-    public const string AttachmentInfoTotalSizeInBytes = "X-AttachmentInfo-TotalSizeInBytes";
-    public const string AttachmentInfoHasExternalReference = "X-AttachmentInfo-HasExternalReference";
 }
