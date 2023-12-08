@@ -5,7 +5,6 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
-
 namespace Helsenorge.Messaging.Amqp;
 
 /// <summary>
@@ -48,38 +47,27 @@ public static class MetadataHelper
         var el = payload?.Root;
         if (el == null) return new Dictionary<string, string>();
 
-        var properties = Enumerable.Empty<KeyValuePair<string, string>>();
-        try
+        var defaultNamespace = el.GetDefaultNamespace()?.NamespaceName;
+        var properties = defaultNamespace switch
         {
+            MsgHead => ExtractMessagePropertiesFromMsgHead(el),
+            Apprec10 => ExtractMessagePropertiesFromApprec(el, A10),
+            Apprec11 => ExtractMessagePropertiesFromApprec(el, A11),
+            _ => ExtractMessagePropertiesFromUnspecified(el)
+        };
 
-            var defaultNamespace = el.GetDefaultNamespace();
-            if (defaultNamespace == MsgHead)
-                properties = ExtractMessagePropertiesFromMsgHead(el);
-            else if (defaultNamespace == Apprec10)
-                properties = ExtractMessagePropertiesFromApprec(el, A10);
-            else if (defaultNamespace == Apprec11)
-                properties = ExtractMessagePropertiesFromApprec(el, A11);
-            else
-            {
-                properties = ExtractMessagePropertiesFromUnspecified(el);
-            }
-        }
-        catch
-        {
-            // ignored
-        }
-
-        return properties.ToDictionary(x => x.Key, v => v.Value);
+        return properties.ToDictionary(k=>k.Key, v=>v.Value);
     }
 
-    private static IEnumerable<KeyValuePair<string,string>> ExtractMessagePropertiesFromUnspecified(XElement el)
+    private static IEnumerable<KeyValuePair<string, string>> ExtractMessagePropertiesFromUnspecified(XElement el)
     {
         var mainNs = el.GetDefaultNamespace()?.NamespaceName;
         if (!string.IsNullOrWhiteSpace(mainNs))
             yield return new KeyValuePair<string, string>(MetadataKeys.MessageInfoSchemaNamespace, mainNs);
     }
 
-    private static IEnumerable<KeyValuePair<string, string>> ExtractMessagePropertiesFromApprec(XElement el, string prefix)
+    private static IEnumerable<KeyValuePair<string, string>> ExtractMessagePropertiesFromApprec(XElement el,
+        string prefix)
     {
         var apprecEl = GetElement($"/{prefix}:AppRec", el);
         var mainNs = apprecEl.GetDefaultNamespace()?.NamespaceName;
@@ -135,7 +123,8 @@ public static class MetadataHelper
 
         var msgInfoRefToConversation = GetElement($"{MH}:RefToConversation", conversationRefEl)?.Value;
         if (!string.IsNullOrWhiteSpace(msgInfoRefToConversation))
-            yield return new KeyValuePair<string, string>(MetadataKeys.MessageInfoRefConversation, msgInfoRefToConversation);
+            yield return new KeyValuePair<string, string>(MetadataKeys.MessageInfoRefConversation,
+                msgInfoRefToConversation);
 
         var senderEl = GetElement($"{MH}:Sender", msgInfoEl);
         var senderLvl1Id = GetMsgHeadLvl1Id(senderEl);
@@ -165,7 +154,8 @@ public static class MetadataHelper
                 var innerDocument = GetElement($"{MH}:RefDoc/{MH}:Content", currentDocument)?.FirstNode as XElement;
                 var innerNamespace = innerDocument?.GetDefaultNamespace()?.NamespaceName;
                 if (!string.IsNullOrWhiteSpace(innerNamespace))
-                    yield return new KeyValuePair<string, string>(MetadataKeys.MessageInfoSchemaNamespace, innerNamespace);
+                    yield return new KeyValuePair<string, string>(MetadataKeys.MessageInfoSchemaNamespace,
+                        innerNamespace);
             }
             else
             {
@@ -175,26 +165,33 @@ public static class MetadataHelper
                 {
                     var contentString = basee64ContentEl.Value;
                     var bytes = Encoding.UTF8.GetBytes(contentString);
-                    if (bytes.Length> 0) attachmentsTotalCount += bytes.Length;
+                    if (bytes.Length > 0) attachmentsTotalCount += bytes.Length;
                 }
+
                 var fileReferenceContent = GetElement($"{MH}:RefDoc/{MH}:FileReference", currentDocument);
                 if (fileReferenceContent != null) hasExternalReference = true;
             }
         }
+
         yield return new KeyValuePair<string, string>(MetadataKeys.AttachmentInfoCount, attachmentCounter.ToString());
-        yield return new KeyValuePair<string, string>(MetadataKeys.AttachmentInfoTotalSizeInBytes, attachmentsTotalCount.ToString());
-        yield return new KeyValuePair<string, string>(MetadataKeys.AttachmentInfoHasExternalReference, hasExternalReference.ToString());
+        yield return new KeyValuePair<string, string>(MetadataKeys.AttachmentInfoTotalSizeInBytes,
+            attachmentsTotalCount.ToString());
+        yield return new KeyValuePair<string, string>(MetadataKeys.AttachmentInfoHasExternalReference,
+            hasExternalReference.ToString());
     }
+
     private static string GetApprecLvl1Id(XElement senderReceiverElement, string prefix)
     {
         var idents = GetElements($"{prefix}:HCP/{prefix}:Inst/{prefix}:TypeId", senderReceiverElement);
         var identOfInterest = idents.FirstOrDefault(se => se.Attribute("V")?.Value == "HER");
         return GetElement($"{prefix}:Id", identOfInterest?.Parent)?.Value;
     }
+
     private static string GetApprecLvl2Id(XElement senderReceiverElement, string prefix)
     {
         var identsOrg = GetElements($"{prefix}:HCP/{prefix}:Inst/{prefix}:Dept/{prefix}:TypeId", senderReceiverElement);
-        var identsHcp = GetElements($"{prefix}:HCP/{prefix}:Inst/{prefix}:HCPerson/{prefix}:TypeId", senderReceiverElement);
+        var identsHcp = GetElements($"{prefix}:HCP/{prefix}:Inst/{prefix}:HCPerson/{prefix}:TypeId",
+            senderReceiverElement);
         var allIdents = identsOrg.Union(identsHcp);
         var identOfInterest = allIdents.FirstOrDefault(se => se.Attribute("V")?.Value == "HER");
         return GetElement($"{prefix}:Id", identOfInterest?.Parent)?.Value;
@@ -206,10 +203,13 @@ public static class MetadataHelper
         var identOfInterest = idents.FirstOrDefault(se => se.Attribute("V")?.Value == "HER");
         return GetElement($"{MH}:Id", identOfInterest?.Parent)?.Value;
     }
+
     private static string GetMsgHeadLvl2Id(XElement senderReceiverElement)
     {
-        var identsOrg = GetElements($"{MH}:Organisation/{MH}:Organisation/{MH}:Ident/{MH}:TypeId", senderReceiverElement);
-        var identsHcp = GetElements($"{MH}:Organisation/{MH}:HealthcareProfessional/{MH}:Ident/{MH}:TypeId", senderReceiverElement);
+        var identsOrg = GetElements($"{MH}:Organisation/{MH}:Organisation/{MH}:Ident/{MH}:TypeId",
+            senderReceiverElement);
+        var identsHcp = GetElements($"{MH}:Organisation/{MH}:HealthcareProfessional/{MH}:Ident/{MH}:TypeId",
+            senderReceiverElement);
         var allIdents = identsOrg.Union(identsHcp);
         var identOfInterest = allIdents.FirstOrDefault(se => se.Attribute("V")?.Value == "HER");
         return GetElement($"{MH}:Id", identOfInterest?.Parent)?.Value;

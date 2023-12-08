@@ -178,5 +178,21 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
             }
             
         }
+
+        [DataRow(2, null)]
+        [DataRow(2, false)]
+        [DataRow(0, true)]
+        [TestMethod]
+        public void Send_AsyncMessage_SkipAddingPayloadMetadata(int expectedLogElements, bool? configValue)
+        {
+            var message = CreateMessage();
+            if (configValue.HasValue)
+            {
+                Settings.SkipAddingPayloadMetadataIntoApplicationProperties = configValue.Value;
+            }
+            RunAndHandleException(Client.SendAndContinueAsync(message));
+
+            Assert.AreEqual(expectedLogElements, MockLoggerProvider.Entries.Count(x=>x.Message.Contains("AddingPayloadMetadata")));
+        }
     }
 }
