@@ -31,14 +31,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Files\MetadataTests_Apprec10.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Files\MetadataTests_Apprec11.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Files\MetadataTestsDialogmelding11.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <None Update="Files\*.xml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory> 
+        </None>
     </ItemGroup>
 </Project>

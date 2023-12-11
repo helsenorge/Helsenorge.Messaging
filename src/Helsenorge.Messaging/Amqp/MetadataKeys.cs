@@ -1,5 +1,8 @@
 ﻿namespace Helsenorge.Messaging.Amqp;
 
+/// <summary>
+/// Keys or Identifiers for the various metadata properties extracted from xml payload
+/// </summary>
 public static class MetadataKeys
 {
     /// <summary>
