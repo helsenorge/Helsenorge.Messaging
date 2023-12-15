@@ -203,7 +203,7 @@ namespace Helsenorge.Messaging.Amqp
                     }
                 }
             }
-            logger.LogBeforeEncryptingPayload(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate.Thumbprint, profile?.EncryptionCertificate.Thumbprint, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            logger.LogBeforeEncryptingPayload(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate?.Thumbprint, profile?.EncryptionCertificate?.Thumbprint, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
             stopwatch.Restart();
             // Encrypt the payload
             var stream = Core.MessageProtection.Protect(outgoingMessage.Payload?.ToStream(), profile?.EncryptionCertificate);
