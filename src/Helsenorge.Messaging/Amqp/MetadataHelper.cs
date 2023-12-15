@@ -47,30 +47,28 @@ public static class MetadataHelper
         var el = payload?.Root;
         if (el == null) return new Dictionary<string, string>();
 
-        var defaultNamespace = el.GetDefaultNamespace()?.NamespaceName;
-        var properties = defaultNamespace switch
+        var ns = GetNamespace(el);
+
+        var properties = ns switch
         {
             MsgHead => ExtractMessagePropertiesFromMsgHead(el),
             Apprec10 => ExtractMessagePropertiesFromApprec(el, A10),
             Apprec11 => ExtractMessagePropertiesFromApprec(el, A11),
-            _ => ExtractMessagePropertiesFromUnspecified(el)
+            _ => ExtractMessagePropertiesFromUnspecified(ns)
         };
 
         return properties.ToDictionary(k=>k.Key, v=>v.Value);
     }
 
-    private static IEnumerable<KeyValuePair<string, string>> ExtractMessagePropertiesFromUnspecified(XElement el)
+    private static IEnumerable<KeyValuePair<string, string>> ExtractMessagePropertiesFromUnspecified(string ns)
     {
-        var mainNs = el.GetDefaultNamespace()?.NamespaceName;
-        if (!string.IsNullOrWhiteSpace(mainNs))
-            yield return new KeyValuePair<string, string>(MetadataKeys.MessageInfoSchemaNamespace, mainNs);
+        yield return new KeyValuePair<string, string>(MetadataKeys.MessageInfoSchemaNamespace, ns);
     }
 
-    private static IEnumerable<KeyValuePair<string, string>> ExtractMessagePropertiesFromApprec(XElement el,
-        string prefix)
+    private static IEnumerable<KeyValuePair<string, string>> ExtractMessagePropertiesFromApprec(XElement el, string prefix)
     {
         var apprecEl = GetElement($"/{prefix}:AppRec", el);
-        var mainNs = apprecEl.GetDefaultNamespace()?.NamespaceName;
+        var mainNs = GetNamespace(apprecEl);
         if (!string.IsNullOrWhiteSpace(mainNs))
             yield return new KeyValuePair<string, string>(MetadataKeys.MessageInfoSchemaNamespace, mainNs);
         var msgType = GetElementAttribute($"{prefix}:MsgType", "V", apprecEl)?.Value;
@@ -103,6 +101,13 @@ public static class MetadataHelper
         var receiverLvl2Id = GetApprecLvl2Id(receiverEl, prefix);
         if (!string.IsNullOrWhiteSpace(receiverLvl2Id))
             yield return new KeyValuePair<string, string>(MetadataKeys.ReceiverLvl2Id, receiverLvl2Id);
+    }
+
+    private static string GetNamespace(XElement element)
+    {
+        var ns =  element.GetDefaultNamespace()?.NamespaceName;
+        if (string.IsNullOrWhiteSpace(ns)) ns = element?.Name.NamespaceName;
+        return ns;
     }
 
     private static IEnumerable<KeyValuePair<string, string>> ExtractMessagePropertiesFromMsgHead(XElement el)
@@ -152,7 +157,7 @@ public static class MetadataHelper
             if (i == 0)
             {
                 var innerDocument = GetElement($"{MH}:RefDoc/{MH}:Content", currentDocument)?.FirstNode as XElement;
-                var innerNamespace = innerDocument?.GetDefaultNamespace()?.NamespaceName;
+                var innerNamespace = GetNamespace(innerDocument);
                 if (!string.IsNullOrWhiteSpace(innerNamespace))
                     yield return new KeyValuePair<string, string>(MetadataKeys.MessageInfoSchemaNamespace,
                         innerNamespace);
