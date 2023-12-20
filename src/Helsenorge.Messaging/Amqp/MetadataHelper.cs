@@ -105,8 +105,8 @@ public static class MetadataHelper
 
     private static string GetNamespace(XElement element)
     {
-        var ns =  element.GetDefaultNamespace()?.NamespaceName;
-        if (string.IsNullOrWhiteSpace(ns)) ns = element?.Name.NamespaceName;
+        var ns =  element?.GetDefaultNamespace()?.NamespaceName;
+        if (string.IsNullOrWhiteSpace(ns)) ns = element?.Name?.NamespaceName;
         return ns;
     }
 
