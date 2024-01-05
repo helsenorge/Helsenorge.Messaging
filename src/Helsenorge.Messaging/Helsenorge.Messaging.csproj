@@ -13,7 +13,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="AMQPNetLite" Version="2.4.7" />
+    <PackageReference Include="AMQPNetLite" Version="2.4.8" />
     <PackageReference Include="AMQPNetLite.Serialization" Version="2.4.7" />
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="6.0.4" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
