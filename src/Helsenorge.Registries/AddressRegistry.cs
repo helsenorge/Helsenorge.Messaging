@@ -155,7 +155,7 @@ namespace Helsenorge.Registries
                 certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
                 try
                 {
-                    certificateDetails.Certificate.Verify();
+                    certificateDetails?.Certificate?.Verify();
                 }
                 catch (CryptographicException ex)
                 {
@@ -212,7 +212,7 @@ namespace Helsenorge.Registries
                 certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
                 try
                 {
-                    certificateDetails.Certificate.Verify();
+                    certificateDetails?.Certificate?.Verify();
                 }
                 catch (CryptographicException ex)
                 {
