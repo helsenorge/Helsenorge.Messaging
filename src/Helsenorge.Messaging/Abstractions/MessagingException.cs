@@ -135,6 +135,10 @@ namespace Helsenorge.Messaging.Abstractions
         /// Invalid HER-id.
         /// </summary>
         public static EventId InvalidHerId = new EventId(40, EventIdName);
+        /// <summary>
+        /// Invalid HER-id.
+        /// </summary>
+        public static EventId CouldNotVerifyCertificate = new EventId(41, EventIdName);
 
         /// <summary>
         /// Event Id used for informational purposes when starting/ending the Receive process.

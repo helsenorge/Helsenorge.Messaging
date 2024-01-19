@@ -312,6 +312,11 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 await AmqpCore.ReportErrorToExternalSenderAsync(Logger, EventIds.InvalidHerId, message, "transport:invalid-field-value", ex.Message, new [] { "FromHerId", $"{ex.HerId}" }, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
+            catch (CouldNotVerifyCertificateException ex)
+            {
+                await AmqpCore.ReportErrorToExternalSenderAsync(Logger, EventIds.CouldNotVerifyCertificate, message, "transport:unverified-certificate", ex.Message, new [] { "FromHerId", $"{ex.HerId}" }, ex).ConfigureAwait(false);
+                await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
+            }
             catch (Exception ex) // unknown error
             {
                 message.AddDetailsToException(ex);

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
@@ -21,6 +21,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Code = Helsenorge.Registries.Abstractions.Code;
+using System.Security.Cryptography;
 
 namespace Helsenorge.Registries
 {
@@ -152,6 +153,15 @@ namespace Helsenorge.Registries
                 }
 
                 certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
+                try
+                {
+                    certificateDetails.Certificate.Verify();
+                }
+                catch (CryptographicException ex)
+                {
+                    throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate", ex, herId);
+                }
+                
                 // Cache the mapped CertificateDetails.
                 await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, certificateDetails, _settings.CachingInterval).ConfigureAwait(false);
             }
@@ -200,6 +210,14 @@ namespace Helsenorge.Registries
                 }
 
                 certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
+                try
+                {
+                    certificateDetails.Certificate.Verify();
+                }
+                catch (CryptographicException ex)
+                {
+                    throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate", ex, herId);
+                }
                 // Cache the mapped CertificateDetails.
                 await CacheExtensions.WriteValueToCacheAsync(
                     _logger,

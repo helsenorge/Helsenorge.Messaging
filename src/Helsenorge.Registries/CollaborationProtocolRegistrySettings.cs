@@ -30,5 +30,7 @@ namespace Helsenorge.Registries
         /// Use online certificate revocation list (CRL) check. Default true.
         /// </summary>
         public bool UseOnlineRevocationCheck { get; set; } = true;
+
+        public bool ThrowMessageIfNoCpp { get; set; } = false;
     }
 }
