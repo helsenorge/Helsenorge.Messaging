@@ -33,7 +33,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             AmqpCore amqpCore,
             ILogger logger,
             IMessagingNotification messagingNotification,
-            QueueNames queueNames) : base(amqpCore, logger, messagingNotification, queueNames)
+            QueueNames queueNames) : base(amqpCore, logger, messagingNotification, amqpCore.CertificateValidator, queueNames)
         {
             ReadTimeout = AmqpCore.Settings.Asynchronous.ReadTimeout;
         }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
@@ -113,7 +113,7 @@ namespace Helsenorge.Registries
             }
             if (string.IsNullOrEmpty(xmlString))
             {
-                return await DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, counterpartyHerId, null);
+                return await DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, counterpartyHerId, null, CertificateValidator);
             }
             else
             {

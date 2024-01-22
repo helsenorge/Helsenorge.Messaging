@@ -34,6 +34,8 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         private CommunicationPartyDetails _myDetails;
         private IAmqpReceiver _messageReceiver;
         private bool _listenerEstablishedConfirmed;
+        private readonly ICertificateValidator _certificateValidator;
+
         /// <summary>
         /// The available queues for this instance.
         /// </summary>
@@ -94,16 +96,19 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         /// <param name="amqpCore">An instance of <see cref="AmqpCore"/> which has the common infrastructure to talk to the Message Bus.</param>
         /// <param name="logger">An instance of <see cref="ILogger"/>, used to log diagnostics information.</param>
         /// <param name="messagingNotification">An instance of <see cref="IMessagingNotification"/> which holds reference to callbacks back to the client that owns this instance of the <see cref="MessageListener"/>.</param>
+        /// <param name="certificateValidator">An instance of <see cref="ICertificateValidator"/>, used to validate certificates</param>
         /// <param name="queueNames">The Queue Names associated with the client.</param>
         protected MessageListener(
             AmqpCore amqpCore,
             ILogger logger,
             IMessagingNotification messagingNotification,
+            ICertificateValidator certificateValidator,
             QueueNames queueNames = null)
         {
             Logger = logger ?? throw new ArgumentNullException(nameof(logger));
             AmqpCore = amqpCore ?? throw new ArgumentNullException(nameof(amqpCore));
             MessagingNotification = messagingNotification;
+            _certificateValidator = certificateValidator;
             _queueNames = queueNames;
         }
 

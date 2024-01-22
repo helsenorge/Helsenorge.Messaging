@@ -32,7 +32,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         /// <param name="amqpCore">An instance of <see cref="AmqpCore"/> which has the common infrastructure to talk to the Message Bus.</param>
         /// <param name="logger">An instance of <see cref="ILogger"/>, used to log diagnostics information.</param>
         /// <param name="messagingNotification">An instance of <see cref="IMessagingNotification"/> which holds reference to callbacks back to the client that owns this instance of the <see cref="MessageListener"/>.</param>
-        internal SynchronousReplyListener(AmqpCore amqpCore, ILogger logger, IMessagingNotification messagingNotification) : base(amqpCore, logger, messagingNotification)
+        internal SynchronousReplyListener(AmqpCore amqpCore, ILogger logger, IMessagingNotification messagingNotification) : base(amqpCore, logger, messagingNotification, amqpCore.CertificateValidator)
         {
             ReadTimeout = AmqpCore.Settings.Synchronous.ReadTimeout;
         }

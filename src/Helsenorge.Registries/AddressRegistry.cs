@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
@@ -116,10 +116,11 @@ namespace Helsenorge.Registries
         /// Returns encryption certificate for a specific communication party.
         /// </summary>
         /// <param name="herId">Her-ID of the communication party</param>
+        /// <param name="certificateValidator">Certificate validator</param>
         /// <returns></returns>
-        public async Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId)
+        public async Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, ICertificateValidator certificateValidator = null)
         {
-            return await GetCertificateDetailsForEncryptionAsync(herId, false).ConfigureAwait(false);
+            return await GetCertificateDetailsForEncryptionAsync(herId, false, certificateValidator).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -127,8 +128,9 @@ namespace Helsenorge.Registries
         /// </summary>
         /// <param name="herId">Her-ID of the communication party</param>
         /// <param name="forceUpdate">Set to true to force cache update.</param>
+        /// <param name="certificateValidator">Certificate validator</param>
         /// <returns></returns>
-        public async Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate)
+        public async Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate, ICertificateValidator certificateValidator = null)
         {
             var key = $"AR_GetCertificateDetailsForEncryption{herId}";
 
@@ -153,15 +155,15 @@ namespace Helsenorge.Registries
                 }
 
                 certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
-                try
+                if (certificateValidator != null)
                 {
-                    certificateDetails?.Certificate?.Verify();
+                    var error = certificateValidator.Validate(certificateDetails?.Certificate, X509KeyUsageFlags.KeyEncipherment);
+                    if (error != CertificateErrors.None)
+                    {
+                        throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate", herId);
+                    }
                 }
-                catch (CryptographicException ex)
-                {
-                    throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate", ex, herId);
-                }
-                
+
                 // Cache the mapped CertificateDetails.
                 await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, certificateDetails, _settings.CachingInterval).ConfigureAwait(false);
             }
@@ -173,10 +175,11 @@ namespace Helsenorge.Registries
         /// Returns the signature certificate for a specific communication party.
         /// </summary>
         /// <param name="herId">Her-ID of the communication party</param>
+        /// <param name="certificateValidator">Certificate validator</param>
         /// <returns></returns>
-        public async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId)
+        public async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, ICertificateValidator certificateValidator = null)
         {
-            return await GetCertificateDetailsForValidatingSignatureAsync(herId, false).ConfigureAwait(false);
+            return await GetCertificateDetailsForValidatingSignatureAsync(herId, false, certificateValidator).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -184,8 +187,9 @@ namespace Helsenorge.Registries
         /// </summary>
         /// <param name="herId">Her-ID of the communication party</param>
         /// <param name="forceUpdate">Set to true to force cache update.</param>
+        /// <param name="certificateValidator">Certificate validator</param>
         /// <returns></returns>
-        public async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate)
+        public async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate, ICertificateValidator certificateValidator = null)
         {
             var key = $"AR_GetCertificateDetailsForValidationSignature{herId}";
 
@@ -210,14 +214,16 @@ namespace Helsenorge.Registries
                 }
 
                 certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
-                try
+                
+                if (certificateValidator != null)
                 {
-                    certificateDetails?.Certificate?.Verify();
+                    var error = certificateValidator.Validate(certificateDetails?.Certificate, X509KeyUsageFlags.KeyEncipherment);
+                    if (error != CertificateErrors.None)
+                    {
+                        throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate", herId);
+                    }
                 }
-                catch (CryptographicException ex)
-                {
-                    throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate", ex, herId);
-                }
+
                 // Cache the mapped CertificateDetails.
                 await CacheExtensions.WriteValueToCacheAsync(
                     _logger,

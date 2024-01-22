@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
@@ -490,7 +490,7 @@ namespace Helsenorge.Messaging.Amqp
             if (Core.Settings.MessageFunctionsExcludedFromCpaResolve.Contains(messageFunction))
             {
                 // MessageFunction is defined in exception list, return a dummy CollaborationProtocolProfile
-                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AddressRegistry, logger, message.ToHerId, messageFunction);
+                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AddressRegistry, logger, message.ToHerId, messageFunction, CertificateValidator);
             }
 
             var profile =

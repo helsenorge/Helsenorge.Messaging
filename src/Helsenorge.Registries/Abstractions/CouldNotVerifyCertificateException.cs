@@ -21,12 +21,15 @@ namespace Helsenorge.Registries.Abstractions
         ///     Initiates a new instance of CouldNotVerifyCertificateException
         /// </summary>
         /// <param name="message"></param>
-        /// <param name="innerException"></param>
-        public CouldNotVerifyCertificateException(string message, Exception innerException, int herId) : base(message, innerException)
+        /// <param name="herId"></param>
+        public CouldNotVerifyCertificateException(string message, int herId) : base(message)
         {
             HerId = herId;
         }
 
-        public int HerId { get; set; }
+        /// <summary>
+        /// HerId of counterparty whose certificate could not be verified
+        /// </summary>
+        public int HerId { get; }
     }
 }

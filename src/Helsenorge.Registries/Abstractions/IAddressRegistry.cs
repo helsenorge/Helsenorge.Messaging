@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
@@ -37,31 +37,35 @@ namespace Helsenorge.Registries.Abstractions
         /// Gets the public encryption certificate in addition to the LDAP Url.
         /// </summary>
         /// <param name="herId">Her-ID of the certificate owner</param>
+        /// <param name="certificateValidator">Certificate validator</param>
         /// <returns></returns>
-        Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId);
+        Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, ICertificateValidator certificateValidator = null);
 
         /// <summary>
         /// Returns encryption ceritficate for a specific communcation party.
         /// </summary>
         /// <param name="herId">Her-ID of the communication party</param>
         /// <param name="forceUpdate">Set to true to force cache update.</param>
+        /// <param name="certificateValidator">Certificate validator</param>
         /// <returns></returns>
-        Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate);
+        Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate, ICertificateValidator certificateValidator = null);
 
         /// <summary>
         /// Get the public signature certificate in addition to the LDAP Url.
         /// </summary>
         /// <param name="herId">Her-ID of the certificate owner</param>
+        /// <param name="certificateValidator">Certificate validator</param>
         /// <returns></returns>
-        Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId);
+        Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, ICertificateValidator certificateValidator = null);
 
         /// <summary>
         /// Get the public signature certificate in addition to the LDAP Url.
         /// </summary>
         /// <param name="herId">Her-ID of the certificate owner</param>
         /// <param name="forceUpdate">Set to true to force cache update.</param>
+        /// <param name="certificateValidator">Certificate validator</param>
         /// <returns></returns>
-        Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate);
+        Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate, ICertificateValidator certificateValidator = null);
 
         /// <summary>
         /// Tries to Ping the AddressRegistry Service to verify a connection.

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Tests.Mocks;
 using Helsenorge.Registries.Abstractions;
@@ -17,7 +17,7 @@ namespace SignEncryptAndSend
             throw new System.NotImplementedException();
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId)
+        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, ICertificateValidator certificateValidator = null)
         {
             return Task.FromResult(new CertificateDetails
             {
@@ -26,17 +26,17 @@ namespace SignEncryptAndSend
             });
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate)
+        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate, ICertificateValidator certificateValidator = null)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId)
+        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, ICertificateValidator certificateValidator = null)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate)
+        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate, ICertificateValidator certificateValidator = null)
         {
             throw new System.NotImplementedException();
         }

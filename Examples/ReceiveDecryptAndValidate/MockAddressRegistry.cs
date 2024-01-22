@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Tests.Mocks;
@@ -18,17 +18,17 @@ namespace ReceiveDecryptAndValidate
             throw new NotImplementedException();
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId)
+        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, ICertificateValidator certificateValidator = null)
         {
             throw new NotImplementedException();
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate)
+        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate, ICertificateValidator certificateValidator = null)
         {
             throw new NotImplementedException();
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId)
+        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, ICertificateValidator certificateValidator = null)
         {
             return Task.FromResult(new CertificateDetails
             {
@@ -37,7 +37,7 @@ namespace ReceiveDecryptAndValidate
             });
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate)
+        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate, ICertificateValidator certificateValidator = null)
         {
             throw new NotImplementedException();
         }
