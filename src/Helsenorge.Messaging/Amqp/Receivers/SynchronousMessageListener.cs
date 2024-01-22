@@ -32,9 +32,9 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         /// <param name="queueNames">The Queue Names associated with the client.</param>
         internal SynchronousMessageListener(
             AmqpCore amqpCore,
-            ILogger logger, 
+            ILogger logger,
             IMessagingNotification messagingNotification,
-            QueueNames queueNames) : base(amqpCore, logger, messagingNotification, amqpCore.CertificateValidator, queueNames)
+            QueueNames queueNames) : base(amqpCore, logger, messagingNotification, queueNames)
         {
             ReadTimeout = AmqpCore.Settings.Synchronous.ReadTimeout;
         }
@@ -69,7 +69,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             {
                 FromHerId = message.ToHerId,
                 ToHerId = message.FromHerId,
-                Payload =  reply,
+                Payload = reply,
                 MessageFunction = message.MessageFunction,
                 MessageId = Guid.NewGuid().ToString()
             };

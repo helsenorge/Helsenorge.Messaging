@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
@@ -9,9 +9,11 @@
 using System;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Helsenorge.Registries.Abstractions;
 using Helsenorge.Registries.AddressService;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using CertificateDetails = Helsenorge.Registries.AddressService.CertificateDetails;
 
 namespace Helsenorge.Registries.Tests.Mocks
 {
@@ -33,7 +35,8 @@ namespace Helsenorge.Registries.Tests.Mocks
         public AddressRegistryMock(
             AddressRegistrySettings settings,
             IDistributedCache cache,
-            ILogger logger) : base(settings, cache, logger)
+            ILogger logger,
+            ICertificateValidator certificateValidator) : base(settings, cache, logger, certificateValidator)
         {
         }
         /// <summary>

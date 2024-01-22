@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
@@ -45,7 +45,7 @@ namespace Helsenorge.Registries.Tests
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var distributedCache = DistributedCacheFactory.Create();
 
-            var registry = new AddressRegistryMock(settings, distributedCache, logger);
+            var registry = new AddressRegistryMock(settings, distributedCache, logger, null);
 
             registry.SetupFindCommunicationPartyDetails(i =>
             {
@@ -130,13 +130,13 @@ namespace Helsenorge.Registries.Tests
         {
             var distributedCache = DistributedCacheFactory.Create();
 
-            new AddressRegistry(null, distributedCache, _logger);
+            new AddressRegistry(null, distributedCache, _logger, null);
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_Cache_Null()
         {
-            new AddressRegistry(new AddressRegistrySettings(), null, _logger);
+            new AddressRegistry(new AddressRegistrySettings(), null, _logger, null);
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -144,7 +144,7 @@ namespace Helsenorge.Registries.Tests
         {
             var distributedCache = DistributedCacheFactory.Create();
 
-            new AddressRegistry(new AddressRegistrySettings(), distributedCache, null);
+            new AddressRegistry(new AddressRegistrySettings(), distributedCache, null, null);
         }
 
         [TestMethod, Ignore]

@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
@@ -71,7 +71,7 @@ namespace Helsenorge.Messaging.Client
             // set up address registry
             var addressRegistrySettings = new AddressRegistrySettings();
             configurationRoot.GetSection("AddressRegistrySettings").Bind(addressRegistrySettings);
-            var addressRegistry = new AddressRegistry(addressRegistrySettings, distributedCache, _logger);
+            var addressRegistry = new AddressRegistry(addressRegistrySettings, distributedCache, _logger, null);
 
             // set up collaboration registry
             var collaborationProtocolRegistrySettings = new CollaborationProtocolRegistrySettings();

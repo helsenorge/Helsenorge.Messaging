@@ -27,7 +27,7 @@ internal static class Program
             },
             CachingInterval = TimeSpan.FromMinutes(60),
         };
-        var addressRegistry = new AddressRegistry(settings, cache, logger);
+        var addressRegistry = new AddressRegistry(settings, cache, logger, null);
 
         var communicationPartyDetailsList = await addressRegistry.SearchByIdAsync("912039374");
         var communicationPartyDetails = communicationPartyDetailsList.FirstOrDefault();

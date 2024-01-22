@@ -113,7 +113,7 @@ namespace Helsenorge.Registries
             }
             if (string.IsNullOrEmpty(xmlString))
             {
-                return await DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, counterpartyHerId, null, CertificateValidator);
+                return await DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, counterpartyHerId, null);
             }
             else
             {

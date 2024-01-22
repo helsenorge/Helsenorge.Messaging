@@ -18,17 +18,17 @@ namespace ReceiveDecryptAndValidate
             throw new NotImplementedException();
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, ICertificateValidator certificateValidator = null)
+        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate, ICertificateValidator certificateValidator = null)
+        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate)
         {
             throw new NotImplementedException();
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, ICertificateValidator certificateValidator = null)
+        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId)
         {
             return Task.FromResult(new CertificateDetails
             {
@@ -37,7 +37,7 @@ namespace ReceiveDecryptAndValidate
             });
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate, ICertificateValidator certificateValidator = null)
+        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate)
         {
             throw new NotImplementedException();
         }

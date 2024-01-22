@@ -17,7 +17,7 @@ namespace SignEncryptAndSend
             throw new System.NotImplementedException();
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, ICertificateValidator certificateValidator = null)
+        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId)
         {
             return Task.FromResult(new CertificateDetails
             {
@@ -26,17 +26,17 @@ namespace SignEncryptAndSend
             });
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate, ICertificateValidator certificateValidator = null)
+        public Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, ICertificateValidator certificateValidator = null)
+        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate, ICertificateValidator certificateValidator = null)
+        public Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate)
         {
             throw new System.NotImplementedException();
         }

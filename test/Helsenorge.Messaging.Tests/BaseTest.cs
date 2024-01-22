@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
@@ -94,7 +94,7 @@ namespace Helsenorge.Messaging.Tests
 
             var distributedCache = DistributedCacheFactory.Create();
 
-            AddressRegistry = new AddressRegistryMock(addressRegistrySettings, distributedCache, Logger);
+            AddressRegistry = new AddressRegistryMock(addressRegistrySettings, distributedCache, Logger, null);
             AddressRegistry.SetupFindCommunicationPartyDetails(i =>
             {
                 var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CommunicationDetails_{i}.xml"));

@@ -49,8 +49,7 @@ public static class DummyCollaborationProtocolProfileFactory
         IAddressRegistry addressRegistry,
         ILogger logger,
         int herId,
-        string messageFunction,
-        ICertificateValidator certificateValidator = null)
+        string messageFunction)
     {
         var communicationParty = await addressRegistry.FindCommunicationPartyDetailsAsync(herId).ConfigureAwait(false);
         if(communicationParty == null)
@@ -61,8 +60,8 @@ public static class DummyCollaborationProtocolProfileFactory
 
         var deliveryChannel = communicationParty.AsynchronousQueueName;
         return CreateDummyCollaborationProtocolProfile(herId,
-            await addressRegistry.GetCertificateDetailsForEncryptionAsync(herId, certificateValidator).ConfigureAwait(false),
-            await addressRegistry.GetCertificateDetailsForValidatingSignatureAsync(herId, certificateValidator).ConfigureAwait(false),
+            await addressRegistry.GetCertificateDetailsForEncryptionAsync(herId).ConfigureAwait(false),
+            await addressRegistry.GetCertificateDetailsForValidatingSignatureAsync(herId).ConfigureAwait(false),
             deliveryChannel,
             messageFunction);
     }

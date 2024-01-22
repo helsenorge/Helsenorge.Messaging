@@ -35,6 +35,7 @@ namespace Helsenorge.Registries
         private readonly AddressRegistrySettings _settings;
         private readonly IDistributedCache _cache;
         private readonly ILogger _logger;
+        private readonly ICertificateValidator _certificateValidator;
 
         /// <summary>
         /// Contstructor
@@ -42,10 +43,12 @@ namespace Helsenorge.Registries
         /// <param name="settings">Options for this instance</param>
         /// <param name="cache">Cache implementation to use</param>
         /// <param name="logger">The ILogger object used to log diagnostics.</param>
+        /// <param name="certificateValidator">Used to validate certificates</param>
         public AddressRegistry(
             AddressRegistrySettings settings,
             IDistributedCache cache,
-            ILogger logger)
+            ILogger logger,
+            ICertificateValidator certificateValidator)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (cache == null) throw new ArgumentNullException(nameof(cache));
@@ -54,6 +57,7 @@ namespace Helsenorge.Registries
             _settings = settings;
             _cache = cache;
             _logger = logger;
+            _certificateValidator = certificateValidator;
             _invoker = new SoapServiceInvoker(settings.WcfConfiguration);
         }
 
@@ -116,11 +120,10 @@ namespace Helsenorge.Registries
         /// Returns encryption certificate for a specific communication party.
         /// </summary>
         /// <param name="herId">Her-ID of the communication party</param>
-        /// <param name="certificateValidator">Certificate validator</param>
         /// <returns></returns>
-        public async Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, ICertificateValidator certificateValidator = null)
+        public async Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId)
         {
-            return await GetCertificateDetailsForEncryptionAsync(herId, false, certificateValidator).ConfigureAwait(false);
+            return await GetCertificateDetailsForEncryptionAsync(herId, false).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -128,9 +131,8 @@ namespace Helsenorge.Registries
         /// </summary>
         /// <param name="herId">Her-ID of the communication party</param>
         /// <param name="forceUpdate">Set to true to force cache update.</param>
-        /// <param name="certificateValidator">Certificate validator</param>
         /// <returns></returns>
-        public async Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate, ICertificateValidator certificateValidator = null)
+        public async Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate)
         {
             var key = $"AR_GetCertificateDetailsForEncryption{herId}";
 
@@ -155,9 +157,9 @@ namespace Helsenorge.Registries
                 }
 
                 certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
-                if (certificateValidator != null && certificateDetails?.Certificate != null)
+                if (_certificateValidator != null && certificateDetails?.Certificate != null)
                 {
-                    var error = certificateValidator.Validate(certificateDetails.Certificate, X509KeyUsageFlags.KeyEncipherment);
+                    var error = _certificateValidator.Validate(certificateDetails.Certificate, X509KeyUsageFlags.KeyEncipherment);
                     if (error != CertificateErrors.None)
                     {
                         throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate", herId);
@@ -175,11 +177,10 @@ namespace Helsenorge.Registries
         /// Returns the signature certificate for a specific communication party.
         /// </summary>
         /// <param name="herId">Her-ID of the communication party</param>
-        /// <param name="certificateValidator">Certificate validator</param>
         /// <returns></returns>
-        public async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, ICertificateValidator certificateValidator = null)
+        public async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId)
         {
-            return await GetCertificateDetailsForValidatingSignatureAsync(herId, false, certificateValidator).ConfigureAwait(false);
+            return await GetCertificateDetailsForValidatingSignatureAsync(herId, false).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -187,9 +188,8 @@ namespace Helsenorge.Registries
         /// </summary>
         /// <param name="herId">Her-ID of the communication party</param>
         /// <param name="forceUpdate">Set to true to force cache update.</param>
-        /// <param name="certificateValidator">Certificate validator</param>
         /// <returns></returns>
-        public async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate, ICertificateValidator certificateValidator = null)
+        public async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate)
         {
             var key = $"AR_GetCertificateDetailsForValidationSignature{herId}";
 
@@ -215,9 +215,9 @@ namespace Helsenorge.Registries
 
                 certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
 
-                if (certificateValidator != null && certificateDetails?.Certificate != null)
+                if (_certificateValidator != null && certificateDetails?.Certificate != null)
                 {
-                    var error = certificateValidator.Validate(certificateDetails.Certificate, X509KeyUsageFlags.KeyEncipherment);
+                    var error = _certificateValidator.Validate(certificateDetails.Certificate, X509KeyUsageFlags.KeyEncipherment);
                     if (error != CertificateErrors.None)
                     {
                         throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate", herId);
