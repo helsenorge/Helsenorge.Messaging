@@ -155,9 +155,9 @@ namespace Helsenorge.Registries
                 }
 
                 certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
-                if (certificateValidator != null)
+                if (certificateValidator != null && certificateDetails?.Certificate != null)
                 {
-                    var error = certificateValidator.Validate(certificateDetails?.Certificate, X509KeyUsageFlags.KeyEncipherment);
+                    var error = certificateValidator.Validate(certificateDetails.Certificate, X509KeyUsageFlags.KeyEncipherment);
                     if (error != CertificateErrors.None)
                     {
                         throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate", herId);
@@ -214,10 +214,10 @@ namespace Helsenorge.Registries
                 }
 
                 certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
-                
-                if (certificateValidator != null)
+
+                if (certificateValidator != null && certificateDetails?.Certificate != null)
                 {
-                    var error = certificateValidator.Validate(certificateDetails?.Certificate, X509KeyUsageFlags.KeyEncipherment);
+                    var error = certificateValidator.Validate(certificateDetails.Certificate, X509KeyUsageFlags.KeyEncipherment);
                     if (error != CertificateErrors.None)
                     {
                         throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate", herId);
