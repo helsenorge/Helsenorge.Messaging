@@ -1,4 +1,4 @@
-/* 
+﻿/*
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
@@ -21,6 +21,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Code = Helsenorge.Registries.Abstractions.Code;
+using System.Security.Cryptography;
 
 namespace Helsenorge.Registries
 {
@@ -34,6 +35,7 @@ namespace Helsenorge.Registries
         private readonly AddressRegistrySettings _settings;
         private readonly IDistributedCache _cache;
         private readonly ILogger _logger;
+        private readonly ICertificateValidator _certificateValidator;
 
         /// <summary>
         /// Contstructor
@@ -41,10 +43,15 @@ namespace Helsenorge.Registries
         /// <param name="settings">Options for this instance</param>
         /// <param name="cache">Cache implementation to use</param>
         /// <param name="logger">The ILogger object used to log diagnostics.</param>
+        /// <param name="certificateValidator">
+        /// The ICertificateValidator implementation that validate certificates before adding them to the cache. 
+        /// This only applies to the methods GetCertificateDetailsForEncryption() and GetCertificateDetailsForValidatingSignatureAsync(). I
+        /// f this is not set, no validation of certificates will occur.</param>
         public AddressRegistry(
             AddressRegistrySettings settings,
             IDistributedCache cache,
-            ILogger logger)
+            ILogger logger,
+            ICertificateValidator certificateValidator = null)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (cache == null) throw new ArgumentNullException(nameof(cache));
@@ -53,6 +60,7 @@ namespace Helsenorge.Registries
             _settings = settings;
             _cache = cache;
             _logger = logger;
+            _certificateValidator = certificateValidator;
             _invoker = new SoapServiceInvoker(settings.WcfConfiguration);
         }
 
@@ -152,6 +160,15 @@ namespace Helsenorge.Registries
                 }
 
                 certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
+                if (_certificateValidator != null && certificateDetails?.Certificate != null)
+                {
+                    var error = _certificateValidator.Validate(certificateDetails.Certificate, X509KeyUsageFlags.KeyEncipherment);
+                    if (error != CertificateErrors.None)
+                    {
+                        throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate", herId);
+                    }
+                }
+
                 // Cache the mapped CertificateDetails.
                 await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, certificateDetails, _settings.CachingInterval).ConfigureAwait(false);
             }
@@ -200,6 +217,16 @@ namespace Helsenorge.Registries
                 }
 
                 certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
+
+                if (_certificateValidator != null && certificateDetails?.Certificate != null)
+                {
+                    var error = _certificateValidator.Validate(certificateDetails.Certificate, X509KeyUsageFlags.NonRepudiation);
+                    if (error != CertificateErrors.None)
+                    {
+                        throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate", herId);
+                    }
+                }
+
                 // Cache the mapped CertificateDetails.
                 await CacheExtensions.WriteValueToCacheAsync(
                     _logger,

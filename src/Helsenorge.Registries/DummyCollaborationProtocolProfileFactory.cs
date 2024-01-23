@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
@@ -44,7 +44,11 @@ public static class DummyCollaborationProtocolProfileFactory
     /// <param name="herId">The HER-id to create a "dummy" <see cref="CollaborationProtocolProfile"/></param>
     /// <param name="messageFunction"></param>
     /// <returns></returns>
-    public static async Task<CollaborationProtocolProfile> CreateAsync(IAddressRegistry addressRegistry, ILogger logger, int herId, string messageFunction)
+    public static async Task<CollaborationProtocolProfile> CreateAsync(
+        IAddressRegistry addressRegistry,
+        ILogger logger,
+        int herId,
+        string messageFunction)
     {
         var communicationParty = await addressRegistry.FindCommunicationPartyDetailsAsync(herId).ConfigureAwait(false);
         if(communicationParty == null)

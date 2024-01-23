@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
@@ -48,7 +48,7 @@ namespace Helsenorge.Registries.Tests
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddLogging(loggingBuilder => loggingBuilder.AddDebug());
             var provider = serviceCollection.BuildServiceProvider();
-            _loggerFactory = provider.GetRequiredService<ILoggerFactory>();            
+            _loggerFactory = provider.GetRequiredService<ILoggerFactory>();
             _logger = _loggerFactory.CreateLogger<CollaborationRegistryTests>();
 
             var distributedCache = DistributedCacheFactory.CreatePartlyMockedDistributedCache();
@@ -90,7 +90,7 @@ namespace Helsenorge.Registries.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_Cache_Null()
         {
-            
+
             var distributedCache = DistributedCacheFactory.Create();
             IAddressRegistry addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache, _logger);
 
@@ -329,7 +329,7 @@ namespace Helsenorge.Registries.Tests
             var profile = _registry.FindProtocolForCounterpartyAsync(93238).Result;
             Assert.IsNull(profile.FindMessagePartsForReceiveAppRec("BOB"));
         }
-        
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void FindMessagePartsForSendMessage_ArgumentNull()

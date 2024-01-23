@@ -34,6 +34,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         private CommunicationPartyDetails _myDetails;
         private IAmqpReceiver _messageReceiver;
         private bool _listenerEstablishedConfirmed;
+
         /// <summary>
         /// The available queues for this instance.
         /// </summary>
@@ -310,6 +311,11 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             catch (InvalidHerIdException ex)
             {
                 await AmqpCore.ReportErrorToExternalSenderAsync(Logger, EventIds.InvalidHerId, message, "transport:invalid-field-value", ex.Message, new [] { "FromHerId", $"{ex.HerId}" }, ex).ConfigureAwait(false);
+                await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
+            }
+            catch (CouldNotVerifyCertificateException ex)
+            {
+                await AmqpCore.ReportErrorToExternalSenderAsync(Logger, EventIds.CouldNotVerifyCertificate, message, "transport:unverified-certificate", ex.Message, new [] { "FromHerId", $"{ex.HerId}" }, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
             catch (Exception ex) // unknown error

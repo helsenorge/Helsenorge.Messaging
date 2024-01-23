@@ -1,4 +1,4 @@
-/* 
+﻿/*
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
@@ -91,6 +91,15 @@ namespace Helsenorge.Registries
             }
             catch (FaultException<CPAService.GenericFault> ex)
             {
+                if (_settings.ThrowMessageIfNoCpp)
+                {
+                    throw new RegistriesException(ex.Message, ex)
+                    {
+                        EventId = EventIds.CollaborationProfile,
+                        Data = { { "HerId", counterpartyHerId } }
+                    };
+                }
+
                 // if this happens, we fall back to the dummy profile further down
                 _logger.LogWarning($"Could not find or resolve protocol for counterparty when using HerId {counterpartyHerId}. ErrorCode: {ex.Detail.ErrorCode} Message: {ex.Detail.Message}");
             }
