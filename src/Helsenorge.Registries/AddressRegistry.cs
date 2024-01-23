@@ -217,7 +217,7 @@ namespace Helsenorge.Registries
 
                 if (_certificateValidator != null && certificateDetails?.Certificate != null)
                 {
-                    var error = _certificateValidator.Validate(certificateDetails.Certificate, X509KeyUsageFlags.KeyEncipherment);
+                    var error = _certificateValidator.Validate(certificateDetails.Certificate, X509KeyUsageFlags.NonRepudiation);
                     if (error != CertificateErrors.None)
                     {
                         throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate", herId);
