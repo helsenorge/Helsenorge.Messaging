@@ -88,7 +88,7 @@ namespace Helsenorge.Messaging.Server
             // set up address registry
             var addressRegistrySettings = new AddressRegistrySettings();
             configurationRoot.GetSection("AddressRegistrySettings").Bind(addressRegistrySettings);
-            var addressRegistry = new AddressRegistry(addressRegistrySettings, distributedCache, _logger, null);
+            var addressRegistry = new AddressRegistry(addressRegistrySettings, distributedCache, _logger);
 
             // set up collaboration registry
             var collaborationProtocolRegistrySettings = new CollaborationProtocolRegistrySettings();

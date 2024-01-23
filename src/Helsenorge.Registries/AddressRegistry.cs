@@ -43,12 +43,15 @@ namespace Helsenorge.Registries
         /// <param name="settings">Options for this instance</param>
         /// <param name="cache">Cache implementation to use</param>
         /// <param name="logger">The ILogger object used to log diagnostics.</param>
-        /// <param name="certificateValidator">Used to validate certificates</param>
+        /// <param name="certificateValidator">
+        /// The ICertificateValidator implementation that validate certificates before adding them to the cache. 
+        /// This only applies to the methods GetCertificateDetailsForEncryption() and GetCertificateDetailsForValidatingSignatureAsync(). I
+        /// f this is not set, no validation of certificates will occur.</param>
         public AddressRegistry(
             AddressRegistrySettings settings,
             IDistributedCache cache,
             ILogger logger,
-            ICertificateValidator certificateValidator)
+            ICertificateValidator certificateValidator = null)
         {
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             if (cache == null) throw new ArgumentNullException(nameof(cache));

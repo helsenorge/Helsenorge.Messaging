@@ -81,7 +81,7 @@ namespace Helsenorge.Registries.Tests
         public void Constructor_Settings_Null()
         {
             var distributedCache = DistributedCacheFactory.Create();
-            IAddressRegistry addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache, _logger, null);
+            IAddressRegistry addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache, _logger);
 
             new CollaborationProtocolRegistry(null, distributedCache, addressRegistry, _logger);
         }
@@ -92,7 +92,7 @@ namespace Helsenorge.Registries.Tests
         {
 
             var distributedCache = DistributedCacheFactory.Create();
-            IAddressRegistry addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache, _logger, null);
+            IAddressRegistry addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache, _logger);
 
             new CollaborationProtocolRegistry(new CollaborationProtocolRegistrySettings(), null, addressRegistry, _logger);
         }

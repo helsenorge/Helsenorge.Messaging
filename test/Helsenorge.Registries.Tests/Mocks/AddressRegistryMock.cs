@@ -36,7 +36,7 @@ namespace Helsenorge.Registries.Tests.Mocks
             AddressRegistrySettings settings,
             IDistributedCache cache,
             ILogger logger,
-            ICertificateValidator certificateValidator) : base(settings, cache, logger, certificateValidator)
+            ICertificateValidator certificateValidator = null) : base(settings, cache, logger, certificateValidator)
         {
         }
         /// <summary>

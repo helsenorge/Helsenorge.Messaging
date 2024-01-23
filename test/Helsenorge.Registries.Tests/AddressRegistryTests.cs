@@ -45,7 +45,7 @@ namespace Helsenorge.Registries.Tests
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var distributedCache = DistributedCacheFactory.Create();
 
-            var registry = new AddressRegistryMock(settings, distributedCache, logger, null);
+            var registry = new AddressRegistryMock(settings, distributedCache, logger);
 
             registry.SetupFindCommunicationPartyDetails(i =>
             {
@@ -130,13 +130,13 @@ namespace Helsenorge.Registries.Tests
         {
             var distributedCache = DistributedCacheFactory.Create();
 
-            new AddressRegistry(null, distributedCache, _logger, null);
+            new AddressRegistry(null, distributedCache, _logger);
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_Cache_Null()
         {
-            new AddressRegistry(new AddressRegistrySettings(), null, _logger, null);
+            new AddressRegistry(new AddressRegistrySettings(), null, _logger);
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -144,7 +144,7 @@ namespace Helsenorge.Registries.Tests
         {
             var distributedCache = DistributedCacheFactory.Create();
 
-            new AddressRegistry(new AddressRegistrySettings(), distributedCache, null, null);
+            new AddressRegistry(new AddressRegistrySettings(), distributedCache, null);
         }
 
         [TestMethod, Ignore]
