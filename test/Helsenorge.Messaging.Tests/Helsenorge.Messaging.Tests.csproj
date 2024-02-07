@@ -27,6 +27,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\Helsenorge.Messaging\Helsenorge.Messaging.csproj" />
+        <ProjectReference Include="..\Helsenorge.Messaging.Tests.Mocks\Helsenorge.Messaging.Tests.Mocks.csproj" />
         <ProjectReference Include="..\Helsenorge.Registries.Tests\Helsenorge.Registries.Tests.csproj" />
     </ItemGroup>
 

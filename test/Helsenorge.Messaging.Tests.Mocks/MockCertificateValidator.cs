@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -12,7 +12,7 @@ using Helsenorge.Registries.Abstractions;
 
 namespace Helsenorge.Messaging.Tests.Mocks
 {
-    internal class MockCertificateValidator : ICertificateValidator
+    public class MockCertificateValidator : ICertificateValidator
     {
         private Func<X509Certificate2, X509KeyUsageFlags, CertificateErrors> _error;
 

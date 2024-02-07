@@ -1,4 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿/*
+ * Copyright (c) 2021-2024, Norsk Helsenett SF and contributors
+ * See the file CONTRIBUTORS for details.
+ *
+ * This file is licensed under the MIT license
+ * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+ */
+
+using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
