@@ -7,7 +7,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\Helsenorge.Registries\Helsenorge.Registries.csproj" />
-      <ProjectReference Include="..\..\test\Helsenorge.Messaging.Tests\Helsenorge.Messaging.Tests.csproj" />
+      <ProjectReference Include="..\..\test\Helsenorge.Messaging.Tests.Mocks\Helsenorge.Messaging.Tests.Mocks.csproj" />
     </ItemGroup>
 
 </Project>

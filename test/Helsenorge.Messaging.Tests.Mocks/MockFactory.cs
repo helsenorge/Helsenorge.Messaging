@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -13,7 +13,7 @@ using Helsenorge.Messaging.Abstractions;
 
 namespace Helsenorge.Messaging.Tests.Mocks
 {
-    internal class MockFactory : IAmqpFactory
+    public class MockFactory : IAmqpFactory
     {
         public const int HelsenorgeHerId = 93238;
         public const int HerIdWithOnlyCpp = 91462;
@@ -58,7 +58,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
         }
     }
 
-    internal class MockCommunicationParty
+    public class MockCommunicationParty
     {
         public MockCommunicationParty(MockFactory factory, int herId)
         {
@@ -80,7 +80,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
 
     }
 
-    internal class MockQueue
+    public class MockQueue
     {
         public string Name { get; }
         public List<IAmqpMessage> Messages { get; }

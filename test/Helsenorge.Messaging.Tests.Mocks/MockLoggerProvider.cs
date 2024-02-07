@@ -1,5 +1,5 @@
 ﻿/* 
- * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
+ * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
  * This file is licensed under the MIT license
@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.Tests.Mocks
 {
-    class MockLoggerProvider : ILoggerProvider 
+    public class MockLoggerProvider : ILoggerProvider
     {
         // teh server creates multiple loggers, this acts as the hub for all logger output
         public List<Entry> Entries { get; set; } = new List<Entry>();
@@ -40,7 +40,7 @@ namespace Helsenorge.Messaging.Tests.Mocks
             return r;
         }
 
-        internal class Entry
+        public class Entry
         {
             public LogLevel LogLevel { get; set; }
             public EventId EventId { get; set; }
