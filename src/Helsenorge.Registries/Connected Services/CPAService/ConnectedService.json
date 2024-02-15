@@ -1,0 +1,15 @@
+{
+  "providerId": "Microsoft.Tools.ServiceModel.Svcutil",
+  "version": "2.1.0",
+  "ExtendedData": {
+    "inputs": [
+      "https://register-web.test.nhn.no/v1/CPPA"
+    ],
+    "namespaceMappings": [
+      "*, Helsenorge.Registries.CppaService"
+    ],
+    "outputFile": "CPAService.cs",
+    "targetFramework": "netstandard2.0",
+    "typeReuseMode": "All"
+  }
+}

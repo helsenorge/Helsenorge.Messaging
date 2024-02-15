@@ -267,54 +267,11 @@ namespace Helsenorge.Registries
         }
 
         /// <inheritdoc cref="GetCollaborationProtocolProfileAsync"/>
-        public async Task<CollaborationProtocolProfile> GetCollaborationProtocolProfileAsync(Guid id, bool forceUpdate = false)
+        [Obsolete("Method GetCollaborationProtocolProfileAsync is deprecated, and will be removed in the future.")]
+        public Task<CollaborationProtocolProfile> GetCollaborationProtocolProfileAsync(Guid id, bool forceUpdate = false)
         {
-            var key = $"CPA_GetCollaborationProtocolProfileAsync_{id}";
-            var result = forceUpdate ? null : await CacheExtensions.ReadValueFromCacheAsync<CollaborationProtocolProfile>(_logger, _cache, key).ConfigureAwait(false);
-
-            if (result != null)
-            {
-                var errors = CertificateErrors.None;
-                errors |= CertificateValidator.Validate(result.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
-                errors |= CertificateValidator.Validate(result.SignatureCertificate, X509KeyUsageFlags.NonRepudiation);
-                // If the certificates are valid, only then do we return a value from the cache
-                if (errors == CertificateErrors.None)
-                {
-                    return result;
-                }
-            }
-
-            string collaborationProtocolProfileXml;
-            try
-            {
-                collaborationProtocolProfileXml = await GetCollaborationProtocolProfileAsXmlAsyncInternal(id).ConfigureAwait(false);
-            }
-            catch (FaultException ex)
-            {
-                // if there are error getting a proper CPP, we have only the option to log that.
-                _logger.LogError($"Could not find or resolve protocol for counterparty when retrieving by id: '{id}'.  ErrorCode: {ex.Code} Message: {ex.Message}");
-                throw new RegistriesException(ex.Message, ex)
-                {
-                    EventId = EventIds.CollaborationProfile,
-                    Data = { { "CppId", id } }
-                };
-            }
-
-            if (string.IsNullOrEmpty(collaborationProtocolProfileXml))
-                return null;
-
-            var document = XDocument.Parse(collaborationProtocolProfileXml);
-            result = document.Root == null ? null : CollaborationProtocolProfile.CreateFromPartyInfoElement(document.Root.Element(_ns + "PartyInfo"));
-            if (result != null)
-                result.CppId = id;
-
-            await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, result, _settings.CachingInterval).ConfigureAwait(false);
-            return result;
+            throw new NotImplementedException();
         }
-
-        /// <inheritdoc cref="GetCollaborationProtocolProfileAsync"/>
-        protected virtual Task<string> GetCollaborationProtocolProfileAsXmlAsyncInternal(Guid id)
-            => Invoke(_logger, x => x.GetCppXmlAsync(id), "GetCppXmlAsync");
 
         /// <summary>
         /// Makes the actual call to the registry. Virtual so that it can overriden by mocks.

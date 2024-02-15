@@ -252,12 +252,6 @@ namespace Helsenorge.Registries.CPAService
     internal partial class GenericFault {
     }
     [ExcludeFromCodeCoverage]
-    internal partial class CollaborationProtocolProfileParameters {
-    }
-    [ExcludeFromCodeCoverage]
-    internal partial class Process {
-    }
-    [ExcludeFromCodeCoverage]
     internal partial class Channel {
     }
     [ExcludeFromCodeCoverage]
@@ -271,9 +265,6 @@ namespace Helsenorge.Registries.CPAService
     }
     [ExcludeFromCodeCoverage]
     internal partial class CpaXmlDetails {
-    }
-    [ExcludeFromCodeCoverage]
-    internal partial class CollaborationRoleIdentifier {
     }
     [ExcludeFromCodeCoverage]
     internal partial class ProcessParameter {
