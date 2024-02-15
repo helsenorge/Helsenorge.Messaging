@@ -275,3 +275,18 @@ namespace Helsenorge.Registries.CPAService
     }
 }
 
+namespace Helsenorge.Registries
+{
+    [ExcludeFromCodeCoverage]
+    public partial class EventSubscription
+    {
+    }
+    [ExcludeFromCodeCoverage]
+    internal partial class GenericFault
+    {
+    }
+    [ExcludeFromCodeCoverage]
+    internal partial class ServiceBusManagerV2Client
+    {
+    }
+}

@@ -1,12 +1,12 @@
 {
   "providerId": "Microsoft.Tools.ServiceModel.Svcutil",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "ExtendedData": {
     "inputs": [
-      "https://ws-web.test.nhn.no/v2/serviceBusManager"
+      "https://register-web.test.nhn.no/v2/serviceBusManager"
     ],
     "namespaceMappings": [
-      "*, Helsenorge.Registries"
+      "*, Helsenorge.Registries.ServiceBusManagerServiceV2"
     ],
     "outputFile": "ServiceBusManagerServiceV2.cs",
     "targetFramework": "netstandard2.0",
