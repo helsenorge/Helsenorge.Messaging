@@ -43,7 +43,7 @@ namespace Helsenorge.Messaging.Security
         /// is used.</param>
         /// <param name="messagingEncryptionType">Controls which encryption type the Protect methods use.</param>
         /// <param name="rejectDesEncryptedMessages">Controls if all envelopes encrypted with DES gets rejected</param>
-        /// <param name="rejectTripleDesEncryptedMessages">Controls if all envelopes encrypted with DES gets rejected</param>
+        /// <param name="rejectTripleDesEncryptedMessages">Controls if all envelopes encrypted with 3DES gets rejected</param>
         public SignThenEncryptMessageProtection(
             X509Certificate2 signingCertificate,
             X509Certificate2 encryptionCertificate,
