@@ -52,8 +52,7 @@ namespace Helsenorge.Messaging.Security
             X509IncludeOption? includeOption = default,
             MessagingEncryptionType messagingEncryptionType = MessagingEncryptionType.AES256,
             bool rejectDesEncryptedMessages = false,
-            bool rejectTripleDesEncryptedMessages = false
-            )
+            bool rejectTripleDesEncryptedMessages = false)
             : base (signingCertificate, encryptionCertificate, legacyEncryptionCertificate)
         {
             _logger = logger;
