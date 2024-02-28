@@ -16,6 +16,7 @@ using System.Text;
 using Helsenorge.Messaging.Abstractions;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
+using Helsenorge.Messaging.Amqp.Receivers;
 
 namespace Helsenorge.Messaging.Security
 {
@@ -27,6 +28,8 @@ namespace Helsenorge.Messaging.Security
         private readonly ILogger _logger;
         private readonly X509IncludeOption? _includeOption;
         private readonly MessagingEncryptionType _messagingEncryptionType;
+        private readonly bool _rejectDesEncryptedMessages;
+        private readonly bool _rejectTripleDesEncryptedMessages;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SignThenEncryptMessageProtection"/> class with the required certificates for signing and encrypting data.
@@ -39,18 +42,25 @@ namespace Helsenorge.Messaging.Security
         /// embedded in the signed message. If not specified, the default <see cref="X509IncludeOption.ExcludeRoot"/>
         /// is used.</param>
         /// <param name="messagingEncryptionType">Controls which encryption type the Protect methods use.</param>
+        /// <param name="rejectDesEncryptedMessages">Controls if all envelopes encrypted with DES gets rejected</param>
+        /// <param name="rejectTripleDesEncryptedMessages">Controls if all envelopes encrypted with DES gets rejected</param>
         public SignThenEncryptMessageProtection(
             X509Certificate2 signingCertificate,
             X509Certificate2 encryptionCertificate,
             ILogger logger,
             X509Certificate2 legacyEncryptionCertificate = null,
             X509IncludeOption? includeOption = default,
-            MessagingEncryptionType messagingEncryptionType = MessagingEncryptionType.AES256)
+            MessagingEncryptionType messagingEncryptionType = MessagingEncryptionType.AES256,
+            bool rejectDesEncryptedMessages = false,
+            bool rejectTripleDesEncryptedMessages = false
+            )
             : base (signingCertificate, encryptionCertificate, legacyEncryptionCertificate)
         {
             _logger = logger;
             _includeOption = includeOption;
             _messagingEncryptionType = messagingEncryptionType;
+            _rejectDesEncryptedMessages = rejectDesEncryptedMessages;
+            _rejectTripleDesEncryptedMessages = rejectTripleDesEncryptedMessages;
         }
 
         /// <summary>
@@ -132,6 +142,12 @@ namespace Helsenorge.Messaging.Security
             {
                 var encryptionOid = envelopedCms?.ContentEncryptionAlgorithm?.Oid;
                 _logger.LogInformation($"Decrypting EnvelopedCms with ContentEncryptionAlgorithm: {encryptionOid?.FriendlyName ?? "null"} : {encryptionOid?.Value ?? "null"}");
+
+                if ((_rejectDesEncryptedMessages && encryptionOid.Value == "1.3.14.3.2.7")
+                    || (_rejectTripleDesEncryptedMessages && encryptionOid.Value == "1.2.840.113549.3.7"))
+                {
+                    throw new UnsupportedMessageException($"EnvelopedCms was encrypted with disabled ContentEncryptionAlgorithm: {encryptionOid?.FriendlyName ?? "null"} : {encryptionOid?.Value ?? "null"}");
+                }
 
                 envelopedCms.Decrypt(envelopedCms.RecipientInfos[0], encryptionCertificates);
             }

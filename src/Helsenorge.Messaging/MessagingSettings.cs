@@ -64,6 +64,16 @@ namespace Helsenorge.Messaging
         public bool SkipAddingPayloadMetadataIntoApplicationProperties  { get; set; }
 
         /// <summary>
+        /// Indicates if messages encrypted with DES (OID = 1.3.14.3.2.7) gets rejected
+        /// </summary>
+        public bool RejectDesEncryptedMessages { get; set; } = false;
+
+        /// <summary>
+        /// Indicates if messages encrypted with 3DES (OID = 1.2.840.113549.3.7) gets rejected
+        /// </summary>
+        public bool RejectTripleDesEncryptedMessages { get; set; } = false;
+
+        /// <summary>
         /// Skip CPA lookup for message functions in this list. Instead use an internal dummy CPA.
         /// </summary>
         public List<string> MessageFunctionsExcludedFromCpaResolve { get; set; } = new List<string>();
