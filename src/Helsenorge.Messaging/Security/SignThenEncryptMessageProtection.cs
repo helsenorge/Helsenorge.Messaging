@@ -16,6 +16,7 @@ using System.Text;
 using Helsenorge.Messaging.Abstractions;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
+using Helsenorge.Messaging.Amqp.Receivers;
 
 namespace Helsenorge.Messaging.Security
 {
@@ -27,6 +28,7 @@ namespace Helsenorge.Messaging.Security
         private readonly ILogger _logger;
         private readonly X509IncludeOption? _includeOption;
         private readonly MessagingEncryptionType _messagingEncryptionType;
+        private readonly MessagingEncryptionType _rejectMessagingEncryptionTypes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SignThenEncryptMessageProtection"/> class with the required certificates for signing and encrypting data.
@@ -39,18 +41,21 @@ namespace Helsenorge.Messaging.Security
         /// embedded in the signed message. If not specified, the default <see cref="X509IncludeOption.ExcludeRoot"/>
         /// is used.</param>
         /// <param name="messagingEncryptionType">Controls which encryption type the Protect methods use.</param>
+        /// <param name="rejectMessagingEncryptionType">Controls which encryption type the Unprotect methods rejects.</param>
         public SignThenEncryptMessageProtection(
             X509Certificate2 signingCertificate,
             X509Certificate2 encryptionCertificate,
             ILogger logger,
             X509Certificate2 legacyEncryptionCertificate = null,
             X509IncludeOption? includeOption = default,
-            MessagingEncryptionType messagingEncryptionType = MessagingEncryptionType.AES256)
-            : base (signingCertificate, encryptionCertificate, legacyEncryptionCertificate)
+            MessagingEncryptionType messagingEncryptionType = MessagingEncryptionType.AES256,
+            MessagingEncryptionType rejectMessagingEncryptionType = MessagingEncryptionType.None)
+            : base(signingCertificate, encryptionCertificate, legacyEncryptionCertificate)
         {
             _logger = logger;
             _includeOption = includeOption;
             _messagingEncryptionType = messagingEncryptionType;
+            _rejectMessagingEncryptionTypes = rejectMessagingEncryptionType;
         }
 
         /// <summary>
@@ -133,13 +138,19 @@ namespace Helsenorge.Messaging.Security
                 var encryptionOid = envelopedCms?.ContentEncryptionAlgorithm?.Oid;
                 _logger.LogInformation($"Decrypting EnvelopedCms with ContentEncryptionAlgorithm: {encryptionOid?.FriendlyName ?? "null"} : {encryptionOid?.Value ?? "null"}");
 
+                if ((_rejectMessagingEncryptionTypes.HasFlag(MessagingEncryptionType.DES) && encryptionOid.Value == "1.3.14.3.2.7")
+                    || (_rejectMessagingEncryptionTypes.HasFlag(MessagingEncryptionType.TripleDES) && encryptionOid.Value == "1.2.840.113549.3.7"))
+                {
+                    throw new UnsupportedMessageException($"EnvelopedCms was encrypted with disabled ContentEncryptionAlgorithm: {encryptionOid?.FriendlyName ?? "null"} : {encryptionOid?.Value ?? "null"}");
+                }
+
                 envelopedCms.Decrypt(envelopedCms.RecipientInfos[0], encryptionCertificates);
             }
             catch (System.Security.Cryptography.CryptographicException ce)
             {
                 var cert = envelopedCms?.RecipientInfos[0]?.RecipientIdentifier?.Value as System.Security.Cryptography.Xml.X509IssuerSerial?;
                 if (cert.HasValue)
-                    throw new SecurityException($"Message encrypted with certificate SerialNumber {cert.Value.SerialNumber}, IssueName {cert.Value.IssuerName } " +
+                    throw new SecurityException($"Message encrypted with certificate SerialNumber {cert.Value.SerialNumber}, IssueName {cert.Value.IssuerName} " +
                                             $"could not be decrypted. Certification details: {cert} Exception: {ce.Message}");
 
                 throw new SecurityException($"Encryption certificate not found. Exception: {ce.Message}");
@@ -178,10 +189,14 @@ namespace Helsenorge.Messaging.Security
 
         private EnvelopedCms GetEnvelope(byte[] rawContent)
         {
-            if (_messagingEncryptionType == MessagingEncryptionType.AES256)
+            if (_messagingEncryptionType.HasFlag(MessagingEncryptionType.AES256))
+            {
                 return new EnvelopedCms(new ContentInfo(rawContent), new AlgorithmIdentifier(new Oid("2.16.840.1.101.3.4.1.42")));
-            else if (_messagingEncryptionType == MessagingEncryptionType.TripleDES)
+            }
+            else if (_messagingEncryptionType.HasFlag(MessagingEncryptionType.TripleDES))
+            {
                 return new EnvelopedCms(new ContentInfo(rawContent), new AlgorithmIdentifier(new Oid("1.2.840.113549.3.7")));
+            }
 
             throw new ArgumentException($"MessagingEncryptionType has been set to an unsupported type.: {_messagingEncryptionType}", nameof(_messagingEncryptionType));
         }

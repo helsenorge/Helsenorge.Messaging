@@ -6,13 +6,21 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using System;
+
 namespace Helsenorge.Messaging
 {
     /// <summary>
     /// Enum used for setting messaging encryption type 
     /// </summary>
+    [Flags]
     public enum MessagingEncryptionType
     {
+        /// <summary>
+        /// Specifies no encryption used in messaging.
+        /// </summary>
+        None = 0,
+
         /// <summary>
         /// Specifies the AES256 encryption used in messaging.
         /// </summary>
@@ -22,5 +30,10 @@ namespace Helsenorge.Messaging
         /// Specifies the TripleDES encryption used in messaging.
         /// </summary>
         TripleDES = 2,
+
+        /// <summary>
+        /// Specifies the DES encryption used in messaging.
+        /// </summary>
+        DES = 4,
     }
 }

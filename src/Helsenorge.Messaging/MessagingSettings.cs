@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
@@ -62,6 +62,11 @@ namespace Helsenorge.Messaging
         /// Indicates if we should NOT add metadata from payload into application properties. default: true
         /// </summary>
         public bool SkipAddingPayloadMetadataIntoApplicationProperties  { get; set; }
+
+        /// <summary>
+        /// Indicates what encryption types get rejected in messaging
+        /// </summary>
+        public MessagingEncryptionType RejectionMessagingEncryptionType { get; set; } = MessagingEncryptionType.None;
 
         /// <summary>
         /// Skip CPA lookup for message functions in this list. Instead use an internal dummy CPA.
