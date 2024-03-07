@@ -66,7 +66,7 @@ namespace Helsenorge.Messaging
         /// <summary>
         /// Indicates what encryption types get rejected in messaging
         /// </summary>
-        public RejectionMessagingEncryptionType RejectionMessagingEncryptionType { get; set; } = RejectionMessagingEncryptionType.None;
+        public MessagingEncryptionType RejectionMessagingEncryptionType { get; set; } = MessagingEncryptionType.None;
 
         /// <summary>
         /// Skip CPA lookup for message functions in this list. Instead use an internal dummy CPA.

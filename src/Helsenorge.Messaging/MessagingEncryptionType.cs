@@ -13,8 +13,14 @@ namespace Helsenorge.Messaging
     /// <summary>
     /// Enum used for setting messaging encryption type 
     /// </summary>
+    [Flags]
     public enum MessagingEncryptionType
     {
+        /// <summary>
+        /// Specifies no encryption used in messaging.
+        /// </summary>
+        None = 0,
+
         /// <summary>
         /// Specifies the AES256 encryption used in messaging.
         /// </summary>
@@ -24,27 +30,10 @@ namespace Helsenorge.Messaging
         /// Specifies the TripleDES encryption used in messaging.
         /// </summary>
         TripleDES = 2,
-    }
-
-    /// <summary>
-    /// Enum used for setting messaging rejection encryption types
-    /// </summary>
-    [Flags]
-    public enum RejectionMessagingEncryptionType
-    {
-        /// <summary>
-        /// Specifies no encryption rejection used in messaging.
-        /// </summary>
-        None = 0,
 
         /// <summary>
-        /// Specifies rejection of messages encrypted using DES encryption.
+        /// Specifies the DES encryption used in messaging.
         /// </summary>
-        DES = 1,
-
-        /// <summary>
-        /// Specifies rejection of messages encrypted using TripleDES encryption.
-        /// </summary>
-        TripleDES = 2,
+        DES = 4,
     }
 }
