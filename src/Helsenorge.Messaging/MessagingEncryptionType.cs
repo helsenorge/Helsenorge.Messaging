@@ -6,6 +6,8 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using System;
+
 namespace Helsenorge.Messaging
 {
     /// <summary>
@@ -20,6 +22,28 @@ namespace Helsenorge.Messaging
 
         /// <summary>
         /// Specifies the TripleDES encryption used in messaging.
+        /// </summary>
+        TripleDES = 2,
+    }
+
+    /// <summary>
+    /// Enum used for setting messaging rejection encryption types
+    /// </summary>
+    [Flags]
+    public enum RejectionMessagingEncryptionType
+    {
+        /// <summary>
+        /// Specifies no encryption rejection used in messaging.
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// Specifies rejection messages encrypted using DES encryption.
+        /// </summary>
+        DES = 1,
+
+        /// <summary>
+        /// Specifies rejection messages encrypted using TripleDES encryption.
         /// </summary>
         TripleDES = 2,
     }

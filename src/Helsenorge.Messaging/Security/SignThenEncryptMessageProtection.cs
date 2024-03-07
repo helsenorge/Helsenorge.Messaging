@@ -28,8 +28,7 @@ namespace Helsenorge.Messaging.Security
         private readonly ILogger _logger;
         private readonly X509IncludeOption? _includeOption;
         private readonly MessagingEncryptionType _messagingEncryptionType;
-        private readonly bool _rejectDesEncryptedMessages;
-        private readonly bool _rejectTripleDesEncryptedMessages;
+        private readonly RejectionMessagingEncryptionType _rejectMessagingEncryptionType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SignThenEncryptMessageProtection"/> class with the required certificates for signing and encrypting data.
@@ -42,8 +41,7 @@ namespace Helsenorge.Messaging.Security
         /// embedded in the signed message. If not specified, the default <see cref="X509IncludeOption.ExcludeRoot"/>
         /// is used.</param>
         /// <param name="messagingEncryptionType">Controls which encryption type the Protect methods use.</param>
-        /// <param name="rejectDesEncryptedMessages">Controls if all envelopes encrypted with DES gets rejected</param>
-        /// <param name="rejectTripleDesEncryptedMessages">Controls if all envelopes encrypted with 3DES gets rejected</param>
+        /// <param name="rejectMessagingEncryptionType">Controls which encryption type the Unprotect methods rejects.</param>
         public SignThenEncryptMessageProtection(
             X509Certificate2 signingCertificate,
             X509Certificate2 encryptionCertificate,
@@ -51,15 +49,13 @@ namespace Helsenorge.Messaging.Security
             X509Certificate2 legacyEncryptionCertificate = null,
             X509IncludeOption? includeOption = default,
             MessagingEncryptionType messagingEncryptionType = MessagingEncryptionType.AES256,
-            bool rejectDesEncryptedMessages = false,
-            bool rejectTripleDesEncryptedMessages = false)
-            : base (signingCertificate, encryptionCertificate, legacyEncryptionCertificate)
+            RejectionMessagingEncryptionType rejectMessagingEncryptionType = RejectionMessagingEncryptionType.None)
+            : base(signingCertificate, encryptionCertificate, legacyEncryptionCertificate)
         {
             _logger = logger;
             _includeOption = includeOption;
             _messagingEncryptionType = messagingEncryptionType;
-            _rejectDesEncryptedMessages = rejectDesEncryptedMessages;
-            _rejectTripleDesEncryptedMessages = rejectTripleDesEncryptedMessages;
+            _rejectMessagingEncryptionType = rejectMessagingEncryptionType;
         }
 
         /// <summary>
@@ -142,8 +138,8 @@ namespace Helsenorge.Messaging.Security
                 var encryptionOid = envelopedCms?.ContentEncryptionAlgorithm?.Oid;
                 _logger.LogInformation($"Decrypting EnvelopedCms with ContentEncryptionAlgorithm: {encryptionOid?.FriendlyName ?? "null"} : {encryptionOid?.Value ?? "null"}");
 
-                if ((_rejectDesEncryptedMessages && encryptionOid.Value == "1.3.14.3.2.7")
-                    || (_rejectTripleDesEncryptedMessages && encryptionOid.Value == "1.2.840.113549.3.7"))
+                if ((_rejectMessagingEncryptionType.HasFlag(RejectionMessagingEncryptionType.DES) && encryptionOid.Value == "1.3.14.3.2.7")
+                    || (_rejectMessagingEncryptionType.HasFlag(RejectionMessagingEncryptionType.TripleDES) && encryptionOid.Value == "1.2.840.113549.3.7"))
                 {
                     throw new UnsupportedMessageException($"EnvelopedCms was encrypted with disabled ContentEncryptionAlgorithm: {encryptionOid?.FriendlyName ?? "null"} : {encryptionOid?.Value ?? "null"}");
                 }
@@ -154,7 +150,7 @@ namespace Helsenorge.Messaging.Security
             {
                 var cert = envelopedCms?.RecipientInfos[0]?.RecipientIdentifier?.Value as System.Security.Cryptography.Xml.X509IssuerSerial?;
                 if (cert.HasValue)
-                    throw new SecurityException($"Message encrypted with certificate SerialNumber {cert.Value.SerialNumber}, IssueName {cert.Value.IssuerName } " +
+                    throw new SecurityException($"Message encrypted with certificate SerialNumber {cert.Value.SerialNumber}, IssueName {cert.Value.IssuerName} " +
                                             $"could not be decrypted. Certification details: {cert} Exception: {ce.Message}");
 
                 throw new SecurityException($"Encryption certificate not found. Exception: {ce.Message}");

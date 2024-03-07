@@ -202,8 +202,7 @@ namespace Helsenorge.Messaging
                 _logger,
                 legacyEncryptionCertificate,
                 messagingEncryptionType: Settings.MessagingEncryptionType,
-                rejectDesEncryptedMessages: Settings.RejectDesEncryptedMessages,
-                rejectTripleDesEncryptedMessages: Settings.RejectTripleDesEncryptedMessages);
+                rejectMessagingEncryptionType: Settings.RejectionMessagingEncryptionType);
 #pragma warning restore CS0618
         }
 
