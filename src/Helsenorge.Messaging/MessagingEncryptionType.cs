@@ -38,12 +38,12 @@ namespace Helsenorge.Messaging
         None = 0,
 
         /// <summary>
-        /// Specifies rejection messages encrypted using DES encryption.
+        /// Specifies rejection of messages encrypted using DES encryption.
         /// </summary>
         DES = 1,
 
         /// <summary>
-        /// Specifies rejection messages encrypted using TripleDES encryption.
+        /// Specifies rejection of messages encrypted using TripleDES encryption.
         /// </summary>
         TripleDES = 2,
     }
