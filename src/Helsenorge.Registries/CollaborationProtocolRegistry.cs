@@ -115,6 +115,7 @@ namespace Helsenorge.Registries
             }
             if (string.IsNullOrEmpty(xmlString))
             {
+                // Fix that enables substitutes and interns without CPP to reply to messages on behalf of the GP
                 return await DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, counterpartyHerId, null);
             }
             else
