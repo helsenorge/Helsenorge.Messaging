@@ -8,7 +8,6 @@
 
 using System;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using Helsenorge.Registries.Abstractions;
 
 namespace Helsenorge.Registries
@@ -67,7 +66,6 @@ namespace Helsenorge.Registries
             using (chain)
             {
                 if (chain.Build(certificate)) return result;
-                var sb = new StringBuilder();
 
                 foreach (var status in chain.ChainStatus)
                 {
@@ -82,7 +80,6 @@ namespace Helsenorge.Registries
                             result |= CertificateErrors.Revoked;
                             break;
                     }
-                    sb.AppendLine(status.StatusInformation);
                 }
                 return result;
             }
