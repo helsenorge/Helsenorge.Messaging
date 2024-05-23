@@ -138,6 +138,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                 TimeToLive = TimeSpan.FromSeconds(15),
                 ReplyTo = MockFactory.OtherParty.Synchronous.Name,
                 Queue = MockFactory.Helsenorge.Error.Messages,
+                DeadLetterQueue = MockFactory.Helsenorge.DeadLetter.Messages
             };
         }
     }

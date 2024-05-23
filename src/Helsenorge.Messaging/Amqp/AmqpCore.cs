@@ -469,6 +469,27 @@ namespace Helsenorge.Messaging.Amqp
 
             message.Complete();
         }
+
+        /// <summary>
+        /// Moves the message from current queue to the dead letter queue
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="id"></param>
+        /// <param name="message"></param>
+        /// <param name="description"></param>
+        /// <param name="ex"></param>
+        internal async void DeadLetterProcessedMessageAsync(
+            ILogger logger,
+            EventId id, 
+            IAmqpMessage message,
+            string description,
+            Exception ex = null)
+        {
+            if (message == null) throw new ArgumentNullException(nameof(message));
+
+            logger.LogWarning(id, ex, description);
+            await message.RejectAsync();
+        }
         /// <summary>
         /// Registers an alternate messaging factory
         /// </summary>

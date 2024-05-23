@@ -254,6 +254,17 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 stopwatch.Stop();
                 return incomingMessage;
             }
+            catch (CertificateException ex) when (ex.Error == CertificateErrors.RevokedOffline)
+            {
+                // If theres an network related issue with the CRL then we'll deadletter the message so it can be tried again later
+                Logger.LogError("Deadlettering message, so it can be retried if issue with certificate have been resolved. " + 
+                                  $"{ex.Description}. MessageFunction: {message.MessageFunction} " +
+                                  $"FromHerId: {message.FromHerId} ToHerId: {message.ToHerId} CpaId: {message.CpaId} " +
+                                  $"CorrelationId: {message.CorrelationId} Certificate thumbprint: {ex.AdditionalInformation}");
+
+                AmqpCore.DeadLetterProcessedMessageAsync(Logger, ex.EventId, message, ex.Description);
+                await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
+            }
             catch (CertificateException ex)
             {
                 Logger.LogWarning($"{ex.Description}. MessageFunction: {message.MessageFunction} " +
@@ -493,6 +504,9 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 case CertificateErrors.RevokedUnknown:
                     throw new CertificateException(error, "transport:revoked-certificate", "Unable to determine revocation status",
                         EventIds.RemoteCertificateRevocation, AdditionalInformation(certificate));
+                case CertificateErrors.RevokedOffline:
+                    throw new CertificateException(error, "transport:revoked-certificate-offline", "Unable to determine revocation status. Service is unavailable",
+                        EventIds.RemoteCertificateRevocationOffline, AdditionalInformation(certificate));
                 default: // since the value is bit-coded
                     throw new CertificateException(error, "transport:invalid-certificate", "More than one error with certificate",
                         EventIds.RemoteCertificate, AdditionalInformation(certificate));
@@ -535,6 +549,10 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 case CertificateErrors.Missing:
                     description = "Certificate is missing";
                     id = EventIds.LocalCertificate;
+                    break;
+                case CertificateErrors.RevokedOffline:
+                    description = "Unable to determine revocation status. Service is unavailable";
+                    id = EventIds.LocalCertificateRevocationOffline;
                     break;
                 default: // since the value is bit-coded
                     description = "More than one error with certificate";

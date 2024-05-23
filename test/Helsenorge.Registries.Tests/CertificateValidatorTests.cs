@@ -8,6 +8,7 @@
 
 using System.Security.Cryptography.X509Certificates;
 using Helsenorge.Registries.Abstractions;
+using Helsenorge.Registries.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Helsenorge.Registries.Tests
@@ -23,7 +24,7 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(CertificateErrors.Missing, error);
         }
         [TestMethod]
-        [TestCategory("X509Chain"), Ignore]
+        [TestCategory("X509Chain")]
         public void CertificateValidation_None()
         {
             var validator = new CertificateValidator();
@@ -32,7 +33,7 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(CertificateErrors.None, error);
         }
         [TestMethod]
-        [TestCategory("X509Chain"), Ignore]
+        [TestCategory("X509Chain")]
         public void CertificateValidation_StartDate()
         {
             var validator = new CertificateValidator();
@@ -41,7 +42,7 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(CertificateErrors.StartDate, error);
         }
         [TestMethod]
-        [TestCategory("X509Chain"), Ignore]
+        [TestCategory("X509Chain")]
         public void CertificateValidation_EndDate()
         {
             var validator = new CertificateValidator();
@@ -50,7 +51,7 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(CertificateErrors.EndDate, error);
         }
         [TestMethod]
-        [TestCategory("X509Chain"), Ignore]
+        [TestCategory("X509Chain")]
         public void CertificateValidation_Usage()
         {
             var validator = new CertificateValidator();
@@ -65,16 +66,87 @@ namespace Helsenorge.Registries.Tests
             Assert.IsTrue(TestCertificates.CounterpartyPublicSignature.HasKeyUsage(X509KeyUsageFlags.NonRepudiation));
             Assert.IsFalse(TestCertificates.CounterpartyPublicSignature.HasKeyUsage(X509KeyUsageFlags.KeyEncipherment));
         }
-        // don't have a certificate with multiple errors
-        //[TestMethod]
-        //public void CertificateValidation_Multiple()
-        //{
-        //	var validator = new CertificateValidator();
-        //	var error = validator.Validate(TestCertificates.HelsenorgePublicEncryptionInvalid,
-        //		X509KeyUsageFlags.KeyEncipherment);
-        //	Assert.AreEqual(CertificateErrors.StartDate | CertificateErrors.Usage, error);
-        //}
 
-        // missing certificate that has been revoked
+        [TestMethod("X509Chain")]
+        public void CertificateValidation_Multiple()
+        {
+            var validator = new CertificateValidator();
+            var error = validator.Validate(TestCertificates.CounterpartyPublicSignatureInvalidStart,
+                X509KeyUsageFlags.KeyEncipherment);
+            Assert.AreEqual(CertificateErrors.StartDate | CertificateErrors.Usage, error);
+        }
+
+        [TestMethod]
+        [TestCategory("X509Chain")]
+        public void CertificateValidation_RevokeOffline()
+        {
+            var usage = X509KeyUsageFlags.NonRepudiation;
+            var testCertificate = TestCertificates.CounterpartyPublicSignature;
+
+            var mockChain = new MockX509Chain();
+            mockChain.SetChainStatus(new[]
+            {
+                new X509ChainStatus
+                {
+                    Status = X509ChainStatusFlags.OfflineRevocation,
+                    StatusInformation = "Offline revocation"
+                }
+            });
+            var validator = new CertificateValidator(mockChain);
+            var error = validator.Validate(testCertificate, usage);
+            Assert.AreEqual(CertificateErrors.RevokedOffline, error);
+        }
+
+        [TestMethod]
+        [TestCategory("X509Chain")]
+        public void CertificateValidation_RevokeMultiple()
+        {
+            var usage = X509KeyUsageFlags.NonRepudiation;
+            var testCertificate = TestCertificates.CounterpartyPublicSignature;
+
+            var mockChain = new MockX509Chain();
+            mockChain.SetChainStatus(new[]
+            {
+                new X509ChainStatus
+                {
+                    Status = X509ChainStatusFlags.OfflineRevocation,
+                    StatusInformation = "Offline revocation"
+                },
+                new X509ChainStatus
+                {
+                Status = X509ChainStatusFlags.Revoked,
+                StatusInformation = "Revoked"
+                }
+            });
+            var validator = new CertificateValidator(mockChain);
+            var error = validator.Validate(testCertificate, usage);
+            Assert.AreEqual(CertificateErrors.RevokedOffline | CertificateErrors.Revoked, error);
+        }
+
+        [TestMethod]
+        [TestCategory("X509Chain")]
+        public void CertificateValidation_ChainStatusOther()
+        {
+            var usage = X509KeyUsageFlags.NonRepudiation;
+            var testCertificate = TestCertificates.CounterpartyPublicSignature;
+
+            var mockChain = new MockX509Chain();
+            mockChain.SetChainStatus(new[]
+            {
+                new X509ChainStatus
+                {
+                    Status = X509ChainStatusFlags.HasWeakSignature,
+                    StatusInformation = "Has weak signature"
+                },
+                new X509ChainStatus
+                {
+                    Status = X509ChainStatusFlags.InvalidExtension,
+                    StatusInformation = "Invalid extension"
+                }
+            });
+            var validator = new CertificateValidator(mockChain);
+            var error = validator.Validate(testCertificate, usage);
+            Assert.AreEqual(CertificateErrors.None, error);
+        }
     }
 }

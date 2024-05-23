@@ -139,6 +139,14 @@ namespace Helsenorge.Messaging.Abstractions
         /// Invalid HER-id.
         /// </summary>
         public static EventId CouldNotVerifyCertificate = new EventId(41, EventIdName);
+        /// <summary>
+        /// Remote certificate has been revoked.
+        /// </summary>
+        public static EventId RemoteCertificateRevocationOffline = new EventId(42, EventIdName);
+        /// <summary>
+        /// Local certificate has been revoked.
+        /// </summary>
+        public static EventId LocalCertificateRevocationOffline = new EventId(43, EventIdName);
 
         /// <summary>
         /// Event Id used for informational purposes when starting/ending the Receive process.

@@ -66,17 +66,20 @@ namespace Helsenorge.Messaging.Tests.Mocks
             Synchronous = new MockQueue($"{herId}_sync");
             Error = new MockQueue($"{herId}_error");
             SynchronousReply = new MockQueue($"{herId}_syncreply");
-            
+            DeadLetter = new MockQueue($"{herId}_dl");
+
             factory.Qeueues.Add(Asynchronous.Name, Asynchronous.Messages);
             factory.Qeueues.Add(Synchronous.Name, Synchronous.Messages);
             factory.Qeueues.Add(Error.Name, Error.Messages);
             factory.Qeueues.Add(SynchronousReply.Name, SynchronousReply.Messages);
+            factory.Qeueues.Add(DeadLetter.Name, DeadLetter.Messages);
         }
 
         public MockQueue Asynchronous { get; }
         public MockQueue Synchronous { get; }
         public MockQueue Error { get; }
         public MockQueue SynchronousReply { get; }
+        public MockQueue DeadLetter { get; }
 
     }
 

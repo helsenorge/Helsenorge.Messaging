@@ -9,6 +9,7 @@
 using System;
 using System.Security.Cryptography.X509Certificates;
 using Helsenorge.Registries.Abstractions;
+using Helsenorge.Registries.Utilities;
 
 namespace Helsenorge.Registries
 {
@@ -18,6 +19,7 @@ namespace Helsenorge.Registries
     public class CertificateValidator : ICertificateValidator
     {
         private readonly bool _useOnlineRevocationCheck;
+        private readonly IX509Chain _chain;
 
         /// <summary>
         /// CertificateValidator constructor
@@ -26,7 +28,20 @@ namespace Helsenorge.Registries
         public CertificateValidator(bool useOnlineRevocationCheck = true)
         {
             _useOnlineRevocationCheck = useOnlineRevocationCheck;
+            _chain = new X509ChainWrapper();
         }
+
+        /// <summary>
+        /// CertificateValidator constructor
+        /// </summary>
+        /// <param name="chain">You can set your own X509Chain.</param>
+        /// <param name="useOnlineRevocationCheck">Should online certificate revocation list be used. Optional, default true.</param>
+        internal CertificateValidator(IX509Chain chain, bool useOnlineRevocationCheck = true)
+        {
+            _useOnlineRevocationCheck = useOnlineRevocationCheck;
+            _chain = chain;
+        }
+
         /// <summary>
         /// Validates the provided certificate
         /// </summary>
@@ -49,30 +64,27 @@ namespace Helsenorge.Registries
                 result |= CertificateErrors.EndDate;
             }
 
-            if(!certificate.HasKeyUsage(usage))
+            if (!certificate.HasKeyUsage(usage))
                 result |= CertificateErrors.Usage;
 
-            var chain = new X509Chain
-            {
-                ChainPolicy =
-                {
-                    RevocationMode = _useOnlineRevocationCheck ? X509RevocationMode.Online : X509RevocationMode.NoCheck,
-                    RevocationFlag = X509RevocationFlag.EntireChain,
-                    UrlRetrievalTimeout = TimeSpan.FromSeconds(30),
-                    VerificationTime = DateTime.Now,
-                }
-            };
 
-            using (chain)
-            {
-                if (chain.Build(certificate)) return result;
+            _chain.ChainPolicy.RevocationMode = _useOnlineRevocationCheck ? X509RevocationMode.Online : X509RevocationMode.NoCheck;
+            _chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
+            _chain.ChainPolicy.UrlRetrievalTimeout = TimeSpan.FromSeconds(30);
+            _chain.ChainPolicy.VerificationTime = DateTime.Now;
 
-                foreach (var status in chain.ChainStatus)
+            using (_chain)
+            {
+                if (_chain.Build(certificate)) return result;
+
+                foreach (var status in _chain.ChainStatus)
                 {
                     // ReSharper disable once SwitchStatementMissingSomeCases
                     switch (status.Status)
                     {
                         case X509ChainStatusFlags.OfflineRevocation:
+                            result |= CertificateErrors.RevokedOffline;
+                            break;
                         case X509ChainStatusFlags.RevocationStatusUnknown:
                             result |= CertificateErrors.RevokedUnknown;
                             break;

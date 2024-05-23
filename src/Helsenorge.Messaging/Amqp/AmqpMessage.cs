@@ -323,9 +323,9 @@ namespace Helsenorge.Messaging.Amqp
 
         public async Task CompleteAsync() => await CompleteActionAsync.Invoke().ConfigureAwait(false);
 
-        public void Reject() => ReleaseAction.Invoke();
+        public void Reject() => RejectAction.Invoke();
 
-        public async Task RejectAsync() => await ReleaseActionAsync.Invoke().ConfigureAwait(false);
+        public async Task RejectAsync() => await RejectActionAsync.Invoke().ConfigureAwait(false);
 
         public void Release() => ReleaseAction.Invoke();
 
