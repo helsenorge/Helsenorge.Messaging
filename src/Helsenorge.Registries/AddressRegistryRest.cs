@@ -21,7 +21,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using Helsenorge.Registries.AddressService;
 using System.ServiceModel;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Helsenorge.Registries;
 /// <summary>

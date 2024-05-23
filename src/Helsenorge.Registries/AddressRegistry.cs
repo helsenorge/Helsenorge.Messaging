@@ -17,11 +17,9 @@ using Microsoft.Extensions.Logging;
 using System.Security.Cryptography.X509Certificates;
 using Helsenorge.Registries.AddressService;
 using CertificateDetails = Helsenorge.Registries.Abstractions.CertificateDetails;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Code = Helsenorge.Registries.Abstractions.Code;
-using System.Security.Cryptography;
 
 namespace Helsenorge.Registries
 {
