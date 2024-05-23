@@ -16,7 +16,15 @@ public class AddressRegistryRestSettings
     /// <summary>
     ///     The configuration containing WCF settings
     /// </summary>
-    public RestConfiguration RestConfiguration { get; set; }
+    public RestConfiguration RestConfigurationAr { get; set; }
+    /// <summary>
+    ///     The configuration containing WCF settings
+    /// </summary>
+    public RestConfiguration RestConfigurationCertificate { get; set; }
+    /// <summary>
+    ///     Use online certificate revocation list (CRL) check. Default true.
+    /// </summary>
+    public bool UseOnlineRevocationCheck { get; set; } = true;
 
     /// <summary>
     ///     The amount of time values should be cached
