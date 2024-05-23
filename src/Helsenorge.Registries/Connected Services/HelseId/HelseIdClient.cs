@@ -17,7 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Helsenorge.Registries.Connected_Services.HelseId;
 
-public class HelseIdClient
+public class HelseIdClient : IHelseIdClient
 {
     private readonly HelseIdConfiguration _configuration;
     private readonly ISecurityKeyProvider _securityKeyProvider;

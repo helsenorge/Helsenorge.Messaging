@@ -33,7 +33,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     private readonly IAddressRegistry _addressRegistry;
     private readonly RestServiceInvoker _restServiceInvoker;
     private readonly ILogger _logger;
-    private readonly HelseIdClient _helseIdClient;
+    private readonly IHelseIdClient _helseIdClient;
     private readonly XNamespace _ns = "http://www.oasis-open.org/committees/ebxml-cppa/schema/cpp-cpa-2_0.xsd";
     private readonly CollaborationProtocolRegistryRestSettings _settings;
 
@@ -55,7 +55,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         IDistributedCache cache,
         IAddressRegistry addressRegistry,
         ILogger logger,
-        HelseIdClient helseIdClient)
+        IHelseIdClient helseIdClient)
     {
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _cache = cache ?? throw new ArgumentNullException(nameof(cache));
@@ -64,7 +64,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         _helseIdClient = helseIdClient ?? throw new ArgumentNullException(nameof(helseIdClient));
 
         var httpClientFactory = new ProxyHttpClientFactory(settings.RestConfiguration);
-        _restServiceInvoker = new RestServiceInvoker(logger, httpClientFactory);
+        _restServiceInvoker = new RestServiceInvoker(_logger, httpClientFactory);
         CertificateValidator = new CertificateValidator(_settings.UseOnlineRevocationCheck);
     }
 
@@ -91,7 +91,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
 
         try
         {
-            xmlString = await FindProtocolForCounterpartyInternalAsync(counterpartyHerId);
+            xmlString = await FindProtocolForCounterpartyVirtualAsync(counterpartyHerId);
         }
         catch (Exception ex)
         {
@@ -124,7 +124,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     /// <param name="counterpartyHerId"></param>
     /// <returns></returns>
     [ExcludeFromCodeCoverage] // requires wire communication
-    internal virtual async Task<string> FindProtocolForCounterpartyInternalAsync(int counterpartyHerId)
+    protected virtual async Task<string> FindProtocolForCounterpartyVirtualAsync(int counterpartyHerId)
     {
         var request = await CreateRequestMessageAsync(HttpMethod.Get, $"/Profiles/{counterpartyHerId}");
         return await _restServiceInvoker.ExecuteAsync(request, nameof(FindProtocolForCounterpartyAsync));
@@ -160,7 +160,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         string xmlString;
         try
         {
-            xmlString = await FindAgreementByIdInternalAsync(id);
+            xmlString = await FindAgreementByIdVirtualAsync(id);
         }
         catch (FaultException ex)
         {
@@ -192,7 +192,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     /// <param name="id"></param>
     /// <returns></returns>
     [ExcludeFromCodeCoverage] // requires wire communication
-    internal virtual async Task<string> FindAgreementByIdInternalAsync(Guid id)
+    protected virtual async Task<string> FindAgreementByIdVirtualAsync(Guid id)
     {
         var request = await CreateRequestMessageAsync(HttpMethod.Get, $"/Agreements/{id}");
         return await _restServiceInvoker.ExecuteAsync(request, nameof(FindAgreementByIdAsync));
@@ -225,7 +225,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         string details;
         try
         {
-            details = await FindAgreementForCounterpartyInternalAsync(myHerId, counterpartyHerId);
+            details = await FindAgreementForCounterpartyVirtualAsync(myHerId, counterpartyHerId);
         }
         catch (FaultException ex)
         {
@@ -256,11 +256,11 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     /// <param name="counterpartyHerId"></param>
     /// <returns></returns>
     [ExcludeFromCodeCoverage] // requires wire communication
-    internal virtual async Task<string> FindAgreementForCounterpartyInternalAsync(int myHerId, int counterpartyHerId)
+    protected virtual async Task<string> FindAgreementForCounterpartyVirtualAsync(int myHerId, int counterpartyHerId)
     {
         var request = await CreateRequestMessageAsync(HttpMethod.Get,
             $"/Agreements/HerIds/{myHerId}/{counterpartyHerId}");
-        return await _restServiceInvoker.ExecuteAsync(request, nameof(FindAgreementForCounterpartyAsync));
+        return await _restServiceInvoker.ExecuteAsync(request, nameof(FindAgreementForCounterpartyVirtualAsync));
     }
 
     /// <inheritdoc cref="PingAsync"/>
@@ -291,7 +291,8 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         {
             Method = method,
             Path = path,
-            BearerToken = await _helseIdClient.CreateJwtAccessTokenAsync()
+            BearerToken = await _helseIdClient.CreateJwtAccessTokenAsync(),
+            AcceptHeader = "application/xml"
         };
         return request;
     }
