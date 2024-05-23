@@ -69,7 +69,7 @@ internal class RestServiceInvoker
         if (string.IsNullOrEmpty(request.Path)) throw new ArgumentNullException(nameof(request.Path));
 
         var httpRequest = new HttpRequestMessage(request.Method, request.Path);
-        httpRequest.Headers.Add("Accept", "application/xml");
+        httpRequest.Headers.Add("Accept", request.AcceptHeader);
         httpRequest.SetBearerToken(request.BearerToken);
         return httpRequest;
     }

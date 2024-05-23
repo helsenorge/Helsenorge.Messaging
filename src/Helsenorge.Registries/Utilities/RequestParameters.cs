@@ -20,4 +20,6 @@ internal class RequestParameters
     public string Path { get; set; }
 
     public string BearerToken { get; set; }
+
+    public string AcceptHeader {  get; set; }
 }
