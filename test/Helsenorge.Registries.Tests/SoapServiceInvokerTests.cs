@@ -10,7 +10,6 @@ using Helsenorge.Registries.AddressService;
 using Helsenorge.Registries.Configuration;
 using Helsenorge.Registries.CPAService;
 using Helsenorge.Registries.Utilities;
-using System;
 using System.ServiceModel;
 using Xunit;
 
