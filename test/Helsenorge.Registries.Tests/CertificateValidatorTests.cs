@@ -27,7 +27,7 @@ namespace Helsenorge.Registries.Tests
         [TestCategory("X509Chain")]
         public void CertificateValidation_None()
         {
-            var validator = new CertificateValidator();
+            var validator = new CertificateValidator(new MockX509Chain());
             var error = validator.Validate(TestCertificates.CounterpartyPublicSignature,
                 X509KeyUsageFlags.NonRepudiation);
             Assert.AreEqual(CertificateErrors.None, error);
@@ -36,7 +36,7 @@ namespace Helsenorge.Registries.Tests
         [TestCategory("X509Chain")]
         public void CertificateValidation_StartDate()
         {
-            var validator = new CertificateValidator();
+            var validator = new CertificateValidator(new MockX509Chain());
             var error = validator.Validate(TestCertificates.CounterpartyPublicSignatureInvalidStart,
                 X509KeyUsageFlags.NonRepudiation);
             Assert.AreEqual(CertificateErrors.StartDate, error);
@@ -45,7 +45,7 @@ namespace Helsenorge.Registries.Tests
         [TestCategory("X509Chain")]
         public void CertificateValidation_EndDate()
         {
-            var validator = new CertificateValidator();
+            var validator = new CertificateValidator(new MockX509Chain());
             var error = validator.Validate(TestCertificates.CounterpartyPublicSignatureInvalidEnd,
                 X509KeyUsageFlags.NonRepudiation);
             Assert.AreEqual(CertificateErrors.EndDate, error);
@@ -54,7 +54,7 @@ namespace Helsenorge.Registries.Tests
         [TestCategory("X509Chain")]
         public void CertificateValidation_Usage()
         {
-            var validator = new CertificateValidator();
+            var validator = new CertificateValidator(new MockX509Chain());
             var error = validator.Validate(TestCertificates.CounterpartyPublicSignature,
                 X509KeyUsageFlags.KeyEncipherment);
             Assert.AreEqual(CertificateErrors.Usage, error);
@@ -70,7 +70,7 @@ namespace Helsenorge.Registries.Tests
         [TestMethod("X509Chain")]
         public void CertificateValidation_Multiple()
         {
-            var validator = new CertificateValidator();
+            var validator = new CertificateValidator(new MockX509Chain());
             var error = validator.Validate(TestCertificates.CounterpartyPublicSignatureInvalidStart,
                 X509KeyUsageFlags.KeyEncipherment);
             Assert.AreEqual(CertificateErrors.StartDate | CertificateErrors.Usage, error);

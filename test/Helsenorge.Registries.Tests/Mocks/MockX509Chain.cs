@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿using System;
+using System.Security.Cryptography.X509Certificates;
 using Helsenorge.Registries.Utilities;
 
 namespace Helsenorge.Registries.Tests.Mocks
@@ -12,6 +13,7 @@ namespace Helsenorge.Registries.Tests.Mocks
         public MockX509Chain()
         {
             ChainPolicy = new X509ChainPolicy();
+            ChainStatus = Array.Empty<X509ChainStatus>();
         }
 
         public void SetChainStatus(X509ChainStatus[] statuses)
