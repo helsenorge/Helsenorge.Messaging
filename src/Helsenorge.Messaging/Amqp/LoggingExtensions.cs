@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
-using System.Diagnostics;
 
 namespace Helsenorge.Messaging.Amqp
 {

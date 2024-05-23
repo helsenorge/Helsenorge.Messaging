@@ -8,8 +8,6 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Helsenorge.Registries.AddressService;
-using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Registries.Abstractions
 {
