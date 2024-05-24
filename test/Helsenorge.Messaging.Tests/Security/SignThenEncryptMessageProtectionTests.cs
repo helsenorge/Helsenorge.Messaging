@@ -34,7 +34,6 @@ namespace Helsenorge.Messaging.Tests.Security
         }
 
         [TestMethod]
-        [TestCategory("X509Chain")]
         public void Protect_And_Unprotect_OK()
         {
             MemoryStream contentStream = new MemoryStream(Encoding.UTF8.GetBytes(_content.ToString()));
@@ -51,7 +50,6 @@ namespace Helsenorge.Messaging.Tests.Security
         }
 
         [TestMethod]
-        [TestCategory("X509Chain")]
         public void Protect_And_Unprotect_UsingLegacy_OK()
         {
             MemoryStream contentStream = new MemoryStream(Encoding.UTF8.GetBytes(_content.ToString()));
@@ -70,7 +68,6 @@ namespace Helsenorge.Messaging.Tests.Security
         }
 
         [TestMethod]
-        [TestCategory("X509Chain")]
         [ExpectedException(typeof(CertificateMessagePayloadException))]
         public void Protect_And_Unprotect_WrongSigningCertificate()
         {
@@ -86,7 +83,6 @@ namespace Helsenorge.Messaging.Tests.Security
         }
 
         [TestMethod]
-        [TestCategory("X509Chain")]
         [ExpectedException(typeof(SecurityException))]
         public void Protect_And_Unprotect_WrongEncryptionCertificate()
         {
@@ -127,7 +123,6 @@ namespace Helsenorge.Messaging.Tests.Security
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        [TestCategory("X509Chain")]
         public void Unprotect_Data_ArgumentNullException()
         {
             var partyBProtection = new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.CounterpartySignatureThumbprint), TestCertificates.GetCertificate(TestCertificates.CounterpartyEncryptionThumbprint), _logger);
@@ -136,14 +131,12 @@ namespace Helsenorge.Messaging.Tests.Security
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        [TestCategory("X509Chain")]
         public void Unprotect_Encryption_ArgumentNullException()
         {
             new SignThenEncryptMessageProtection(TestCertificates.GetCertificate(TestCertificates.HelsenorgeSignatureThumbprint), null, _logger);
         }
 
         [TestMethod]
-        [TestCategory("X509Chain")]
         public void Unprotect_Signature_MissingPublicKeySignatureCertificate()
         {
             MemoryStream contentStream = new MemoryStream(Encoding.UTF8.GetBytes(_content.ToString()));

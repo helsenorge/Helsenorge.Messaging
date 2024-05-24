@@ -71,7 +71,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                 messageModification: (m) => { });
         }
 
-        [TestMethod, TestCategory("X509Chain")]
+        [TestMethod]
         public async Task Asynchronous_Receive_CertificateSignError()
         {
             Exception receiveException = null;

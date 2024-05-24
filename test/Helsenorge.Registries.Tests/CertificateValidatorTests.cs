@@ -19,12 +19,11 @@ namespace Helsenorge.Registries.Tests
         [TestMethod]
         public void CertificateValidation_ArgumentNullException()
         {
-            var validator = new CertificateValidator();
+            var validator = new CertificateValidator(new MockX509Chain());
             var error = validator.Validate(null, X509KeyUsageFlags.NonRepudiation);
             Assert.AreEqual(CertificateErrors.Missing, error);
         }
         [TestMethod]
-        [TestCategory("X509Chain")]
         public void CertificateValidation_None()
         {
             var validator = new CertificateValidator(new MockX509Chain());
@@ -33,7 +32,6 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(CertificateErrors.None, error);
         }
         [TestMethod]
-        [TestCategory("X509Chain")]
         public void CertificateValidation_StartDate()
         {
             var validator = new CertificateValidator(new MockX509Chain());
@@ -42,7 +40,6 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(CertificateErrors.StartDate, error);
         }
         [TestMethod]
-        [TestCategory("X509Chain")]
         public void CertificateValidation_EndDate()
         {
             var validator = new CertificateValidator(new MockX509Chain());
@@ -51,7 +48,6 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(CertificateErrors.EndDate, error);
         }
         [TestMethod]
-        [TestCategory("X509Chain")]
         public void CertificateValidation_Usage()
         {
             var validator = new CertificateValidator(new MockX509Chain());
@@ -60,14 +56,13 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(CertificateErrors.Usage, error);
         }
         [TestMethod]
-        [TestCategory("X509Chain")]
         public void X509Certificate2Extensions_KeyUsage()
         {
             Assert.IsTrue(TestCertificates.CounterpartyPublicSignature.HasKeyUsage(X509KeyUsageFlags.NonRepudiation));
             Assert.IsFalse(TestCertificates.CounterpartyPublicSignature.HasKeyUsage(X509KeyUsageFlags.KeyEncipherment));
         }
 
-        [TestMethod("X509Chain")]
+        [TestMethod]
         public void CertificateValidation_Multiple()
         {
             var validator = new CertificateValidator(new MockX509Chain());
@@ -77,7 +72,6 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
-        [TestCategory("X509Chain")]
         public void CertificateValidation_RevokeOffline()
         {
             var usage = X509KeyUsageFlags.NonRepudiation;
@@ -98,7 +92,6 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
-        [TestCategory("X509Chain")]
         public void CertificateValidation_RevokeMultiple()
         {
             var usage = X509KeyUsageFlags.NonRepudiation;
@@ -124,7 +117,6 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
-        [TestCategory("X509Chain")]
         public void CertificateValidation_ChainStatusOther()
         {
             var usage = X509KeyUsageFlags.NonRepudiation;
