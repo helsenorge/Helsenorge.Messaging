@@ -215,22 +215,5 @@ namespace Helsenorge.Messaging.Abstractions
         /// Constructor
         /// </summary>
         public MessagingException(string message, Exception inner) : base(message, inner){}
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        protected MessagingException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context){}
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        // ReSharper disable once RedundantOverridenMember
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            // code analysis trigger if this is not present
-            base.GetObjectData(info, context);
-        }
     }
 }
