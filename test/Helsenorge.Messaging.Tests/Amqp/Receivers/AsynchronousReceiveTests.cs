@@ -560,12 +560,11 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                 postValidation: () =>
                 {
-                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+                    Assert.AreEqual(1, MockFactory.Helsenorge.Asynchronous.Messages.Count);
                     Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
-                    Assert.AreEqual(1, MockFactory.Helsenorge.DeadLetter.Messages.Count);
-                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateRevocationOffline));
+                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.UnknownError));
                 },
-                wait: () => _handledExceptionCalled,
+                wait: () => _unhandledExceptionCalled,
                 received: (m) =>
                 {
                     Assert.IsTrue(m.SignatureError != CertificateErrors.None);

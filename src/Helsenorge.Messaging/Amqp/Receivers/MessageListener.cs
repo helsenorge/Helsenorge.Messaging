@@ -254,18 +254,10 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 stopwatch.Stop();
                 return incomingMessage;
             }
-            catch (CertificateException ex) when (ex.Error == CertificateErrors.RevokedOffline)
-            {
-                // If theres an network related issue with the CRL then we'll deadletter the message so it can be tried again later
-                Logger.LogError("Deadlettering message, so it can be retried if issue with certificate have been resolved. " + 
-                                  $"{ex.Description}. MessageFunction: {message.MessageFunction} " +
-                                  $"FromHerId: {message.FromHerId} ToHerId: {message.ToHerId} CpaId: {message.CpaId} " +
-                                  $"CorrelationId: {message.CorrelationId} Certificate thumbprint: {ex.AdditionalInformation}");
-
-                AmqpCore.DeadLetterProcessedMessageAsync(Logger, ex.EventId, message, ex.Description);
-                await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
-            }
-            catch (CertificateException ex)
+            // Network related issues when validating certificate (e.g. CRL offline) is considered temporary
+            // This is why when we get validation error of type RevokedOffline then process it as unhandeled exception
+            // Unhandeled exception will place it on dead letter (after given retries) and it can then be reprocesses when issue has been resolved
+            catch (CertificateException ex) when (ex.Error != CertificateErrors.RevokedOffline)
             {
                 Logger.LogWarning($"{ex.Description}. MessageFunction: {message.MessageFunction} " +
                   $"FromHerId: {message.FromHerId} ToHerId: {message.ToHerId} CpaId: {message.CpaId} " +
@@ -274,7 +266,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 await AmqpCore.ReportErrorToExternalSenderAsync(Logger, ex.EventId, message, ex.ErrorCode, ex.Description, ex.AdditionalInformation).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
-            catch (SecurityException ex)
+            catch (SecurityException ex) when (ex is not CertificateException)
             {
                 await AmqpCore.ReportErrorToExternalSenderAsync(Logger, EventIds.RemoteCertificate, message, "transport:invalid-certificate", ex.Message, null, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
