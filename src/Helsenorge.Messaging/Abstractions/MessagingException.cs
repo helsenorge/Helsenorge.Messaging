@@ -139,6 +139,14 @@ namespace Helsenorge.Messaging.Abstractions
         /// Invalid HER-id.
         /// </summary>
         public static EventId CouldNotVerifyCertificate = new EventId(41, EventIdName);
+        /// <summary>
+        /// Remote certificate has been revoked.
+        /// </summary>
+        public static EventId RemoteCertificateRevocationOffline = new EventId(42, EventIdName);
+        /// <summary>
+        /// Local certificate has been revoked.
+        /// </summary>
+        public static EventId LocalCertificateRevocationOffline = new EventId(43, EventIdName);
 
         /// <summary>
         /// Event Id used for informational purposes when starting/ending the Receive process.
@@ -207,22 +215,5 @@ namespace Helsenorge.Messaging.Abstractions
         /// Constructor
         /// </summary>
         public MessagingException(string message, Exception inner) : base(message, inner){}
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        protected MessagingException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context){}
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        // ReSharper disable once RedundantOverridenMember
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            // code analysis trigger if this is not present
-            base.GetObjectData(info, context);
-        }
     }
 }

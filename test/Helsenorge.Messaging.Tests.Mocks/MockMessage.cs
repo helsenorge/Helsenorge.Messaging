@@ -78,22 +78,14 @@ namespace Helsenorge.Messaging.Tests.Mocks
 
         public void Reject()
         {
-        }
-
-        public Task RejectAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public void DeadLetter()
-        {
             Queue.Remove(this);
             DeadLetterQueue.Add(this);
         }
 
-        public Task DeadLetterAsync()
+        public Task RejectAsync()
         {
-            DeadLetter();
+            Queue.Remove(this);
+            DeadLetterQueue.Add(this);
             return Task.CompletedTask;
         }
 

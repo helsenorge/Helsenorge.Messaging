@@ -71,7 +71,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                 messageModification: (m) => { });
         }
 
-        [TestMethod, TestCategory("X509Chain")]
+        [TestMethod]
         public async Task Asynchronous_Receive_CertificateSignError()
         {
             Exception receiveException = null;
@@ -550,6 +550,29 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                   },
                   messageModification: (m) => { });
         }
+
+        [TestMethod]
+        public async Task Asynchronous_Receive_RemoteCertificateOfflineRevocation()
+        {
+            CertificateValidator.SetError(
+                (c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.RevokedOffline : CertificateErrors.None);
+
+            await RunAsynchronousReceive(
+                postValidation: () =>
+                {
+                    Assert.AreEqual(1, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+                    Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.UnknownError));
+                },
+                wait: () => _unhandledExceptionCalled,
+                received: (m) =>
+                {
+                    Assert.IsTrue(m.SignatureError != CertificateErrors.None);
+                    return Task.CompletedTask;
+                },
+                messageModification: (m) => { });
+        }
+
         [TestMethod]
         public async Task Asynchronous_Receive_RemoteCertificateMultiple()
         {
@@ -788,6 +811,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                 TimeToLive = TimeSpan.FromSeconds(15),
                 ReplyTo = MockFactory.OtherParty.Asynchronous.Name,
                 Queue = MockFactory.Helsenorge.Asynchronous.Messages,
+                DeadLetterQueue = MockFactory.Helsenorge.DeadLetter.Messages
             };
         }
         
@@ -810,6 +834,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                 TimeToLive = TimeSpan.FromSeconds(15),
                 ReplyTo = MockFactory.OtherParty.Asynchronous.Name,
                 Queue = MockFactory.Helsenorge.Asynchronous.Messages,
+                DeadLetterQueue = MockFactory.Helsenorge.DeadLetter.Messages
             };
         }
     }
