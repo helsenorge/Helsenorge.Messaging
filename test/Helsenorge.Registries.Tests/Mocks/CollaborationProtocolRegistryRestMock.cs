@@ -11,7 +11,7 @@ using System.IO;
 using System.ServiceModel;
 using System.Threading.Tasks;
 using Helsenorge.Registries.Abstractions;
-using Helsenorge.Registries.Connected_Services.HelseId;
+using Helsenorge.Registries.HelseId;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
