@@ -11,11 +11,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Helsenorge.Registries.Configuration;
+using Helsenorge.Registries.HelseId;
 using IdentityModel;
 using IdentityModel.Client;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Helsenorge.Registries.Connected_Services.HelseId;
+namespace Helsenorge.Registries.HelseId;
 
 public class HelseIdClient : IHelseIdClient
 {
