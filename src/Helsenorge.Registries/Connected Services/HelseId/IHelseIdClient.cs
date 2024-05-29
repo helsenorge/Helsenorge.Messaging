@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Helsenorge.Registries.Connected_Services.HelseId
+namespace Helsenorge.Registries.HelseId
 {
     public interface IHelseIdClient
     {
