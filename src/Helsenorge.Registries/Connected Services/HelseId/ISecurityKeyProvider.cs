@@ -8,7 +8,7 @@
 
 using Microsoft.IdentityModel.Tokens;
 
-namespace Helsenorge.Registries.Connected_Services.HelseId;
+namespace Helsenorge.Registries.HelseId;
 
 /// <summary>
 /// Interface for providing the security key for creating AccessToken from HelseId

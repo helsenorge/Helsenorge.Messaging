@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Concurrent;
 
-namespace Helsenorge.Registries.Connected_Services.HelseId;
+namespace Helsenorge.Registries.HelseId;
 
 public static class TokenCache
 {
