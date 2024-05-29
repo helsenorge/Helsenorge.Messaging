@@ -1,4 +1,4 @@
-﻿using Helsenorge.Registries.Connected_Services.HelseId;
+﻿using Helsenorge.Registries.HelseId;
 using System.Threading.Tasks;
 
 namespace Helsenorge.Registries.Tests.Mocks
