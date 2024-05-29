@@ -5,11 +5,15 @@
       "Password": "???"
     }
   },
-  "CollaborationProtocolRegistrySettings": {
-    "WcfConfiguration": {
-      "UserName": "???",
-      "Password": "???"
+  "CollaborationProtocolRegistryRestSettings": {
+    "RestConfiguration": {
+      "Address": "???"
     }
+  },
+  "HelseIdConfiguration": {
+    "ClientId": "???",
+    "TokenEndpoint": "???",
+    "ScopeName": "???"
   },
   "MessagingSettings": {
     "MyHerIds": [ "1234" ],
