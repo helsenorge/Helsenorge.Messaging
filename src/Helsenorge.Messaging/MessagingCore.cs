@@ -208,7 +208,7 @@ namespace Helsenorge.Messaging
 
         internal ICertificateValidator GetDefaultCertificateValidator()
         {
-            return new CertificateValidator(Settings.UseOnlineRevocationCheck);
+            return new CertificateValidator(_logger, Settings.UseOnlineRevocationCheck);
         }
 
         private static IDictionary<string, object> GetSystemInformation()
