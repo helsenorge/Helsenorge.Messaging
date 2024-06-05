@@ -10,6 +10,7 @@ using System;
 using System.Security.Cryptography.X509Certificates;
 using Helsenorge.Registries.Abstractions;
 using Helsenorge.Registries.Utilities;
+using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Registries
 {
@@ -18,15 +19,18 @@ namespace Helsenorge.Registries
     /// </summary>
     public class CertificateValidator : ICertificateValidator
     {
+        private readonly ILogger _logger;
         private readonly bool _useOnlineRevocationCheck;
         private readonly IX509Chain _chain;
 
         /// <summary>
         /// CertificateValidator constructor
         /// </summary>
+        /// <param name="logger">Default logger</param>
         /// <param name="useOnlineRevocationCheck">Should online certificate revocation list be used. Optional, default true.</param>
-        public CertificateValidator(bool useOnlineRevocationCheck = true)
+        public CertificateValidator(ILogger logger, bool useOnlineRevocationCheck = true)
         {
+            _logger = logger;
             _useOnlineRevocationCheck = useOnlineRevocationCheck;
             _chain = new X509ChainWrapper();
         }
@@ -35,11 +39,13 @@ namespace Helsenorge.Registries
         /// CertificateValidator constructor
         /// </summary>
         /// <param name="chain">You can set your own X509Chain.</param>
+        /// <param name="logger">Default logger</param>
         /// <param name="useOnlineRevocationCheck">Should online certificate revocation list be used. Optional, default true.</param>
-        internal CertificateValidator(IX509Chain chain, bool useOnlineRevocationCheck = true)
+        internal CertificateValidator(IX509Chain chain, ILogger logger, bool useOnlineRevocationCheck = true)
         {
             _useOnlineRevocationCheck = useOnlineRevocationCheck;
             _chain = chain;
+            _logger = logger;
         }
 
         /// <summary>
@@ -79,6 +85,8 @@ namespace Helsenorge.Registries
 
                 foreach (var status in _chain.ChainStatus)
                 {
+                    _logger.LogInformation("Certificate chain validation. " +
+                                       $"Status Information: {status.StatusInformation} Status Flag: {status.Status}");
                     // ReSharper disable once SwitchStatementMissingSomeCases
                     switch (status.Status)
                     {
@@ -93,6 +101,9 @@ namespace Helsenorge.Registries
                             break;
                     }
                 }
+                if (result != CertificateErrors.None)
+                    _logger.LogWarning($"Certificate chain validation failed. Certificate: {certificate.Subject} Result: {result}");
+
                 return result;
             }
         }

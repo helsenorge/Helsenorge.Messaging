@@ -62,7 +62,7 @@ namespace Helsenorge.Registries
             _addressRegistry = addressRegistry;
             _logger = logger;
             _invoker = new SoapServiceInvoker(settings.WcfConfiguration);
-            CertificateValidator = new CertificateValidator(_settings.UseOnlineRevocationCheck);
+            CertificateValidator = new CertificateValidator(logger, _settings.UseOnlineRevocationCheck);
         }
 
         /// <inheritdoc cref="FindProtocolForCounterpartyAsync"/>
@@ -82,11 +82,13 @@ namespace Helsenorge.Registries
                 // if the certificates are valid, only then do we return a value from the cache
                 if (errors == CertificateErrors.None)
                 {
+                    _logger.LogInformation($"{key} - Retrive from cache");
                     return result;
                 }
             }
             try
             {
+                _logger.LogInformation($"{key} - Retrive from registry");
                 xmlString = await FindProtocolForCounterparty(counterpartyHerId).ConfigureAwait(false);
             }
             catch (FaultException<CPAService.GenericFault> ex)
@@ -156,6 +158,7 @@ namespace Helsenorge.Registries
                 // if the certificates are valid, only then do we return a value from the cache
                 if (errors == CertificateErrors.None)
                 {
+                    _logger.LogInformation($"{key} - Retrive from cache");
                     return result;
                 }
             }
@@ -164,6 +167,7 @@ namespace Helsenorge.Registries
 
             try
             {
+                _logger.LogInformation($"{key} - Retrive from registry");
                 details = await FindAgreementById(id).ConfigureAwait(false);
             }
             catch (FaultException ex)
@@ -220,6 +224,7 @@ namespace Helsenorge.Registries
                 // if the certificates are valid, only then do we return a value from the cache
                 if (errors == CertificateErrors.None)
                 {
+                    _logger.LogInformation($"{key} - Retrive from cache");
                     return result;
                 }
             }
@@ -228,6 +233,7 @@ namespace Helsenorge.Registries
 
             try
             {
+                _logger.LogInformation($"{key} - Retrive from registry");
                 details = await FindAgreementForCounterparty(myHerId, counterpartyHerId).ConfigureAwait(false);
             }
             catch (FaultException ex)
