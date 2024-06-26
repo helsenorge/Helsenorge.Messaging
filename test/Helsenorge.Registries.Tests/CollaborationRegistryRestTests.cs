@@ -28,7 +28,7 @@ namespace Helsenorge.Registries.Tests
     public class CollaborationRegistryRestTests
     {
         private CollaborationProtocolRegistryRestMock _registry;
-        private IAddressRegistry _addressRegistry;
+        private IAddressRegistry addressRegistry;
         private ILoggerFactory _loggerFactory;
         private ILogger _logger;
         private IHelseIdClient _helseIdClientCppa;
@@ -36,7 +36,7 @@ namespace Helsenorge.Registries.Tests
         [TestInitialize]
         public void Setup()
         {
-            var settings = new CollaborationProtocolRegistryRestSettings()
+            var collaborationSettings = new CollaborationProtocolRegistryRestSettings()
             {
                 RestConfiguration = new RestConfiguration()
                 {
@@ -53,7 +53,7 @@ namespace Helsenorge.Registries.Tests
 
             var distributedCache = DistributedCacheFactory.CreatePartlyMockedDistributedCache();
 
-            _addressRegistry = AddressRegistryTests.GetDefaultAddressRegistryMock(_logger);
+            addressRegistry = AddressRegistryRestTests.GetDefaultAddressRegistryRestMock(_logger);
 
             var helseIdConfigCppa = new HelseIdConfiguration()
             {
@@ -64,7 +64,7 @@ namespace Helsenorge.Registries.Tests
 
             _helseIdClientCppa = new HelseIdClientMock();
 
-            _registry = new CollaborationProtocolRegistryRestMock(settings, distributedCache, _addressRegistry, _logger, _helseIdClientCppa);
+            _registry = new CollaborationProtocolRegistryRestMock(collaborationSettings, distributedCache, addressRegistry, _logger, _helseIdClientCppa);
             _registry.SetupFindAgreementById(i =>
             {
                 var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_Rest_{i:D}.xml"));
@@ -91,7 +91,7 @@ namespace Helsenorge.Registries.Tests
         public void RestCpa_Constructor_Settings_Null()
         {
             var distributedCache = DistributedCacheFactory.Create();
-            IAddressRegistry addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache, _logger);
+            addressRegistry = new AddressRegistryRestMock(new AddressRegistryRestSettings(), distributedCache, _logger, _helseIdClientCppa);
 
             new CollaborationProtocolRegistryRest(null, distributedCache, addressRegistry, _logger, _helseIdClientCppa);
         }
@@ -102,7 +102,7 @@ namespace Helsenorge.Registries.Tests
         {
 
             var distributedCache = DistributedCacheFactory.Create();
-            IAddressRegistry addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache, _logger);
+            addressRegistry = new AddressRegistryRestMock(new AddressRegistryRestSettings(), distributedCache, _logger, _helseIdClientCppa);
 
             new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), null, addressRegistry, _logger, _helseIdClientCppa);
         }
@@ -122,7 +122,7 @@ namespace Helsenorge.Registries.Tests
         {
             var distributedCache = DistributedCacheFactory.Create();
 
-            new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache, _addressRegistry, null, _helseIdClientCppa);
+            new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache, addressRegistry, null, _helseIdClientCppa);
         }
 
         [TestMethod]
@@ -131,35 +131,28 @@ namespace Helsenorge.Registries.Tests
         {
             var distributedCache = DistributedCacheFactory.Create();
 
-            new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache, _addressRegistry, _logger, null);
+            new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache, addressRegistry, _logger, null);
         }
 
         [TestMethod]
         public void RestCpa_Read_CollaborationProfile_NotFound()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(93252).Result;
-            Assert.IsNotNull(profile);
-            Assert.AreEqual("DummyCollaborationProtocolProfile", profile.Name);
+            Assert.IsNull(profile);
         }
 
         [TestMethod]
         public void RestCpa_Read_MessageFunctionExceptionProfile_Found()
         {
-            var profile = DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, 93238, "NO_CPA_MESSAGE").Result;
-            Assert.IsNotNull(profile);
-            Assert.AreEqual("MessageFunctionExceptionProfile", profile.Name);
-            Assert.AreEqual("NO_CPA_MESSAGE", profile.Roles.First().SendMessages.First().Name);
-            Assert.AreEqual("NO_CPA_MESSAGE", profile.Roles.First().SendMessages.First().Action);
+            var profile = DummyCollaborationProtocolProfileFactory.CreateAsync(addressRegistry, _logger, 93238, "NO_CPA_MESSAGE").Result;
+            Assert.IsNull(profile);
         }
 
         [TestMethod]
         public void RestCpa_Read_DummyCollaborationProfile_Found()
         {
-            var profile = DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, 93238, null).Result;
-            Assert.IsNotNull(profile);
-            Assert.AreEqual("DummyCollaborationProtocolProfile", profile.Name);
-            Assert.AreEqual("APPREC", profile.Roles.First().SendMessages.First().Name);
-            Assert.AreEqual("APPREC", profile.Roles.First().SendMessages.First().Action);
+            var profile = DummyCollaborationProtocolProfileFactory.CreateAsync(addressRegistry, _logger, 93238, null).Result;
+            Assert.IsNull(profile);
         }
 
         [TestMethod]

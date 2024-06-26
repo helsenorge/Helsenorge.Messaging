@@ -1,0 +1,165 @@
+{
+    "herId": 8141705,
+    "parentHerId": 8141703,
+    "type": "Service",
+    "communicationParty": {
+        "Code": {
+            "Active": true,
+            "CodeText": "Allmennlege",
+            "CodeValue": "05",
+            "LongDescription": "Virksomheter som tilbyr allmennlegetjenester, men som ikke er fastleger. Eksempel: private virksomheter og nettleger.",
+            "OID": 8666,
+            "SimpleType": "andre_helsetjenestetyper"
+        },
+        "CoverageAreas": null,
+        "Description": null,
+        "LocationDescription": null,
+        "Properties": null,
+        "Active": true,
+        "CoverageAreaType": null,
+        "DisplayName": null,
+        "ElectronicAddresses": [
+            {
+                "Address": "ldap://ldap.test4.buypass.no/dc=Buypass,dc=no,CN=Buypass%20Class%203%20Test4%20CA%20G2?usercertificate;binary?sub?(|(certificateSerialNumber=1962180325571982850481203)(certificateSerialNumber=1962209794993334850691870))",
+                "Inherited": true,
+                "LastChanged": "2024-06-13T09:29:56.11",
+                "Type": {
+                    "Active": true,
+                    "CodeText": "Digital sertifikat",
+                    "CodeValue": "E_DS",
+                    "LongDescription": null,
+                    "OID": 9044,
+                    "SimpleType": "type_adressekomponeneter"
+                },
+                "TypeCodeValue": "E_DS"
+            },
+            {
+                "Address": "tb.test.nhn.no/NHNTESTServiceBus/8141703_error",
+                "Inherited": true,
+                "LastChanged": "2023-04-04T09:40:26.89",
+                "Type": {
+                    "Active": true,
+                    "CodeText": "Feilmelding AMQP kø",
+                    "CodeValue": "E_SB_ERROR",
+                    "LongDescription": null,
+                    "OID": 9044,
+                    "SimpleType": "type_adressekomponeneter"
+                },
+                "TypeCodeValue": "E_SB_ERROR"
+            },
+            {
+                "Address": "tb.test.nhn.no/NHNTESTServiceBus/8141703_sync",
+                "Inherited": true,
+                "LastChanged": "2023-04-04T09:42:29.58",
+                "Type": {
+                    "Active": true,
+                    "CodeText": "Synkron AMQP kø",
+                    "CodeValue": "E_SB_SYNC",
+                    "LongDescription": null,
+                    "OID": 9044,
+                    "SimpleType": "type_adressekomponeneter"
+                },
+                "TypeCodeValue": "E_SB_SYNC"
+            },
+            {
+                "Address": "tb.test.nhn.no/NHNTESTServiceBus/8141703_async",
+                "Inherited": true,
+                "LastChanged": "2023-04-04T09:40:26.89",
+                "Type": {
+                    "Active": true,
+                    "CodeText": "Asynkron AMQP kø",
+                    "CodeValue": "E_SB_ASYNC",
+                    "LongDescription": null,
+                    "OID": 9044,
+                    "SimpleType": "type_adressekomponeneter"
+                },
+                "TypeCodeValue": "E_SB_ASYNC"
+            },
+            {
+                "Address": "tb.test.nhn.no/NHNTESTServiceBus/8141703_syncreply",
+                "Inherited": true,
+                "LastChanged": "2023-04-04T09:42:29.58",
+                "Type": {
+                    "Active": true,
+                    "CodeText": "Synkron Svar AMQP kø",
+                    "CodeValue": "E_SB_SYNCREPLY",
+                    "LongDescription": "",
+                    "OID": 9044,
+                    "SimpleType": "type_adressekomponeneter"
+                },
+                "TypeCodeValue": "E_SB_SYNCREPLY"
+            }
+        ],
+        "FutureElectronicAddresses": [
+        ],
+        "HerId": 8141705,
+        "IsValidCommunicationParty": true,
+        "LastChanged": "2023-04-04T09:59:57.87",
+        "Municipality": {
+            "Active": true,
+            "CodeText": "Oslo",
+            "CodeValue": "0301",
+            "LongDescription": null,
+            "OID": 3402,
+            "SimpleType": "kommune"
+        },
+        "Name": "Allmennlege",
+        "ParentBusinessType": {
+            "Active": true,
+            "CodeText": "Fastlege og annen privat virksomhet som yter helsetjenester",
+            "CodeValue": "103",
+            "LongDescription": null,
+            "OID": 9040,
+            "SimpleType": "helsevirksomhet_type"
+        },
+        "ParentHerId": 8141703,
+        "ParentName": "TestsenteretHN",
+        "ParentOrganizationNumber": 999988891,
+        "PhysicalAddresses": [
+            {
+                "City": "OSLO",
+                "Country": null,
+                "Description": null,
+                "Inherited": true,
+                "LastChanged": "2023-04-03T15:46:29.9",
+                "PostalCode": 110,
+                "Postbox": null,
+                "StreetAddress": "Testtorget 1",
+                "Type": {
+                    "Active": true,
+                    "CodeText": "Besøksadresse",
+                    "CodeValue": "RES",
+                    "LongDescription": null,
+                    "OID": 3401,
+                    "SimpleType": "adressetype"
+                },
+                "TypeCodeValue": "RES"
+            },
+            {
+                "City": "OSLO",
+                "Country": null,
+                "Description": null,
+                "Inherited": true,
+                "LastChanged": "2023-04-03T15:46:29.9",
+                "PostalCode": 110,
+                "Postbox": null,
+                "StreetAddress": "Testtorget 1",
+                "Type": {
+                    "Active": true,
+                    "CodeText": "Postadresse",
+                    "CodeValue": "PST",
+                    "LongDescription": null,
+                    "OID": 3401,
+                    "SimpleType": "adressetype"
+                },
+                "TypeCodeValue": "PST"
+            }
+        ],
+        "ServerTime": "2024-06-13T11:43:37.681664+02:00",
+        "Type": "Service",
+        "Valid": {
+            "From": "2023-04-04T00:00:00",
+            "To": "9999-12-31T00:00:00"
+        }
+    }
+}
