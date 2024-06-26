@@ -1,8 +1,7 @@
 {
-  "AddressRegistrySettings": {
-    "WcfConfiguration": {
-      "UserName": "???",
-      "Password": "???"
+  "AddressRegistryRestSettings": {
+    "RestConfiguration": {
+      "Address": "???"
     }
   },
   "CollaborationProtocolRegistryRestSettings": {
