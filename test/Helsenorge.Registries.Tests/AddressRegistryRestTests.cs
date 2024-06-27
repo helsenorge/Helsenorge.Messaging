@@ -141,14 +141,35 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NotImplementedException))]
-        public void GetCertificateDetailsForEncryptionAsync()
+        public async Task GetCertificateDetailsForEncryptionAsync_ShouldThrowNotImplementedException()
         {
             var registry = GetDefaultAddressRegistryRestMock(_logger);
-            registry.GetCertificateDetailsForEncryptionAsync(2222);
+            await Assert.ThrowsExceptionAsync<NotImplementedException>(() => registry.GetCertificateDetailsForEncryptionAsync(2222));
+            await Assert.ThrowsExceptionAsync<NotImplementedException>(() => registry.GetCertificateDetailsForEncryptionAsync(2222, false));
         }
 
-        
+        [TestMethod]
+        public async Task GetCertificateDetailsForValidatingSignatureAsync_ShouldThrowNotImplementedException()
+        {
+            var registry = GetDefaultAddressRegistryRestMock(_logger);
+            await Assert.ThrowsExceptionAsync<NotImplementedException>(() => registry.GetCertificateDetailsForValidatingSignatureAsync(2222));
+            await Assert.ThrowsExceptionAsync<NotImplementedException>(() => registry.GetCertificateDetailsForValidatingSignatureAsync(2222, false));
+        }
+
+        [TestMethod]
+        public async Task SearchByIdAsync_ShouldThrowNotImplementedException()
+        {
+            var registry = GetDefaultAddressRegistryRestMock(_logger);
+            await Assert.ThrowsExceptionAsync<NotImplementedException>(() => registry.SearchByIdAsync("2222", false));
+        }
+
+        [TestMethod]
+        public async Task GetOrganizationDetailsAsync_ShouldThrowNotImplementedException()
+        {
+            var registry = GetDefaultAddressRegistryRestMock(_logger);
+            await Assert.ThrowsExceptionAsync<NotImplementedException>(() => registry.GetOrganizationDetailsAsync(2222, false));
+        }
+
         [TestMethod]
         public void Serialize_AddressService_CommunicationParty()
         {

@@ -176,7 +176,7 @@ namespace Helsenorge.Registries
         /// </summary>
         /// <param name="herId">Her-ID of the communication party</param>
         /// <returns></returns>
-        //[Obsolete("This method is no longer supported.")]
+        [Obsolete("This method is no longer supported.")]
         public async Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId)
         {
             throw new NotImplementedException();
@@ -214,6 +214,7 @@ namespace Helsenorge.Registries
         [Obsolete("This method is no longer supported.")]
         public async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate)
         {
+            await Task.Delay(1000);
             throw new NotImplementedException();
         }
 
@@ -221,6 +222,7 @@ namespace Helsenorge.Registries
         [Obsolete("This method is no longer supported.")]
         public async Task<IEnumerable<CommunicationPartyDetails>> SearchByIdAsync(string id, bool forceUpdate = false)
         {
+            await Task.Delay(1000);
             throw new NotImplementedException();
         }
 
@@ -228,6 +230,7 @@ namespace Helsenorge.Registries
         [Obsolete("This method is no longer supported.")]
         public async Task<OrganizationDetails> GetOrganizationDetailsAsync(int herId, bool forceUpdate = false)
         {
+            await Task.Delay(1000);
             throw new NotImplementedException();
         }
 
@@ -235,6 +238,7 @@ namespace Helsenorge.Registries
         [Obsolete("This method will be replaced in the future.")]
         public async Task PingAsync()
         {
+            await Task.Delay(1000);
             throw new NotImplementedException();
         }
 
