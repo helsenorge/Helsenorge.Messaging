@@ -48,14 +48,14 @@ namespace Helsenorge.Registries.Tests.Mocks
             _findCommunicationPartyDetails = func;
         }
 
-        protected override async Task<CommunicationPartyDetails> FindCommunicationPartyDetails(int herId)
+        internal override async Task<string> FindCommunicationPartyDetails(int herId)
         {
             var json = _findCommunicationPartyDetails(herId);
             if (json == null)
             {
-                return default(CommunicationPartyDetails);
+                return string.Empty;
             }
-            return await Task.FromResult(MapCommunicationPartyDetails(json)).ConfigureAwait(false);
+            return await Task.FromResult(json).ConfigureAwait(false);
         }
     }
 }

@@ -14,17 +14,12 @@ using Helsenorge.Registries.Abstractions;
 using Helsenorge.Registries.Utilities;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using System.Security.Cryptography.X509Certificates;
-using Helsenorge.Registries.AddressService;
 using CertificateDetails = Helsenorge.Registries.Abstractions.CertificateDetails;
 using System.Collections.Generic;
-using System.Linq;
-using Code = Helsenorge.Registries.Abstractions.Code;
 using Helsenorge.Registries.Configuration;
 using System.Net.Http;
 using Helsenorge.Registries.HelseId;
 using System.Text.Json;
-using System.Collections;
 
 namespace Helsenorge.Registries
 {
@@ -46,6 +41,8 @@ namespace Helsenorge.Registries
         /// <param name="settings">Options for this instance</param>
         /// <param name="cache">Cache implementation to use</param>
         /// <param name="logger">The ILogger object used to log diagnostics.</param>
+        /// <param name="helseIdClient">The HelseIdClient object used to retrive authentication token.</param>
+
 
         public AddressRegistryRest(
             AddressRegistryRestSettings settings,
@@ -53,20 +50,20 @@ namespace Helsenorge.Registries
             ILogger logger,
             IHelseIdClient helseIdClient)
         {
-            if (settings == null) throw new ArgumentNullException(nameof(settings));
-            if (cache == null) throw new ArgumentNullException(nameof(cache));
-            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _helseIdClient = helseIdClient ?? throw new ArgumentNullException(nameof(helseIdClient));
-
-            _settings = settings;
-            _cache = cache;
-            _logger = logger;
 
             var httpClientFactory = new ProxyHttpClientFactory(settings.RestConfiguration);
             _restServiceInvoker = new RestServiceInvoker(_logger, httpClientFactory);
         }
 
-        
+        /// <summary>
+        /// Returns communication details for a specific counterparty
+        /// </summary>
+        /// <param name="herId">HER-Id of counter party</param>
+        /// <returns>Communication details if found, otherwise null</returns>
         public async Task<CommunicationPartyDetails> FindCommunicationPartyDetailsAsync(int herId)
         {
             return await FindCommunicationPartyDetailsAsync(herId, false).ConfigureAwait(false);
@@ -76,6 +73,7 @@ namespace Helsenorge.Registries
         /// Returns communication details for a specific counterparty
         /// </summary>
         /// <param name="herId">HER-Id of counter party</param>
+        /// /// <param name="forceUpdate">Set to true to force cache update.</param>
         /// <returns>Communication details if found, otherwise null</returns>
         public async Task<CommunicationPartyDetails> FindCommunicationPartyDetailsAsync(int herId, bool forceUpdate)
         {
@@ -86,11 +84,16 @@ namespace Helsenorge.Registries
                         _cache,
                         key).ConfigureAwait(false);
 
-            if (communicationPartyDetails == null) { }
+            if (communicationPartyDetails == null)
             {
                 try
                 {
-                    communicationPartyDetails = await FindCommunicationPartyDetails(herId).ConfigureAwait(false);
+                    var details = await FindCommunicationPartyDetails(herId).ConfigureAwait(false);
+
+                    if (!string.IsNullOrEmpty(details))
+                    {
+                        communicationPartyDetails = MapCommunicationPartyDetails(details);
+                    }
                 }
                 catch (FaultException<GenericFault> ex)
                 {
@@ -105,6 +108,7 @@ namespace Helsenorge.Registries
                         Data = { { "HerId", herId } }
                     };
                 }
+                await CacheExtensions.WriteValueToCacheAsync(_logger, _cache, key, communicationPartyDetails, _settings.CachingInterval).ConfigureAwait(false);
             }
             return communicationPartyDetails;
         }
@@ -113,16 +117,15 @@ namespace Helsenorge.Registries
         /// Makes the actual call to the registry. This is virtual so that it can be mocked by unit tests
         /// </summary>
         /// <param name="herId">Her id of communication party</param>
-        /// <returns></returns>
+        /// <returns>Communication party details as json</returns>
         [ExcludeFromCodeCoverage] // requires wire communication
-        protected virtual async Task<CommunicationPartyDetails> FindCommunicationPartyDetails(int herId)
+        internal virtual async Task<string> FindCommunicationPartyDetails(int herId)
         {
             var request = await CreateRequestMessageAsync(HttpMethod.Get, $"/CommunicationParties/{herId}");
-            var communicationPartyDetails = await _restServiceInvoker.ExecuteAsync(request, nameof(FindCommunicationPartyDetails));
-            return MapCommunicationPartyDetails(communicationPartyDetails);
+            return await _restServiceInvoker.ExecuteAsync(request, nameof(FindCommunicationPartyDetails));
         }
 
-        public static CommunicationPartyDetails MapCommunicationPartyDetails(string details)
+        private static CommunicationPartyDetails MapCommunicationPartyDetails(string details)
         {
             var communicationPartyDetails = new CommunicationPartyDetails();
 
@@ -165,98 +168,11 @@ namespace Helsenorge.Registries
             {
                 if (item.GetProperty("TypeCodeValue").GetString() == value)
                 {
-                    return item.GetProperty("Address").GetString().Split('/').Last();
+                    return item.GetProperty("Address").GetString();
                 }
             }
             return string.Empty;
         }
-
-        /// <summary>
-        /// Returns encryption certificate for a specific communication party.
-        /// </summary>
-        /// <param name="herId">Her-ID of the communication party</param>
-        /// <returns></returns>
-        [Obsolete("This method is no longer supported.")]
-        public async Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Returns encryption certificate for a specific communication party.
-        /// </summary>
-        /// <param name="herId">Her-ID of the communication party</param>
-        /// <param name="forceUpdate">Set to true to force cache update.</param>
-        /// <returns></returns>
-        [Obsolete("This method is no longer supported.")]
-        public async Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Returns the signature certificate for a specific communication party.
-        /// </summary>
-        /// <param name="herId">Her-ID of the communication party</param>
-        /// <returns></returns>
-        [Obsolete("This method is no longer supported.")]
-        public async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Returns the signature certificate for a specific communication party.
-        /// </summary>
-        /// <param name="herId">Her-ID of the communication party</param>
-        /// <param name="forceUpdate">Set to true to force cache update.</param>
-        /// <returns></returns>
-        [Obsolete("This method is no longer supported.")]
-        public async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate)
-        {
-            await Task.Delay(1000);
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        [Obsolete("This method is no longer supported.")]
-        public async Task<IEnumerable<CommunicationPartyDetails>> SearchByIdAsync(string id, bool forceUpdate = false)
-        {
-            await Task.Delay(1000);
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc cref="IAddressRegistry.GetOrganizationDetailsAsync"/>
-        [Obsolete("This method is no longer supported.")]
-        public async Task<OrganizationDetails> GetOrganizationDetailsAsync(int herId, bool forceUpdate = false)
-        {
-            await Task.Delay(1000);
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc cref="PingAsync"/>
-        [Obsolete("This method will be replaced in the future.")]
-        public async Task PingAsync()
-        {
-            await Task.Delay(1000);
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc cref="PingAsync"/>
-        [Obsolete("This method will be replaced in the future.")]
-        public async Task PingAsync(int herId)
-        {
-            await PingAsyncInternal(herId).ConfigureAwait(false);
-        }
-
-        /// <inheritdoc cref="PingAsync"/>
-        [ExcludeFromCodeCoverage]
-        protected virtual async Task PingAsyncInternal(int herId)
-        {
-            var request = await CreateRequestMessageAsync(HttpMethod.Get, $"/CommunicationParties/{herId}");
-            await _restServiceInvoker.ExecuteAsync(request, nameof(PingAsync));
-        }
-
 
         private async Task<RequestParameters> CreateRequestMessageAsync(HttpMethod method, string path)
         {
@@ -268,6 +184,55 @@ namespace Helsenorge.Registries
                 AcceptHeader = "application/json"
             };
             return request;
+        }
+
+        /// <inheritdoc cref="IAddressRegistry.GetCertificateDetailsForEncryptionAsync(int)"/>
+        [Obsolete("This method is no longer supported.")]
+        public async Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId)
+        {
+            return await GetCertificateDetailsForEncryptionAsync(herId, false);
+        }
+
+        /// <inheritdoc cref="IAddressRegistry.GetCertificateDetailsForEncryptionAsync(int, bool)"/>
+        [Obsolete("This method is no longer supported.")]
+        public async Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc cref="IAddressRegistry.GetCertificateDetailsForValidatingSignatureAsync(int)"/>
+        [Obsolete("This method is no longer supported.")]
+        public async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc cref="IAddressRegistry.GetCertificateDetailsForValidatingSignatureAsync(int, bool)"/>
+        [Obsolete("This method is no longer supported.")]
+        public async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc cref="IAddressRegistry.SearchByIdAsync"/>/>
+        [Obsolete("This method is no longer supported.")]
+        public async Task<IEnumerable<CommunicationPartyDetails>> SearchByIdAsync(string id, bool forceUpdate = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc cref="IAddressRegistry.GetOrganizationDetailsAsync"/>
+        [Obsolete("This method is no longer supported.")]
+        public async Task<OrganizationDetails> GetOrganizationDetailsAsync(int herId, bool forceUpdate = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc cref="IAddressRegistry.PingAsync"/>
+        [Obsolete("This method is no longer supported.")]
+        public async Task PingAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

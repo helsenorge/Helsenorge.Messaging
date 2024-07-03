@@ -47,6 +47,11 @@ internal class RestServiceInvoker
             stopwatch.Start();
 
             var response = await httpClient.SendAsync(httpRequest);
+            if (response.IsSuccessStatusCode == false)
+            {
+                throw new HttpRequestException(
+                "Error calling {operationName} on {absoluteUri}. Status code: {response.StatusCode}");
+            }
             var result = await response.Content.ReadAsStringAsync();
 
             stopwatch.Stop();
