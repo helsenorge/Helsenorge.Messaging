@@ -11,7 +11,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Helsenorge.Registries.Configuration;
-using Helsenorge.Registries.HelseId;
 using IdentityModel;
 using IdentityModel.Client;
 using Microsoft.IdentityModel.Tokens;
@@ -35,7 +34,7 @@ public class HelseIdClient : IHelseIdClient
     /// <returns>Jwt access token</returns>
     public async Task<string> CreateJwtAccessTokenAsync()
     {
-        string tokenKey = "HelseIdJwtAccessToken";  // Could be more specific if needed
+        string tokenKey = $"HelseIdJwtAccessToken_{_configuration.ScopeName}";
 
         if (TokenCache.TryGetToken(tokenKey, out var cachedToken))
         {
