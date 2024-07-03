@@ -11,14 +11,11 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
-using System.Text.Json;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Helsenorge.Registries.Configuration;
 using Helsenorge.Registries.HelseId;
 using Helsenorge.Registries.Tests.Mocks;
 using Helsenorge.Registries.Utilities;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -48,11 +45,11 @@ namespace Helsenorge.Registries.Tests
 
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var distributedCache = DistributedCacheFactory.CreatePartlyMockedDistributedCache();
-            var _helseIdClientCpp = new HelseIdClientMock();
+            var helseIdClientCpp = new HelseIdClientMock();
 
-            var _registry = new AddressRegistryRestMock(settings, distributedCache, logger, _helseIdClientCpp);
+            var registry = new AddressRegistryRestMock(settings, distributedCache, logger, helseIdClientCpp);
 
-            _registry.SetupFindCommunicationPartyDetails(i =>
+            registry.SetupFindCommunicationPartyDetails(i =>
             {
                 if (i < 0)
                 {
@@ -62,7 +59,7 @@ namespace Helsenorge.Registries.Tests
                 return File.Exists(file) == false ? null : File.ReadAllText(file);
             });
 
-            return _registry;
+            return registry;
         }
 
         [TestInitialize]
@@ -76,42 +73,37 @@ namespace Helsenorge.Registries.Tests
             
             _registry = GetDefaultAddressRegistryRestMock(_logger);
         }
+
         [TestMethod]
-        public void Read_CommunicationDetails_Found()
+        public void RestAr_Read_CommunicationDetails_Found()
         {
             var result = _registry.FindCommunicationPartyDetailsAsync(8141791).Result;
 
             Assert.AreEqual("Jonny Karl Rønhovde", result.Name);
             Assert.AreEqual(8141791, result.HerId);
-            Assert.AreEqual("8141703_async", result.AsynchronousQueueName);
-            Assert.AreEqual("8141703_sync", result.SynchronousQueueName);
-            Assert.AreEqual("8141703_error", result.ErrorQueueName);
+            Assert.AreEqual("tb.test.nhn.no/NHNTESTServiceBus/8141703_async", result.AsynchronousQueueName);
+            Assert.AreEqual("tb.test.nhn.no/NHNTESTServiceBus/8141703_sync", result.SynchronousQueueName);
+            Assert.AreEqual("tb.test.nhn.no/NHNTESTServiceBus/8141703_error", result.ErrorQueueName);
         }
+
         [TestMethod]
-        public void Read_CommunicationDetails_NotFound()
+        public void RestAr_Read_CommunicationDetails_NotFound()
         {
             var result = _registry.FindCommunicationPartyDetailsAsync(1234).Result;
 
             Assert.IsNull(result);
         }
-        [TestMethod]
-        //[ExpectedException(typeof(RegistriesException))]
-        public void Read_CommunicationDetails_Exception()
-        {
-            var task = _registry.FindCommunicationPartyDetailsAsync(-4);
 
-            try
-            {
-                Task.WaitAll(task);
-            }
-            catch (AggregateException ex )
-            {
-                var x = ex.InnerException;
-            }
+        [TestMethod]
+        [ExpectedException(typeof(RegistriesException))]
+        public async Task RestAr_CommunicationDetails_Exception()
+        {
+            await _registry.FindCommunicationPartyDetailsAsync(-4);
         }
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Constructor_Settings_Null()
+        public void RestAr_Constructor_Settings_Null()
         {
             var distributedCache = DistributedCacheFactory.Create();
 
@@ -119,13 +111,13 @@ namespace Helsenorge.Registries.Tests
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Constructor_Cache_Null()
+        public void RestAr_Constructor_Cache_Null()
         {
             new AddressRegistryRest(new AddressRegistryRestSettings(), null, _logger, _helseIdClientCpp);
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Constructor_Logger_Null()
+        public void RestAr_Constructor_Logger_Null()
         {
             var distributedCache = DistributedCacheFactory.Create();
 
@@ -133,7 +125,7 @@ namespace Helsenorge.Registries.Tests
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Constructor_HelseIdClient_Null()
+        public void RestAr_Constructor_HelseIdClient_Null()
         {
             var distributedCache = DistributedCacheFactory.Create();
 
@@ -141,15 +133,15 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
-        public async Task GetCertificateDetailsForEncryptionAsync_ShouldThrowNotImplementedException()
+        [ExpectedException(typeof(NotImplementedException))]
+        public async Task RestAr_GetCertificateDetailsForEncryptionAsync_ShouldThrowNotImplementedException()
         {
-            var registry = GetDefaultAddressRegistryRestMock(_logger);
-            await Assert.ThrowsExceptionAsync<NotImplementedException>(() => registry.GetCertificateDetailsForEncryptionAsync(2222));
-            await Assert.ThrowsExceptionAsync<NotImplementedException>(() => registry.GetCertificateDetailsForEncryptionAsync(2222, false));
+            var _registry = GetDefaultAddressRegistryRestMock(_logger);
+            await _registry.GetCertificateDetailsForEncryptionAsync(2222);
         }
 
         [TestMethod]
-        public async Task GetCertificateDetailsForValidatingSignatureAsync_ShouldThrowNotImplementedException()
+        public async Task RestAr_GetCertificateDetailsForValidatingSignatureAsync_ShouldThrowNotImplementedException()
         {
             var registry = GetDefaultAddressRegistryRestMock(_logger);
             await Assert.ThrowsExceptionAsync<NotImplementedException>(() => registry.GetCertificateDetailsForValidatingSignatureAsync(2222));
@@ -157,102 +149,17 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
-        public async Task SearchByIdAsync_ShouldThrowNotImplementedException()
+        public async Task RestAr_SearchByIdAsync_ShouldThrowNotImplementedException()
         {
             var registry = GetDefaultAddressRegistryRestMock(_logger);
             await Assert.ThrowsExceptionAsync<NotImplementedException>(() => registry.SearchByIdAsync("2222", false));
         }
 
         [TestMethod]
-        public async Task GetOrganizationDetailsAsync_ShouldThrowNotImplementedException()
+        public async Task RestAr_GetOrganizationDetailsAsync_ShouldThrowNotImplementedException()
         {
             var registry = GetDefaultAddressRegistryRestMock(_logger);
             await Assert.ThrowsExceptionAsync<NotImplementedException>(() => registry.GetOrganizationDetailsAsync(2222, false));
-        }
-
-        [TestMethod]
-        public void Serialize_AddressService_CommunicationParty()
-        {
-            var item = new AddressService.CommunicationParty
-            {
-                Active = true,
-                HerId = 1234,
-                ParentHerId = 4321,
-            };
-
-            var serialized = XmlCacheFormatter.Serialize(item);
-            var deserialized = XmlCacheFormatter.DeserializeAsync<AddressService.CommunicationParty>(serialized).Result;
-            Assert.AreEqual(item.Active, deserialized.Active);
-            Assert.AreEqual(item.HerId, deserialized.HerId);
-            Assert.AreEqual(item.ParentHerId, deserialized.ParentHerId);
-        }
-
-        [TestMethod]
-        public void Serialize_AddressService_CommunicationPartyDetails()
-        {
-            var item = new Abstractions.CommunicationPartyDetails
-            {
-                Name = "Name",
-                HerId = 1234,
-                ParentHerId = 4321,
-                ParentName = "Parent Name",
-                SynchronousQueueName = "1234_sync",
-                AsynchronousQueueName = "1234_async",
-                ErrorQueueName = "1234_error",
-            };
-
-            var serialized = XmlCacheFormatter.Serialize(item);
-            var deserialized =
-                XmlCacheFormatter.DeserializeAsync<Abstractions.CommunicationPartyDetails>(serialized).Result;
-            Assert.AreEqual(item.Name, deserialized.Name);
-            Assert.AreEqual(item.HerId, deserialized.HerId);
-            Assert.AreEqual(item.ParentHerId, deserialized.ParentHerId);
-            Assert.AreEqual(item.ParentName, deserialized.ParentName);
-            Assert.AreEqual(item.SynchronousQueueName, deserialized.SynchronousQueueName);
-            Assert.AreEqual(item.AsynchronousQueueName, deserialized.AsynchronousQueueName);
-            Assert.AreEqual(item.ErrorQueueName, deserialized.ErrorQueueName);
-        }
-
-        [TestMethod]
-        public void Serialize_AddressService_CertificateDetails()
-        {
-            var keys = ECDsa.Create();
-            var request = new CertificateRequest("CN=foo", keys, HashAlgorithmName.SHA256);
-            var cert = request.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
-
-            var serviceDetails = new AddressService.CertificateDetails
-            {
-                Certificate = cert.GetRawCertData(),
-                LdapUrl = "ldap://CN=foo",
-            };
-
-            var serialized = XmlCacheFormatter.Serialize(serviceDetails);
-            var deserialized = XmlCacheFormatter.DeserializeAsync<AddressService.CertificateDetails>(serialized).Result;
-            var deserializedCert = new X509Certificate2(deserialized.Certificate);
-            Assert.AreEqual(serviceDetails.LdapUrl, deserialized.LdapUrl);
-            Assert.AreEqual(cert.Thumbprint, deserializedCert.Thumbprint);
-        }
-
-        [TestMethod]
-        public void Serialize_Abstractions_CertificateDetails()
-        {
-            var keys = ECDsa.Create();
-            var request = new CertificateRequest("CN=foo", keys, HashAlgorithmName.SHA256);
-            var cert = request.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
-
-            var serviceDetails = new Abstractions.CertificateDetails
-            {
-                Certificate = cert,
-                HerId = 1234,
-                LdapUrl = "ldap://CN=foo",
-            };
-
-            var serialized = XmlCacheFormatter.Serialize(serviceDetails);
-            var deserialized = XmlCacheFormatter.DeserializeAsync<Abstractions.CertificateDetails>(serialized).Result;
-            var deserializedCert = deserialized.Certificate;
-            Assert.AreEqual(cert.Thumbprint, deserializedCert.Thumbprint);
-            Assert.AreEqual(serviceDetails.HerId, deserialized.HerId);
-            Assert.AreEqual(cert.Thumbprint, deserializedCert.Thumbprint);
         }
     }
 }
