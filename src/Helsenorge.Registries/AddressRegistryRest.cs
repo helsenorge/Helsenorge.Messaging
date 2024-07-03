@@ -197,6 +197,7 @@ namespace Helsenorge.Registries
         [Obsolete("This method is no longer supported.")]
         public async Task<CertificateDetails> GetCertificateDetailsForEncryptionAsync(int herId, bool forceUpdate)
         {
+            await Task.Yield(); // Dummy await to avoid warning
             throw new NotImplementedException();
         }
 
@@ -204,6 +205,7 @@ namespace Helsenorge.Registries
         [Obsolete("This method is no longer supported.")]
         public async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId)
         {
+            await Task.Yield(); // Dummy await to avoid warning
             throw new NotImplementedException();
         }
 
@@ -211,6 +213,7 @@ namespace Helsenorge.Registries
         [Obsolete("This method is no longer supported.")]
         public async Task<CertificateDetails> GetCertificateDetailsForValidatingSignatureAsync(int herId, bool forceUpdate)
         {
+            await Task.Yield(); // Dummy await to avoid warning
             throw new NotImplementedException();
         }
 
@@ -218,6 +221,7 @@ namespace Helsenorge.Registries
         [Obsolete("This method is no longer supported.")]
         public async Task<IEnumerable<CommunicationPartyDetails>> SearchByIdAsync(string id, bool forceUpdate = false)
         {
+            await Task.Yield(); // Dummy await to avoid warning
             throw new NotImplementedException();
         }
 
@@ -225,6 +229,7 @@ namespace Helsenorge.Registries
         [Obsolete("This method is no longer supported.")]
         public async Task<OrganizationDetails> GetOrganizationDetailsAsync(int herId, bool forceUpdate = false)
         {
+            await Task.Yield(); // Dummy await to avoid warning
             throw new NotImplementedException();
         }
 
@@ -232,6 +237,7 @@ namespace Helsenorge.Registries
         [Obsolete("This method is no longer supported.")]
         public async Task PingAsync()
         {
+            await Task.Yield(); // Dummy await to avoid warning
             throw new NotImplementedException();
         }
     }
