@@ -65,7 +65,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
 
         var httpClientFactory = new ProxyHttpClientFactory(settings.RestConfiguration);
         _restServiceInvoker = new RestServiceInvoker(_logger, httpClientFactory);
-        CertificateValidator = new CertificateValidator(_settings.UseOnlineRevocationCheck);
+        CertificateValidator = new CertificateValidator(_logger, _settings.UseOnlineRevocationCheck);
     }
 
     /// <inheritdoc cref="FindProtocolForCounterpartyAsync"/>
