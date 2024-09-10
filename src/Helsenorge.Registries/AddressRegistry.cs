@@ -159,7 +159,14 @@ namespace Helsenorge.Registries
                     };
                 }
 
+                if (certificateDetailsRegistry != null 
+                    && (certificateDetailsRegistry?.Certificate == null || certificateDetailsRegistry.Certificate.Length == 0))
+                {
+                    throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate, certificate is null", herId);
+                }
+
                 certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
+
                 if (_certificateValidator != null && certificateDetails?.Certificate != null)
                 {
                     var error = _certificateValidator.Validate(certificateDetails.Certificate, X509KeyUsageFlags.KeyEncipherment);
@@ -214,6 +221,12 @@ namespace Helsenorge.Registries
                         EventId = EventIds.CerificateDetails,
                         Data = { { "HerId", herId } }
                     };
+                }
+
+                if (certificateDetailsRegistry != null 
+                    && (certificateDetailsRegistry?.Certificate == null || certificateDetailsRegistry.Certificate.Length == 0))
+                {
+                    throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate, certificate is null", herId);
                 }
 
                 certificateDetails = MapCertificateDetails(herId, certificateDetailsRegistry);
