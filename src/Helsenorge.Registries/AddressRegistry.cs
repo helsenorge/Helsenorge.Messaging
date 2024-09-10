@@ -159,7 +159,8 @@ namespace Helsenorge.Registries
                     };
                 }
 
-                if (certificateDetailsRegistry?.Certificate == null || certificateDetailsRegistry.Certificate.Length == 0)
+                if (certificateDetailsRegistry != null 
+                    && (certificateDetailsRegistry?.Certificate == null || certificateDetailsRegistry.Certificate.Length == 0))
                 {
                     throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate, certificate is null", herId);
                 }
@@ -222,7 +223,8 @@ namespace Helsenorge.Registries
                     };
                 }
 
-                if (certificateDetailsRegistry?.Certificate == null || certificateDetailsRegistry.Certificate.Length == 0)
+                if (certificateDetailsRegistry != null 
+                    && (certificateDetailsRegistry?.Certificate == null || certificateDetailsRegistry.Certificate.Length == 0))
                 {
                     throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate, certificate is null", herId);
                 }
