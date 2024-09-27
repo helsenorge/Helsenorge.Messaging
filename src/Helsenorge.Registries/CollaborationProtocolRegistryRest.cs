@@ -46,22 +46,22 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     /// Contstructor
     /// </summary>
     /// <param name="settings">Options for this instance</param>
+    /// <param name="addressRegistryRest">Options for this instance</param>
     /// <param name="cache">Cache implementation to use</param>
-    /// <param name="addressRegistry">AddressRegistry implementation to use</param>
     /// <param name="logger">The ILogger object used to log diagnostics.</param>
     /// <param name="helseIdClient">The HelseIdClient object used to retrive authentication token.</param>
     public CollaborationProtocolRegistryRest(
         CollaborationProtocolRegistryRestSettings settings,
-        IDistributedCache cache,
         IAddressRegistry addressRegistry,
+        IDistributedCache cache,
         ILogger logger,
         IHelseIdClient helseIdClient)
     {
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _cache = cache ?? throw new ArgumentNullException(nameof(cache));
-        _addressRegistry = addressRegistry ?? throw new ArgumentNullException(nameof(addressRegistry));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _helseIdClient = helseIdClient ?? throw new ArgumentNullException(nameof(helseIdClient));
+        _addressRegistry = addressRegistry ?? throw new ArgumentNullException(nameof(addressRegistry));
 
         var httpClientFactory = new ProxyHttpClientFactory(settings.RestConfiguration);
         _restServiceInvoker = new RestServiceInvoker(_logger, httpClientFactory);
@@ -91,22 +91,27 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
 
         try
         {
+            _logger.LogInformation($"{key} - Retrive from registry");
             xmlString = await FindProtocolForCounterpartyVirtualAsync(counterpartyHerId);
+            
         }
-        catch (Exception ex)
+        catch (FaultException<CPAService.GenericFault> ex)
         {
-            // TODO: Implementere handling for om ingen CPPA er funnet og sørge for at DummyCollaborationProtocolProfileFactory.CreateAsync blir kalt
-
-            throw new RegistriesException(ex.Message, ex)
+            if (_settings.ThrowMessageIfNoCpp)
             {
-                EventId = EventIds.CollaborationProfile,
-                Data = { { "HerId", counterpartyHerId } }
-            };
+                throw new RegistriesException(ex.Message, ex)
+                {
+                    EventId = EventIds.CollaborationProfile,
+                    Data = { { "HerId", counterpartyHerId } }
+                };
+            }
+
+            // if this happens, we fall back to the dummy profile further down
+            _logger.LogWarning($"Could not find or resolve protocol for counterparty when using HerId {counterpartyHerId}. ErrorCode: {ex.Detail.ErrorCode} Message: {ex.Detail.Message}");
         }
         if (string.IsNullOrEmpty(xmlString))
         {
-            // Fix that enables substitutes and interns without CPP to reply to messages on behalf of the GP
-            return await DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, counterpartyHerId, null);
+            return await DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, counterpartyHerId, null, this);
         }
         else
         {

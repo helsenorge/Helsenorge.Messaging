@@ -35,10 +35,10 @@ namespace Helsenorge.Registries.Tests.Mocks
         /// <param name="addressRegistry"></param>
         public CollaborationProtocolRegistryRestMock(
             CollaborationProtocolRegistryRestSettings settings,
-            IDistributedCache cache,
             IAddressRegistry addressRegistry,
+            IDistributedCache cache,
             ILogger logger, 
-            IHelseIdClient helseIdClient) : base(settings, cache, addressRegistry, logger, helseIdClient)
+            IHelseIdClient helseIdClient) : base(settings, addressRegistry, cache, logger, helseIdClient)
         {
         }
 

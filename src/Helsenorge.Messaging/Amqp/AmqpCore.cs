@@ -511,12 +511,19 @@ namespace Helsenorge.Messaging.Amqp
             if (Core.Settings.MessageFunctionsExcludedFromCpaResolve.Contains(messageFunction))
             {
                 // MessageFunction is defined in exception list, return a dummy CollaborationProtocolProfile
-                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AddressRegistry, logger, message.ToHerId, messageFunction);
+                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AddressRegistry, logger, message.ToHerId, messageFunction, CollaborationProtocolRegistry, CertificateValidator);
             }
 
             var profile =
                 await CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(message.FromHerId, message.ToHerId).ConfigureAwait(false) ??
                 await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(message.ToHerId).ConfigureAwait(false);
+
+            if (profile == null)
+                throw new MessagingException($"Could not find collaboration protocol profile for {message.FromHerId} and {message.ToHerId}")
+                {
+                    EventId = EventIds.ProfileNotFound
+                };
+
             return profile;
         }
     }

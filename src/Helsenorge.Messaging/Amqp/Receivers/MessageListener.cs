@@ -306,6 +306,11 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 Logger.LogError(EventIds.Send, ex, $"Send operation failed when processing message with MessageId: {message.MessageId} MessageFunction: {message.MessageFunction}");
                 await MessagingNotification.NotifyUnhandledExceptionAsync(message, ex);
             }
+            catch (MessagingException ex) when (((MessagingException)ex).EventId.Id == EventIds.ProfileNotFound.Id)
+            {
+                Logger.LogError(EventIds.Send, ex, $"Failed to retrive profile TODO: Bedre tekst");
+                await MessagingNotification.NotifyUnhandledExceptionAsync(message, ex);
+            }
             catch (UnsupportedMessageException ex)  // reportable error from message handler (application)
             {
                 await AmqpCore.ReportErrorToExternalSenderAsync(Logger, EventIds.ApplicationReported, message, "transport:unsupported-message", ex.Message, null, ex).ConfigureAwait(false);
@@ -364,7 +369,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             if(AmqpCore.MessagingSettings.MessageFunctionsExcludedFromCpaResolve.Contains(message.MessageFunction))
             {
                 // MessageFunction is defined in exception list, return a dummy CollaborationProtocolProfile
-                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AmqpCore.AddressRegistry, Logger, message.FromHerId, message.MessageFunction);
+                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AmqpCore.AddressRegistry, Logger, message.FromHerId, message.MessageFunction, AmqpCore.CollaborationProtocolRegistry);
             }
 
             // if we receive an error message then CPA isn't needed because we're not decrypting the message and then the CPA info isn't needed

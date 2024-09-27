@@ -7,6 +7,7 @@
  */
 
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -43,26 +44,78 @@ public static class DummyCollaborationProtocolProfileFactory
     /// <param name="logger">An instance of <see cref="ILogger"/>.</param>
     /// <param name="herId">The HER-id to create a "dummy" <see cref="CollaborationProtocolProfile"/></param>
     /// <param name="messageFunction"></param>
+    /// <param name="collaborationProtocolRegistry"></param>
     /// <returns></returns>
     public static async Task<CollaborationProtocolProfile> CreateAsync(
         IAddressRegistry addressRegistry,
         ILogger logger,
         int herId,
-        string messageFunction)
+        string messageFunction,
+        ICollaborationProtocolRegistry collaborationProtocolRegistry = null,
+        ICertificateValidator certificateValidator = null)
     {
-        var communicationParty = await addressRegistry.FindCommunicationPartyDetailsAsync(herId).ConfigureAwait(false);
-        if(communicationParty == null)
+        var profile = await addressRegistry.FindCommunicationPartyDetailsAsync(herId).ConfigureAwait(false);
+
+        if (profile == null)
         {
             logger.LogWarning($"Could not get communication party details for HerId {herId}");
             return null;
         }
+        
+        var deliveryChannel = profile.AsynchronousQueueName;
 
-        var deliveryChannel = communicationParty.AsynchronousQueueName;
+        if (collaborationProtocolRegistry != null && certificateValidator != null)
+        {
+            var collaborationProtocolProfile = await collaborationProtocolRegistry.FindProtocolForCounterpartyAsync(herId).ConfigureAwait(false);
+            
+            if (collaborationProtocolProfile == null)
+            {
+                logger.LogWarning($"Could not get collaborationProtocolProfile details for HerId {herId}");
+                return null;
+            }
+            if (collaborationProtocolProfile.Roles == null || collaborationProtocolProfile.Roles.Count == 0)
+            {
+                logger.LogWarning($"Could not get collaborationProtocolProfileRoles for for HerId {herId}");
+                return null;
+            }
+            var encryptionCertificate = new CertificateDetails
+            {
+                HerId = collaborationProtocolProfile.HerId,
+                Certificate = collaborationProtocolProfile.EncryptionCertificate
+            };
+            var signatureCertificate = new CertificateDetails
+            {
+                HerId = collaborationProtocolProfile.HerId,
+                Certificate = collaborationProtocolProfile.SignatureCertificate
+            };
+
+            ValidateCertificate(herId, certificateValidator, encryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
+            ValidateCertificate(herId, certificateValidator, signatureCertificate, X509KeyUsageFlags.NonRepudiation);
+
+            return CreateDummyCollaborationProtocolProfile(herId,
+                encryptionCertificate,
+                signatureCertificate,
+                deliveryChannel,
+                messageFunction);
+        }
+
         return CreateDummyCollaborationProtocolProfile(herId,
             await addressRegistry.GetCertificateDetailsForEncryptionAsync(herId).ConfigureAwait(false),
             await addressRegistry.GetCertificateDetailsForValidatingSignatureAsync(herId).ConfigureAwait(false),
             deliveryChannel,
             messageFunction);
+    }
+
+    private static void ValidateCertificate(int herId, ICertificateValidator certificateValidator, CertificateDetails encryptionCertificate, X509KeyUsageFlags usage)
+    {
+        if (certificateValidator != null && encryptionCertificate?.Certificate != null)
+        {
+            var error = certificateValidator.Validate(encryptionCertificate.Certificate, usage);
+            if (error != CertificateErrors.None)
+            {
+                throw new CouldNotVerifyCertificateException($"Could not verify HerId: {herId} certificate", herId);
+            }
+        }
     }
 
     private static CollaborationProtocolProfile CreateDummyCollaborationProtocolProfile(int herId, CertificateDetails encryptionCertificate, CertificateDetails signatureCertificate, string deliveryChannel, string messageFunction)

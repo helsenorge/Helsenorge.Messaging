@@ -50,7 +50,7 @@ internal class RestServiceInvoker
             if (response.IsSuccessStatusCode == false)
             {
                 throw new HttpRequestException(
-                "Error calling {operationName} on {absoluteUri}. Status code: {response.StatusCode}");
+                $"Error calling {operationName} on {absoluteUri}. Status code: {response.StatusCode}");
             }
             var result = await response.Content.ReadAsStringAsync();
 
