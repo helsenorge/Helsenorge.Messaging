@@ -187,10 +187,6 @@ namespace Helsenorge.Messaging.Abstractions
         /// Event Id used for informational purposes when a retry operation is in progress.
         /// </summary>
         public static EventId RetryOperation = new EventId(1009, EventIdName);
-        /// <summary>
-        /// Event Id used for profile or agreement not found for herid.
-        /// </summary>
-        public static EventId ProfileNotFound = new EventId(1010, EventIdName);
     }
 
     /// <summary>
