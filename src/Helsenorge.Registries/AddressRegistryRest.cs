@@ -180,7 +180,7 @@ namespace Helsenorge.Registries
             {
                 Method = method,
                 Path = path,
-                BearerToken = await _helseIdClient.CreateJwtAccessTokenAsync(),
+                BearerToken = await _helseIdClient.CreateJwtAccessTokenAsyncCpe(),
                 AcceptHeader = "application/json"
             };
             return request;

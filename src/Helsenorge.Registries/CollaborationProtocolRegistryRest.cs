@@ -111,6 +111,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         }
         if (string.IsNullOrEmpty(xmlString))
         {
+            // Fix that enables substitutes and interns without CPP to reply to messages on behalf of the GP
             return await DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, counterpartyHerId, null, this);
         }
         else
@@ -296,7 +297,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         {
             Method = method,
             Path = path,
-            BearerToken = await _helseIdClient.CreateJwtAccessTokenAsync(),
+            BearerToken = await _helseIdClient.CreateJwtAccessTokenAsyncCppa(),
             AcceptHeader = "application/xml"
         };
         return request;

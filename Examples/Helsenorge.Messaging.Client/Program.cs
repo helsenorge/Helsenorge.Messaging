@@ -78,21 +78,15 @@ namespace Helsenorge.Messaging.Client
             var collaborationProtocolRegistryRestSettings = new CollaborationProtocolRegistryRestSettings();
             configurationRoot.GetSection("CollaborationProtocolRegistryRestSettings").Bind(collaborationProtocolRegistryRestSettings);
 
-            var helseidConfiguratrioncpp = new HelseIdConfiguration();
-            configurationRoot.GetSection("HelseIdConfigurationCpp").Bind(helseidConfiguratrioncpp);
+            var helseidConfiguratrion = new HelseIdConfiguration();
+            configurationRoot.GetSection("HelseIdConfiguration").Bind(helseidConfiguratrion);
 
-            var helseidConfiguratrioncpa = new HelseIdConfiguration();
-            configurationRoot.GetSection("HelseIdConfigurationCpa").Bind(helseidConfiguratrioncpa);
 
             var provider = new SecurityKeyProvider();
-
-            var helseIdClientcpa = new HelseIdClient(helseidConfiguratrioncpa, provider);
-            var helseIdClientcpp = new HelseIdClient(helseidConfiguratrioncpp, provider);
-
-            var addressRegistryRest = new AddressRegistryRest(addressRegistryRestSettings, distributedCache, _logger, helseIdClientcpp);
-
-            var collaborationProtocolRestRegistry = new CollaborationProtocolRegistryRest(collaborationProtocolRegistryRestSettings,
-                               distributedCache, addressRegistryRest, _logger, helseIdClientcpa);
+            var helseIdClient = new HelseIdClient(helseidConfiguratrion, provider);
+            var addressRegistryRest = new AddressRegistryRest(addressRegistryRestSettings, distributedCache, _logger, helseIdClient);
+            var collaborationProtocolRestRegistry = new CollaborationProtocolRegistryRest(collaborationProtocolRegistryRestSettings, addressRegistryRest,
+                               distributedCache, _logger, helseIdClient);
 
             _clientSettings = new ClientSettings();
             configurationRoot.GetSection("ClientSettings").Bind(_clientSettings);

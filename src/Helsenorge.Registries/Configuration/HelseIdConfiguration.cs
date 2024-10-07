@@ -22,7 +22,12 @@ public class HelseIdConfiguration
     public string TokenEndpoint { get; set; }
 
     /// <summary>
-    ///     HelseId scope.
+    ///     HelseId scope for Cppa service.
     /// </summary>
-    public string ScopeName { get; set; }
+    public string CppaScopeName { get; set; }
+
+    /// <summary>
+    ///     HelseId scope for Cpe service.
+    /// </summary>
+    public string CpeScopeName { get; set; }
 }

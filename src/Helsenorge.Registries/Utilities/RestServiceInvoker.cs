@@ -49,8 +49,9 @@ internal class RestServiceInvoker
             var response = await httpClient.SendAsync(httpRequest);
             if (response.IsSuccessStatusCode == false)
             {
+                await TryLogContent(response);
                 throw new HttpRequestException(
-                $"Error calling {operationName} on {absoluteUri}. Status code: {response.StatusCode}");
+                    $"Error calling {operationName} on {absoluteUri}. Status code: {response.StatusCode}");
             }
             var result = await response.Content.ReadAsStringAsync();
 
@@ -77,5 +78,17 @@ internal class RestServiceInvoker
         httpRequest.Headers.Add("Accept", request.AcceptHeader);
         httpRequest.SetBearerToken(request.BearerToken);
         return httpRequest;
+    }
+
+    private async Task TryLogContent(HttpResponseMessage response)
+    {
+        try
+        {
+            _logger.LogInformation($"Request unsuccessful. Response content: {await response.Content.ReadAsStringAsync()}");
+        }
+        catch
+        {
+            // ignored
+        }
     }
 }

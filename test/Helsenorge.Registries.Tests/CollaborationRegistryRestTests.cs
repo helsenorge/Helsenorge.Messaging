@@ -57,7 +57,7 @@ namespace Helsenorge.Registries.Tests
             {
                 ClientId = "client-id",
                 TokenEndpoint = "https://localhost",
-                ScopeName = "testscope"
+                CppaScopeName = "testscopeCppa"
             };
 
             _helseIdClientCppa = new HelseIdClientMock();

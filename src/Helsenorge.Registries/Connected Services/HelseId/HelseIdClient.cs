@@ -29,19 +29,33 @@ public class HelseIdClient : IHelseIdClient
     }
 
     /// <summary>
-    /// Creates a Jwt access token for authentication with HelseId
+    /// Creates a Jwt access token for authentication with HelseId for the Cpe service
     /// </summary>
     /// <returns>Jwt access token</returns>
-    public async Task<string> CreateJwtAccessTokenAsync()
+    public async Task<string> CreateJwtAccessTokenAsyncCpe()
     {
-        string tokenKey = $"HelseIdJwtAccessToken_{_configuration.ScopeName}";
+        return await CreateJwtAccessTokenAsync(_configuration.CpeScopeName);
+    }
+
+    /// <summary>
+    /// Creates a Jwt access token for authentication with HelseId for the Cppa service
+    /// </summary>
+    /// <returns>Jwt access token</returns>
+    public async Task<string> CreateJwtAccessTokenAsyncCppa()
+    {
+        return await CreateJwtAccessTokenAsync(_configuration.CppaScopeName);
+    }
+
+    private async Task<string> CreateJwtAccessTokenAsync(string scopeName)
+    {
+        string tokenKey = $"HelseIdJwtAccessToken_{scopeName}";
 
         if (TokenCache.TryGetToken(tokenKey, out var cachedToken))
         {
             return cachedToken;
         }
 
-        var request = CreateClientAssertionsRequest();
+        var request = CreateClientAssertionsRequest(scopeName);
         var response = await new HttpClient().RequestClientCredentialsTokenAsync(request);
         if (response.IsError)
         {
@@ -52,13 +66,13 @@ public class HelseIdClient : IHelseIdClient
         return response.AccessToken;
     }
 
-    private ClientCredentialsTokenRequest CreateClientAssertionsRequest()
+    private ClientCredentialsTokenRequest CreateClientAssertionsRequest(string scopeName)
     {
         var request = new ClientCredentialsTokenRequest
         {
             ClientId = _configuration.ClientId,
             Address = _configuration.TokenEndpoint,
-            Scope = _configuration.ScopeName,
+            Scope = scopeName,
             GrantType = OidcConstants.GrantTypes.ClientCredentials,
             ClientCredentialStyle = ClientCredentialStyle.PostBody,
             ClientAssertion = new ClientAssertion

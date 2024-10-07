@@ -12,7 +12,8 @@
   "HelseIdConfiguration": {
     "ClientId": "???",
     "TokenEndpoint": "???",
-    "ScopeName": "???"
+    "CppaScopeName": "???",
+    "CpeScopeName": "???"
   },
   "MessagingSettings": {
     "MyHerIds": [ "1234" ],
@@ -29,12 +30,12 @@
       }
     },
     "DecryptionCertificate": {
-      "Thumbprint": "c38fa377f0dc296ca2a9752c79f107ac96b58602",
+      "Thumbprint": "5bbf4ff360d2f8b44832a03a42a38ddc641c304c",
       "StoreName": "My",
       "StoreLocation": "LocalMachine"
     },
     "SigningCertificate": {
-      "Thumbprint": "97c826f99dac40d4aa9d8533387e3a6922930286",
+      "Thumbprint": "715e4d3bd30e89895b34f6d2188f255cdd94f1b0",
       "StoreName": "My",
       "StoreLocation": "LocalMachine"
     }
