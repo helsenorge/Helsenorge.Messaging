@@ -46,14 +46,14 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     /// Contstructor
     /// </summary>
     /// <param name="settings">Options for this instance</param>
-    /// <param name="addressRegistryRest">Options for this instance</param>
     /// <param name="cache">Cache implementation to use</param>
+    /// <param name="addressRegistry">AddressRegistry implementation to use</param>
     /// <param name="logger">The ILogger object used to log diagnostics.</param>
     /// <param name="helseIdClient">The HelseIdClient object used to retrive authentication token.</param>
     public CollaborationProtocolRegistryRest(
         CollaborationProtocolRegistryRestSettings settings,
-        IAddressRegistry addressRegistry,
         IDistributedCache cache,
+        IAddressRegistry addressRegistry,
         ILogger logger,
         IHelseIdClient helseIdClient)
     {

@@ -85,8 +85,8 @@ namespace Helsenorge.Messaging.Client
             var provider = new SecurityKeyProvider();
             var helseIdClient = new HelseIdClient(helseidConfiguratrion, provider);
             var addressRegistryRest = new AddressRegistryRest(addressRegistryRestSettings, distributedCache, _logger, helseIdClient);
-            var collaborationProtocolRestRegistry = new CollaborationProtocolRegistryRest(collaborationProtocolRegistryRestSettings, addressRegistryRest,
-                               distributedCache, _logger, helseIdClient);
+            var collaborationProtocolRestRegistry = new CollaborationProtocolRegistryRest(collaborationProtocolRegistryRestSettings,
+                               distributedCache, addressRegistryRest, _logger, helseIdClient);
 
             _clientSettings = new ClientSettings();
             configurationRoot.GetSection("ClientSettings").Bind(_clientSettings);

@@ -38,7 +38,7 @@ namespace Helsenorge.Registries.Tests.Mocks
             IAddressRegistry addressRegistry,
             IDistributedCache cache,
             ILogger logger, 
-            IHelseIdClient helseIdClient) : base(settings, addressRegistry, cache, logger, helseIdClient)
+            IHelseIdClient helseIdClient) : base(settings, cache, addressRegistry, logger, helseIdClient)
         {
         }
 

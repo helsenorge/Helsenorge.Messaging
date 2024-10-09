@@ -92,7 +92,7 @@ namespace Helsenorge.Registries.Tests
             var distributedCache = DistributedCacheFactory.Create();
             addressRegistry = new AddressRegistryRestMock(new AddressRegistryRestSettings(), distributedCache, _logger, _helseIdClientCppa);
 
-            new CollaborationProtocolRegistryRest(null, addressRegistry, distributedCache, _logger, _helseIdClientCppa);
+            new CollaborationProtocolRegistryRest(null, distributedCache, addressRegistry, _logger, _helseIdClientCppa);
         }
 
         [TestMethod]
@@ -103,7 +103,7 @@ namespace Helsenorge.Registries.Tests
             var distributedCache = DistributedCacheFactory.Create();
             addressRegistry = new AddressRegistryRestMock(new AddressRegistryRestSettings(), distributedCache, _logger, _helseIdClientCppa);
 
-            new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), addressRegistry, null, _logger, _helseIdClientCppa);
+            new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), null, addressRegistry, _logger, _helseIdClientCppa);
         }
 
         [TestMethod]
@@ -112,7 +112,7 @@ namespace Helsenorge.Registries.Tests
         {
             var distributedCache = DistributedCacheFactory.Create();
 
-            new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), null, distributedCache, _logger, _helseIdClientCppa);
+            new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache, null, _logger, _helseIdClientCppa);
         }
 
         [TestMethod]
@@ -122,7 +122,7 @@ namespace Helsenorge.Registries.Tests
             var distributedCache = DistributedCacheFactory.Create();
             addressRegistry = new AddressRegistryRestMock(new AddressRegistryRestSettings(), distributedCache, _logger, _helseIdClientCppa);
 
-            new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), addressRegistry, distributedCache, null, _helseIdClientCppa);
+            new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache, addressRegistry, null, _helseIdClientCppa);
         }
 
         [TestMethod]
@@ -132,7 +132,7 @@ namespace Helsenorge.Registries.Tests
             var distributedCache = DistributedCacheFactory.Create();
             addressRegistry = new AddressRegistryRestMock(new AddressRegistryRestSettings(), distributedCache, _logger, _helseIdClientCppa);
 
-            new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), addressRegistry, distributedCache, _logger, null);
+            new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache, addressRegistry, _logger, null);
         }
 
         [TestMethod]
