@@ -95,12 +95,9 @@ namespace Helsenorge.Registries
                         communicationPartyDetails = MapCommunicationPartyDetails(details);
                     }
                 }
-                catch (FaultException<GenericFault> ex)
-                {
-                    if (ex.Detail.ErrorCode == "InvalidHerIdSupplied")
-                        throw new InvalidHerIdException(herId, ex);
-                }
-                catch (FaultException ex)
+                // SOAP has own error code "InvalidHerIdSupplied" which InvalidHerIdException
+                // We don't get granular error codes from Rest so we default to RegistriesException (SOAP also defaults to this)
+                catch (HttpRequestException ex)
                 {
                     throw new RegistriesException(ex.Message, ex)
                     {

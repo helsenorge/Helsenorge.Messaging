@@ -95,7 +95,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
             xmlString = await FindProtocolForCounterpartyVirtualAsync(counterpartyHerId);
             
         }
-        catch (FaultException<CPAService.GenericFault> ex)
+        catch (HttpRequestException ex)
         {
             if (_settings.ThrowMessageIfNoCpp)
             {
@@ -107,7 +107,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
             }
 
             // if this happens, we fall back to the dummy profile further down
-            _logger.LogWarning($"Could not find or resolve protocol for counterparty when using HerId {counterpartyHerId}. ErrorCode: {ex.Detail.ErrorCode} Message: {ex.Detail.Message}");
+            _logger.LogWarning($"Could not find or resolve protocol for counterparty when using HerId {counterpartyHerId}, fallback to generate dummy profile. Message: {ex.Message}");
         }
         if (string.IsNullOrEmpty(xmlString))
         {
@@ -168,7 +168,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         {
             xmlString = await FindAgreementByIdVirtualAsync(id);
         }
-        catch (FaultException ex)
+        catch (HttpRequestException ex)
         {
             throw new RegistriesException(ex.Message, ex)
             {
@@ -233,10 +233,10 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         {
             details = await FindAgreementForCounterpartyVirtualAsync(myHerId, counterpartyHerId);
         }
-        catch (FaultException ex)
+        catch (HttpRequestException ex)
         {
             // if there are error getting a proper CPA, we fallback to getting CPP.
-            _logger.LogWarning($"Failed to resolve CPA between {myHerId} and {counterpartyHerId}. {ex.Message}");
+            _logger.LogWarning($"Failed to resolve CPA between {myHerId} and {counterpartyHerId}. Fallback to CPP. Message: {ex.Message}");
             return await FindProtocolForCounterpartyAsync(counterpartyHerId).ConfigureAwait(false);
         }
 
