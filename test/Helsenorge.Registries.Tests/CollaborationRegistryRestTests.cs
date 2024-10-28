@@ -57,7 +57,7 @@ namespace Helsenorge.Registries.Tests
             {
                 ClientId = "client-id",
                 TokenEndpoint = "https://localhost",
-                CppaScopeName = "testscopeCppa"
+                ScopeName = "testscopeCppa"
             };
 
             _helseIdClientCppa = new HelseIdClientMock();
@@ -90,7 +90,7 @@ namespace Helsenorge.Registries.Tests
         public void RestCpa_Constructor_Settings_Null()
         {
             var distributedCache = DistributedCacheFactory.Create();
-            addressRegistry = new AddressRegistryRestMock(new AddressRegistryRestSettings(), distributedCache, _logger, _helseIdClientCppa);
+            addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache, _logger);
 
             new CollaborationProtocolRegistryRest(null, distributedCache, addressRegistry, _logger, _helseIdClientCppa);
         }
@@ -101,7 +101,7 @@ namespace Helsenorge.Registries.Tests
         {
 
             var distributedCache = DistributedCacheFactory.Create();
-            addressRegistry = new AddressRegistryRestMock(new AddressRegistryRestSettings(), distributedCache, _logger, _helseIdClientCppa);
+            addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache, _logger);
 
             new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), null, addressRegistry, _logger, _helseIdClientCppa);
         }
@@ -120,7 +120,7 @@ namespace Helsenorge.Registries.Tests
         public void RestCpa_Constructor_ILogger_Null()
         {
             var distributedCache = DistributedCacheFactory.Create();
-            addressRegistry = new AddressRegistryRestMock(new AddressRegistryRestSettings(), distributedCache, _logger, _helseIdClientCppa);
+            addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache, _logger);
 
             new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache, addressRegistry, null, _helseIdClientCppa);
         }
@@ -130,7 +130,7 @@ namespace Helsenorge.Registries.Tests
         public void RestCpa_Constructor_HelseIdClient_Null()
         {
             var distributedCache = DistributedCacheFactory.Create();
-            addressRegistry = new AddressRegistryRestMock(new AddressRegistryRestSettings(), distributedCache, _logger, _helseIdClientCppa);
+            addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache, _logger);
 
             new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache, addressRegistry, _logger, null);
         }

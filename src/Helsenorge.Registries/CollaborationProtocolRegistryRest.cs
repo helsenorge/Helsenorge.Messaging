@@ -297,7 +297,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         {
             Method = method,
             Path = path,
-            BearerToken = await _helseIdClient.CreateJwtAccessTokenAsyncCppa(),
+            BearerToken = await _helseIdClient.CreateJwtAccessTokenAsync(),
             AcceptHeader = "application/xml"
         };
         return request;

@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Helsenorge.Messaging.Client": {
-      "commandName": "Project",
-      "commandLineArgs": "sendasync appsettings"
-    }
-  }
-}

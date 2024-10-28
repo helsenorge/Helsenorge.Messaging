@@ -71,22 +71,22 @@ namespace Helsenorge.Messaging.Client
             var distributedCache = DistributedCacheFactory.Create();
 
             // set up address registry
-            var addressRegistryRestSettings = new AddressRegistryRestSettings();
-            configurationRoot.GetSection("AddressRegistryRestSettings").Bind(addressRegistryRestSettings);
+            var addressRegistrySettings = new AddressRegistrySettings();
+            configurationRoot.GetSection("AddressRegistrySettings").Bind(addressRegistrySettings);
+            var addressRegistry = new AddressRegistry(addressRegistrySettings, distributedCache, _logger);
+
+            // set up HelseIdClient
+            var helseidConfiguratrion = new HelseIdConfiguration();
+            configurationRoot.GetSection("HelseIdConfiguration").Bind(helseidConfiguratrion);
+            var provider = new SecurityKeyProvider();
+            var helseIdClient = new HelseIdClient(helseidConfiguratrion, provider);
 
             // set up collaboration rest registry
             var collaborationProtocolRegistryRestSettings = new CollaborationProtocolRegistryRestSettings();
             configurationRoot.GetSection("CollaborationProtocolRegistryRestSettings").Bind(collaborationProtocolRegistryRestSettings);
 
-            var helseidConfiguratrion = new HelseIdConfiguration();
-            configurationRoot.GetSection("HelseIdConfiguration").Bind(helseidConfiguratrion);
-
-
-            var provider = new SecurityKeyProvider();
-            var helseIdClient = new HelseIdClient(helseidConfiguratrion, provider);
-            var addressRegistryRest = new AddressRegistryRest(addressRegistryRestSettings, distributedCache, _logger, helseIdClient);
             var collaborationProtocolRestRegistry = new CollaborationProtocolRegistryRest(collaborationProtocolRegistryRestSettings,
-                               distributedCache, addressRegistryRest, _logger, helseIdClient);
+                               distributedCache, addressRegistry, _logger, helseIdClient);
 
             _clientSettings = new ClientSettings();
             configurationRoot.GetSection("ClientSettings").Bind(_clientSettings);
@@ -99,9 +99,9 @@ namespace Helsenorge.Messaging.Client
             messagingSettings.LogPayload = true;
 
             if(noProtection)
-                _messagingClient = new MessagingClient(messagingSettings, _loggerFactory, collaborationProtocolRestRegistry, addressRegistryRest, null, null, new NoMessageProtection());
+                _messagingClient = new MessagingClient(messagingSettings, _loggerFactory, collaborationProtocolRestRegistry, addressRegistry, null, null, new NoMessageProtection());
             else
-                _messagingClient = new MessagingClient(messagingSettings, _loggerFactory, collaborationProtocolRestRegistry, addressRegistryRest);
+                _messagingClient = new MessagingClient(messagingSettings, _loggerFactory, collaborationProtocolRestRegistry, addressRegistry);
         }
 
         private static void HandleAsyncMessage(CommandLineApplication command)

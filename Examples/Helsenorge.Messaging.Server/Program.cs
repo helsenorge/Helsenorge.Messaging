@@ -20,6 +20,8 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Helsenorge.Registries.Configuration;
+using Helsenorge.Registries.HelseId;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Helsenorge.Messaging.Server
@@ -90,11 +92,18 @@ namespace Helsenorge.Messaging.Server
             configurationRoot.GetSection("AddressRegistrySettings").Bind(addressRegistrySettings);
             var addressRegistry = new AddressRegistry(addressRegistrySettings, distributedCache, _logger);
 
-            // set up collaboration registry
-            var collaborationProtocolRegistrySettings = new CollaborationProtocolRegistrySettings();
-            configurationRoot.GetSection("CollaborationProtocolRegistrySettings").Bind(collaborationProtocolRegistrySettings);
+            // set up HelseIdClient
+            var helseidConfiguratrion = new HelseIdConfiguration();
+            configurationRoot.GetSection("HelseIdConfiguration").Bind(helseidConfiguratrion);
+            var provider = new SecurityKeyProvider();
+            var helseIdClient = new HelseIdClient(helseidConfiguratrion, provider);
 
-            var collaborationProtocolRegistry = new CollaborationProtocolRegistry(collaborationProtocolRegistrySettings, distributedCache, addressRegistry, _logger);
+            // set up collaboration rest registry
+            var collaborationProtocolRegistryRestSettings = new CollaborationProtocolRegistryRestSettings();
+            configurationRoot.GetSection("CollaborationProtocolRegistryRestSettings").Bind(collaborationProtocolRegistryRestSettings);
+
+            var collaborationProtocolRestRegistry = new CollaborationProtocolRegistryRest(collaborationProtocolRegistryRestSettings,
+                distributedCache, addressRegistry, _logger, helseIdClient);
 
             _serverSettings = new ServerSettings();
             configurationRoot.GetSection("ServerSettings").Bind(_serverSettings);
@@ -106,7 +115,7 @@ namespace Helsenorge.Messaging.Server
             messagingSettings.AmqpSettings.Synchronous.ReplyQueueMapping.Add(Environment.MachineName, "DUMMY"); // we just need a value, it will never be used
             messagingSettings.LogPayload = true;
 
-            _messagingServer = new MessagingServer(messagingSettings, _loggerFactory, collaborationProtocolRegistry, addressRegistry);
+            _messagingServer = new MessagingServer(messagingSettings, _loggerFactory, collaborationProtocolRestRegistry, addressRegistry);
 
             _messagingServer.RegisterAsynchronousMessageReceivedStartingCallbackAsync((listener, message) =>
             {

@@ -1,19 +1,14 @@
 {
-  "AddressRegistryRestSettings": {
-    "RestConfiguration": {
-      "Address": "???"
-    }
-  },
-  "CollaborationProtocolRegistryRestSettings": {
-    "RestConfiguration": {
-      "Address": "???"
+  "AddressRegistrySettings": {
+    "WcfConfiguration": {
+      "UserName": "???",
+      "Password": "???"
     }
   },
   "HelseIdConfiguration": {
     "ClientId": "???",
     "TokenEndpoint": "???",
-    "CppaScopeName": "???",
-    "CpeScopeName": "???"
+    "ScopeName": "???"
   },
   "MessagingSettings": {
     "MyHerIds": [ "1234" ],
@@ -30,12 +25,12 @@
       }
     },
     "DecryptionCertificate": {
-      "Thumbprint": "5bbf4ff360d2f8b44832a03a42a38ddc641c304c",
+      "Thumbprint": "fddbcfbb3231f0c66ee2168358229d3cac95e88a",
       "StoreName": "My",
       "StoreLocation": "LocalMachine"
     },
     "SigningCertificate": {
-      "Thumbprint": "715e4d3bd30e89895b34f6d2188f255cdd94f1b0",
+      "Thumbprint": "bd302b20fcdcf3766bf0bcba485dfb4b2bfe1379",
       "StoreName": "My",
       "StoreLocation": "LocalMachine"
     }

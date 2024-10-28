@@ -24,10 +24,5 @@ public class HelseIdConfiguration
     /// <summary>
     ///     HelseId scope for Cppa service.
     /// </summary>
-    public string CppaScopeName { get; set; }
-
-    /// <summary>
-    ///     HelseId scope for Cpe service.
-    /// </summary>
-    public string CpeScopeName { get; set; }
+    public string ScopeName { get; set; }
 }
