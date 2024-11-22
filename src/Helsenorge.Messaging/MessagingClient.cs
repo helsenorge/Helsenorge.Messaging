@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
@@ -131,6 +131,30 @@ namespace Helsenorge.Messaging
             {
                 case DeliveryProtocol.Amqp:
                     return await _synchronousServiceBusSender.SendAsync(_logger, message).ConfigureAwait(false);
+                case DeliveryProtocol.Unknown:
+                default:
+                    var profile = await AmqpCore.FindProfileAsync(_logger, message).ConfigureAwait(false);
+                    throw new MessagingException($"Invalid delivery protocol. Message Function {message.MessageFunction} might be missing from either CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}.")
+                    {
+                        EventId = EventIds.InvalidMessageFunction
+                    };
+            }
+        }
+
+        /// <summary>
+        /// Sends a message without waiting for a reply
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns>The received XML</returns>
+        public async Task SendWithoutWaitingAsync(OutgoingMessage message)
+        {
+            var collaborationProtocolMessage = await PreCheckAsync(_logger, message).ConfigureAwait(false);
+
+            switch (collaborationProtocolMessage.DeliveryProtocol)
+            {
+                case DeliveryProtocol.Amqp:
+                    await _synchronousServiceBusSender.SendWithoutWaitingAsync(_logger, message).ConfigureAwait(false);
+                    break;
                 case DeliveryProtocol.Unknown:
                 default:
                     var profile = await AmqpCore.FindProfileAsync(_logger, message).ConfigureAwait(false);
