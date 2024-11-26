@@ -15,8 +15,10 @@ Dette er et eksempel på hvordan en slik fil kan se ut.
         "EndpointName": "BasicHttpBinding_ICommunicationPartyService",
         "CachingInterval": "00:05:00"
     },
-    "CollaborationProtocolRegistrySettings": {
-        "EndpointName": "BasicHttpBinding_ICPPAService",
+    "CollaborationProtocolRegistryRestSettings": {
+        "RestConfiguration": {
+            "Address": "https://cppa.grunndata.nhn.no"
+        },
         "CachingInterval": "00:05:00"
     },
     "MessagingSettings": {
@@ -76,6 +78,9 @@ Nedenfor vises formatet på ConnectionString for 3.x versjon og tidligere, og de
 Portene det referes til må være åpne. Versjon 4.x benytter AMQP 1.0 og benytter derfor port 5671.
 
 Komplett oversikt over URLer og porter finner man her: https://helsenorge.atlassian.net/l/c/KAxHoTyc
+
+##### Versjon 5.2.x og nyere
+Endret integrasjon mot CPPA tjenesten fra wcf til rest. Oppdatert konfigurasjon for CollaborationProtocolRegistryRestSettings.
 
 ##### Versjon 4.x og nyere
 ```
