@@ -514,9 +514,19 @@ namespace Helsenorge.Messaging.Amqp
                 return await DummyCollaborationProtocolProfileFactory.CreateAsync(AddressRegistry, logger, message.ToHerId, messageFunction);
             }
 
-            var profile =
-                await CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(message.FromHerId, message.ToHerId).ConfigureAwait(false) ??
-                await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(message.ToHerId).ConfigureAwait(false);
+
+            // try first to find an agreement
+            var profile = await CollaborationProtocolRegistry
+                .FindAgreementForCounterpartyAsync(message.FromHerId, message.ToHerId).ConfigureAwait(false);
+            if (profile != null)
+                return profile;
+
+            // if we cannot find agreement, we fallback to protocol (which may return a dummy protocol if things are really missing in AR)
+            logger.LogInformation($"Could not find agreement for HerId {message.FromHerId} and {message.ToHerId}. Falling back to protocol profile.");
+            profile = await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(message.ToHerId).ConfigureAwait(false);
+            if (profile == null)
+                logger.LogInformation($"Could not find protocol profile for HerId {message.FromHerId}");
+
             return profile;
         }
     }

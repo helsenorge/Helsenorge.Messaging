@@ -381,11 +381,20 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                     Logger.LogInformation($"Tried to fetch Cpa from CpaID, continuing as if there wasn't a CpaId. Error message: {ex.Message}");
                 }
             }
-            return
-                // try first to find an agreement
-                await AmqpCore.CollaborationProtocolRegistry.FindAgreementForCounterpartyAsync(message.ToHerId, message.FromHerId).ConfigureAwait(false) ??
-                // if we cannot find that, we fallback to protocol (which may return a dummy protocol if things are really missing in AR)
-                await AmqpCore.CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(message.FromHerId).ConfigureAwait(false);
+
+            // try first to find an agreement
+            var profile = await AmqpCore.CollaborationProtocolRegistry
+                .FindAgreementForCounterpartyAsync(message.ToHerId, message.FromHerId).ConfigureAwait(false);
+            if (profile != null) 
+                return profile;
+
+            // if we cannot find agreement, we fallback to protocol (which may return a dummy protocol if things are really missing in AR)
+            Logger.LogInformation($"Could not find agreement for HerId {message.FromHerId} and {message.ToHerId}. Falling back to protocol profile.");
+            profile = await AmqpCore.CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(message.FromHerId).ConfigureAwait(false);
+            if (profile == null)
+                Logger.LogInformation($"Could not find protocol profile for HerId {message.FromHerId}");
+
+            return profile;
         }
 
         private XDocument HandlePayload(IAmqpMessage originalMessage, Stream bodyStream, string contentType, IncomingMessage incomingMessage, out bool contentWasSigned)
