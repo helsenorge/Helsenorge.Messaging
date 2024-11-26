@@ -364,7 +364,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             if(AmqpCore.MessagingSettings.MessageFunctionsExcludedFromCpaResolve.Contains(message.MessageFunction))
             {
                 // MessageFunction is defined in exception list, return a dummy CollaborationProtocolProfile
-                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AmqpCore.AddressRegistry, Logger, message.FromHerId, message.MessageFunction, AmqpCore.CollaborationProtocolRegistry);
+                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AmqpCore.AddressRegistry, Logger, message.FromHerId, message.MessageFunction);
             }
 
             // if we receive an error message then CPA isn't needed because we're not decrypting the message and then the CPA info isn't needed

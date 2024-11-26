@@ -50,55 +50,16 @@ public static class DummyCollaborationProtocolProfileFactory
         IAddressRegistry addressRegistry,
         ILogger logger,
         int herId,
-        string messageFunction,
-        ICollaborationProtocolRegistry collaborationProtocolRegistry = null,
-        ICertificateValidator certificateValidator = null)
+        string messageFunction)
     {
-        var profile = await addressRegistry.FindCommunicationPartyDetailsAsync(herId).ConfigureAwait(false);
-
-        if (profile == null)
+        var communicationParty = await addressRegistry.FindCommunicationPartyDetailsAsync(herId).ConfigureAwait(false);
+        if (communicationParty == null)
         {
             logger.LogWarning($"Could not get communication party details for HerId {herId}");
             return null;
         }
-        
-        var deliveryChannel = profile.AsynchronousQueueName;
 
-        if (collaborationProtocolRegistry != null && certificateValidator != null)
-        {
-            var collaborationProtocolProfile = await collaborationProtocolRegistry.FindProtocolForCounterpartyAsync(herId).ConfigureAwait(false);
-            
-            if (collaborationProtocolProfile == null)
-            {
-                logger.LogWarning($"Could not get collaborationProtocolProfile details for HerId {herId}");
-                return null;
-            }
-            if (collaborationProtocolProfile.Roles == null || collaborationProtocolProfile.Roles.Count == 0)
-            {
-                logger.LogWarning($"Could not get collaborationProtocolProfileRoles for for HerId {herId}");
-                return null;
-            }
-            var encryptionCertificate = new CertificateDetails
-            {
-                HerId = collaborationProtocolProfile.HerId,
-                Certificate = collaborationProtocolProfile.EncryptionCertificate
-            };
-            var signatureCertificate = new CertificateDetails
-            {
-                HerId = collaborationProtocolProfile.HerId,
-                Certificate = collaborationProtocolProfile.SignatureCertificate
-            };
-
-            ValidateCertificate(herId, certificateValidator, encryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
-            ValidateCertificate(herId, certificateValidator, signatureCertificate, X509KeyUsageFlags.NonRepudiation);
-
-            return CreateDummyCollaborationProtocolProfile(herId,
-                encryptionCertificate,
-                signatureCertificate,
-                deliveryChannel,
-                messageFunction);
-        }
-
+        var deliveryChannel = communicationParty.AsynchronousQueueName;
         return CreateDummyCollaborationProtocolProfile(herId,
             await addressRegistry.GetCertificateDetailsForEncryptionAsync(herId).ConfigureAwait(false),
             await addressRegistry.GetCertificateDetailsForValidatingSignatureAsync(herId).ConfigureAwait(false),

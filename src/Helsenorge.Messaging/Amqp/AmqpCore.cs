@@ -511,8 +511,7 @@ namespace Helsenorge.Messaging.Amqp
             if (Core.Settings.MessageFunctionsExcludedFromCpaResolve.Contains(messageFunction))
             {
                 // MessageFunction is defined in exception list, return a dummy CollaborationProtocolProfile
-                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AddressRegistry, logger, message.ToHerId, messageFunction, 
-                    CollaborationProtocolRegistry, CertificateValidator);
+                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AddressRegistry, logger, message.ToHerId, messageFunction);
             }
 
 

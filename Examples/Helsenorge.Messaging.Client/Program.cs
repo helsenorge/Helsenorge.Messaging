@@ -58,6 +58,10 @@ namespace Helsenorge.Messaging.Client
 
         private static void Configure(string profile, bool ignoreCertificateErrors, bool noProtection)
         {
+
+
+
+
             // read configuration values
             var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
