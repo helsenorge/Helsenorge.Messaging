@@ -1,12 +1,12 @@
 ## Registre
 For å kunne kommunisere riktig med en mottpart, så er vi avhengig av å vite en del om protokoller, sertifikater, og kønavn. All denne informasjonen ligger i adresseregisteret og CPA-registeret.  
 
-Meldingsutvekslingen er ekstremt avhengig av adresseregisteret og CPA-registeret. 
+Meldingsutvekslingen er avhengig av adresseregisteret og CPA-registeret. 
 
 ### Registerintegrasjon
 
-Før man kan sette opp infrastrukturen for meldinger, så må man ha registerintegrasjonen på plass og HelseId klient.
-Denne koden bruker klasser fra andre Microsoft.Extensions.* pakkker.
+Før man kan sette opp infrastrukturen for meldinger, så må man ha registerintegrasjonen på plass og HelseId.
+Denne koden bruker klasser fra andre Microsoft.Extensions.* pakkker. Se også Helsenorge.Messaging.Client prosjektet for eksempler på hvordan det kan settes opp.
 
 ```cs
 var loggerFactory = new LoggerFactory();
