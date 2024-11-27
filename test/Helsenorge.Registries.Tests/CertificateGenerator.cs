@@ -22,10 +22,7 @@ namespace Helsenorge.Registries.Tests
                 request.CertificateExtensions.Add(new X509SubjectKeyIdentifierExtension(request.PublicKey, false));
 
                 // Create the self-signed certificate
-                var certificate = request.CreateSelfSigned(notBefore, notAfter);
-
-                // Export and re-import to get an X509Certificate2 with private key
-                return new X509Certificate2(certificate.Export(X509ContentType.Pfx));
+                return request.CreateSelfSigned(notBefore, notAfter);
             }
         }
     }
