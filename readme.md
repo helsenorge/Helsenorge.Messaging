@@ -21,6 +21,7 @@ Dette biblioteket støtter oppunder basisbehovet for en kommunikasjonsløsning v
 12. [Biztalk](Documentation/Biztalk.md "Biztalk")
 13. [Migrere fra 3.0 til 4.0](Documentation/MigrateFrom3To4.md)
 14. [Migrere fra 4.0 til 5.0](Documentation/MigrateFrom4To5.md)
+14. [Migrere fra SOAP til REST i versjon 5.2](Documentation/MigrateFromSoapToRest.md)
 
 
 ## Contributing
