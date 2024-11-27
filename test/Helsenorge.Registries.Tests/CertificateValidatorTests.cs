@@ -57,7 +57,7 @@ namespace Helsenorge.Registries.Tests
                 X509KeyUsageFlags.NonRepudiation);
             // Added RevokedUnknown as build server add this error
             Assert.IsTrue(error == CertificateErrors.StartDate
-                || error == (CertificateErrors.Usage | CertificateErrors.RevokedUnknown));
+                || error == (CertificateErrors.StartDate | CertificateErrors.RevokedUnknown));
         }
         [TestMethod]
         public void CertificateValidation_EndDate()
@@ -67,7 +67,7 @@ namespace Helsenorge.Registries.Tests
                 X509KeyUsageFlags.NonRepudiation);
             // Added RevokedUnknown as build server add this error
             Assert.IsTrue(error == CertificateErrors.EndDate
-                || error == (CertificateErrors.Usage | CertificateErrors.RevokedUnknown));
+                || error == (CertificateErrors.EndDate | CertificateErrors.RevokedUnknown));
         }
         [TestMethod]
         public void CertificateValidation_Usage()

@@ -1,4 +1,4 @@
-## Migrere fra 5.0 til 5.2
+## Migrere fra SOAP til REST i 5.2 og senere versjoner
 
 Hovedendringer for 5.2 er nytt endepunkt for CPPA tjenesten. Det gamle endepunktet vil fortsatt fungere, men
 støtten for SOAP-endepunktet vil fjernes i en fremtidig versjon. Derfor anbefaler vi at alle oppgraderer
