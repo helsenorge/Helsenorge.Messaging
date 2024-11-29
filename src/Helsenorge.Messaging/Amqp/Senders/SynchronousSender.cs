@@ -237,6 +237,21 @@ namespace Helsenorge.Messaging.Amqp.Senders
             return Task.CompletedTask;
         }
 
+        public Task<XDocument> NotifySynchronousReplyMessageReceivedAsync(IncomingMessage message)
+        {
+            return null;
+        }
+
+        public Task NotifySynchronousReplyMessageReceivedCompletedAsync(IncomingMessage message)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task NotifySynchronousReplyMessageReceivedStartingAsync(MessageListener listener, IncomingMessage message)
+        {
+            return Task.CompletedTask;
+        }
+
         public Task NotifyUnhandledExceptionAsync(IAmqpMessage message, Exception ex)
         {
             return Task.CompletedTask;

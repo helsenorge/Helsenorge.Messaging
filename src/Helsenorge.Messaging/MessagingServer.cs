@@ -407,6 +407,22 @@ namespace Helsenorge.Messaging
                 _onSynchronousMessageReceivedStarting.Invoke(message);
             }
         }
+
+        public Task<XDocument> NotifySynchronousReplyMessageReceivedAsync(IncomingMessage message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task NotifySynchronousReplyMessageReceivedCompletedAsync(IncomingMessage message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task NotifySynchronousReplyMessageReceivedStartingAsync(MessageListener listener, IncomingMessage message)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Registers a delegate that should be called when we have an handled exception
         /// </summary>
