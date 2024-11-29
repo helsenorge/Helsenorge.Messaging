@@ -1,12 +1,16 @@
-## CPP og CPA
+## Samhandlingsprofiler (CPP) og samhandlingsavtaler (CPA)
+Bruk av kommunikasjonsparametre med samhandlingsprofiler og samhandlingsavtaler er en forutsetning for meldingsutveksling med Helsenorge.
 
-### CPP
-En CPP definerer en del ting om en kommunikasjonspart. 
-- Sertifikater
-- Kønavn
-- Hvilke kommunikasjonsprosseser og versjon av prossene som støttes
+### Samhanslingsprofil
+Kommunikasjonsparametre benyttes til å definere
+- Hvilke kommunikasjonsprosesser en kommunikasjonspart støtter
+- Hvilke versjoner av kommunikasjonsprosesser en kommunikasjonspart støtter
+- Hvilket sertifikat som er benyttet for meldingsutveksling
+- Endepunkt for hvor meldinger skal sendes
 
-### CPA
+En kommunikasjonsprosess er en funksjonell modellering av hvem (hvilke roller) som kommuniserer, hva de to rollene i prosessen kan sende og innholdsformat (Skjemadefinisjon) for hva som kan sendes. 
+
+### Samhandlingsavtale
 En CPA er avhengig av at begge partene har en CPP registrert. For prossesen, så vil en CPA inneholde de versjonene begge parter støtter. 
 
 | Prosess | Part A	| Part B | Resultat |
@@ -15,46 +19,23 @@ En CPA er avhengig av at begge partene har en CPP registrert. For prossesen, så
 | P2      | V1,V2   | V1,V2  | V2		|
 | P2      | V1,V2   | ingen	 | ingen 	|
 
+Samhandlingsavtalen vil altså kun inneholde versjoner som begge parter støtter og der partene støtter utlike roller i prosessen. Dersom begge parter støtter flere versjoner av en prosess, vil kun den nyeste vises i CPA og skal brukes for samhandling. Helsenorge vil typisk alltid ha rollen Innbygger i alle prosesser, alle andre har den andre rollen (typisk helsepersonell).
 
 ### Hvordan brukes CPA informasjonen?
-Kønavn og sertifikater skulle være rimelig selvforklerende. Tjenester og versjoner er mere difust.
+Informasjon fra CPA benyttes blant annet til:
+- Validering av innkommende meldinger, inkludert om kommunikasjonsprosess er støttet, verifisering av innhold i henhold til skjema og identifisering av om det skal sendes kvitteringer
+- identifisering av hvilket sertifikat som skal benyttes for den spesifikke meldingen
+- Visning i brukerflaten for hvilke funksjoner som er tilgjengelig
 
-#### Protokoll
-Når man skal sende en melding, så trenger vi å vite hvilken protokoll som skal brukes. Siden vi pr dags dato bare støtter AMQP, så virker dette kanskje unødvendig. Erfaringen vår viser at dersom det finnes en vei rundt å opprette nye prosseser, så blir den ofte benyttet. For å tvinge prosjekter i å opprette nye CPP prosseser, så har vi satt dette som et krav i koden vår. 
-
-Dersom du skulle ønske å klone koden og gjøre lokal endring, så er det fult mulig å komme rundt dette. I MessagingClient så vil man finne følgende kode som man kan endre på. 
-
-**Dette er å anse som en veldig midlertidig fiks siden du ikke vil få oppdateringer vi gjør.**  
-
-```cs
-var collaborationProtocolMessage = await PreCheck(logger, message).ConfigureAwait(false);
-
-switch (collaborationProtocolMessage.DeliveryProtocol)
-{
-    case DeliveryProtocol.Amqp:
-        await _asynchronousServiceBusSender.SendAsync(logger, message).ConfigureAwait(false);
-        return;
-    case DeliveryProtocol.Unknown:
-    default:
-        throw new NotImplementedException();
-}
-```
-
-Et mere avansert alternativ er å lage en egen implementasjon av ICollaborationProtocolRegistry som pakker inn vår implementasjon. Man kan så legge på eller endre dataene som vi returnerer.  
-
-
-#### Prossesversjoner og XML-versjoner
+#### Versjonering av prosesser
 
 En prossess kan få ny versjon av to grunner.
 
 1. Ny funksjonalitet
-2. Underliggende XML har endret seg. 
+2. Nye innholdsformat (xmlskjema) 
 
-I tillegg til protokoll, så spesifiserer en kommunikasjonsprosses hvilke XSDer og XML namespace som skal benyttes.
-
-Et eksempel på alternativ 1 er Digital Dialog Fastleges endring av time. Denne funksjonaliteten krever ingen endring i meldingsformatet, men er en funksjon hver mottpart kan støtte. 
-
-Et eksempel på alternativ 2 er Dialogmelding; spesialist bruker 1.0, mens fastlege benytter 1.1.
+Et eksempel på type 1 er utvidet bruk som ikke krever endring i skjemadefinisjon, men der det er nødvendig å vite om en kommunikaskonspart støtter endring funksjonelt.
+Et eksempel på type 2 er en prosess der nye meldingsformat legges til eller får oppdaterte versjon, for eksempel oppgradering av FHIR fra R3 tl R4. Slike emdringer vil typisk også inkludere funksjonelle endringer, det er sjelden hensiktsmessig å gjøre en ren teknsik endring.
 
 Når man mottar en melding via MessagingServer, så vil det ligge ved informasjon om CPA-profilen til avsender. Basert på versjonene og XML-informasjonen som er definert, så vil man være i stand til å bygge opp en XML som avsender kan konsumere.
    
