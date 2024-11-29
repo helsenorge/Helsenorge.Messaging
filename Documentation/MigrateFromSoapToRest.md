@@ -9,8 +9,8 @@ For å autentisere mot det nye REST endepunktet så krever det at man har HelseI
 
 ### Konfigurasjonsrelaterte endringer
 Nye konfigurasjoner er CollaborationProtocolRegistryRestSettings og HelseIdConfiguration. 
-CollaborationProtocolRegistryRestSettings inneholder RestConfiguration,CahcingInterval, UseOnlineRevocationCheck 
-og ThorwMessageIfNoCpp. Det brukes i stedet for CollaborationProtocolRegistrySettings når man skal ta i bruk
+CollaborationProtocolRegistryRestSettings inneholder RestConfiguration,CachingInterval, UseOnlineRevocationCheck 
+og ThrowMessageIfNoCpp. Det brukes i stedet for CollaborationProtocolRegistrySettings når man skal ta i bruk
 nye REST endepunktet.
 
 I RestConfiguration setter man URL adressen til CPPA (https://cppa.test.grunndata.nhn.no og 
