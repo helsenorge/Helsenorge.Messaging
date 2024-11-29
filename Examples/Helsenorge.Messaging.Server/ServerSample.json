@@ -1,35 +1,34 @@
 {
-    "AddressRegistrySettings": {
-        "WcfConfiguration": {
-            "UserName": "???",
-            "Password": "???"
-        }
+  "AddressRegistrySettings": {
+    "WcfConfiguration": {
+      "UserName": "???",
+      "Password": "???"
+    }
+  },
+  "HelseIdConfiguration": {
+    "ClientId": "???",
+    "TokenEndpoint": "???",
+    "ScopeName": "???"
+  },
+  "MessagingSettings": {
+    "MyHerIds": [ "6789" ],
+    "AmqpSettings": {
+      "ConnectionString": "???",
+      "MessageBrokerDialect": "RabbitMQ"
     },
-    "CollaborationProtocolRegistrySettings": {
-        "WcfConfiguration": {
-            "UserName": "???",
-            "Password": "???"
-        }
+    "DecryptionCertificate": {
+      "Thumbprint": "fddbcfbb3231f0c66ee2168358229d3cac95e88a",
+      "StoreName": "My",
+      "StoreLocation": "LocalMachine"
     },
-    "MessagingSettings": {
-        "MyHerIds": [ "6789" ],
-        "AmqpSettings": {
-            "ConnectionString": "???",
-            "MessageBrokerDialect": "RabbitMQ"
-        },
-        "DecryptionCertificate": {
-            "Thumbprint": "fddbcfbb3231f0c66ee2168358229d3cac95e88a",
-            "StoreName": "My",
-            "StoreLocation": "LocalMachine"
-        },
-        "SigningCertificate": {
-            "Thumbprint": "bd302b20fcdcf3766bf0bcba485dfb4b2bfe1379",
-            "StoreName": "My",
-            "StoreLocation": "LocalMachine"
-        }
-    },
-    "ServerSettings": {
-        "DestinationDirectory": "Results"
-    } 
+    "SigningCertificate": {
+      "Thumbprint": "bd302b20fcdcf3766bf0bcba485dfb4b2bfe1379",
+      "StoreName": "My",
+      "StoreLocation": "LocalMachine"
+    }
+  },
+  "ServerSettings": {
+    "DestinationDirectory": "Results"
+  }
 }
 

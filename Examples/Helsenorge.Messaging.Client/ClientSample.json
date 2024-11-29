@@ -5,11 +5,10 @@
       "Password": "???"
     }
   },
-  "CollaborationProtocolRegistrySettings": {
-    "WcfConfiguration": {
-      "UserName": "???",
-      "Password": "???"
-    }
+  "HelseIdConfiguration": {
+    "ClientId": "???",
+    "TokenEndpoint": "???",
+    "ScopeName": "???"
   },
   "MessagingSettings": {
     "MyHerIds": [ "1234" ],
@@ -26,12 +25,12 @@
       }
     },
     "DecryptionCertificate": {
-      "Thumbprint": "c38fa377f0dc296ca2a9752c79f107ac96b58602",
+      "Thumbprint": "fddbcfbb3231f0c66ee2168358229d3cac95e88a",
       "StoreName": "My",
       "StoreLocation": "LocalMachine"
     },
     "SigningCertificate": {
-      "Thumbprint": "97c826f99dac40d4aa9d8533387e3a6922930286",
+      "Thumbprint": "bd302b20fcdcf3766bf0bcba485dfb4b2bfe1379",
       "StoreName": "My",
       "StoreLocation": "LocalMachine"
     }

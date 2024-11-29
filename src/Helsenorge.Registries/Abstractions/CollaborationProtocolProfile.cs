@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json.Serialization;
 using System.Xml.Linq;
 using Helsenorge.Registries.Utilities;
 
@@ -130,11 +131,13 @@ namespace Helsenorge.Registries.Abstractions
         /// The public certificate used for signature validations
         /// </summary>
         [field: NonSerialized]
+        [JsonIgnore]
         public X509Certificate2 SignatureCertificate { get; set; }
         /// <summary>
         /// The public certificate used for encryption
         /// </summary>
         [field: NonSerialized]
+        [JsonIgnore]
         public X509Certificate2 EncryptionCertificate { get; set; }
 
         /// <summary>

@@ -9,6 +9,7 @@
 using System;
 using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json.Serialization;
 
 namespace Helsenorge.Registries.Abstractions
 {
@@ -30,6 +31,7 @@ namespace Helsenorge.Registries.Abstractions
         /// The certificate of the communication party represented as a byte array.
         /// </summary>
         [field: NonSerialized]
+        [JsonIgnore]
         public X509Certificate2 Certificate { get; set; }
 
         /// <summary>

@@ -6,8 +6,6 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
-using System.Collections.Generic;
-
 namespace Helsenorge.Messaging.AdminLib;
 
 public class ConnectionString

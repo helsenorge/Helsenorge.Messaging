@@ -9,7 +9,6 @@
 using System;
 using System.Security.Cryptography.X509Certificates;
 using Helsenorge.Registries.Abstractions;
-using Helsenorge.Registries.Utilities;
 using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Registries
@@ -21,7 +20,6 @@ namespace Helsenorge.Registries
     {
         private readonly ILogger _logger;
         private readonly bool _useOnlineRevocationCheck;
-        private readonly IX509Chain _chain;
 
         /// <summary>
         /// CertificateValidator constructor
@@ -32,20 +30,6 @@ namespace Helsenorge.Registries
         {
             _logger = logger;
             _useOnlineRevocationCheck = useOnlineRevocationCheck;
-            _chain = new X509ChainWrapper();
-        }
-
-        /// <summary>
-        /// CertificateValidator constructor
-        /// </summary>
-        /// <param name="chain">You can set your own X509Chain.</param>
-        /// <param name="logger">Default logger</param>
-        /// <param name="useOnlineRevocationCheck">Should online certificate revocation list be used. Optional, default true.</param>
-        internal CertificateValidator(IX509Chain chain, ILogger logger, bool useOnlineRevocationCheck = true)
-        {
-            _useOnlineRevocationCheck = useOnlineRevocationCheck;
-            _chain = chain;
-            _logger = logger;
         }
 
         /// <summary>
@@ -73,17 +57,22 @@ namespace Helsenorge.Registries
             if (!certificate.HasKeyUsage(usage))
                 result |= CertificateErrors.Usage;
 
-
-            _chain.ChainPolicy.RevocationMode = _useOnlineRevocationCheck ? X509RevocationMode.Online : X509RevocationMode.NoCheck;
-            _chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
-            _chain.ChainPolicy.UrlRetrievalTimeout = TimeSpan.FromSeconds(30);
-            _chain.ChainPolicy.VerificationTime = DateTime.Now;
-
-            using (_chain)
+            var chain = new X509Chain
             {
-                if (_chain.Build(certificate)) return result;
+                ChainPolicy =
+                {
+                    RevocationMode = _useOnlineRevocationCheck ? X509RevocationMode.Online : X509RevocationMode.NoCheck,
+                    RevocationFlag = X509RevocationFlag.EntireChain,
+                    UrlRetrievalTimeout = TimeSpan.FromSeconds(30),
+                    VerificationTime = DateTime.Now,
+                }
+            };
 
-                foreach (var status in _chain.ChainStatus)
+            using (chain)
+            {
+                if (chain.Build(certificate)) return result;
+
+                foreach (var status in chain.ChainStatus)
                 {
                     _logger.LogInformation("Certificate chain validation. " +
                                        $"Status Information: {status.StatusInformation} Status Flag: {status.Status}");
