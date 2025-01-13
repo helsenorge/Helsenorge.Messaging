@@ -10,6 +10,9 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <SignAssembly>false</SignAssembly>
     <PackageId>Helsenorge.Messaging</PackageId>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageOutputPath>C:\Users\stian\source\repos\HN-Meldingsutveksling\Source\MessagingDll</PackageOutputPath>
   </PropertyGroup>
   
   <ItemGroup>
@@ -23,5 +26,13 @@
   <ItemGroup>
     <ProjectReference Include="..\Helsenorge.Registries\Helsenorge.Registries.csproj" />
   </ItemGroup>
+
+  <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command=" xcopy /Q /Y &quot;$(TargetPath)&quot;&#xD;&#xA; &quot;C:\Users\stian\source\repos\HN-Meldingsutveksling\Source\MessagingDll&quot;&quot;" />
+  </Target>-->
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy $(TargetPath) C:\Users\stian\source\repos\HN-Meldingsutveksling\Source\MessagingDll" />
+  </Target>
 
 </Project>

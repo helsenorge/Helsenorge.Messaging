@@ -221,6 +221,7 @@ namespace Helsenorge.Messaging.Amqp
                 messagingMessage.ReplyTo =
                     replyTo ?? await ConstructQueueNameAsync(logger, outgoingMessage.FromHerId, queueType).ConfigureAwait(false);
             }
+            logger.LogDebug($"DEBUG: Sender queueType: {queueType }. Forventer svar på: {messagingMessage.ReplyTo}");
             messagingMessage.ContentType = Core.MessageProtection.ContentType;
             messagingMessage.MessageId = outgoingMessage.MessageId;
             messagingMessage.To = queueName;
@@ -260,7 +261,7 @@ namespace Helsenorge.Messaging.Amqp
                     amqpMessage.SetApplicationPropertyValue(metaDataProperty.Key, metaDataProperty.Value);
                 }
                 sw.Stop();
-                logger.LogInformation($"After-AddingPayloadMetadata: {amqpMessage.MessageFunction} FromHerId: {amqpMessage.FromHerId} ToHerId: {amqpMessage.ToHerId}  MessageId: {amqpMessage.MessageId} Elapsed:{sw.ElapsedMilliseconds}");
+                logger.LogInformation($"After-AddingPayloadMetadata: {amqpMessage.MessageFunction} FromHerId: {amqpMessage.FromHerId} ToHerId: {amqpMessage.ToHerId}  MessageId: {amqpMessage.MessageId} Elapsed: {sw.ElapsedMilliseconds} ms");
             }
             catch (Exception e)
             {

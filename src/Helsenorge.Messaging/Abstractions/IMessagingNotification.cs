@@ -72,6 +72,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// <param name="message">The actual message, contains the payload in addition to metadata.</param>
         Task NotifySynchronousMessageReceivedStartingAsync(IncomingMessage message);
 
+
         /// <summary>
         /// Called when the synchronous message is ready for processing. The client should process the synchronous
         /// message here and return the XDocument that is the output to the caller.
@@ -87,12 +88,11 @@ namespace Helsenorge.Messaging.Abstractions
         Task NotifySynchronousReplyMessageReceivedCompletedAsync(IncomingMessage message);
 
         /// <summary>
-        /// Called to notify that processing of an syncreply message has started. The client can do any necessary
-        /// set up it needs, like setting up CorrelationIds, etc.
+        /// Called to notify that we haved started to process a synchronous message.
+        /// The client can do any necessary set up it needs, like setting up CorrelationIds, etc.
         /// </summary>
-        /// <param name="listener">Reference to the listener invoking the callback.</param>
         /// <param name="message">The actual message, contains the payload in addition to metadata.</param>
-        Task NotifySynchronousReplyMessageReceivedStartingAsync(MessageListener listener, IncomingMessage message);
+        Task NotifySynchronousReplyMessageReceivedStartingAsync(IncomingMessage message);
 
         /// <summary>
         /// Called to notifiy an unhandled exception has occurred. The client need to assert what it needs to do.

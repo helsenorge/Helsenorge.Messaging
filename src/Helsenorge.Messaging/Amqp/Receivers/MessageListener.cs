@@ -67,6 +67,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             {
                 QueueType.Asynchronous => _queueNames.Async,
                 QueueType.Synchronous => _queueNames.Sync,
+                QueueType.SynchronousReply => _queueNames.SyncReply,
                 QueueType.Error => _queueNames.Error,
                 _ => throw new UnknownQueueTypeException(QueueType)
             };

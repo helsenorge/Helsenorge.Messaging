@@ -48,6 +48,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             // Not relevant for this implementation
             return Task.CompletedTask;
         }
+
         /// <summary>
         /// Called when message processing is complete
         /// </summary>
@@ -58,6 +59,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             // Not relevant for this implementation
             return Task.CompletedTask;
         }
+
         /// <summary>
         /// Called to process message
         /// </summary>

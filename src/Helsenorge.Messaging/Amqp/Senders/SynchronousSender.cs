@@ -247,6 +247,11 @@ namespace Helsenorge.Messaging.Amqp.Senders
             return Task.CompletedTask;
         }
 
+        public Task NotifySynchronousReplyMessageReceivedStartingAsync(IncomingMessage message)
+        {
+            return Task.CompletedTask;
+        }
+
         public Task NotifySynchronousReplyMessageReceivedStartingAsync(MessageListener listener, IncomingMessage message)
         {
             return Task.CompletedTask;

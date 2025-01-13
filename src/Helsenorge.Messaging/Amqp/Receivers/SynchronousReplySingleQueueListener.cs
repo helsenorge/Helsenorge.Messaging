@@ -8,7 +8,6 @@
 
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Threading.Tasks;
 
 namespace Helsenorge.Messaging.Amqp.Receivers
@@ -16,7 +15,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
     /// <summary>
     /// Listens for the reply to an outgoing synchronous message
     /// </summary>
-    public class SynchronousReplyMessageListener : MessageListener
+    public class SynchronousReplySingleQueueListener : MessageListener
     {
         /// <summary>
         /// Specifies the name of the queue this listener is reading from
@@ -28,13 +27,13 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         protected override QueueType QueueType => QueueType.SynchronousReply;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SynchronousReplyMessageListener"/> class.
+        /// Initializes a new instance of the <see cref="SynchronousReplySingleQueueListener"/> class.
         /// </summary>
         /// <param name="amqpCore">An instance of <see cref="AmqpCore"/> which has the common infrastructure to talk to the Message Bus.</param>
         /// <param name="logger">An instance of <see cref="ILogger"/>, used to log diagnostics information.</param>
         /// <param name="messagingNotification">An instance of <see cref="IMessagingNotification"/> which holds reference to callbacks back to the client that owns this instance of the <see cref="MessageListener"/>.</param>
         /// <param name="queueNames">The Queue Names associated with the client.</param>
-        internal SynchronousReplyMessageListener(
+        internal SynchronousReplySingleQueueListener(
             AmqpCore amqpCore,
             ILogger logger,
             IMessagingNotification messagingNotification,
@@ -42,6 +41,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         {
             ReadTimeout = AmqpCore.Settings.Synchronous.ReadTimeout;
         }
+
         /// <summary>
         /// Called prior to message processing
         /// </summary>
@@ -50,9 +50,10 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         protected override async Task NotifyMessageProcessingStartedAsync(MessageListener listener, IncomingMessage message)
         {
             Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousReplyMessageReceivedStartingAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
-            await MessagingNotification.NotifySynchronousReplyMessageReceivedStartingAsync(listener, message).ConfigureAwait(false);
+            await MessagingNotification.NotifySynchronousReplyMessageReceivedStartingAsync(message).ConfigureAwait(false);
             Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousReplyMessageReceivedStartingAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
+
         /// <summary>
         /// Called to process message
         /// </summary>
@@ -64,6 +65,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             await MessagingNotification.NotifySynchronousReplyMessageReceivedAsync(message).ConfigureAwait(false);
             Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousReplyMessageReceivedAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
+
         /// <summary>
         /// Called when message processing is complete
         /// </summary>
