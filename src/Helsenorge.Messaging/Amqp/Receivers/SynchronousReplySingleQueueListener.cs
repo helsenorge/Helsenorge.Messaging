@@ -50,7 +50,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         protected override async Task NotifyMessageProcessingStartedAsync(MessageListener listener, IncomingMessage message)
         {
             Logger.LogBeforeNotificationHandler(nameof(MessagingNotification.NotifySynchronousReplyMessageReceivedStartingAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
-            await MessagingNotification.NotifySynchronousReplyMessageReceivedStartingAsync(message).ConfigureAwait(false);
+            await MessagingNotification.NotifySynchronousReplyMessageReceivedStartingAsync(listener, message).ConfigureAwait(false);
             Logger.LogAfterNotificationHandler(nameof(MessagingNotification.NotifySynchronousReplyMessageReceivedStartingAsync), message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId);
         }
 

@@ -72,10 +72,12 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 _ => throw new UnknownQueueTypeException(QueueType)
             };
         }
+
         /// <summary>
         /// Specifies what type of queue this listener is processing
         /// </summary>
         protected abstract QueueType QueueType { get; }
+
         /// <summary>
         /// Reference to service bus related setting
         /// </summary>
@@ -85,6 +87,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         /// Gets a reference to the server
         /// </summary>
         protected IMessagingNotification MessagingNotification { get; }
+
         /// <summary>
         /// Gets the logger used for diagnostics purposes
         /// </summary>
@@ -191,6 +194,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             }
             return await HandleRawMessageAsync(message, alwaysRemoveMessage).ConfigureAwait(false);
         }
+
         private async Task<IncomingMessage> HandleRawMessageAsync(IAmqpMessage message, bool alwaysRemoveMessage)
         {
             if (message == null) return null;
@@ -226,6 +230,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 };
                 await NotifyMessageProcessingStartedAsync(this, incomingMessage).ConfigureAwait(false);
 
+                //SetCorrelationIdAction?.Invoke(incomingMessage.CorrelationId);
                 SetCorrelationIdAction?.Invoke(incomingMessage.MessageId);
 
                 Logger.LogStartReceive(QueueType, incomingMessage, $"Message received from host and queue: {AmqpCore.HostnameAndPath}/{queueName}");

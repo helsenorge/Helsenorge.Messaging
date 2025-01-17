@@ -145,15 +145,16 @@ namespace Helsenorge.Messaging
         /// Sends a message without waiting for a reply
         /// </summary>
         /// <param name="message"></param>
+        /// <param name="correlationId">The correlation id to use when sending the message. Only relevant in synchronous messaging</param>
         /// <returns>The received XML</returns>
-        public async Task SendWithoutWaitingAsync(OutgoingMessage message)
+        public async Task SendWithoutWaitingAsync(OutgoingMessage message, string correlationId = null)
         {
             var collaborationProtocolMessage = await PreCheckAsync(_logger, message).ConfigureAwait(false);
 
             switch (collaborationProtocolMessage.DeliveryProtocol)
             {
                 case DeliveryProtocol.Amqp:
-                    await _synchronousServiceBusSender.SendWithoutWaitingAsync(_logger, message).ConfigureAwait(false);
+                    await _synchronousServiceBusSender.SendWithoutWaitingAsync(_logger, message, correlationId).ConfigureAwait(false);
                     break;
                 case DeliveryProtocol.Unknown:
                 default:

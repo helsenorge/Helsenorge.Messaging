@@ -111,25 +111,26 @@ namespace Helsenorge.Messaging.Abstractions
         /// Registers a delegate that should be called as we start processing a message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterSynchronousReplyMessageReceivedStartingCallback(Action<IncomingMessage> action);
+        void RegisterSynchronousReplyMessageReceivedStartingCallback(Action<MessageListener, IncomingMessage> action);
 
         /// <summary>
         /// Registers a delegate that should be called as we start processing a message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterSynchronousReplyMessageReceivedStartingCallbackAsync(Func<IncomingMessage, Task> action);
+        void RegisterSynchronousReplyMessageReceivedStartingCallbackAsync(
+            Func<MessageListener, IncomingMessage, Task> action);
 
         /// <summary>
         /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterSynchronousReplyMessageReceivedCallback(Func<IncomingMessage, XDocument> action);
+        void RegisterSynchronousReplyMessageReceivedCallback(Action<IncomingMessage> action);
 
         /// <summary>
         /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterSynchronousReplyMessageReceivedCallbackAsync(Func<IncomingMessage, Task<XDocument>> action);
+        void RegisterSynchronousReplyMessageReceivedCallbackAsync(Func<IncomingMessage, Task> action);
 
         /// <summary>
         /// Registers a delegate that should be called when we are finished processing the message.

@@ -52,9 +52,9 @@ namespace Helsenorge.Messaging.Amqp.Senders
 
         public Func<IncomingMessage, Task> OnSynchronousReplyMessageReceived { get; set; }
 
-        public async Task SendWithoutWaitingAsync(ILogger logger, OutgoingMessage message)
+        public async Task SendWithoutWaitingAsync(ILogger logger, OutgoingMessage message, string correlationId = null)
         {
-            await _amqpCore.SendAsync(logger, message, QueueType.Synchronous, _amqpCore.Settings.Synchronous.StaticReplyQueue).ConfigureAwait(false);
+            await _amqpCore.SendAsync(logger, message, QueueType.Synchronous, _amqpCore.Settings.Synchronous.StaticReplyQueue, correlationId).ConfigureAwait(false);
         }
 
         public async Task<XDocument> SendAsync(ILogger logger, OutgoingMessage message)
@@ -237,11 +237,11 @@ namespace Helsenorge.Messaging.Amqp.Senders
             return Task.CompletedTask;
         }
 
-        public Task<XDocument> NotifySynchronousReplyMessageReceivedAsync(IncomingMessage message)
+        public Task NotifySynchronousReplyMessageReceivedAsync(IncomingMessage message)
         {
-            return null;
+            return Task.CompletedTask;
         }
-
+       
         public Task NotifySynchronousReplyMessageReceivedCompletedAsync(IncomingMessage message)
         {
             return Task.CompletedTask;

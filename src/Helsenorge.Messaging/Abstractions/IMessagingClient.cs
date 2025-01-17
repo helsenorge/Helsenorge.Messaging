@@ -29,13 +29,14 @@ namespace Helsenorge.Messaging.Abstractions
         /// <param name="message">Details about the message being sent</param>
         /// <returns></returns>
         Task<XDocument> SendAndWaitAsync(OutgoingMessage message);
-        
+
         /// <summary>
         /// Send a message without waiting for a reply (synchronous messaging)
         /// </summary>
         /// <param name="message">Details about the message being sent</param>
+        /// <param name="correlationId">The correlation id to use when sending the message. Only relevant in synchronous messaging</param>
         /// <returns></returns>
-        Task SendWithoutWaitingAsync(OutgoingMessage message);
+        Task SendWithoutWaitingAsync(OutgoingMessage message, string correlationId = null);
 
         /// <summary>
         /// Closes down links, sessions and connections.

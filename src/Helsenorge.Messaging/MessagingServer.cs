@@ -70,19 +70,18 @@ namespace Helsenorge.Messaging
         private Func<IncomingMessage, Task<XDocument>> _onSynchronousMessageReceivedAsync;
         private Func<IncomingMessage, Task> _onSynchronousMessageReceivedCompletedAsync;
         private Func<IncomingMessage, Task> _onSynchronousMessageReceivedStartingAsync;
-
-        private Func<IncomingMessage, XDocument> _onSynchronousReplyMessageReceived;
+        
+        private Action<IncomingMessage> _onSynchronousReplyMessageReceived;
+        private Action<MessageListener, IncomingMessage> _onSynchronousReplyMessageReceivedStarting;
         private Action<IncomingMessage> _onSynchronousReplyMessageReceivedCompleted;
-        private Action<IncomingMessage> _onSynchronousReplyMessageReceivedStarting;
-        private Func<IncomingMessage, Task<XDocument>> _onSynchronousReplyMessageReceivedAsync;
+        private Func<IncomingMessage, Task> _onSynchronousReplyMessageReceivedAsync;
+        private Func<MessageListener, IncomingMessage, Task> _onSynchronousReplyMessageReceivedStartingAsync;
         private Func<IncomingMessage, Task> _onSynchronousReplyMessageReceivedCompletedAsync;
-        private Func<IncomingMessage, Task> _onSynchronousReplyMessageReceivedStartingAsync;
 
         private Action<IAmqpMessage> _onErrorMessageReceived;
         private Action<IncomingMessage> _onErrorMessageReceivedStarting;
         private Func<IAmqpMessage, Task> _onErrorMessageReceivedAsync;
         private Func<IncomingMessage, Task> _onErrorMessageReceivedStartingAsync;
-
 
         private Action<IAmqpMessage, Exception> _onUnhandledException;
         private Action<IAmqpMessage, Exception> _onHandledException;
@@ -155,6 +154,7 @@ namespace Helsenorge.Messaging
             _listeners.Where(listener => listener is AsynchronousMessageListener)
                 .OrderByDescending(listener => listener.LastReadTimeUtc)
                 .FirstOrDefault()?.LastReadTimeUtc;
+
         /// <summary>
         /// Returns the Last Read Time from the synchronous queue in UTC format.
         /// </summary>
@@ -260,15 +260,13 @@ namespace Helsenorge.Messaging
         }
 
         #region Async
-
-        
-
       
         /// <summary>
         /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         public void RegisterAsynchronousMessageReceivedCallback(Action<IncomingMessage> action) => _onAsynchronousMessageReceived = action;
+
         /// <summary>
         /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
         /// </summary>
@@ -293,6 +291,7 @@ namespace Helsenorge.Messaging
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         public void RegisterAsynchronousMessageReceivedStartingCallback(Action<MessageListener, IncomingMessage> action) => _onAsynchronousMessageReceivedStarting = action;
+
         /// <summary>
         /// Registers a delegate that should be called as we start processing a message
         /// </summary>
@@ -317,6 +316,7 @@ namespace Helsenorge.Messaging
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         public void RegisterAsynchronousMessageReceivedCompletedCallback(Action<IncomingMessage> action) => _onAsynchronousMessageReceivedCompleted = action;
+
         /// <summary>
         /// Registers a delegate that should be called when we are finished processing the message.
         /// </summary>
@@ -335,7 +335,9 @@ namespace Helsenorge.Messaging
                 _onAsynchronousMessageReceivedCompleted.Invoke(message);
             }
         }
-#endregion
+
+        #endregion
+
         #region Error
 
 
@@ -392,8 +394,6 @@ namespace Helsenorge.Messaging
 
         #region Synchronous
 
-
-
         /// <summary>
         /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
         /// </summary>
@@ -420,19 +420,19 @@ namespace Helsenorge.Messaging
 
             return default;
         }
+
         /// <summary>
         /// Registers a delegate that should be called when we are finished processing the message.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         public void RegisterSynchronousMessageReceivedCompletedCallback(Action<IncomingMessage> action) => _onSynchronousMessageReceivedCompleted = action;
+
         /// <summary>
         /// Registers a delegate that should be called when we are finished processing the message.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         public void RegisterSynchronousMessageReceivedCompletedCallbackAsync(Func<IncomingMessage, Task> action) => _onSynchronousMessageReceivedCompletedAsync = action;
-
         
-
         async Task IMessagingNotification.NotifySynchronousMessageReceivedCompletedAsync(IncomingMessage message)
         {
             _logger.LogDebug("NotifySynchronousMessageReceivedCompleted");
@@ -472,46 +472,68 @@ namespace Helsenorge.Messaging
         #endregion
 
         #region SynchronousReply
-     
+        
+        /// <summary>
+        /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        public void RegisterSynchronousReplyMessageReceivedCallback(Action<IncomingMessage> action) => _onSynchronousReplyMessageReceived = action;
 
         /// <summary>
         /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        public void RegisterSynchronousReplyMessageReceivedCallback(Func<IncomingMessage, XDocument> action) => _onSynchronousReplyMessageReceived = action;
+        public void RegisterSynchronousReplyMessageReceivedCallbackAsync(Func<IncomingMessage, Task> action) => _onSynchronousReplyMessageReceivedAsync = action;
 
-        /// <summary>
-        /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
-        /// </summary>
-        /// <param name="action">The delegate that should be called</param>
-        public void RegisterSynchronousReplyMessageReceivedCallbackAsync(Func<IncomingMessage, Task<XDocument>> action) => _onSynchronousReplyMessageReceivedAsync = action;
-
-        async Task<XDocument> IMessagingNotification.NotifySynchronousReplyMessageReceivedAsync(IncomingMessage message)
+        async Task IMessagingNotification.NotifySynchronousReplyMessageReceivedAsync(IncomingMessage message)
         {
             _logger.LogDebug("NotifySynchronousReplyMessageReceived");
             if (_onSynchronousReplyMessageReceivedAsync != null)
             {
-                return await _onSynchronousReplyMessageReceivedAsync.Invoke(message).ConfigureAwait(false);
+                await _onSynchronousReplyMessageReceivedAsync.Invoke(message).ConfigureAwait(false);
             }
             if (_onSynchronousReplyMessageReceived != null)
             {
-                return _onSynchronousReplyMessageReceived.Invoke(message);
+                _onSynchronousReplyMessageReceived.Invoke(message);
             }
-
-            return default;
         }
+
+        /// <summary>
+        /// Registers a delegate that should be called as we start processing a message
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        public void RegisterSynchronousReplyMessageReceivedStartingCallback(Action<MessageListener, IncomingMessage> action) => _onSynchronousReplyMessageReceivedStarting = action;
+
+        /// <summary>
+        /// Registers a delegate that should be called as we start processing a message
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        public void RegisterSynchronousReplyMessageReceivedStartingCallbackAsync(Func<MessageListener, IncomingMessage, Task> action) => _onSynchronousReplyMessageReceivedStartingAsync = action;
+
+        async Task IMessagingNotification.NotifySynchronousReplyMessageReceivedStartingAsync(MessageListener listener, IncomingMessage message)
+        {
+            _logger.LogDebug("NotifySynchronousReplyMessageReceivedStarting");
+            if (_onSynchronousReplyMessageReceivedStartingAsync != null)
+            {
+                await _onSynchronousReplyMessageReceivedStartingAsync.Invoke(listener, message).ConfigureAwait(false);
+            }
+            if (_onSynchronousReplyMessageReceivedStarting != null)
+            {
+                _onSynchronousReplyMessageReceivedStarting.Invoke(listener, message);
+            }
+        }
+
         /// <summary>
         /// Registers a delegate that should be called when we are finished processing the message.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         public void RegisterSynchronousReplyMessageReceivedCompletedCallback(Action<IncomingMessage> action) => _onSynchronousReplyMessageReceivedCompleted = action;
+
         /// <summary>
         /// Registers a delegate that should be called when we are finished processing the message.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         public void RegisterSynchronousReplyMessageReceivedCompletedCallbackAsync(Func<IncomingMessage, Task> action) => _onSynchronousReplyMessageReceivedCompletedAsync = action;
-
-
 
         async Task IMessagingNotification.NotifySynchronousReplyMessageReceivedCompletedAsync(IncomingMessage message)
         {
@@ -525,34 +547,7 @@ namespace Helsenorge.Messaging
                 _onSynchronousReplyMessageReceivedCompleted.Invoke(message);
             }
         }
-        /// <summary>
-        /// Registers a delegate that should be called as we start processing a message
-        /// </summary>
-        /// <param name="action">The delegate that should be called</param>
-        public void RegisterSynchronousReplyMessageReceivedStartingCallback(Action<IncomingMessage> action) => _onSynchronousReplyMessageReceivedStarting = action;
 
-        /// <summary>
-        /// Registers a delegate that should be called as we start processing a message
-        /// </summary>
-        /// <param name="action">The delegate that should be called</param>
-        public void RegisterSynchronousReplyMessageReceivedStartingCallbackAsync(Func<IncomingMessage, Task> action) => _onSynchronousReplyMessageReceivedStartingAsync = action;
-
-        async Task IMessagingNotification.NotifySynchronousReplyMessageReceivedStartingAsync(IncomingMessage message)
-        {
-            _logger.LogDebug("NotifySynchronousReplyMessageReceivedStarting");
-            if (_onSynchronousReplyMessageReceivedStartingAsync != null)
-            {
-                await _onSynchronousReplyMessageReceivedStartingAsync.Invoke(message).ConfigureAwait(false);
-            }
-            if (_onSynchronousReplyMessageReceivedStarting != null)
-            {
-                _onSynchronousReplyMessageReceivedStarting.Invoke(message);
-            }
-        }
-
-
-     
-      
         #endregion
 
         /// <summary>
