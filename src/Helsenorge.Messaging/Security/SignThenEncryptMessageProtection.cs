@@ -80,8 +80,11 @@ namespace Helsenorge.Messaging.Security
             if (signingCertificate == null) throw new ArgumentNullException(nameof(signingCertificate));
 
             byte[] dataAsBytes = new byte[data.Length];
+#if NET9_0_OR_GREATER
+            data.ReadExactly(dataAsBytes, 0, (int)data.Length);
+#else
             data.Read(dataAsBytes, 0, (int)data.Length);
-
+#endif
             return new MemoryStream(Protect(dataAsBytes, encryptionCertificate, signingCertificate));
         }
 
@@ -117,7 +120,11 @@ namespace Helsenorge.Messaging.Security
             if (data == null) throw new ArgumentNullException(nameof(data));
 
             byte[] dataAsBytes = new byte[data.Length];
+#if NET9_0_OR_GREATER
+            data.ReadExactly(dataAsBytes, 0, (int)data.Length);
+#else
             data.Read(dataAsBytes, 0, (int)data.Length);
+#endif
 
             return new MemoryStream(Unprotect(dataAsBytes, signingCertificate));
         }
