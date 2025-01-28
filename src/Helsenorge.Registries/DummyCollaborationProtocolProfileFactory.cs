@@ -44,7 +44,6 @@ public static class DummyCollaborationProtocolProfileFactory
     /// <param name="logger">An instance of <see cref="ILogger"/>.</param>
     /// <param name="herId">The HER-id to create a "dummy" <see cref="CollaborationProtocolProfile"/></param>
     /// <param name="messageFunction"></param>
-    /// <param name="collaborationProtocolRegistry"></param>
     /// <returns></returns>
     public static async Task<CollaborationProtocolProfile> CreateAsync(
         IAddressRegistry addressRegistry,
