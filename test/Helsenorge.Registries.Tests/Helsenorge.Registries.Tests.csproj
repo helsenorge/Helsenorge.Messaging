@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
         <AssemblyName>Helsenorge.Registries.Tests</AssemblyName>
         <RootNamespace>Helsenorge.Registries.Tests</RootNamespace>
         <ProjectGuid>{0DD35E31-7384-4F3D-BBE0-366993DC2307}</ProjectGuid>

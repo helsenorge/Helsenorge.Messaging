@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
         <LangVersion>10.0</LangVersion>
         <AssemblyName>Helsenorge.Messaging.Tests</AssemblyName>
         <RootNamespace>Helsenorge.Messaging.Tests</RootNamespace>
