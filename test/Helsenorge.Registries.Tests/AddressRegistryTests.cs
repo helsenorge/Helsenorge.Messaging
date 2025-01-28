@@ -267,7 +267,11 @@ namespace Helsenorge.Registries.Tests
 
             var serialized = XmlCacheFormatter.Serialize(serviceDetails);
             var deserialized = XmlCacheFormatter.DeserializeAsync<AddressService.CertificateDetails>(serialized).Result;
+#if NET9_0_OR_GREATER
+            var deserializedCert = X509CertificateLoader.LoadCertificate(deserialized.Certificate);
+#else
             var deserializedCert = new X509Certificate2(deserialized.Certificate);
+#endif
             Assert.AreEqual(serviceDetails.LdapUrl, deserialized.LdapUrl);
             Assert.AreEqual(cert.Thumbprint, deserializedCert.Thumbprint);
         }

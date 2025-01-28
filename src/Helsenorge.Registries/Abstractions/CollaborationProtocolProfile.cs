@@ -51,7 +51,11 @@ namespace Helsenorge.Registries.Abstractions
             foreach (var certificateElement in partyInfo.Elements(NameSpace + "Certificate"))
             {
                 var base64 = certificateElement.Descendants(xmlSig + "X509Certificate").First().Value;
+#if NET9_0_OR_GREATER
+                var certificate = X509CertificateLoader.LoadCertificate(Convert.FromBase64String(base64));
+#else
                 var certificate = new X509Certificate2(Convert.FromBase64String(base64));
+#endif
 
                 if (certificate.HasKeyUsage(X509KeyUsageFlags.KeyEncipherment))
                 {
@@ -99,10 +103,18 @@ namespace Helsenorge.Registries.Abstractions
         {
             EncryptionCertificate = string.IsNullOrWhiteSpace(_encryptionCertificateBase64String)
                 ? null
+#if NET9_0_OR_GREATER
+                : X509CertificateLoader.LoadCertificate(Convert.FromBase64String(_encryptionCertificateBase64String));
+#else
                 : new X509Certificate2(Convert.FromBase64String(_encryptionCertificateBase64String));
+#endif
             SignatureCertificate = string.IsNullOrWhiteSpace(_signatureCertificateBase64String)
                 ? null
+#if NET9_0_OR_GREATER
+                : X509CertificateLoader.LoadCertificate(Convert.FromBase64String(_signatureCertificateBase64String));
+#else
                 : new X509Certificate2(Convert.FromBase64String(_signatureCertificateBase64String));
+#endif
         }
 
         /// <summary>
