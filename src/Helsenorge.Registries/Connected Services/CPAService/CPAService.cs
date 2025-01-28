@@ -7,6 +7,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+#pragma warning disable CS0108
+
 namespace Helsenorge.Registries.CPAService
 {
     using System.Runtime.Serialization;
