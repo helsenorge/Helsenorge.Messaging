@@ -32,15 +32,5 @@ namespace Helsenorge.Messaging.Amqp
         /// <param name="message"></param>
         /// <param name="inner"></param>
         public NotifySenderException(string message, Exception inner) : base(message, inner) { }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        protected NotifySenderException(
-          SerializationInfo info,
-          StreamingContext context)
-            : base(info, context) { }
-
     }
 }

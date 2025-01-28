@@ -28,11 +28,5 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         public HeaderValidationException(string message, Exception inner) : base(message, inner)
         {
         }
-
-        protected HeaderValidationException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
     }
 }
