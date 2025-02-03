@@ -261,7 +261,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             {
                 Logger.LogWarning($"{ex.Description}. MessageFunction: {message.MessageFunction} " +
                   $"FromHerId: {message.FromHerId} ToHerId: {message.ToHerId} CpaId: {message.CpaId} " +
-                  $"CorrelationId: {message.CorrelationId} Certificate thumbprint: {ex.AdditionalInformation}");
+                  $"CorrelationId: {message.CorrelationId} Additional information: {string.Join(" ", ex.AdditionalInformation)}");
 
                 await AmqpCore.ReportErrorToExternalSenderAsync(Logger, ex.EventId, message, ex.ErrorCode, ex.Description, ex.AdditionalInformation).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
@@ -516,7 +516,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
 
         private static string[] AdditionalInformation(X509Certificate2 certificate)
         {
-            return certificate != null ? new[] {certificate.Subject, certificate.Thumbprint} : new string[] { };
+            return certificate != null ? new[] { "Subject: " + certificate.Subject, "Thumbprint: " + certificate.Thumbprint} : new string[] { };
         }
 
         private void ReportErrorOnLocalCertificate(X509Certificate2 certificate, CertificateErrors error)
