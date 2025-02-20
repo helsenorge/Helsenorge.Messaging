@@ -51,7 +51,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void Send_SynchronousWithoutWaiting_NoMessage()
         {
             RunAndHandleException(Client.SendWithoutWaitingAsync(null));
