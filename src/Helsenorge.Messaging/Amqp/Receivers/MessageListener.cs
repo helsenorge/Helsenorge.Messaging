@@ -228,10 +228,10 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                     DeliveryCount = message.DeliveryCount,
                     LockedUntil = message.LockedUntil,
                 };
+               
                 await NotifyMessageProcessingStartedAsync(this, incomingMessage).ConfigureAwait(false);
 
-                //SetCorrelationIdAction?.Invoke(incomingMessage.CorrelationId);
-                SetCorrelationIdAction?.Invoke(incomingMessage.MessageId);
+                SetCorrelationIdAction?.Invoke(incomingMessage.CorrelationId);
 
                 Logger.LogStartReceive(QueueType, incomingMessage, $"Message received from host and queue: {AmqpCore.HostnameAndPath}/{queueName}");
 

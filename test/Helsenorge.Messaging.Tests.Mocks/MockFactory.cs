@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
  * 
@@ -18,8 +18,8 @@ namespace Helsenorge.Messaging.Tests.Mocks
         public const int HelsenorgeHerId = 93238;
         public const int HerIdWithOnlyCpp = 91462;
 
-
         public int OtherHerId { get; }
+
         public MockCommunicationParty Helsenorge { get; }
         public MockCommunicationParty OtherParty { get; }
         public MockCommunicationParty OtherPartyWithOnlyCpp { get; }
