@@ -477,7 +477,11 @@ namespace Helsenorge.Registries
             return new CertificateDetails
             {
                 HerId = herId,
+#if NET9_0_OR_GREATER
+                Certificate = X509CertificateLoader.LoadCertificate(certificateDetails.Certificate),
+#else
                 Certificate = new X509Certificate2(certificateDetails.Certificate),
+#endif
                 LdapUrl = certificateDetails.LdapUrl
             };
         }

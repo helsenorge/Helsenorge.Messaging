@@ -54,26 +54,5 @@ namespace Helsenorge.Registries
         public RegistriesException(string message, Exception inner) : base(message, inner)
         {
         }
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        protected RegistriesException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        // ReSharper disable once RedundantOverridenMember
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-        }
     }
 }

@@ -58,7 +58,11 @@ namespace Helsenorge.Registries.Abstractions
         {
             Certificate = string.IsNullOrWhiteSpace(_certificateBase64String)
                 ? null
+#if NET9_0_OR_GREATER
+                : X509CertificateLoader.LoadCertificate(Convert.FromBase64String(_certificateBase64String));
+#else
                 : new X509Certificate2(Convert.FromBase64String(_certificateBase64String));
+#endif
         }
     }
 }
