@@ -11,7 +11,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
-using System.ServiceModel;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Helsenorge.Registries.Abstractions;

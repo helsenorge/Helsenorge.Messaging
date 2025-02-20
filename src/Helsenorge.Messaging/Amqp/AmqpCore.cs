@@ -260,7 +260,7 @@ namespace Helsenorge.Messaging.Amqp
                     amqpMessage.SetApplicationPropertyValue(metaDataProperty.Key, metaDataProperty.Value);
                 }
                 sw.Stop();
-                logger.LogInformation($"After-AddingPayloadMetadata: {amqpMessage.MessageFunction} FromHerId: {amqpMessage.FromHerId} ToHerId: {amqpMessage.ToHerId}  MessageId: {amqpMessage.MessageId} Elapsed:{sw.ElapsedMilliseconds}");
+                logger.LogInformation($"After-AddingPayloadMetadata: {amqpMessage.MessageFunction} FromHerId: {amqpMessage.FromHerId} ToHerId: {amqpMessage.ToHerId}  MessageId: {amqpMessage.MessageId} Elapsed: {sw.ElapsedMilliseconds} ms");
             }
             catch (Exception e)
             {

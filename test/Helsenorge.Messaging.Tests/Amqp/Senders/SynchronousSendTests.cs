@@ -12,7 +12,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Schema;
 using Helsenorge.Messaging.Abstractions;
-using Helsenorge.Messaging.Tests.Mocks;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -108,6 +107,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
             //fake timeout by not posting any messag on the reply queue
             RunAndHandleMessagingException(sender, EventIds.SynchronousCallTimeout);
         }
+
         [TestMethod]
         public void Send_Synchronous_DelayedReply()
         {

@@ -25,14 +25,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{FB9DDD90-D5A5-4F25-8C81-4E6C9B4A18EE}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build.yml = .github\workflows\build.yml
-		.github\workflows\nuget-deploy.yml = .github\workflows\nuget-deploy.yml
 		.github\workflows\codeql-analysis.yml = .github\workflows\codeql-analysis.yml
+		.github\workflows\nuget-deploy.yml = .github\workflows\nuget-deploy.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{C78E1F1C-6AE6-4E64-8211-90EEC7A5FCAD}"
 	ProjectSection(SolutionItems) = preProject
-		readme.md = readme.md
 		LICENSE = LICENSE
+		readme.md = readme.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{D65E8495-DAAD-46D6-8053-8D911A5C24F3}"
@@ -47,6 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		Documentation\KrypteringOgSignering.md = Documentation\KrypteringOgSignering.md
 		Documentation\MigrateFrom3To4.md = Documentation\MigrateFrom3To4.md
 		Documentation\MigrateFrom4To5.md = Documentation\MigrateFrom4To5.md
+		Documentation\MigrateFrom5To6.md = Documentation\MigrateFrom5To6.md
 		Documentation\MottaMeldinger.md = Documentation\MottaMeldinger.md
 		Documentation\OppdaterProxyKlasser.md = Documentation\OppdaterProxyKlasser.md
 		Documentation\Registre.md = Documentation\Registre.md

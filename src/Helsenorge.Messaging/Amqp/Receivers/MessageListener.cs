@@ -67,14 +67,17 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             {
                 QueueType.Asynchronous => _queueNames.Async,
                 QueueType.Synchronous => _queueNames.Sync,
+                QueueType.SynchronousReply => _queueNames.SyncReply,
                 QueueType.Error => _queueNames.Error,
                 _ => throw new UnknownQueueTypeException(QueueType)
             };
         }
+
         /// <summary>
         /// Specifies what type of queue this listener is processing
         /// </summary>
         protected abstract QueueType QueueType { get; }
+
         /// <summary>
         /// Reference to service bus related setting
         /// </summary>
@@ -84,6 +87,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         /// Gets a reference to the server
         /// </summary>
         protected IMessagingNotification MessagingNotification { get; }
+
         /// <summary>
         /// Gets the logger used for diagnostics purposes
         /// </summary>
@@ -190,6 +194,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
             }
             return await HandleRawMessageAsync(message, alwaysRemoveMessage).ConfigureAwait(false);
         }
+
         private async Task<IncomingMessage> HandleRawMessageAsync(IAmqpMessage message, bool alwaysRemoveMessage)
         {
             if (message == null) return null;
@@ -223,9 +228,10 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                     DeliveryCount = message.DeliveryCount,
                     LockedUntil = message.LockedUntil,
                 };
+               
                 await NotifyMessageProcessingStartedAsync(this, incomingMessage).ConfigureAwait(false);
 
-                SetCorrelationIdAction?.Invoke(incomingMessage.MessageId);
+                SetCorrelationIdAction?.Invoke(incomingMessage.CorrelationId);
 
                 Logger.LogStartReceive(QueueType, incomingMessage, $"Message received from host and queue: {AmqpCore.HostnameAndPath}/{queueName}");
 

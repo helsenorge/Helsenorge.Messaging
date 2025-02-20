@@ -1,7 +1,7 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
@@ -22,6 +22,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// Start message processing
         /// </summary>
         Task StartAsync();
+
         /// <summary>
         /// Terminate message processing
         /// </summary>
@@ -38,17 +39,20 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         void RegisterAsynchronousMessageReceivedStartingCallback(Action<MessageListener, IncomingMessage> action);
+
         /// <summary>
         /// Registers a delegate that should be called as we start processing a message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
-        void RegisterAsynchronousMessageReceivedStartingCallbackAsync(Func<MessageListener, IncomingMessage, Task> action);
+        void RegisterAsynchronousMessageReceivedStartingCallbackAsync(
+            Func<MessageListener, IncomingMessage, Task> action);
 
         /// <summary>
         /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         void RegisterAsynchronousMessageReceivedCallback(Action<IncomingMessage> action);
+
         /// <summary>
         /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
         /// </summary>
@@ -60,6 +64,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         void RegisterAsynchronousMessageReceivedCompletedCallback(Action<IncomingMessage> action);
+
         /// <summary>
         /// Registers a delegate that should be called when we are finished processing the message.
         /// </summary>
@@ -71,6 +76,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         void RegisterSynchronousMessageReceivedStartingCallback(Action<IncomingMessage> action);
+
         /// <summary>
         /// Registers a delegate that should be called as we start processing a message
         /// </summary>
@@ -82,6 +88,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         void RegisterSynchronousMessageReceivedCallback(Func<IncomingMessage, XDocument> action);
+
         /// <summary>
         /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
         /// </summary>
@@ -93,6 +100,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         void RegisterSynchronousMessageReceivedCompletedCallback(Action<IncomingMessage> action);
+
         /// <summary>
         /// Registers a delegate that should be called when we are finished processing the message.
         /// </summary>
@@ -100,10 +108,48 @@ namespace Helsenorge.Messaging.Abstractions
         void RegisterSynchronousMessageReceivedCompletedCallbackAsync(Func<IncomingMessage, Task> action);
 
         /// <summary>
+        /// Registers a delegate that should be called as we start processing a message
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterSynchronousReplyMessageReceivedStartingCallback(Action<MessageListener, IncomingMessage> action);
+
+        /// <summary>
+        /// Registers a delegate that should be called as we start processing a message
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterSynchronousReplyMessageReceivedStartingCallbackAsync(
+            Func<MessageListener, IncomingMessage, Task> action);
+
+        /// <summary>
+        /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterSynchronousReplyMessageReceivedCallback(Action<IncomingMessage> action);
+
+        /// <summary>
+        /// Registers a delegate that should be called when we have enough information to process the message. This is where the main processing logic hooks in.
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterSynchronousReplyMessageReceivedCallbackAsync(Func<IncomingMessage, Task> action);
+
+        /// <summary>
+        /// Registers a delegate that should be called when we are finished processing the message.
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterSynchronousReplyMessageReceivedCompletedCallback(Action<IncomingMessage> action);
+
+        /// <summary>
+        /// Registers a delegate that should be called when we are finished processing the message.
+        /// </summary>
+        /// <param name="action">The delegate that should be called</param>
+        void RegisterSynchronousReplyMessageReceivedCompletedCallbackAsync(Func<IncomingMessage, Task> action);
+
+        /// <summary>
         /// Registers a delegate that should be called when we receive an error message
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         void RegisterErrorMessageReceivedCallback(Action<IAmqpMessage> action);
+
         /// <summary>
         /// Registers a delegate that should be called when we receive an error message
         /// </summary>
@@ -115,6 +161,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         void RegisterHandledExceptionCallback(Action<IAmqpMessage, Exception> action);
+
         /// <summary>
         /// Registers a delegate that should be called when we have an handled exception
         /// </summary>
@@ -126,6 +173,7 @@ namespace Helsenorge.Messaging.Abstractions
         /// </summary>
         /// <param name="action">The delegate that should be called</param>
         void RegisterUnhandledExceptionCallback(Action<IAmqpMessage, Exception> action);
+
         /// <summary>
         /// Registers a delegate that should be called when we have an unhandled exception
         /// </summary>

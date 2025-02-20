@@ -203,7 +203,6 @@ namespace Helsenorge.Messaging.Tests
             }
             catch (AggregateException ex)
             {
-
                 throw ex.InnerException;
             }
         }

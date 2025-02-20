@@ -243,6 +243,8 @@ namespace Helsenorge.Messaging
         /// </summary>
         public TimeSpan CallTimeout { get; set; } = TimeSpan.FromSeconds(15);
 
+        public string StaticReplyQueue { get; set; }
+
         internal SynchronousSettings() { }
 
         internal void Validate()

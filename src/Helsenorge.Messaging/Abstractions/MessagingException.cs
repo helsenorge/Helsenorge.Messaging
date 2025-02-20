@@ -8,7 +8,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
 using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.Abstractions

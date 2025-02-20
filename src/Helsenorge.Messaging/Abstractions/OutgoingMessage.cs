@@ -6,7 +6,6 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
-using System;
 using System.Xml.Linq;
 
 namespace Helsenorge.Messaging.Abstractions
