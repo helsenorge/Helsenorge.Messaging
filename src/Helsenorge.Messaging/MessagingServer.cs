@@ -194,8 +194,16 @@ namespace Helsenorge.Messaging
             if (!await HasCommonAncestorAsync(AmqpCore.Settings.MyHerIds.ToArray()))
                 throw new MessagingException(
                     "There must be a common set of ancestor queues when receiving from multiple HER-Ids.");
-            if (string.IsNullOrWhiteSpace(Settings.AmqpSettings.Synchronous
-                    .StaticReplyQueue)) //HACK FOR Å TESTE OM TING FUNKER
+            if (!string.IsNullOrWhiteSpace(Settings.AmqpSettings.Synchronous.StaticReplyQueue))
+            {
+                var queueNames = new QueueNames
+                {
+                    SyncReply = Settings.AmqpSettings.Synchronous.StaticReplyQueue
+                };
+                _listeners.Add(new SynchronousReplySingleQueueListener(AmqpCore,
+                    _loggerFactory.CreateLogger("SyncreplyListener"), this, queueNames));
+            }
+            else
             {
                 var queueNames = await GetCommonAncestorAsync(AmqpCore.Settings.MyHerIds);
 
@@ -216,15 +224,6 @@ namespace Helsenorge.Messaging
                     _listeners.Add(new ErrorMessageListener(AmqpCore, _loggerFactory.CreateLogger($"ErrorListener_{i}"),
                         this, queueNames));
                 }
-            }
-            else
-            {
-                var q = new QueueNames
-                {
-                    SyncReply = Settings.AmqpSettings.Synchronous.StaticReplyQueue
-                };
-                _listeners.Add(new SynchronousReplySingleQueueListener(AmqpCore,
-                    _loggerFactory.CreateLogger("SyncreplyListener"), this, q));
             }
 
             foreach (var listener in _listeners)
@@ -339,9 +338,6 @@ namespace Helsenorge.Messaging
         #endregion
 
         #region Error
-
-
-
 
         /// <summary>
         /// Registers a delegate that should be called when we receive an error message

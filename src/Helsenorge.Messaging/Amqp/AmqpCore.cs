@@ -221,7 +221,6 @@ namespace Helsenorge.Messaging.Amqp
                 messagingMessage.ReplyTo =
                     replyTo ?? await ConstructQueueNameAsync(logger, outgoingMessage.FromHerId, queueType).ConfigureAwait(false);
             }
-            logger.LogDebug($"DEBUG: Sender queueType: {queueType }. Forventer svar på: {messagingMessage.ReplyTo}");
             messagingMessage.ContentType = Core.MessageProtection.ContentType;
             messagingMessage.MessageId = outgoingMessage.MessageId;
             messagingMessage.To = queueName;

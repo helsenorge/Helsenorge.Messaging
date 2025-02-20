@@ -12,10 +12,6 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <SignAssembly>false</SignAssembly>
     <PackageId>Helsenorge.Registries</PackageId>
-    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <PackageOutputPath>C:\Users\stian\source\repos\HN-Meldingsutveksling\Source\MessagingDll</PackageOutputPath>
-
     <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
 
@@ -61,7 +57,4 @@
       <Generator>WCF Proxy Generator</Generator>
     </None>
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy $(TargetPath) C:\Users\stian\source\repos\HN-Meldingsutveksling\Source\MessagingDll" />
-  </Target>
 </Project>
