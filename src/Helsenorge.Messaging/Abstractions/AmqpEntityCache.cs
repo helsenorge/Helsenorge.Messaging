@@ -113,7 +113,6 @@ namespace Helsenorge.Messaging.Abstractions
             stopwatch.Start();
 
             logger.LogInformation("Start-TrimEntriesAsync");
-
             await TrimEntriesAsync(logger).ConfigureAwait(false); // see if we need to trim entries
             logger.LogInformation($"End-TrimEntriesAsync: Execution time: {stopwatch.ElapsedMilliseconds}");
 
