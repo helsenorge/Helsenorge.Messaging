@@ -9,6 +9,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,7 +49,7 @@ namespace Helsenorge.Messaging.Abstractions
 
         private const ushort MaxTimeToLiveInSeconds = 600;
         private const ushort MaxTrimCountPerRecycle = 256;
-        
+
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly Dictionary<string, CacheEntry<T>> _entries = new Dictionary<string, CacheEntry<T>>();
         private readonly string _name;
@@ -81,11 +82,11 @@ namespace Helsenorge.Messaging.Abstractions
                 throw new ArgumentOutOfRangeException(nameof(timeToLiveInSeconds), $"Argument cannot exceed {MaxTimeToLiveInSeconds}.");
             if (maxTrimCountPerRecycle > MaxTrimCountPerRecycle)
                 throw new ArgumentOutOfRangeException(nameof(maxTrimCountPerRecycle), $"Argument cannot exceed {MaxTrimCountPerRecycle}.");
-            
+
             _name = name;
-           Capacity = capacity;
-           _timeToLiveInSeconds = timeToLiveInSeconds;
-           _maxTrimCountPerRecycle = maxTrimCountPerRecycle;
+            Capacity = capacity;
+            _timeToLiveInSeconds = timeToLiveInSeconds;
+            _maxTrimCountPerRecycle = maxTrimCountPerRecycle;
         }
 
         /// <summary>
@@ -108,16 +109,22 @@ namespace Helsenorge.Messaging.Abstractions
             if (_shutdownPending) return null;
 
             CacheEntry<T> entry;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            logger.LogInformation("Start-TrimEntriesAsync");
             await TrimEntriesAsync(logger).ConfigureAwait(false); // see if we need to trim entries
+            logger.LogInformation($"End-TrimEntriesAsync: Execution time: {stopwatch.ElapsedMilliseconds}");
+
+            stopwatch.Restart();
+            logger.LogInformation("Start-AddCacheEntries");
             await _semaphore.WaitAsync().ConfigureAwait(false);
             try
             {
-                logger.LogDebug(EventIds.MessagingEntityCacheProcessor, "Start-MessagingEntityCache::Create: Create entry for {Path}", path);
                 // create an entry if it doesn't exist
                 if (_entries.ContainsKey(path) == false)
                 {
                     // create a new record for this entity
-                    logger.LogDebug(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache::Create: Creating entry for {Path}", path);
                     entry = new CacheEntry<T>()
                     {
                         ActiveCount = 1,
@@ -127,28 +134,27 @@ namespace Helsenorge.Messaging.Abstractions
                     };
                     _entries.Add(path, entry);
 
-                    logger.LogDebug(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCache::Create: Create entry for {Path}. ActiveCount={ActiveCount} CacheEntryCount={CacheEntryCount}", path, entry.ActiveCount, _entries.Count);
                     return entry.Entity;
                 }
 
                 entry = _entries[path];
 
-                if(_incrementActiveCount)
+                if (_incrementActiveCount)
                     entry.ActiveCount++;
                 entry.LastUsed = DateTime.UtcNow;
-                logger.LogDebug(EventIds.MessagingEntityCacheProcessor, $"MessagingEntityCache::Create: Updating entry for {path} ActiveCount={entry.ActiveCount}");
 
                 // if this entity previously was closed, we need to create a new instance
                 if (entry.Entity is { IsClosed: false }) return entry.Entity;
 
-                logger.LogDebug(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache::Create: Creating new entity for {Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
                 entry.Entity = await CreateEntityAsync(logger, path).ConfigureAwait(false);
             }
             finally
             {
                 _semaphore.Release();
-                logger.LogDebug(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCache::Create: Create entry for {Path}", path);
             }
+
+            logger.LogInformation($"End-AddCacheEntries: Execution time: {stopwatch.ElapsedMilliseconds}");
+            stopwatch.Stop();
             return entry.Entity;
         }
 
@@ -165,21 +171,16 @@ namespace Helsenorge.Messaging.Abstractions
             await _semaphore.WaitAsync().ConfigureAwait(false);
             try
             {
-                logger.LogDebug(EventIds.MessagingEntityCacheProcessor, "Start-MessagingEntityCache::Release: Path={Path}", path);
-
                 if (_entries.TryGetValue(path, out CacheEntry<T> entry) == false)
                 {
                     return;
                 }
                 // under normal conditions, we just decrease the active count
-                if(entry.ActiveCount > 0)
+                if (entry.ActiveCount > 0)
                     entry.ActiveCount--;
-                logger.LogDebug(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache::Release: Releasing entry for Path={Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
             }
             finally
             {
-                logger.LogDebug(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCache::Release: Path={Path}", path);
-
                 _semaphore.Release();
             }
         }
@@ -191,8 +192,6 @@ namespace Helsenorge.Messaging.Abstractions
             {
                 try
                 {
-                    logger.LogDebug(EventIds.MessagingEntityCacheProcessor, "Start-MessagingEntityCache::CloseEntity: Path={Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
-
                     await entry.Entity.CloseAsync().ConfigureAwait(false);
                 }
                 catch (Exception ex)
@@ -204,7 +203,6 @@ namespace Helsenorge.Messaging.Abstractions
                     // Even if we get an exception when we close the Link or Session we need to null the  entity or we
                     // will end up in an unsynchronized state where we reuse the entity.
                     entry.Entity = null;
-                    logger.LogDebug(EventIds.MessagingEntityCacheProcessor, "End-MessagingEntityCache::CloseEntity:  Path={Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
                 }
             }
         }
@@ -215,7 +213,8 @@ namespace Helsenorge.Messaging.Abstractions
         {
             _shutdownPending = true;
             await _semaphore.WaitAsync().ConfigureAwait(false);
-            try {
+            try
+            {
                 logger.LogInformation(EventIds.MessagingEntityCacheProcessor, "Shutting down: {CacheName}", _name);
 
                 foreach (var key in _entries.Keys)
@@ -235,25 +234,20 @@ namespace Helsenorge.Messaging.Abstractions
             await _semaphore.WaitAsync().ConfigureAwait(false);
             try
             {
-                logger.LogDebug(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Start-TrimEntries CacheCapacity={CacheCapacity} CacheEntryCount={CacheEntryCount}", Capacity, _entries.Keys.Count);
-
                 // we haven't reached our max capacity yet
                 if (_entries.Keys.Count <= Capacity) return;
 
-                logger.LogDebug(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Trimming entries");
                 var count = (int)Math.Min(_entries.Keys.Count - Capacity, _maxTrimCountPerRecycle);
-                
+
                 // get the oldest n entries
                 var removal = (from v in _entries.Values
-                    orderby v.LastUsed ascending
-                    where v.Entity != null
-                          && v.Entity.IsClosed == false
-                          && v.LastUsed < DateTime.UtcNow.AddSeconds(-_timeToLiveInSeconds)
-                          && v.ActiveCount == 0
-                    select v).Take(count).ToList();
+                               orderby v.LastUsed ascending
+                               where v.Entity != null
+                                     && v.Entity.IsClosed == false
+                                     && v.LastUsed < DateTime.UtcNow.AddSeconds(-_timeToLiveInSeconds)
+                                     && v.ActiveCount == 0
+                               select v).Take(count).ToList();
 
-                logger.LogDebug(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: Trimming entries ActualRemovalCount={ActualRemovalCount} RemovalCount={ProposedRemovalCount} CacheCapacity={CacheCapacity} CacheEntryCount={CacheEntryCount}", removal.Count(), count, Capacity, _entries.Keys.Count);
-                
                 foreach (var item in removal)
                 {
                     await CloseEntityAsync(logger, item, item.Path).ConfigureAwait(false);
@@ -261,8 +255,6 @@ namespace Helsenorge.Messaging.Abstractions
             }
             finally
             {
-                logger.LogDebug(EventIds.MessagingEntityCacheProcessor, "MessagingEntityCache: End-TrimEntries CacheCapacity={CacheCapacity} CacheEntryCount={CacheEntryCount}", Capacity, _entries.Keys.Count);
-
                 _semaphore.Release();
             }
         }

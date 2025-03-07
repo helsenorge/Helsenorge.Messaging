@@ -282,8 +282,18 @@ namespace Helsenorge.Messaging.Amqp
 
             try
             {
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+
+                logger.LogInformation("Start-CreateCachedMessageSenderAsync");
                 messageSender = await SenderPool.CreateCachedMessageSenderAsync(logger, message.To).ConfigureAwait(false);
+                logger.LogInformation($"End-CreateCachedMessageSenderAsync: Execution time: {stopwatch.ElapsedMilliseconds}");
+
+                stopwatch.Restart();
+
+                logger.LogInformation("Start-MessageSenderSendAsync");
                 await messageSender.SendAsync(message).ConfigureAwait(false);
+                logger.LogInformation($"End-MessageSenderSendAsync: Execution time: {stopwatch.ElapsedMilliseconds}");
             }
             catch (Exception ex)
             {
