@@ -76,7 +76,7 @@ public class HelseIdClient : IHelseIdClient
         var tokenIssuedAtEpochTimeSeconds = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         var securityKey = _securityKeyProvider.GetSecurityKey();
         var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha512);
-        var header = new JwtHeader(signingCredentials);
+        var header = new JwtHeader(signingCredentials, outboundAlgorithmMap: null, tokenType: "client-authentication+jwt");
         var endpointUri = new Uri(_configuration.TokenEndpoint);
         var payload = new JwtPayload
         {
