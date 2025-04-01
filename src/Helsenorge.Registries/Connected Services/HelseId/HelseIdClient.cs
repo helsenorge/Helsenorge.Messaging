@@ -77,11 +77,12 @@ public class HelseIdClient : IHelseIdClient
         var securityKey = _securityKeyProvider.GetSecurityKey();
         var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha512);
         var header = new JwtHeader(signingCredentials);
+        var endpointUri = new Uri(_configuration.TokenEndpoint);
         var payload = new JwtPayload
         {
             [JwtRegisteredClaimNames.Iss] = _configuration.ClientId,
             [JwtRegisteredClaimNames.Sub] = _configuration.ClientId,
-            [JwtRegisteredClaimNames.Aud] = _configuration.TokenEndpoint,
+            [JwtRegisteredClaimNames.Aud] = $"{endpointUri.Scheme}://{endpointUri.Host}",
             [JwtRegisteredClaimNames.Exp] = tokenIssuedAtEpochTimeSeconds + 60,
             [JwtRegisteredClaimNames.Nbf] = tokenIssuedAtEpochTimeSeconds,
             [JwtRegisteredClaimNames.Iat] = tokenIssuedAtEpochTimeSeconds,
