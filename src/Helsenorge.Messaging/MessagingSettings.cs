@@ -131,7 +131,6 @@ namespace Helsenorge.Messaging
         /// Gets or set the Type of Message Broker we are using
         /// </summary>
         public MessageBrokerDialect MessageBrokerDialect { get; set; } = MessageBrokerDialect.RabbitMQ;
-
         /// <summary>
         /// Gets or sets the connection string
         /// </summary>
@@ -188,7 +187,6 @@ namespace Helsenorge.Messaging
         /// If true logs every the MessageListener has finished a read call to the broker.
         /// </summary>
         public bool LogReadTime { get; set; } = false;
-
         /// <summary>
         /// The HER-ids we are representing.
         /// </summary>
@@ -242,8 +240,14 @@ namespace Helsenorge.Messaging
         /// The timout for synchronous calls
         /// </summary>
         public TimeSpan CallTimeout { get; set; } = TimeSpan.FromSeconds(15);
-
+        /// <summary>
+        /// Specify the reply queue you are listening on if you have implemented <see cref="Helsenorge.Messaging.Amqp.Receivers.SynchronousReplySingleQueueListener"/>
+        /// </summary>
         public string StaticReplyQueue { get; set; }
+        /// <summary>
+        /// If you want to handle the syncreply queue separately and skip validation of the <see cref="ReplyQueueMapping"/>. Default false.
+        /// </summary>
+        public bool SingleSyncreplyQueueEnabled { get; set; } = false;
 
         internal SynchronousSettings() { }
 
@@ -252,7 +256,7 @@ namespace Helsenorge.Messaging
             if (TimeToLive == TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(TimeToLive));
             if (ReadTimeout == TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(ReadTimeout));
             if (CallTimeout == TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(CallTimeout));
-
+            
             if (FindReplyQueueForMe() == null)
             {
                 throw new InvalidOperationException("Could not determine reply to queue for this server");
@@ -267,6 +271,11 @@ namespace Helsenorge.Messaging
             var server = (from s in ReplyQueueMapping.Keys
                 where s.Equals(Environment.MachineName, StringComparison.OrdinalIgnoreCase)
                 select s).FirstOrDefault();
+
+            if (SingleSyncreplyQueueEnabled && server == null)
+            {
+                return ReplyQueueMapping.LastOrDefault().Value;
+            }
 
             return server == null ? null : ReplyQueueMapping[server];
         }
