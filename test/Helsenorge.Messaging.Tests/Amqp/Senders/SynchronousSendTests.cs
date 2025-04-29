@@ -76,7 +76,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
         [TestMethod]
         public void Send_Synchronous_SingleSyncreplyQueueEnabled_True_OK()
         {
-            Settings.AmqpSettings.Synchronous.SingleSyncreplyQueueEnabled = true;
+            Settings.AmqpSettings.Synchronous.SkipReplyQueueMappingValidation = true;
             var message = CreateMessage();
 
             // post a reply on the syncreply queue before posting the actual message
