@@ -245,9 +245,9 @@ namespace Helsenorge.Messaging
         /// </summary>
         public string StaticReplyQueue { get; set; }
         /// <summary>
-        /// If you want to handle the syncreply queue separately and skip validation of the <see cref="ReplyQueueMapping"/>. Default false.
+        /// Enable if you want to skip validation of the <see cref="ReplyQueueMapping"/>. Default false.
         /// </summary>
-        public bool SingleSyncreplyQueueEnabled { get; set; } = false;
+        public bool SkipReplyQueueMappingValidation { get; set; } = false;
 
         internal SynchronousSettings() { }
 
@@ -256,7 +256,12 @@ namespace Helsenorge.Messaging
             if (TimeToLive == TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(TimeToLive));
             if (ReadTimeout == TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(ReadTimeout));
             if (CallTimeout == TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(CallTimeout));
-            
+
+            if (SkipReplyQueueMappingValidation)
+            {
+                return;
+            }
+
             if (FindReplyQueueForMe() == null)
             {
                 throw new InvalidOperationException("Could not determine reply to queue for this server");
@@ -271,11 +276,6 @@ namespace Helsenorge.Messaging
             var server = (from s in ReplyQueueMapping.Keys
                 where s.Equals(Environment.MachineName, StringComparison.OrdinalIgnoreCase)
                 select s).FirstOrDefault();
-
-            if (SingleSyncreplyQueueEnabled && server == null)
-            {
-                return ReplyQueueMapping.LastOrDefault().Value;
-            }
 
             return server == null ? null : ReplyQueueMapping[server];
         }
