@@ -194,6 +194,7 @@ namespace Helsenorge.Messaging
             if (!await HasCommonAncestorAsync(AmqpCore.Settings.MyHerIds.ToArray()))
                 throw new MessagingException(
                     "There must be a common set of ancestor queues when receiving from multiple HER-Ids.");
+            
             if (!string.IsNullOrWhiteSpace(Settings.AmqpSettings.Synchronous.StaticReplyQueue))
             {
                 var queueNames = new QueueNames
@@ -595,12 +596,18 @@ namespace Helsenorge.Messaging
 
         private async Task<bool> HasCommonAncestorAsync(int[] herIds)
         {
-            if (herIds.Count() <= 1)
+            if (herIds.Length <= 1)
+            {
                 return true;
+            }
 
             var communicationPartyDetailsList = new List<CommunicationPartyDetails>();
             foreach (var herId in herIds)
-                communicationPartyDetailsList.Add(await AmqpCore.AddressRegistry.FindCommunicationPartyDetailsAsync(herId));
+            {
+                communicationPartyDetailsList.Add(
+                    await AmqpCore.AddressRegistry.FindCommunicationPartyDetailsAsync(herId)
+                );
+            }
 
             var queueNames = GetCommonAncestor(communicationPartyDetailsList);
 
@@ -638,7 +645,10 @@ namespace Helsenorge.Messaging
         {
             var communicationPartyDetailsList = new List<CommunicationPartyDetails>();
             foreach (var herId in herIds)
+            {
                 communicationPartyDetailsList.Add(await AmqpCore.AddressRegistry.FindCommunicationPartyDetailsAsync(herId));
+            }
+
             return GetCommonAncestor(communicationPartyDetailsList);
         }
 

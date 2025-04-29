@@ -72,7 +72,36 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
             // message should be gone from our sync reply
             Assert.AreEqual(0, MockFactory.Helsenorge.SynchronousReply.Messages.Count);
         }
-        
+
+        [TestMethod]
+        public void Send_Synchronous_SingleSyncreplyQueueEnabled_True_OK()
+        {
+            Settings.AmqpSettings.Synchronous.SkipReplyQueueMappingValidation = true;
+            var message = CreateMessage();
+
+            // post a reply on the syncreply queue before posting the actual message
+            var mockMessage = CreateMockMessage(message);
+            mockMessage.To = MockFactory.Helsenorge.SynchronousReply.Name;
+            mockMessage.ReplyTo = MockFactory.OtherParty.Synchronous.Name;
+            mockMessage.Queue = MockFactory.Helsenorge.SynchronousReply.Messages;
+            MockFactory.Helsenorge.SynchronousReply.Messages.Add(mockMessage);
+
+            var response = RunAndHandleException(Client.SendAndWaitAsync(message));
+
+            var logProcessedMessage = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Information
+                                                                            && l.Message.Contains($"Removing processed message {mockMessage.MessageId} from Herid {MockFactory.OtherHerId} from queue {MockFactory.Helsenorge.SynchronousReply.Name}. Correlation = {message.MessageId}"));
+            Assert.AreEqual(1, logProcessedMessage.Count());
+
+            var logEntry = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Information
+                                                                 && l.Message.StartsWith("ResponseTime")
+                                                                 && l.Message.EndsWith(" ms"));
+            Assert.AreEqual(1, logEntry.Count());
+            // make sure the content is what we expect
+            Assert.AreEqual(GenericResponse.ToString(), response.ToString());
+            // message should be gone from our sync reply
+            Assert.AreEqual(0, MockFactory.Helsenorge.SynchronousReply.Messages.Count);
+        }
+
         [TestMethod]
         [ExpectedException(typeof(MessagingException))]
         public void Send_Synchronous_ErrorQueue()
