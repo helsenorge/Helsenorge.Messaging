@@ -21,6 +21,8 @@ namespace Helsenorge.Messaging.Amqp
         protected ISession _session;
         protected TLink _link;
         
+        private static readonly TimeSpan DefaultCloseTimeout = TimeSpan.FromSeconds(3);
+
         private readonly SemaphoreSlim _mySemaphoreSlim = new SemaphoreSlim(1);
         private readonly object _lockObject = new object();
 
@@ -120,7 +122,8 @@ namespace Helsenorge.Messaging.Amqp
             if (_session != null && !_session.IsClosed)
             {
                 await OnSessionClosingAsync().ConfigureAwait(false);
-                await _session.CloseAsync().ConfigureAwait(false);
+
+                await _session.CloseAsync(DefaultCloseTimeout, null).ConfigureAwait(false);
             }
         }
     }
