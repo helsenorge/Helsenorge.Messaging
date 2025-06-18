@@ -248,7 +248,11 @@ namespace Helsenorge.Messaging
         /// Enable if you want to skip validation of the <see cref="ReplyQueueMapping"/>. Default false.
         /// </summary>
         public bool SkipReplyQueueMappingValidation { get; set; } = false;
-
+        /// <summary>
+        /// Enable if you want to set up SynchronousReplySingleQueueListener for handling the  <see cref="StaticReplyQueue"/>. Default false.
+        /// </summary>
+        public bool HandleSyncreplyListenerIndependently { get; set; } = false;
+        
         internal SynchronousSettings() { }
 
         internal void Validate()
