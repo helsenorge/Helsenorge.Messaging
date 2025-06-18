@@ -195,7 +195,7 @@ namespace Helsenorge.Messaging
                 throw new MessagingException(
                     "There must be a common set of ancestor queues when receiving from multiple HER-Ids.");
             
-            if (!string.IsNullOrWhiteSpace(Settings.AmqpSettings.Synchronous.StaticReplyQueue))
+            if (Settings.AmqpSettings.Synchronous.HandleSyncreplyListenerIndependently)
             {
                 var queueNames = new QueueNames
                 {
