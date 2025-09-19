@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
     <ProjectReference Include="..\Helsenorge.Registries\Helsenorge.Registries.csproj" />
   </ItemGroup>
 </Project>
