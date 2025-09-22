@@ -119,7 +119,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
         public void Send_Asynchronous_InvalidEncryption()
         {
             Settings.IgnoreCertificateErrorOnSend = false;
-            CertificateValidator.SetError((c,u)=> (u == X509KeyUsageFlags.KeyEncipherment) ? CertificateErrors.StartDate : CertificateErrors.None);
+            CertificateValidator.SetError((_,u)=> u == X509KeyUsageFlags.KeyEncipherment ? CertificateErrors.StartDate : CertificateErrors.None);
 
             var message = CreateMessage();
             RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.RemoteCertificate);
@@ -128,7 +128,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
         public void Send_Asynchronous_InvalidEncryption_Ignore()
         {
             Settings.IgnoreCertificateErrorOnSend = true;
-            CertificateValidator.SetError((c, u) => (u == X509KeyUsageFlags.KeyEncipherment) ? CertificateErrors.StartDate : CertificateErrors.None);
+            CertificateValidator.SetError((_, u) => u == X509KeyUsageFlags.KeyEncipherment ? CertificateErrors.StartDate : CertificateErrors.None);
 
             var message = CreateMessage();
             RunAndHandleException(Client.SendAndContinueAsync(message));
@@ -139,7 +139,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
         public void Send_Asynchronous_InvalidSignature()
         {
             Settings.IgnoreCertificateErrorOnSend = false;
-            CertificateValidator.SetError((c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.StartDate : CertificateErrors.None);
+            CertificateValidator.SetError((_, u) => u == X509KeyUsageFlags.NonRepudiation ? CertificateErrors.StartDate : CertificateErrors.None);
 
             var message = CreateMessage();
             RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.LocalCertificate);
@@ -149,7 +149,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
         public void Send_Asynchronous_InvalidSignature_Ignore()
         {
             Settings.IgnoreCertificateErrorOnSend = true;
-            CertificateValidator.SetError((c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.StartDate : CertificateErrors.None);
+            CertificateValidator.SetError((_, u) => u == X509KeyUsageFlags.NonRepudiation ? CertificateErrors.StartDate : CertificateErrors.None);
 
             var message = CreateMessage();
             RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.LocalCertificate);
@@ -161,7 +161,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
         public void Send_Asynchronous_InvalidEncryptionCertificate()
         {
             Settings.IgnoreCertificateErrorOnSend = false;
-            CertificateValidator.SetError((c, u) => {
+            CertificateValidator.SetError((_, u) => {
                 if (u != X509KeyUsageFlags.KeyEncipherment) return CertificateErrors.None;
 
                 return CertificateErrors.Revoked | CertificateErrors.EndDate;
