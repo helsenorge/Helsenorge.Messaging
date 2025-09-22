@@ -17,25 +17,22 @@ namespace Helsenorge.Messaging.Tests
     public class WindowsCertificateStoreTests
     {
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void WindowsCertificateStore_ctor_MissingStoreName_ExpectedArgumentNullException()
         {
-            new WindowsCertificateStore(null, StoreLocation.LocalMachine);
+            Assert.Throws<ArgumentNullException>(() => new WindowsCertificateStore(null, StoreLocation.LocalMachine));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void WindowsCertificateStore_ctor_MissingStoreLocation_ExpectedArgumentNullException()
         {
-            new WindowsCertificateStore(StoreName.My, null);
+            Assert.Throws<ArgumentNullException>(() => new WindowsCertificateStore(StoreName.My, null));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void WindowsCertificateStore_GetCertificate_ArgumentThumbprintIsStringEmpty_ExpectedArgumentException()
         {
             var store = new WindowsCertificateStore(StoreName.My, StoreLocation.LocalMachine);
-            store.GetCertificate(string.Empty);
+            Assert.Throws<ArgumentException>(() => store.GetCertificate(string.Empty));
         }
     }
 }

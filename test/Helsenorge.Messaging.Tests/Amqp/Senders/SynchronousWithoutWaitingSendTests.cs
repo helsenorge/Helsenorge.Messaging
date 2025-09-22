@@ -51,32 +51,29 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Send_SynchronousWithoutWaiting_NoMessage()
         {
-            RunAndHandleException(Client.SendWithoutWaitingAsync(null));
+            Assert.Throws<ArgumentNullException>(() => RunAndHandleException(Client.SendWithoutWaitingAsync(null)));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Send_SynchronousWithoutWaiting_Error_Missing_ToHerId()
         {
             var message = CreateMessage();
             message.ToHerId = 0;
-            RunAndHandleException(Client.SendWithoutWaitingAsync(message));
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                RunAndHandleException(Client.SendWithoutWaitingAsync(message)));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Send_SynchronousWithoutWaiting_Error_Missing_MessageFunction()
         {
             var message = CreateMessage();
             message.MessageFunction = null;
-            RunAndHandleException(Client.SendWithoutWaitingAsync(message));
+            Assert.Throws<ArgumentNullException>(() => RunAndHandleException(Client.SendWithoutWaitingAsync(message)));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(MessagingException))]
         public void Send_SynchronousWithoutWaiting_InvalidEncryption()
         {
             Settings.IgnoreCertificateErrorOnSend = false;
@@ -84,11 +81,11 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
                 (u == X509KeyUsageFlags.KeyEncipherment) ? CertificateErrors.StartDate : CertificateErrors.None);
 
             var message = CreateMessage();
-            RunAndHandleMessagingException(Client.SendWithoutWaitingAsync(message), EventIds.RemoteCertificate);
+            Assert.Throws<MessagingException>(() =>
+                RunAndHandleMessagingException(Client.SendWithoutWaitingAsync(message), EventIds.RemoteCertificate));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(MessagingException))]
         public void Send_SynchronousWithoutWaiting_InvalidSignature()
         {
             Settings.IgnoreCertificateErrorOnSend = false;
@@ -96,7 +93,8 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
                 (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.StartDate : CertificateErrors.None);
 
             var message = CreateMessage();
-            RunAndHandleMessagingException(Client.SendWithoutWaitingAsync(message), EventIds.LocalCertificate);
+            Assert.Throws<MessagingException>(() =>
+                RunAndHandleMessagingException(Client.SendWithoutWaitingAsync(message), EventIds.LocalCertificate));
         }
     }
 }

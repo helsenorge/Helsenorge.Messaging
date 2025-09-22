@@ -49,58 +49,58 @@ namespace Helsenorge.Messaging.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Options_NotSet()
         {
-            Client = new MessagingClient(null, LoggerFactory, CollaborationRegistry, AddressRegistry);
+            Assert.Throws<ArgumentNullException>(() =>
+                new MessagingClient(null, LoggerFactory, CollaborationRegistry, AddressRegistry));
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void CollaborationRegistry_NotSet()
         {
-            Client = new MessagingClient(Settings, LoggerFactory, null, AddressRegistry);
+            Assert.Throws<ArgumentNullException>(() =>
+                new MessagingClient(Settings, LoggerFactory, null, AddressRegistry));
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void AddressRegistry_NotSet()
         {
-            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, null);
+            Assert.Throws<ArgumentNullException>(() =>
+                new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, null));
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void MyHerIds_NotSet()
         {
             Settings.MyHerIds.Clear();
-            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore));
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void MyHerIds_InvalidValue()
         {
             Settings.MyHerIds.Clear();
             Settings.MyHerIds.Add(0);
-            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore));
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void DecryptionCertificate_NotSet()
         {
             Settings.DecryptionCertificate = null;
-            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
+            Assert.Throws<ArgumentNullException>(() =>
+                new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry));
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void SigningCertificate_NotSet()
         {
             Settings.SigningCertificate = null;
-            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
+            Assert.Throws<ArgumentNullException>(() =>
+                new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry));
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ConnectionString_NotSet()
         {
             Settings.AmqpSettings.ConnectionString = null;
-            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
+            Assert.Throws<ArgumentNullException>(() =>
+                new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry));
         }
 
         [TestMethod]
@@ -109,33 +109,36 @@ namespace Helsenorge.Messaging.Tests
             Settings.AmqpSettings.Synchronous.ProcessingTasks = 0;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
         }
+
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Synchronous_TimeToLive_NotSet()
         {
             Settings.AmqpSettings.Synchronous.TimeToLive = TimeSpan.Zero;
-            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry));
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Synchronous_ReadTimeout_NotSet()
         {
             Settings.AmqpSettings.Synchronous.ReadTimeout = TimeSpan.Zero;
-            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry));
         }
+
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Synchronous_CallTimeout_NotSet()
         {
             Settings.AmqpSettings.Synchronous.CallTimeout = TimeSpan.Zero;
-            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry));
         }
+
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void Synchronous_ReplyQueue_NotSet()
         {
             Settings.AmqpSettings.Synchronous.ReplyQueueMapping = new Dictionary<string, string>();
-            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry);
+            Assert.Throws<InvalidOperationException>(() =>
+                new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry));
         }
         
         [TestMethod]
@@ -144,31 +147,35 @@ namespace Helsenorge.Messaging.Tests
             Settings.AmqpSettings.Asynchronous.ProcessingTasks = 0;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
         }
+
         [TestMethod]
         public void Asynchronous_TimeToLive_NotSet()
         {
             Settings.AmqpSettings.Asynchronous.TimeToLive = TimeSpan.Zero;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
         }
+
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Asynchronous_ReadTimeout_NotSet()
         {
             Settings.AmqpSettings.Asynchronous.ReadTimeout = TimeSpan.Zero;
-            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore));
         }
+
         [TestMethod]
         public void Error_ProcessingTasksEqualsZero_IsAllowed()
         {
             Settings.AmqpSettings.Error.ProcessingTasks = 0;
             Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
         }
+
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Error_ReadTimeout_NotSet()
         {
             Settings.AmqpSettings.Error.ReadTimeout = TimeSpan.Zero;
-            Client = new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore);
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                new MessagingClient(Settings, LoggerFactory, CollaborationRegistry, AddressRegistry, CertificateStore));
         }
     }
 }
