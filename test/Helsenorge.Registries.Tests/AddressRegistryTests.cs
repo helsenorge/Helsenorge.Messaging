@@ -125,26 +125,25 @@ namespace Helsenorge.Registries.Tests
             }
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_Settings_Null()
         {
             var distributedCache = DistributedCacheFactory.Create();
 
-            new AddressRegistry(null, distributedCache, _logger);
+            Assert.Throws<ArgumentNullException>(() => new AddressRegistry(null, distributedCache, _logger));
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_Cache_Null()
         {
-            new AddressRegistry(new AddressRegistrySettings(), null, _logger);
+            Assert.Throws<ArgumentNullException>(() =>
+                new AddressRegistry(new AddressRegistrySettings(), null, _logger));
         }
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_Logger_Null()
         {
             var distributedCache = DistributedCacheFactory.Create();
 
-            new AddressRegistry(new AddressRegistrySettings(), distributedCache, null);
+            Assert.Throws<ArgumentNullException>(() =>
+                new AddressRegistry(new AddressRegistrySettings(), distributedCache, null));
         }
 
         [TestMethod, Ignore]

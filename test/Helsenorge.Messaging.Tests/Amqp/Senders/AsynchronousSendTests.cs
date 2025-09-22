@@ -68,62 +68,64 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Send_Asynchronous_NoMessage()
         {
-            RunAndHandleException(Client.SendAndContinueAsync(null));
+            Assert.Throws<ArgumentNullException>(() => RunAndHandleException(Client.SendAndContinueAsync(null)));
         }
+
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Send_Asynchronous_Error_Missing_ToHerId()
         {
             var message = CreateMessage();
             message.ToHerId = 0;
-            RunAndHandleException(Client.SendAndContinueAsync(message));
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                RunAndHandleException(Client.SendAndContinueAsync(message)));
         }
+
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Send_Asynchronous_Error_Missing_MessageId()
         {
             var message = CreateMessage();
             message.MessageId = null;
-            RunAndHandleException(Client.SendAndContinueAsync(message));
+            Assert.Throws<ArgumentNullException>(() => RunAndHandleException(Client.SendAndContinueAsync(message)));
         }
+
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Send_Asynchronous_Error_Missing_MessageFunction()
         {
             var message = CreateMessage();
             message.MessageFunction = null;
-            RunAndHandleException(Client.SendAndContinueAsync(message));
+            Assert.Throws<ArgumentNullException>(() => RunAndHandleException(Client.SendAndContinueAsync(message)));
         }
+
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Send_Asynchronous_Error_Missing_Payload()
         {
             var message = CreateMessage();
             message.Payload = null;
-            RunAndHandleException(Client.SendAndContinueAsync(message));
+            Assert.Throws<ArgumentNullException>(() => RunAndHandleException(Client.SendAndContinueAsync(message)));
         }
         
         [TestMethod]
-        [ExpectedException(typeof(MessagingException))]
         public void Send_Asynchronous_Error_InvalidMessageFunction()
         {
             var message = CreateMessage();
             message.MessageFunction = "BOB";
-            RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.InvalidMessageFunction);
+            Assert.Throws<MessagingException>(() =>
+                RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.InvalidMessageFunction));
         }
+
         [TestMethod]
-        [ExpectedException(typeof(MessagingException))]
         public void Send_Asynchronous_InvalidEncryption()
         {
             Settings.IgnoreCertificateErrorOnSend = false;
             CertificateValidator.SetError((_,u)=> u == X509KeyUsageFlags.KeyEncipherment ? CertificateErrors.StartDate : CertificateErrors.None);
 
             var message = CreateMessage();
-            RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.RemoteCertificate);
+            Assert.Throws<MessagingException>(() =>
+                RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.RemoteCertificate));
         }
+
         [TestMethod]
         public void Send_Asynchronous_InvalidEncryption_Ignore()
         {
@@ -135,14 +137,14 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
         }
 
         [TestMethod]
-        [ExpectedException(typeof(MessagingException))]
         public void Send_Asynchronous_InvalidSignature()
         {
             Settings.IgnoreCertificateErrorOnSend = false;
             CertificateValidator.SetError((_, u) => u == X509KeyUsageFlags.NonRepudiation ? CertificateErrors.StartDate : CertificateErrors.None);
 
             var message = CreateMessage();
-            RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.LocalCertificate);
+            Assert.Throws<MessagingException>(() =>
+                RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.LocalCertificate));
         }
 
         [TestMethod]

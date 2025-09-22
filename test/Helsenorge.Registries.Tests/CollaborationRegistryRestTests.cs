@@ -86,53 +86,65 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void RestCpa_Constructor_Settings_Null()
         {
             var distributedCache = DistributedCacheFactory.Create();
-            addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache, _logger);
+            addressRegistry =
+                new AddressRegistryMock(new AddressRegistrySettings { WcfConfiguration = new WcfConfiguration() },
+                    distributedCache, _logger);
 
-            new CollaborationProtocolRegistryRest(null, distributedCache, addressRegistry, _logger, _helseIdClientCppa);
+            Assert.Throws<ArgumentNullException>(() =>
+                new CollaborationProtocolRegistryRest(null, distributedCache, addressRegistry, _logger,
+                    _helseIdClientCppa));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void RestCpa_Constructor_Cache_Null()
         {
-
             var distributedCache = DistributedCacheFactory.Create();
-            addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache, _logger);
+            addressRegistry =
+                new AddressRegistryMock(new AddressRegistrySettings { WcfConfiguration = new WcfConfiguration() },
+                    distributedCache, _logger);
 
-            new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), null, addressRegistry, _logger, _helseIdClientCppa);
+            Assert.Throws<ArgumentNullException>(() =>
+                new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), null,
+                    addressRegistry, _logger, _helseIdClientCppa));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void RestCpa_Constructor_AddressRegistry_Null()
         {
             var distributedCache = DistributedCacheFactory.Create();
 
-            new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache, null, _logger, _helseIdClientCppa);
+            Assert.Throws<ArgumentNullException>(() =>
+                new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache,
+                    null, _logger, _helseIdClientCppa));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void RestCpa_Constructor_ILogger_Null()
         {
             var distributedCache = DistributedCacheFactory.Create();
-            addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache, _logger);
+            addressRegistry =
+                new AddressRegistryMock(new AddressRegistrySettings { WcfConfiguration = new WcfConfiguration() },
+                    distributedCache, _logger);
 
-            new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache, addressRegistry, null, _helseIdClientCppa);
+            Assert.Throws<ArgumentNullException>(() =>
+                new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache,
+                    addressRegistry, null, _helseIdClientCppa));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void RestCpa_Constructor_HelseIdClient_Null()
         {
             var distributedCache = DistributedCacheFactory.Create();
-            addressRegistry = new AddressRegistryMock(new AddressRegistrySettings(), distributedCache, _logger);
+            addressRegistry =
+                new AddressRegistryMock(new AddressRegistrySettings { WcfConfiguration = new WcfConfiguration() },
+                    distributedCache, _logger);
 
-            new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache, addressRegistry, _logger, null);
+            Assert.Throws<ArgumentNullException>(() =>
+                new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache,
+                    addressRegistry, _logger, null));
         }
 
         [TestMethod]
@@ -231,11 +243,10 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void RestCpa_FindMessageForSender_ArgumentNull()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(93238).Result;
-            Assert.IsNotNull(profile.FindMessageForSender(null));
+            Assert.Throws<ArgumentNullException>(() => profile.FindMessageForSender(null));
         }
 
         [TestMethod]
@@ -270,11 +281,10 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void RestCpa_FindMessageForReceiver_ArgumentNull()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(93238).Result;
-            Assert.IsNotNull(profile.FindMessageForReceiver(null));
+            Assert.Throws<ArgumentNullException>(() => profile.FindMessageForReceiver(null));
         }
 
         [TestMethod]
@@ -309,11 +319,10 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void RestCpa_FindMessagePartsForReceiveMessage_ArgumentNull()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(93238).Result;
-            Assert.IsNotNull(profile.FindMessagePartsForReceiveMessage(null));
+            Assert.Throws<ArgumentNullException>(() => profile.FindMessagePartsForReceiveMessage(null));
         }
 
         [TestMethod]
@@ -331,11 +340,10 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void RestCpa_FindMessagePartsForReceiveAppRec_ArgumentNull()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(93238).Result;
-            Assert.IsNotNull(profile.FindMessagePartsForReceiveAppRec(null));
+            Assert.Throws<ArgumentNullException>(() => profile.FindMessagePartsForReceiveAppRec(null));
         }
 
         [TestMethod]
@@ -353,11 +361,10 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void RestCpa_FindMessagePartsForSendMessage_ArgumentNull()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(93238).Result;
-            Assert.IsNotNull(profile.FindMessagePartsForSendMessage(null));
+            Assert.Throws<ArgumentNullException>(() => profile.FindMessagePartsForSendMessage(null));
         }
 
         [TestMethod]
@@ -375,11 +382,10 @@ namespace Helsenorge.Registries.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void RestCpa_FindMessagePartsForSendAppRec_ArgumentNull()
         {
             var profile = _registry.FindProtocolForCounterpartyAsync(93238).Result;
-            Assert.IsNotNull(profile.FindMessagePartsForSendAppRec(null));
+            Assert.Throws<ArgumentNullException>(() => profile.FindMessagePartsForSendAppRec(null));
         }
 
         [TestMethod]
