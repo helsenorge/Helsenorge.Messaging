@@ -154,7 +154,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
             var message = CreateMessage();
             RunAndHandleMessagingException(Client.SendAndContinueAsync(message), EventIds.LocalCertificate);
             var errorLog = MockLoggerProvider.Entries.FirstOrDefault(e => e.LogLevel == LogLevel.Error)?.Message;
-            Assert.IsTrue(errorLog.Contains("Certificate error(s): StartDate"));
+            Assert.IsTrue(errorLog?.Contains("Certificate error(s): StartDate"));
         }
 
         [TestMethod]
