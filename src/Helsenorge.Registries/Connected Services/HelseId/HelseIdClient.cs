@@ -11,8 +11,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Helsenorge.Registries.Configuration;
-using IdentityModel;
-using IdentityModel.Client;
+using Duende.IdentityModel;
+using Duende.IdentityModel.Client;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Helsenorge.Registries.HelseId;
