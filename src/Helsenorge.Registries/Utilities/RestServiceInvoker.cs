@@ -12,7 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Helsenorge.Registries.Configuration;
-using IdentityModel.Client;
+using Duende.IdentityModel.Client;
 using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Registries.Utilities;
