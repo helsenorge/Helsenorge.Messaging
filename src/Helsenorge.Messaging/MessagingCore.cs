@@ -1,7 +1,7 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
@@ -11,8 +11,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Versioning;
 using Helsenorge.Messaging.Abstractions;
-using Helsenorge.Messaging.Security;
 using Helsenorge.Messaging.Amqp;
+using Helsenorge.Messaging.Security;
 using Helsenorge.Registries;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -26,6 +26,8 @@ namespace Helsenorge.Messaging
     {
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
+
+        private static readonly Dictionary<string, object> SystemInformation = new();
 
         /// <summary>
         /// Constructor
@@ -213,23 +215,25 @@ namespace Helsenorge.Messaging
 
         private static IDictionary<string, object> GetSystemInformation()
         {
-            var systemInformation = new Dictionary<string, object>();
+            if (SystemInformation.Count > 0) return SystemInformation;
+
             try
             {
                 var assemblyName = Assembly.GetExecutingAssembly().GetName();
-                systemInformation.Add("X-ExecutingAssembly", assemblyName.FullName);
-                systemInformation.Add("X-ExecutingAssemblyVersion", assemblyName.Version?.ToString());
+                SystemInformation.Add("X-ExecutingAssembly", assemblyName.FullName);
+                SystemInformation.Add("X-ExecutingAssemblyVersion", assemblyName.Version?.ToString());
 
-                var targetFramework = Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName;
+                var targetFramework = Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()
+                    ?.FrameworkName;
                 if (!string.IsNullOrWhiteSpace(targetFramework))
-                    systemInformation.Add("X-TargetFramework", targetFramework);
+                    SystemInformation.Add("X-TargetFramework", targetFramework);
             }
             catch
             {
                 // Ignore any errors, we don't want to fail on this step.
             }
 
-            return systemInformation;
+            return SystemInformation;
         }
     }
 }
