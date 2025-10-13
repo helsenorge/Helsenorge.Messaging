@@ -52,7 +52,7 @@ namespace Helsenorge.Registries.Utilities
                 response = await action(channel).ConfigureAwait(false);
 
                 stopwatch.Stop();
-                logger.LogInformation("End-ServiceCall: {OperationName} {Address} ExecutionTime: {ElapsedMilliseconds} ms",
+                logger.LogInformation("End-ServiceCall: {OperationName} {Address} Execution time: {ElapsedMilliseconds} ms",
                     operationName, factory.Endpoint.Address.Uri.AbsoluteUri, stopwatch.ElapsedMilliseconds);
 
                 var communicatonObject = (channel as ICommunicationObject);
@@ -104,7 +104,7 @@ namespace Helsenorge.Registries.Utilities
                 await action(channel).ConfigureAwait(false);
 
                 stopwatch.Stop();
-                logger.LogInformation("End-ServiceCall: {OperationName} {Address} ExecutionTime: {ElapsedMilliseconds} ms",
+                logger.LogInformation("End-ServiceCall: {OperationName} {Address} Execution time: {ElapsedMilliseconds} ms",
                     operationName, factory.Endpoint.Address.Uri.AbsoluteUri, stopwatch.ElapsedMilliseconds);
 
                 var communicatonObject = (channel as ICommunicationObject);

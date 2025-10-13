@@ -56,7 +56,7 @@ internal class RestServiceInvoker
             var result = await response.Content.ReadAsStringAsync();
 
             stopwatch.Stop();
-            _logger.LogInformation("End-ServiceCall: {OperationName} {Address} ExecutionTime: {ElapsedMilliseconds} ms",
+            _logger.LogInformation("End-ServiceCall: {OperationName} {Address} Execution time: {ElapsedMilliseconds} ms",
                 operationName, absoluteUri, stopwatch.ElapsedMilliseconds);
 
             return result;
