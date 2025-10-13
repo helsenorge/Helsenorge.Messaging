@@ -149,7 +149,7 @@ namespace Helsenorge.Messaging.Amqp
             EndReceive = LoggerMessage.Define<QueueType, string, int, int, string, long>(
                 LogLevel.Information,
                 EventIds.ServiceBusReceive,
-                "End-ServiceBusReceive{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} ExecutionTime: {elapsedMilliseconds} ms");
+                "End-ServiceBusReceive{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} Execution time: {elapsedMilliseconds} ms");
 
             StartSend = LoggerMessage.Define<QueueType, string, int, int, string, string>(
                 LogLevel.Information,
@@ -159,12 +159,12 @@ namespace Helsenorge.Messaging.Amqp
             EndSend = LoggerMessage.Define<QueueType, string, int, int, string, long>(
                 LogLevel.Information,
                 EventIds.ServiceBusSend,
-                "End-ServiceBusSend{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} ExecutionTime: {elapsedMilliseconds} ms");
+                "End-ServiceBusSend{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} Execution time: {elapsedMilliseconds} ms");
 
             ResponseTime = LoggerMessage.Define<string, int, int, string, string>(
                LogLevel.Information,
                EventIds.NotificationHandler,
-               "ResponseTime {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} ResponseTime: {ResponseTimeMs} ms");
+               "ResponseTime {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} Execution time: {ResponseTimeMs} ms");
 
             LogTimeout = LoggerMessage.Define<string, string, int>(
                 LogLevel.Error,
