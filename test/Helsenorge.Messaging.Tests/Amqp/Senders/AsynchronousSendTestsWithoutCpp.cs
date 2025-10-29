@@ -46,7 +46,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
 
             RunAndHandleException(Client.SendAndContinueAsync(message));
 
-            Assert.AreEqual(1, MockFactory.OtherParty.Asynchronous.Messages.Count);
+            Assert.HasCount(1, MockFactory.OtherParty.Asynchronous.Messages);
         }
 
         [TestMethod]
@@ -54,9 +54,9 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
         {
             var message = CreateMessageForCommunicationPartyWithoutCpp();
 
-            Assert.ThrowsException<MessagingException>(() => RunAndHandleException(Client.SendAndContinueAsync(message)));
+            Assert.ThrowsExactly<MessagingException>(() => RunAndHandleException(Client.SendAndContinueAsync(message)));
 
-            Assert.AreEqual(0, MockFactory.OtherParty.Asynchronous.Messages.Count);
+            Assert.IsEmpty(MockFactory.OtherParty.Asynchronous.Messages);
         }
 
         private OutgoingMessage CreateApprecMessageForCommunicationPartyWithoutCpp()
@@ -81,7 +81,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
 
             RunAndHandleException(Client.SendAndContinueAsync(message));
 
-            Assert.AreEqual(1, MockFactory.OtherParty.Asynchronous.Messages.Count);
+            Assert.HasCount(1, MockFactory.OtherParty.Asynchronous.Messages);
         }
 
         [TestMethod]
@@ -89,9 +89,9 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
         {
             var message = CreateApprecMessageForCommunicationPartyWithoutCpp();
 
-            Assert.ThrowsException<MessagingException>(() => RunAndHandleException(Client.SendAndContinueAsync(message)));
+            Assert.ThrowsExactly<MessagingException>(() => RunAndHandleException(Client.SendAndContinueAsync(message)));
 
-            Assert.AreEqual(0, MockFactory.OtherParty.Asynchronous.Messages.Count);
+            Assert.IsEmpty(MockFactory.OtherParty.Asynchronous.Messages);
         }
     }
 }

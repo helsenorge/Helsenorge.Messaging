@@ -70,7 +70,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
             // make sure the content is what we expect
             Assert.AreEqual(GenericResponse.ToString(), response.ToString());
             // message should be gone from our sync reply
-            Assert.AreEqual(0, MockFactory.Helsenorge.SynchronousReply.Messages.Count);
+            Assert.IsEmpty(MockFactory.Helsenorge.SynchronousReply.Messages);
         }
 
         [TestMethod]
@@ -99,11 +99,10 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
             // make sure the content is what we expect
             Assert.AreEqual(GenericResponse.ToString(), response.ToString());
             // message should be gone from our sync reply
-            Assert.AreEqual(0, MockFactory.Helsenorge.SynchronousReply.Messages.Count);
+            Assert.IsEmpty(MockFactory.Helsenorge.SynchronousReply.Messages);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(MessagingException))]
         public void Send_Synchronous_ErrorQueue()
         {
             var message = CreateMessage();
@@ -117,14 +116,13 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
             Client.RegisterSynchronousReplyMessageReceivedCallback(m => { throw new XmlSchemaValidationException(); });
 
             //This call will timeout while waiting for the sync reply message
-            var response = RunAndHandleException(Client.SendAndWaitAsync(message));
+            Assert.ThrowsExactly<MessagingException>(() => RunAndHandleException(Client.SendAndWaitAsync(message)));
 
             // message should be moved to the error queue
-            Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+            Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(MessagingException))]
         public void Send_Synchronous_Timeout()
         {
             var message = CreateMessage();
@@ -133,8 +131,9 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
             && l.Message.StartsWith("MUG-000030"));
             Assert.AreEqual(1, logEntry.Count());
 
-            //fake timeout by not posting any messag on the reply queue
-            RunAndHandleMessagingException(sender, EventIds.SynchronousCallTimeout);
+            // Fake timeout by not posting any messag on the reply queue
+            Assert.ThrowsExactly<MessagingException>(() =>
+                RunAndHandleMessagingException(sender, EventIds.SynchronousCallTimeout));
         }
 
         [TestMethod]

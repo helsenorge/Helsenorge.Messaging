@@ -53,19 +53,19 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                 postValidation: () =>
                 {
-                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                    Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                    Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                    Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                     var logEntries = MockLoggerProvider.Entries
                         .Where(a =>
                             a.LogLevel == LogLevel.Warning &&
                             a.Message.Contains("Certificate is missing. MessageFunction:"))
                         .ToList();
-                    Assert.AreEqual(1, logEntries.Count);
+                    Assert.HasCount(1, logEntries);
                 },
                 wait: () => _handledExceptionCalled,
                 received: (m) => 
                 { 
-                    Assert.IsTrue(m.SignatureError == CertificateErrors.Missing);
+                    Assert.AreEqual(CertificateErrors.Missing, m.SignatureError);
                     return Task.CompletedTask;
                 },
                 messageModification: (m) => { });
@@ -98,15 +98,13 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                     Assert.IsFalse(_receivedCalled);
                     Assert.IsTrue(_completedCalled);
                     var error = MockLoggerProvider.FindEntry(EventIds.RemoteCertificate);
-                    Assert.IsTrue(error.Message
-                        .Contains($"{signatureCertificate.Thumbprint}"));
-                    Assert.IsTrue(error.Message
-                        .Contains($"{signatureCertificate.NotBefore}"));
+                    Assert.Contains($"{signatureCertificate.Thumbprint}", error.Message);
+                    Assert.Contains($"{signatureCertificate.NotBefore}", error.Message);
                     var signingException = receiveException as CertificateMessagePayloadException;
                     Assert.IsNotNull(signingException);
                     Assert.IsNotNull(signingException.Payload);
-                    Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
-                    Assert.AreEqual(4, MockFactory.OtherParty.Error.Messages[0].Properties.Count);
+                    Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
+                    Assert.HasCount(4, MockFactory.OtherParty.Error.Messages[0].Properties);
                     Assert.AreEqual("transport:invalid-certificate", MockFactory.OtherParty.Error.Messages[0].Properties["errorCondition"]);
                 },
                 wait: () => _completedCalled,
@@ -133,7 +131,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                     Assert.IsTrue(_startingCalled);
                     Assert.IsTrue(_receivedCalled);
                     Assert.IsTrue(_completedCalled);
-                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+                    Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
                 },
                 wait: () => _completedCalled,
                 received: (m) =>
@@ -154,7 +152,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                     Assert.IsTrue(_startingCalled);
                     Assert.IsTrue(_receivedCalled);
                     Assert.IsTrue(_completedCalled);
-                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+                    Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
                 },
                 wait: () => _completedCalled,
                 received: (m) =>
@@ -172,8 +170,8 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                 postValidation: () =>
                 {
-                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                    Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                    Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                    Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                     CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-field-value", "One or more fields are missing", "Label;");
 
                 },
@@ -187,8 +185,8 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
             postValidation: () =>
             {
-                Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                 CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-field-value", "One or more fields are missing", "toHerId;");
 
             },
@@ -202,9 +200,9 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
             postValidation: () =>
             {
-                Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+                Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
                 // we don't have enough information to know where to send it back
-                Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+                Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
                 var logEntries = MockLoggerProvider.Entries
                 .Where(entry => 
                     entry.EventId == EventIds.MissingField && entry.Message.Contains("FromHerId is missing. No idea where to send the error")
@@ -224,8 +222,8 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
             postValidation: () =>
             {
-                Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                 CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-field-value", "One or more fields are missing", "applicationTimeStamp;");
             },
             wait: () => _handledExceptionCalled,
@@ -238,8 +236,8 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
             postValidation: () =>
             {
-                Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                 CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-field-value", "One or more fields are missing", "ContentType;");
             },
             wait: () => _handledExceptionCalled,
@@ -252,12 +250,12 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
             postValidation: () =>
             {
-                Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                 CheckError(MockFactory.OtherParty.Error.Messages, "transport:not-well-formed-xml", "XML-Error", string.Empty);
                 var logEntry = MockLoggerProvider.FindEntry(EventIds.NotXml);
                 Assert.IsNotNull(logEntry);
-                Assert.IsTrue(logEntry.LogLevel == LogLevel.Warning);
+                Assert.AreEqual(LogLevel.Warning, logEntry.LogLevel);
             },
             wait: () => _handledExceptionCalled,
             received: (m) => {  throw new XmlSchemaValidationException("XML-Error");},
@@ -269,12 +267,12 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
             postValidation: () =>
             {
-                Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                 CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-field-value", "Mismatch", "Expected;Received;");
                 var logEntry = MockLoggerProvider.FindEntry(EventIds.DataMismatch);
                 Assert.IsNotNull(logEntry);
-                Assert.IsTrue(logEntry.LogLevel == LogLevel.Warning);
+                Assert.AreEqual(LogLevel.Warning, logEntry.LogLevel);
             },
             wait: () => _handledExceptionCalled,
             received: (m) => { throw new ReceivedDataMismatchException("Mismatch") { ExpectedValue = "Expected", ReceivedValue = "Received"}; },
@@ -286,12 +284,12 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
             postValidation: () =>
             {
-                Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                 CheckError(MockFactory.OtherParty.Error.Messages, "transport:internal-error", "NotifySender", string.Empty);
                 var logEntry = MockLoggerProvider.FindEntry(EventIds.ApplicationReported);
                 Assert.IsNotNull(logEntry);
-                Assert.IsTrue(logEntry.LogLevel == LogLevel.Warning);
+                Assert.AreEqual(LogLevel.Warning, logEntry.LogLevel);
             },
             wait: () => _handledExceptionCalled,
             received: (m) => { throw new NotifySenderException("NotifySender"); },
@@ -303,8 +301,8 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
             postValidation: () =>
             {
-                Assert.AreEqual(1, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+                Assert.HasCount(1, MockFactory.Helsenorge.Asynchronous.Messages);
+                Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
             },
             wait: () => _unhandledExceptionCalled,
             received: (m) => { throw new ArgumentOutOfRangeException(); },
@@ -319,14 +317,14 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                postValidation: () =>
                {
-                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                    Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+                    Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                    Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
                     Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificateStartDate));
                },
                wait: () => _completedCalled,
                received: (m) => 
                { 
-                   Assert.IsTrue(m.DecryptionError != CertificateErrors.None);
+                   Assert.AreNotEqual(CertificateErrors.None, m.DecryptionError);
                    return Task.CompletedTask;
                },
                messageModification: (m) => { });
@@ -340,14 +338,14 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                postValidation: () =>
                {
-                   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                   Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+                   Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                   Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificateEndDate));
                },
                wait: () => _completedCalled,
                received: (m) => 
                { 
-                   Assert.IsTrue(m.DecryptionError != CertificateErrors.None);
+                   Assert.AreNotEqual(CertificateErrors.None, m.DecryptionError);
                    return Task.CompletedTask;
                },
                messageModification: (m) => { });
@@ -361,14 +359,14 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                postValidation: () =>
                {
-                   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                   Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+                   Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                   Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificateUsage));
                },
                wait: () => _completedCalled,
                received: (m) => 
                { 
-                   Assert.IsTrue(m.DecryptionError != CertificateErrors.None);
+                   Assert.AreNotEqual(CertificateErrors.None, m.DecryptionError);
                    return Task.CompletedTask;
                },
                messageModification: (m) => { });
@@ -382,14 +380,14 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                postValidation: () =>
                {
-                   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                   Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+                   Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                   Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificateRevocation));
                },
                wait: () => _completedCalled,
                received: (m) => 
                { 
-                   Assert.IsTrue(m.DecryptionError != CertificateErrors.None);
+                   Assert.AreNotEqual(CertificateErrors.None, m.DecryptionError);
                    return Task.CompletedTask;
                },
                messageModification: (m) => { });
@@ -403,14 +401,14 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                postValidation: () =>
                {
-                   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                   Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+                   Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                   Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificateRevocation));
                },
                wait: () => _completedCalled,
                received: (m) => 
                { 
-                   Assert.IsTrue(m.DecryptionError != CertificateErrors.None);
+                   Assert.AreNotEqual(CertificateErrors.None, m.DecryptionError);
                    return Task.CompletedTask;
                },
                messageModification: (m) => { });
@@ -427,14 +425,14 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                postValidation: () =>
                {
-                   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                   Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+                   Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                   Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificate));
                },
                wait: () => _completedCalled,
                received: (m) => 
                { 
-                   Assert.IsTrue(m.DecryptionError != CertificateErrors.None);
+                   Assert.AreNotEqual(CertificateErrors.None, m.DecryptionError);
                    return Task.CompletedTask;
                },
                messageModification: (m) => { });
@@ -449,15 +447,15 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                postValidation: () =>
                {
-                   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                   Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                   Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                   Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateStartDate));
                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:expired-certificate", "Invalid start date", string.Empty);
                },
                wait: () => _handledExceptionCalled,
                received: (m) => 
                { 
-                   Assert.IsTrue(m.SignatureError != CertificateErrors.None);
+                   Assert.AreNotEqual(CertificateErrors.None, m.SignatureError);
                    return Task.CompletedTask;
                },
                messageModification: (m) => { });
@@ -471,15 +469,15 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                postValidation: () =>
                {
-                   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                   Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                   Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                   Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateEndDate));
                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:expired-certificate", "Invalid end date", string.Empty);
                },
                wait: () => _handledExceptionCalled,
                received: (m) => 
                { 
-                   Assert.IsTrue(m.SignatureError != CertificateErrors.None);
+                   Assert.AreNotEqual(CertificateErrors.None, m.SignatureError);
                    return Task.CompletedTask;
                },
                messageModification: (m) => { });
@@ -493,15 +491,15 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                postValidation: () =>
                {
-                   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                   Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                   Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                   Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateUsage));
                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-certificate", "Invalid usage", string.Empty);
                },
                wait: () => _handledExceptionCalled,
                received: (m) => 
                { 
-                   Assert.IsTrue(m.SignatureError != CertificateErrors.None);
+                   Assert.AreNotEqual(CertificateErrors.None, m.SignatureError);
                    return Task.CompletedTask;
                },
                messageModification: (m) => { });
@@ -515,15 +513,15 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                postValidation: () =>
                {
-                   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                   Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                   Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                   Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateRevocation));
                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:revoked-certificate", "Certificate has been revoked", string.Empty);
                },
                wait: () => _handledExceptionCalled,
                received: (m) => 
                { 
-                   Assert.IsTrue(m.SignatureError != CertificateErrors.None);
+                   Assert.AreNotEqual(CertificateErrors.None, m.SignatureError);
                    return Task.CompletedTask;
                },
                messageModification: (m) => { });
@@ -537,15 +535,15 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                   postValidation: () =>
                   {
-                      Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                      Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                      Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                      Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                       Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateRevocation));
                       CheckError(MockFactory.OtherParty.Error.Messages, "transport:revoked-certificate", "Unable to determine revocation status", string.Empty);
                   },
                   wait: () => _handledExceptionCalled,
                   received: (m) => 
                   { 
-                      Assert.IsTrue(m.SignatureError != CertificateErrors.None);
+                      Assert.AreNotEqual(CertificateErrors.None, m.SignatureError);
                       return Task.CompletedTask;
                   },
                   messageModification: (m) => { });
@@ -560,14 +558,14 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                 postValidation: () =>
                 {
-                    Assert.AreEqual(1, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                    Assert.AreEqual(0, MockFactory.OtherParty.Error.Messages.Count);
+                    Assert.HasCount(1, MockFactory.Helsenorge.Asynchronous.Messages);
+                    Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
                     Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.UnknownError));
                 },
                 wait: () => _unhandledExceptionCalled,
                 received: (m) =>
                 {
-                    Assert.IsTrue(m.SignatureError != CertificateErrors.None);
+                    Assert.AreNotEqual(CertificateErrors.None, m.SignatureError);
                     return Task.CompletedTask;
                 },
                 messageModification: (m) => { });
@@ -585,15 +583,15 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                postValidation: () =>
                {
-                   Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                   Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                   Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                   Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                    Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificate));
                    CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-certificate", "More than one error with certificate", string.Empty);
                },
                wait: () => _handledExceptionCalled,
                received: (m) => 
                { 
-                   Assert.IsTrue(m.SignatureError != CertificateErrors.None);
+                   Assert.AreNotEqual(CertificateErrors.None, m.SignatureError);
                    return Task.CompletedTask;
                },
                messageModification: (m) => { });
@@ -619,7 +617,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                     Assert.IsTrue(_startingCalled);
                     Assert.IsTrue(_receivedCalled);
                     Assert.IsTrue(_completedCalled);
-                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+                    Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
                 },
                 wait: () => _completedCalled,
                 received: (m) =>
@@ -642,8 +640,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             await RunAsynchronousReceive(
                 postValidation: () =>
                 {
-                    
-                    Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                    Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                     CheckError(MockFactory.OtherParty.Error.Messages, "transport:invalid-certificate", "Invalid certificate", string.Empty);
                 },
                 wait: () => _handledExceptionCalled,
@@ -662,8 +659,8 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                 postValidation: () =>  
                 {
                     Assert.IsTrue(_startingCalled);
-                    Assert.AreEqual(0, MockFactory.Helsenorge.Asynchronous.Messages.Count);
-                    Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                    Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                    Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                     CheckError(MockFactory.OtherParty.Error.Messages, "transport:not-well-formed-xml", "Could not deserialize payload", string.Empty);
                 },  
             wait: () => _handledExceptionCalled,  

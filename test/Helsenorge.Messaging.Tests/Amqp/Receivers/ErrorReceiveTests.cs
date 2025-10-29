@@ -40,7 +40,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                 postValidation: () =>
                 {
                     Assert.IsTrue(_errorReceiveCalled);
-                    Assert.AreEqual(0, MockFactory.Helsenorge.Error.Messages.Count);
+                    Assert.IsEmpty(MockFactory.Helsenorge.Error.Messages);
                     Assert.IsTrue(_errorStartingCalled, "Error message received starting callback not called");
                     Assert.IsNull(MockLoggerProvider.Entries.FirstOrDefault(e => e.Message.Contains("CPA_FindAgreementForCounterpartyAsync_0_93252")));
                     Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.ExternalReportedError));
@@ -63,7 +63,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                 postValidation: () =>
                 {
                     Assert.IsTrue(_errorReceiveCalled);
-                    Assert.AreEqual(0, MockFactory.Helsenorge.Error.Messages.Count);
+                    Assert.IsEmpty(MockFactory.Helsenorge.Error.Messages);
                     Assert.IsTrue(_errorStartingCalled, "Error message received starting callback not called");
                     Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.ExternalReportedError));
                 },

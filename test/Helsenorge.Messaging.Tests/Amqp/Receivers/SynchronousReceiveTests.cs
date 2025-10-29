@@ -47,8 +47,8 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                     Assert.IsTrue(_startingCalled);
                     Assert.IsTrue(_receivedCalled);
                     Assert.IsTrue(_completedCalled);
-                    Assert.AreEqual(0, MockFactory.Helsenorge.Synchronous.Messages.Count);
-                    Assert.AreEqual(1, MockFactory.OtherParty.SynchronousReply.Messages.Count);
+                    Assert.IsEmpty(MockFactory.Helsenorge.Synchronous.Messages);
+                    Assert.HasCount(1, MockFactory.OtherParty.SynchronousReply.Messages);
                 },
                 wait: () => _completedCalled,
                 received: (m) =>
@@ -65,13 +65,13 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                 {
                     Assert.IsTrue(_startingCalled);
                     Assert.IsTrue(_handledExceptionCalled);
-                    Assert.AreEqual(0, MockFactory.Helsenorge.Synchronous.Messages.Count);
-                    Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                    Assert.IsEmpty(MockFactory.Helsenorge.Synchronous.Messages);
+                    Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                     Assert.AreEqual("transport:invalid-field-value", MockFactory.OtherParty.Error.Messages.First().Properties["errorCondition"]);
                     Assert.AreEqual("Invalid value in field: 'ReplyTo'", MockFactory.OtherParty.Error.Messages.First().Properties["errorDescription"]);
                     var logEntry = MockLoggerProvider.Entries.Where(l => l.LogLevel == LogLevel.Critical);
                     Assert.AreEqual(1, logEntry.Count());
-                    Assert.IsTrue(logEntry.First().Message == "An error occurred during Send operation.");
+                    Assert.AreEqual("An error occurred during Send operation.", logEntry.First().Message);
                 },
                 wait: () => _handledExceptionCalled,
                 received: (m) =>
@@ -89,8 +89,8 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                 {
                     Assert.IsTrue(_startingCalled);
                     Assert.IsTrue(_handledExceptionCalled);
-                    Assert.AreEqual(0, MockFactory.Helsenorge.Synchronous.Messages.Count);
-                    Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                    Assert.IsEmpty(MockFactory.Helsenorge.Synchronous.Messages);
+                    Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                     Assert.AreEqual("abuse:spoofing-attack", MockFactory.OtherParty.Error.Messages.First().Properties["errorCondition"]);
                 },
                 wait: () => _handledExceptionCalled,
@@ -106,8 +106,8 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                 {
                     Assert.IsTrue(_startingCalled);
                     Assert.IsTrue(_handledExceptionCalled);
-                    Assert.AreEqual(0, MockFactory.Helsenorge.Synchronous.Messages.Count);
-                    Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+                    Assert.IsEmpty(MockFactory.Helsenorge.Synchronous.Messages);
+                    Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
                     Assert.AreEqual("transport:unsupported-message", MockFactory.OtherParty.Error.Messages.First().Properties["errorCondition"]);
                 },
                 wait: () => _handledExceptionCalled,
