@@ -40,7 +40,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
             message.ToHerId = MockFactory.OtherHerId;
             RunAndHandleException(Client.SendAndContinueAsync(message));
 
-            Assert.AreEqual(1, MockFactory.OtherParty.Asynchronous.Messages.Count);
+            Assert.HasCount(1, MockFactory.OtherParty.Asynchronous.Messages);
             // message includes CPA id
             Assert.IsNotNull(MockFactory.OtherParty.Asynchronous.Messages[0].CpaId);
         }
@@ -51,7 +51,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
             message.ToHerId = MockFactory.HerIdWithOnlyCpp;
             RunAndHandleException(Client.SendAndContinueAsync(message));
 
-            Assert.AreEqual(1, MockFactory.OtherPartyWithOnlyCpp.Asynchronous.Messages.Count);
+            Assert.HasCount(1, MockFactory.OtherPartyWithOnlyCpp.Asynchronous.Messages);
             // no CPA id specified
             Assert.IsNull(MockFactory.OtherPartyWithOnlyCpp.Asynchronous.Messages[0].CpaId);
         }
@@ -64,7 +64,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
             message.MessageFunction = "APPREC";
             RunAndHandleException(Client.SendAndContinueAsync(message));
 
-            Assert.AreEqual(1, MockFactory.OtherParty.Asynchronous.Messages.Count);
+            Assert.HasCount(1, MockFactory.OtherParty.Asynchronous.Messages);
         }
 
         [TestMethod]
@@ -176,7 +176,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
             }
             catch (Exception ex)
             {
-                Assert.IsTrue(ex.Message.Contains("Certificate error(s): EndDate, Revoked."));
+                Assert.Contains("Certificate error(s): EndDate, Revoked.", ex.Message);
             }
             
         }

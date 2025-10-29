@@ -7,5 +7,7 @@
  */
 
 using System.Reflection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+[assembly: DoNotParallelize]
 [assembly: AssemblyKeyFile("../../tools/key.snk")]

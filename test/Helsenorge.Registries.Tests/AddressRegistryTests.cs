@@ -110,20 +110,11 @@ namespace Helsenorge.Registries.Tests
             Assert.IsNull(result);
         }
         [TestMethod]
-        //[ExpectedException(typeof(RegistriesException))]
-        public void Read_CommunicationDetails_Exception()
+        public async Task Read_CommunicationDetails_Exception()
         {
-            var task = _registry.FindCommunicationPartyDetailsAsync(-4);
-
-            try
-            {
-                Task.WaitAll(task);
-            }
-            catch (AggregateException ex )
-            {
-                var x = ex.InnerException;
-            }
+            await Assert.ThrowsExactlyAsync<RegistriesException>(async () => await _registry.FindCommunicationPartyDetailsAsync(-4));
         }
+
         [TestMethod]
         public void Constructor_Settings_Null()
         {

@@ -45,7 +45,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Senders
             message.ToHerId = MockFactory.OtherHerId;
             RunAndHandleException(Client.SendWithoutWaitingAsync(message));
 
-            Assert.AreEqual(1, MockFactory.OtherParty.Synchronous.Messages.Count);
+            Assert.HasCount(1, MockFactory.OtherParty.Synchronous.Messages);
             // message includes CPA id
             Assert.IsNotNull(MockFactory.OtherParty.Synchronous.Messages[0].CpaId);
         }

@@ -138,7 +138,7 @@ namespace Helsenorge.Messaging.Tests
         {
             await _cache.CreateAsync(Logger, "path");
 
-            Assert.AreEqual(1, _cache.Entries.Count, "EntryCount");
+            Assert.HasCount(1, _cache.Entries, "EntryCount");
             var entry = _cache.Entries.First().Value;
 
             Assert.AreEqual(1, entry.ActiveCount, "ActiveCount");
@@ -154,7 +154,7 @@ namespace Helsenorge.Messaging.Tests
             var path = "path";
             await _cache.CreateAsync(Logger, path);
 
-            Assert.AreEqual(1, _cache.Entries.Count, "EntryCount");
+            Assert.HasCount(1, _cache.Entries, "EntryCount");
             var entry = _cache.Entries.First().Value;
 
             Assert.AreEqual(1, entry.ActiveCount, "ActiveCount");
@@ -176,7 +176,7 @@ namespace Helsenorge.Messaging.Tests
             {
                 await _cache.CreateAsync(Logger, "path");
             }
-            Assert.AreEqual(1, _cache.Entries.Count, "EntryCount");
+            Assert.HasCount(1, _cache.Entries, "EntryCount");
             var entry = _cache.Entries.First().Value;
 
             Assert.AreEqual(100, entry.ActiveCount, "ActiveCount");
@@ -186,7 +186,7 @@ namespace Helsenorge.Messaging.Tests
             {
                 await _cache.ReleaseAsync(Logger, "path");
             }
-            Assert.AreEqual(1, _cache.Entries.Count, "EntryCount");
+            Assert.HasCount(1, _cache.Entries, "EntryCount");
             entry = _cache.Entries.First().Value;
 
             Assert.AreEqual(0, entry.ActiveCount, "ActiveCount");
@@ -203,7 +203,7 @@ namespace Helsenorge.Messaging.Tests
             {
                 await _cache.CreateAsync(Logger, "path" + i.ToString());
             }
-            Assert.AreEqual(5, _cache.Entries.Count, "EntryCount");
+            Assert.HasCount(5, _cache.Entries, "EntryCount");
 
             for (int i = 0; i < _cache.Capacity; i++)
             {
@@ -386,7 +386,7 @@ namespace Helsenorge.Messaging.Tests
 
             // new create commands are ignored in shutdown mode
             await _cache.CreateAsync(Logger, "path6");
-            Assert.AreEqual(5, _cache.Entries.Count, "EntryCount");
+            Assert.HasCount(5, _cache.Entries, "EntryCount");
 
             foreach (var key in _cache.Entries.Keys)
             {

@@ -170,7 +170,7 @@ namespace Helsenorge.Registries.Tests
 
             Assert.AreEqual(93252, profile.HerId);
             Assert.AreEqual("Testlege Testlege", profile.Name);
-            Assert.AreEqual(14, profile.Roles.Count);
+            Assert.HasCount(14, profile.Roles);
 
             Assert.IsNotNull(profile.SignatureCertificate);
             Assert.IsNotNull(profile.EncryptionCertificate);
@@ -186,7 +186,7 @@ namespace Helsenorge.Registries.Tests
             Assert.AreEqual(new Guid("{9333f3de-e85c-4c26-9066-6800055b1b8e}"), profile.CpaId);
             Assert.IsNotNull(profile.EncryptionCertificate);
             Assert.IsNotNull(profile.SignatureCertificate);
-            Assert.AreEqual(profile.Roles.Count, 14);
+            Assert.HasCount(14, profile.Roles);
         }
 
         [TestMethod]
@@ -385,8 +385,8 @@ namespace Helsenorge.Registries.Tests
 
             Assert.AreEqual("Digitale innbyggertjenester", profile.Name);
             Assert.AreEqual(8093240, profile.HerId);
-            Assert.AreEqual(32, profile.Roles.Count);
-            Assert.AreEqual(4, profile.Roles[0].SendMessages.Count);
+            Assert.HasCount(32, profile.Roles);
+            Assert.HasCount(4, profile.Roles[0].SendMessages);
             Assert.AreEqual(5, profile.Roles[0].SendMessages[0].Parts.Count());
             Assert.AreEqual("MsgHead-v1_2.xsd", profile.Roles[0].SendMessages[0].Parts.ToList()[0].XmlSchema);
 
@@ -408,8 +408,8 @@ namespace Helsenorge.Registries.Tests
 
             Assert.AreEqual("Digitale innbyggertjenester", profile.Name);
             Assert.AreEqual(8093240, profile.HerId);
-            Assert.AreEqual(32, profile.Roles.Count);
-            Assert.AreEqual(4, profile.Roles[0].SendMessages.Count);
+            Assert.HasCount(32, profile.Roles);
+            Assert.HasCount(4, profile.Roles[0].SendMessages);
             Assert.AreEqual(5, profile.Roles[0].SendMessages[0].Parts.Count());
             Assert.AreEqual("MsgHead-v1_2.xsd", profile.Roles[0].SendMessages[0].Parts.ToList()[0].XmlSchema);
 
@@ -443,7 +443,7 @@ namespace Helsenorge.Registries.Tests
             {
                 var encrypted = rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA1);
                 Assert.IsNotNull(encrypted);
-                Assert.IsTrue(encrypted.Length > 0);
+                Assert.IsNotEmpty(encrypted);
             }
         }
     }

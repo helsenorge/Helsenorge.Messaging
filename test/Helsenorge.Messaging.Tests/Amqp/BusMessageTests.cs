@@ -192,7 +192,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
                 Assert.IsNotNull(((Message)clonedMessage.OriginalObject).Body);
                 Assert.IsInstanceOfType(((Message)clonedMessage.OriginalObject).BodySection, typeof(Data));
                 Data dataClone = (Data)((Message)clonedMessage.OriginalObject).BodySection;
-                Assert.AreEqual(data.Length, dataClone.Binary.Length);
+                Assert.HasCount(data.Length, dataClone.Binary);
                 Assert.AreEqual(data[0], dataClone.Binary[0]);
                 Assert.AreEqual(data[1], dataClone.Binary[1]);
                 Assert.AreEqual(data[2], dataClone.Binary[2]);
@@ -213,7 +213,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
             data.Position = 0;
             byte[] dataBinary = data.ToArray();
 
-            Assert.AreEqual(dataBinary.Length, dataClone.Binary.Length);
+            Assert.HasCount(dataBinary.Length, dataClone.Binary);
             Assert.AreEqual(dataBinary[0], dataClone.Binary[0]);
             Assert.AreEqual(dataBinary[1], dataClone.Binary[1]);
             Assert.AreEqual(dataBinary[2], dataClone.Binary[2]);
