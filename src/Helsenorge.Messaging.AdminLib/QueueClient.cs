@@ -22,9 +22,7 @@ public class QueueClient : IDisposable, IAsyncDisposable
     private readonly ILogger _logger;
     private IConnectionFactory _connectionFactory;
     private IConnection _connection;
-    private IModel _channel;
-
-    private const ushort NoRoute = 312;
+    private IChannel _channel;
 
     private const string FirstDeathExchangeHeaderName = "x-first-death-exchange";
     private const string FirstDeathQueueHeaderName = "x-first-death-queue";
@@ -50,14 +48,23 @@ public class QueueClient : IDisposable, IAsyncDisposable
         }
     }
 
-    private IConnection Connection
+    private async Task<IConnection> GetConnectionAsync()
     {
-        get { return _connection ??= ConnectionFactory.CreateConnection(); }
+        if (_connection == null)
+        {
+            _connection = await ConnectionFactory.CreateConnectionAsync();
+        }
+        return _connection;
     }
 
-    private IModel Channel
+    private async Task<IChannel> GetChannelAsync()
     {
-        get { return _channel ??= Connection.CreateModel(); }
+        if (_channel == null)
+        {
+            var connection = await GetConnectionAsync();
+            _channel = await connection.CreateChannelAsync();
+        }
+        return _channel;
     }
 
     public void Dispose()
@@ -78,8 +85,7 @@ public class QueueClient : IDisposable, IAsyncDisposable
     /// <param name="exchange">The exchange to publish the message to.</param>
     /// <param name="destinationQueue">The destination queue we want to message to be routed to.</param>
     /// <param name="mandatory">If this flag is true we fail if no ACK is received after message is published.</param>
-    /// <param name="waitForConfirm">If this flag is true we wait for ACK to be confirmed before we ACK or NACK the delivery tag of the BasicGetResult.</param>
-    private void PublishMessageAndAckIfSuccessful(BasicGetResult message, string exchange, string destinationQueue, bool mandatory = true, bool waitForConfirm = true)
+    private async Task PublishMessageAndAckIfSuccessfulAsync(BasicGetResult message, string exchange, string destinationQueue, bool mandatory = true)
     {
         if (message == null)
             throw new ArgumentNullException(nameof(message));
@@ -90,39 +96,32 @@ public class QueueClient : IDisposable, IAsyncDisposable
 
         _logger.LogInformation($"Start-PublishMessageAndAckIfSuccessful - Starting publish process of message with MessageId: {message.BasicProperties.MessageId} to DestinationQueue: '{destinationQueue}'.");
 
-        var confirmed = true;
-        if (waitForConfirm)
-        {
-            // Enable publisher acknowledgements.
-            Channel.ConfirmSelect();
-            Channel.BasicReturn += (_, args) =>
-            {
-                if (args.ReplyCode == NoRoute)
-                {
-                    confirmed = false;
-                    _logger.LogError($"PublishMessageAndAckIfSuccessful-BasicReturn - Message is with MessageId: '{args.BasicProperties.MessageId}' un-routable. Exchange: '{args.Exchange}', DestinationQueue: '{args.RoutingKey}', ReplyCode: '{args.ReplyCode}', ReplyText: '{args.ReplyText}'");
-                }
-            };
-        }
+        var channel = await GetChannelAsync();
 
         // Publish message to destination queue.
-        Channel.BasicPublish(exchange, destinationQueue, mandatory, message.BasicProperties, message.Body);
-        if (waitForConfirm && Channel.WaitForConfirms(TimeSpan.FromSeconds(60)) && confirmed)
+        var properties = new BasicProperties
         {
-            // The message was confirmed published to the exchange so positively acknowledge that the message has been processed.
-            Channel.BasicAck(message.DeliveryTag, multiple: false);
+            MessageId = message.BasicProperties.MessageId,
+            CorrelationId = message.BasicProperties.CorrelationId,
+            ContentType = message.BasicProperties.ContentType,
+            ContentEncoding = message.BasicProperties.ContentEncoding,
+            DeliveryMode = message.BasicProperties.DeliveryMode,
+            Priority = message.BasicProperties.Priority,
+            Timestamp = message.BasicProperties.Timestamp,
+            Type = message.BasicProperties.Type,
+            UserId = message.BasicProperties.UserId,
+            AppId = message.BasicProperties.AppId,
+            ClusterId = message.BasicProperties.ClusterId,
+            ReplyTo = message.BasicProperties.ReplyTo,
+            Expiration = message.BasicProperties.Expiration,
+            Headers = message.BasicProperties.Headers
+        };
 
-            _logger.LogInformation($"PublishMessageAndAckIfSuccessful - Message with MessageId: '{message.BasicProperties.MessageId}' was ACKed because publish to DestinationQueue: '{destinationQueue}' was successful.");
-        }
-        else
-        {
-            // The message was not confirmed published to the exchange so negatively acknowledge that the message should be re-queued.
-            Channel.BasicNack(message.DeliveryTag, multiple: false, requeue: true);
+        // Publish and ACK in sequence. If publish fails, the exception propagates and the message remains in the source queue.
+        await channel.BasicPublishAsync(exchange, destinationQueue, mandatory, properties, message.Body);
+        await channel.BasicAckAsync(message.DeliveryTag, multiple: false);
 
-            _logger.LogInformation($"PublishMessageAndAckIfSuccessful - Message with MessageId: '{message.BasicProperties.MessageId}' was NACKed because publish to DestinationQueue: '{destinationQueue}' was unsuccessful.");
-        }
-
-        _logger.LogInformation($"End-PublishMessageAndAckIfSuccessful - Message with MessageId: '{message.BasicProperties.MessageId}' and DeliveryTag '{message.DeliveryTag}' was published to DestinationQueue: '{destinationQueue}'.");
+        _logger.LogInformation($"End-PublishMessageAndAckIfSuccessful - Message with MessageId: '{message.BasicProperties.MessageId}' and DeliveryTag '{message.DeliveryTag}' was published to DestinationQueue: '{destinationQueue}' and ACKed.");
     }
 
     /// <summary>
@@ -131,10 +130,10 @@ public class QueueClient : IDisposable, IAsyncDisposable
     /// <param name="herId">The HER-id of the queue.</param>
     /// <param name="queueType">The type of queue.</param>
     /// <returns>The number of messages currently on the queue.</returns>
-    public uint GetMessageCount(int herId, QueueType queueType)
+    public Task<uint> GetMessageCountAsync(int herId, QueueType queueType)
     {
         var queue = QueueUtilities.ConstructQueueName(herId, queueType);
-        return GetMessageCount(queue);
+        return GetMessageCountAsync(queue);
     }
 
     /// <summary>
@@ -142,9 +141,10 @@ public class QueueClient : IDisposable, IAsyncDisposable
     /// </summary>
     /// <param name="queue">The name of the queue.</param>
     /// <returns>The number of messages currently on the queue.</returns>
-    public uint GetMessageCount(string queue)
+    public async Task<uint> GetMessageCountAsync(string queue)
     {
-        return Channel.MessageCount(queue);
+        var channel = await GetChannelAsync();
+        return await channel.MessageCountAsync(queue);
     }
 
     /// <summary>
@@ -152,7 +152,7 @@ public class QueueClient : IDisposable, IAsyncDisposable
     /// </summary>
     /// <param name="herId">The HER-id of dead letter and source queue.</param>
     /// <param name="numberOfMessagesToMove">The number of message to move, -1 means move all messages</param>
-    public void RepublishMessageFromDeadLetterToOriginQueue(int herId, int numberOfMessagesToMove = -1)
+    public async Task RepublishMessageFromDeadLetterToOriginQueueAsync(int herId, int numberOfMessagesToMove = -1)
     {
         if (herId <= 0)
             throw new ArgumentOutOfRangeException(nameof(herId), herId, "Argument must be a value greater than zero.");
@@ -162,20 +162,21 @@ public class QueueClient : IDisposable, IAsyncDisposable
             return;
 
         var sourceQueue = QueueUtilities.ConstructQueueName(herId, QueueType.DeadLetter);
+        var channel = await GetChannelAsync();
 
         var messageCount = 0;
-        var result = Channel.BasicGet(sourceQueue, autoAck: false);
+        var result = await channel.BasicGetAsync(sourceQueue, autoAck: false);
         while (result != null)
         {
             var exchange = QueueUtilities.GetByteHeaderAsString(result.BasicProperties.Headers, FirstDeathExchangeHeaderName);
             var destinationQueue = QueueUtilities.GetByteHeaderAsString(result.BasicProperties.Headers, FirstDeathQueueHeaderName);
 
-            PublishMessageAndAckIfSuccessful(result, exchange, destinationQueue);
+            await PublishMessageAndAckIfSuccessfulAsync(result, exchange, destinationQueue);
 
             messageCount++;
             if (numberOfMessagesToMove < 0 || numberOfMessagesToMove > messageCount)
             {
-                result = Channel.BasicGet(sourceQueue, autoAck: false);
+                result = await channel.BasicGetAsync(sourceQueue, autoAck: false);
             }
             else
             {
@@ -191,7 +192,7 @@ public class QueueClient : IDisposable, IAsyncDisposable
     /// <param name="herId">The HER-id of dead letter and source queue.</param>
     /// <param name="queueType">The queue type we want to move the dead lettered messages to.</param>
     /// <param name="numberOfMessagesToMove">The number of message to move, -1 means move all messages</param>
-    public void PublishMessagesFromDeadLetterTo(int herId, QueueType queueType = QueueType.Asynchronous, int numberOfMessagesToMove = -1)
+    public Task PublishMessagesFromDeadLetterToAsync(int herId, QueueType queueType = QueueType.Asynchronous, int numberOfMessagesToMove = -1)
     {
         if (herId <= 0)
             throw new ArgumentOutOfRangeException(nameof(herId), herId, "Argument must be a value greater than zero.");
@@ -199,7 +200,7 @@ public class QueueClient : IDisposable, IAsyncDisposable
         var sourceQueue = QueueUtilities.ConstructQueueName(herId, QueueType.DeadLetter);
         var destinationQueue = QueueUtilities.ConstructQueueName(herId, queueType);
 
-        MoveMessages(sourceQueue, destinationQueue, numberOfMessagesToMove);
+        return MoveMessagesAsync(sourceQueue, destinationQueue, numberOfMessagesToMove);
     }
 
     /// <summary>
@@ -208,7 +209,7 @@ public class QueueClient : IDisposable, IAsyncDisposable
     /// <param name="sourceQueue">The source queue messages will be moved from.</param>
     /// <param name="destinationQueue">The destination queue messages will be moved to.</param>
     /// <param name="numberOfMessagesToMove">The number of message to move, -1 means move all messages.</param>
-    public void MoveMessages(string sourceQueue, string destinationQueue, int numberOfMessagesToMove = -1)
+    public async Task MoveMessagesAsync(string sourceQueue, string destinationQueue, int numberOfMessagesToMove = -1)
     {
         if (string.IsNullOrWhiteSpace(sourceQueue))
             throw new ArgumentNullException(nameof(sourceQueue));
@@ -223,16 +224,17 @@ public class QueueClient : IDisposable, IAsyncDisposable
 
         _logger.LogInformation($"Start-MoveMessages - Moving messages from '{sourceQueue}' to '{destinationQueue}'. Number of messages to move {(numberOfMessagesToMove == -1 ? int.MaxValue : numberOfMessagesToMove)}.");
 
+        var channel = await GetChannelAsync();
         var messageCount = 0;
-        var result = Channel.BasicGet(sourceQueue, autoAck: false);
+        var result = await channel.BasicGetAsync(sourceQueue, autoAck: false);
         while (result != null)
         {
-            PublishMessageAndAckIfSuccessful(result, _connectionString.Exchange, destinationQueue);
+            await PublishMessageAndAckIfSuccessfulAsync(result, _connectionString.Exchange, destinationQueue);
 
             messageCount++;
             if (numberOfMessagesToMove < 0 || numberOfMessagesToMove > messageCount)
             {
-                result = Channel.BasicGet(sourceQueue, autoAck: false);
+                result = await channel.BasicGetAsync(sourceQueue, autoAck: false);
             }
             else
             {
@@ -244,15 +246,15 @@ public class QueueClient : IDisposable, IAsyncDisposable
         _logger.LogInformation($"End-MoveMessages - Successfully moved {messageCount} messages from '{sourceQueue}' to '{destinationQueue}'.");
     }
 
-    public void Purge(int herId, QueueType queueType, int numberOfMessagesToPurge = -1)
+    public Task PurgeAsync(int herId, QueueType queueType, int numberOfMessagesToPurge = -1)
     {
         if (herId <= 0)
             throw new ArgumentOutOfRangeException(nameof(herId), herId, "Argument must be a value greater than zero.");
 
-        Purge(QueueUtilities.ConstructQueueName(herId, queueType));
+        return PurgeAsync(QueueUtilities.ConstructQueueName(herId, queueType), numberOfMessagesToPurge);
     }
 
-    public void Purge(string queue, int numberOfMessagesToPurge = -1)
+    public async Task PurgeAsync(string queue, int numberOfMessagesToPurge = -1)
     {
         if (string.IsNullOrEmpty(queue))
             throw new ArgumentNullException(nameof(queue));
@@ -261,16 +263,17 @@ public class QueueClient : IDisposable, IAsyncDisposable
         if (numberOfMessagesToPurge == 0)
             return;
 
+        var channel = await GetChannelAsync();
         var messageCount = 0;
-        var result = Channel.BasicGet(queue, autoAck: false);
+        var result = await channel.BasicGetAsync(queue, autoAck: false);
         while (result != null)
         {
-            Channel.BasicAck(result.DeliveryTag, multiple: false);
+            await channel.BasicAckAsync(result.DeliveryTag, multiple: false);
 
             messageCount++;
             if (numberOfMessagesToPurge < 0 || numberOfMessagesToPurge > messageCount)
             {
-                result = Channel.BasicGet(queue, autoAck: false);
+                result = await channel.BasicGetAsync(queue, autoAck: false);
             }
             else
             {
@@ -280,15 +283,15 @@ public class QueueClient : IDisposable, IAsyncDisposable
         }
     }
 
-    public IEnumerable<MessageMetadata> GetMessageMetadataAndRequeue(int herId, QueueType queueType, int numberOfMessages = -1)
+    public Task<IEnumerable<MessageMetadata>> GetMessageMetadataAndRequeueAsync(int herId, QueueType queueType, int numberOfMessages = -1)
     {
         if (herId <= 0)
             throw new ArgumentOutOfRangeException(nameof(herId), herId, "Argument must be a value greater than zero.");
 
-        return GetMessageMetadataAndRequeue(QueueUtilities.ConstructQueueName(herId, queueType));
+        return GetMessageMetadataAndRequeueAsync(QueueUtilities.ConstructQueueName(herId, queueType), numberOfMessages);
     }
 
-    public IEnumerable<MessageMetadata> GetMessageMetadataAndRequeue(string queue, int numberOfMessages = -1)
+    public async Task<IEnumerable<MessageMetadata>> GetMessageMetadataAndRequeueAsync(string queue, int numberOfMessages = -1)
     {
         if (string.IsNullOrEmpty(queue))
             throw new ArgumentNullException(nameof(queue));
@@ -299,8 +302,9 @@ public class QueueClient : IDisposable, IAsyncDisposable
         if (numberOfMessages == 0)
             return Enumerable.Empty<MessageMetadata>();
 
+        var channel = await GetChannelAsync();
         var messageCount = 0;
-        var result = Channel.BasicGet(queue, autoAck: false);
+        var result = await channel.BasicGetAsync(queue, autoAck: false);
         while (result != null)
         {
             messages.Add(new MessageMetadata
@@ -318,7 +322,7 @@ public class QueueClient : IDisposable, IAsyncDisposable
             messageCount++;
             if (numberOfMessages < 0 || numberOfMessages > messageCount)
             {
-                result = Channel.BasicGet(queue, autoAck: false);
+                result = await channel.BasicGetAsync(queue, autoAck: false);
             }
             else
             {
@@ -329,7 +333,7 @@ public class QueueClient : IDisposable, IAsyncDisposable
 
         // Re-queue messages.
         foreach (var message in messages)
-            Channel.BasicReject(message.DeliveryTag, requeue: true);
+            await channel.BasicRejectAsync(message.DeliveryTag, requeue: true);
 
         return messages;
     }
@@ -339,7 +343,7 @@ public class QueueClient : IDisposable, IAsyncDisposable
     /// </summary>
     /// <param name="herId">The HER-id of dead letter and source queue.</param>
     /// <param name="messageId">A list of the Message Ids to republish.</param>
-    public void RepublishMessageFromDeadLetterToOriginQueue(int herId, params string[] messageId)
+    public async Task RepublishMessageFromDeadLetterToOriginQueueAsync(int herId, params string[] messageId)
     {
         if (herId <= 0)
             throw new ArgumentOutOfRangeException(nameof(herId), herId, "Argument must be a value greater than zero.");
@@ -347,18 +351,19 @@ public class QueueClient : IDisposable, IAsyncDisposable
             throw new ArgumentException("At least one messageId must be specified.", nameof(messageId));
 
         var sourceQueue = QueueUtilities.ConstructQueueName(herId, QueueType.DeadLetter);
+        var channel = await GetChannelAsync();
 
         var delieryTagsToRequeue = new List<ulong>();
 
         var messageCount = 0;
-        var result = Channel.BasicGet(sourceQueue, autoAck: false);
+        var result = await channel.BasicGetAsync(sourceQueue, autoAck: false);
         while (result != null)
         {
             var exchange = QueueUtilities.GetByteHeaderAsString(result.BasicProperties.Headers, FirstDeathExchangeHeaderName);
             var destinationQueue = QueueUtilities.GetByteHeaderAsString(result.BasicProperties.Headers, FirstDeathQueueHeaderName);
             if (messageId.Contains(result.BasicProperties.MessageId))
             {
-                PublishMessageAndAckIfSuccessful(result, exchange, destinationQueue);
+                await PublishMessageAndAckIfSuccessfulAsync(result, exchange, destinationQueue);
                 messageCount += 1;
             }
             else
@@ -370,11 +375,11 @@ public class QueueClient : IDisposable, IAsyncDisposable
             if (messageCount == messageId.Length)
                 break;
 
-            result = Channel.BasicGet(sourceQueue, autoAck: false);
+            result = await channel.BasicGetAsync(sourceQueue, autoAck: false);
         }
 
         // Re-queue messages.
         foreach (var deliveryTag in delieryTagsToRequeue)
-            Channel.BasicReject(deliveryTag, requeue: true);
+            await channel.BasicRejectAsync(deliveryTag, requeue: true);
     }
 }

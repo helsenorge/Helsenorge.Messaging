@@ -6,6 +6,7 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using System.Threading.Tasks;
 using Helsenorge.Messaging.AdminLib;
 using Helsenorge.Messaging.Amqp;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,19 +24,19 @@ internal static class Program
 
     private static int SourceHerId = 1234;
 
-    private static void Main()
+    private static async Task Main()
     {
         var connectionString = GetConnectionParameters();
         var logger = CreateLogger();
 
-        using var client = new QueueClient(connectionString, logger);
+        await using var client = new QueueClient(connectionString, logger);
 
-        var msgCountDlBefore = client.GetMessageCount(SourceHerId, QueueType.DeadLetter);
+        var msgCountDlBefore = await client.GetMessageCountAsync(SourceHerId, QueueType.DeadLetter);
         logger.LogDebug($"MessageCount in DeadLetter for HerId '{SourceHerId}' before republish: {msgCountDlBefore}");
 
-        client.RepublishMessageFromDeadLetterToOriginQueue(SourceHerId);
+        await client.RepublishMessageFromDeadLetterToOriginQueueAsync(SourceHerId);
 
-        var msgCountDlAfter= client.GetMessageCount(SourceHerId, QueueType.DeadLetter);
+        var msgCountDlAfter = await client.GetMessageCountAsync(SourceHerId, QueueType.DeadLetter);
         logger.LogDebug($"MessageCount in DeadLetter for HerId '{SourceHerId}' after republish: {msgCountDlAfter}");
     }
 
