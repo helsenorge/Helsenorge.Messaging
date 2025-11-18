@@ -1,18 +1,18 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.Abstractions
 {
@@ -33,14 +33,17 @@ namespace Helsenorge.Messaging.Abstractions
             /// Reference to the entity being cached
             /// </summary>
             public TE Entity { get; set; }
+
             /// <summary>
             /// The time the entry was last accessed
             /// </summary>
             public DateTime LastUsed { get; set; }
+
             /// <summary>
             /// Number of pending users
             /// </summary>
             public int ActiveCount { get; set; }
+
             /// <summary>
             /// Entity Path for this entity
             /// </summary>
@@ -56,14 +59,17 @@ namespace Helsenorge.Messaging.Abstractions
         private readonly ushort _timeToLiveInSeconds;
         private readonly ushort _maxTrimCountPerRecycle;
         private bool _shutdownPending;
+
         /// <summary>
         /// Set to false to not increment <see cref="CacheEntry{TE}.ActiveCount"/>
         /// </summary>
         protected bool _incrementActiveCount = true;
+
         /// <summary>
         /// Gets the maximum number of items the cache can hold
         /// </summary>
         public uint Capacity { get; }
+
         /// <summary>
         /// Gets a list over all existing entries
         /// </summary>
@@ -79,9 +85,11 @@ namespace Helsenorge.Messaging.Abstractions
         protected AmqpEntityCache(string name, uint capacity, ushort timeToLiveInSeconds, ushort maxTrimCountPerRecycle)
         {
             if (timeToLiveInSeconds > MaxTimeToLiveInSeconds)
-                throw new ArgumentOutOfRangeException(nameof(timeToLiveInSeconds), $"Argument cannot exceed {MaxTimeToLiveInSeconds}.");
+                throw new ArgumentOutOfRangeException(nameof(timeToLiveInSeconds),
+                    $"Argument cannot exceed {MaxTimeToLiveInSeconds}.");
             if (maxTrimCountPerRecycle > MaxTrimCountPerRecycle)
-                throw new ArgumentOutOfRangeException(nameof(maxTrimCountPerRecycle), $"Argument cannot exceed {MaxTrimCountPerRecycle}.");
+                throw new ArgumentOutOfRangeException(nameof(maxTrimCountPerRecycle),
+                    $"Argument cannot exceed {MaxTrimCountPerRecycle}.");
 
             _name = name;
             Capacity = capacity;
@@ -114,7 +122,7 @@ namespace Helsenorge.Messaging.Abstractions
 
             logger.LogInformation("Start-TrimEntriesAsync");
             await TrimEntriesAsync(logger).ConfigureAwait(false); // see if we need to trim entries
-            logger.LogInformation($"End-TrimEntriesAsync: Execution time: {stopwatch.ElapsedMilliseconds}");
+            logger.LogInformation($"End-TrimEntriesAsync: Execution time: {stopwatch.ElapsedMilliseconds} ms");
 
             stopwatch.Restart();
             logger.LogInformation("Start-AddCacheEntries");
@@ -153,7 +161,7 @@ namespace Helsenorge.Messaging.Abstractions
                 _semaphore.Release();
             }
 
-            logger.LogInformation($"End-AddCacheEntries: Execution time: {stopwatch.ElapsedMilliseconds}");
+            logger.LogInformation($"End-AddCacheEntries: Execution time: {stopwatch.ElapsedMilliseconds} ms");
             stopwatch.Stop();
             return entry.Entity;
         }
@@ -175,6 +183,7 @@ namespace Helsenorge.Messaging.Abstractions
                 {
                     return;
                 }
+
                 // under normal conditions, we just decrease the active count
                 if (entry.ActiveCount > 0)
                     entry.ActiveCount--;
@@ -196,7 +205,8 @@ namespace Helsenorge.Messaging.Abstractions
                 }
                 catch (Exception ex)
                 {
-                    logger.LogCritical(EventIds.MessagingEntityCacheFailedToCloseEntity, ex, "Failed to close message entity: {Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
+                    logger.LogCritical(EventIds.MessagingEntityCacheFailedToCloseEntity, ex,
+                        "Failed to close message entity: {Path} ActiveCount={ActiveCount}", path, entry.ActiveCount);
                 }
                 finally
                 {
@@ -206,6 +216,7 @@ namespace Helsenorge.Messaging.Abstractions
                 }
             }
         }
+
         /// <summary>
         /// Closes all entities
         /// </summary>
@@ -241,12 +252,12 @@ namespace Helsenorge.Messaging.Abstractions
 
                 // get the oldest n entries
                 var removal = (from v in _entries.Values
-                               orderby v.LastUsed ascending
-                               where v.Entity != null
-                                     && v.Entity.IsClosed == false
-                                     && v.LastUsed < DateTime.UtcNow.AddSeconds(-_timeToLiveInSeconds)
-                                     && v.ActiveCount == 0
-                               select v).Take(count).ToList();
+                    orderby v.LastUsed ascending
+                    where v.Entity != null
+                          && v.Entity.IsClosed == false
+                          && v.LastUsed < DateTime.UtcNow.AddSeconds(-_timeToLiveInSeconds)
+                          && v.ActiveCount == 0
+                    select v).Take(count).ToList();
 
                 foreach (var item in removal)
                 {

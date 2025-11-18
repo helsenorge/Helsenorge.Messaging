@@ -1,7 +1,7 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
@@ -31,22 +31,27 @@ namespace Helsenorge.Messaging.Amqp
         /// Label used when error message contains a SOAP fault
         /// </summary>
         public const string SoapFaultLabel = "AMQP_SOAP_FAULT";
+
         /// <summary>
         /// Header key for FromHerId
         /// </summary>
         public const string FromHerIdHeaderKey = "fromHerId";
+
         /// <summary>
         /// Header key for ToHerId
         /// </summary>
         public const string ToHerIdHeaderKey = "toHerId";
+
         /// <summary>
         /// Header key for CpaId
         /// </summary>
         public const string CpaIdHeaderKey = "cpaId";
+
         /// <summary>
         /// Header key for ApplicationTimestamp
         /// </summary>
         public const string ApplicationTimestampHeaderKey = "applicationTimeStamp";
+
         /// <summary>The header key for EnqueuedTimeUtc</summary>
         public const string EnqueuedTimeUtc = "enqueuedTimeUtc";
 
@@ -101,7 +106,7 @@ namespace Helsenorge.Messaging.Amqp
         internal AmqpCore(MessagingCore core)
         {
             Core = core ?? throw new ArgumentNullException(nameof(core));
-            
+
             var connectionString = core.Settings.AmqpSettings.ConnectionString;
             if (connectionString == null)
             {
@@ -111,7 +116,7 @@ namespace Helsenorge.Messaging.Amqp
             {
                 FactoryPool = new AmqpFactoryPool(core.Settings.AmqpSettings, core.Settings.ApplicationProperties);
             }
-            
+
             SenderPool = new AmqpSenderPool(core.Settings.AmqpSettings, FactoryPool);
             ReceiverPool = new AmqpReceiverPool(core.Settings.AmqpSettings, FactoryPool);
         }
@@ -125,19 +130,23 @@ namespace Helsenorge.Messaging.Amqp
         /// <param name="replyTo">An optional ReplyTo queue that should be used. Only relevant in synchronous messaging</param>
         /// <param name="correlationId">The correlation id to use when sending the message. Only relevant in synchronous messaging</param>
         /// <returns></returns>
-        internal async Task SendAsync(ILogger logger, OutgoingMessage outgoingMessage, QueueType queueType, string replyTo = null, string correlationId = null)
+        internal async Task SendAsync(ILogger logger, OutgoingMessage outgoingMessage, QueueType queueType,
+            string replyTo = null, string correlationId = null)
         {
             if (outgoingMessage == null) throw new ArgumentNullException(nameof(outgoingMessage));
-            if (string.IsNullOrEmpty(outgoingMessage.MessageId)) throw new ArgumentNullException(nameof(outgoingMessage.MessageId));
+            if (string.IsNullOrEmpty(outgoingMessage.MessageId))
+                throw new ArgumentNullException(nameof(outgoingMessage.MessageId));
             if (outgoingMessage.Payload == null) throw new ArgumentNullException(nameof(outgoingMessage.Payload));
 
             // when we are replying to a synchronous message, we need to use the replyto of the original message
             var queueName =
-                (queueType == QueueType.SynchronousReply) ?
-                    replyTo :
-                    await ConstructQueueNameAsync(logger, outgoingMessage.ToHerId, queueType).ConfigureAwait(false);
+                (queueType == QueueType.SynchronousReply)
+                    ? replyTo
+                    : await ConstructQueueNameAsync(logger, outgoingMessage.ToHerId, queueType).ConfigureAwait(false);
 
-            logger.LogStartSend(queueType, outgoingMessage.MessageFunction, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, $"Sending message using host and queue: {HostnameAndPath}/{queueName}", outgoingMessage.Payload);
+            logger.LogStartSend(queueType, outgoingMessage.MessageFunction, outgoingMessage.FromHerId,
+                outgoingMessage.ToHerId, outgoingMessage.MessageId,
+                $"Sending message using host and queue: {HostnameAndPath}/{queueName}", outgoingMessage.Payload);
 
             var profile = await FindProfileAsync(logger, outgoingMessage);
 
@@ -146,54 +155,68 @@ namespace Helsenorge.Messaging.Amqp
             if (contentType.Equals(ContentType.SignedAndEnveloped, StringComparison.OrdinalIgnoreCase))
             {
                 var validator = Core.CertificateValidator;
-                logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, profile.EncryptionCertificate.Subject, "KeyEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId);
+                logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction,
+                    profile.EncryptionCertificate.Thumbprint, profile.EncryptionCertificate.Subject, "KeyEncipherment",
+                    outgoingMessage.ToHerId, outgoingMessage.MessageId);
                 stopwatch.Start();
                 // Validate external part's encryption certificate
                 var encryptionStatus = validator == null
                     ? CertificateErrors.None
                     : validator.Validate(profile.EncryptionCertificate, X509KeyUsageFlags.KeyEncipherment);
                 stopwatch.Stop();
-                logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, profile.EncryptionCertificate.Thumbprint, "KeyEncipherment", outgoingMessage.ToHerId, outgoingMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+                logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction,
+                    profile.EncryptionCertificate.Thumbprint, "KeyEncipherment", outgoingMessage.ToHerId,
+                    outgoingMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
-                logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate.Thumbprint, Core.MessageProtection.SigningCertificate.Subject, "NonRepudiation", outgoingMessage.FromHerId, outgoingMessage.MessageId);
+                logger.LogBeforeValidatingCertificate(outgoingMessage.MessageFunction,
+                    Core.MessageProtection.SigningCertificate.Thumbprint,
+                    Core.MessageProtection.SigningCertificate.Subject, "NonRepudiation", outgoingMessage.FromHerId,
+                    outgoingMessage.MessageId);
                 stopwatch.Restart();
                 // Validate "our" own signature certificate
                 var signatureStatus = validator == null
                     ? CertificateErrors.None
                     : validator.Validate(Core.MessageProtection.SigningCertificate, X509KeyUsageFlags.NonRepudiation);
                 stopwatch.Stop();
-                logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate.Thumbprint, "NonRepudiation", outgoingMessage.FromHerId, outgoingMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+                logger.LogAfterValidatingCertificate(outgoingMessage.MessageFunction,
+                    Core.MessageProtection.SigningCertificate.Thumbprint, "NonRepudiation", outgoingMessage.FromHerId,
+                    outgoingMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
                 // this is the other parties certificate that may be out of date, not something we can fix
                 if (encryptionStatus != CertificateErrors.None)
                 {
                     if (Core.Settings.IgnoreCertificateErrorOnSend)
                     {
-                        logger.LogError(EventIds.RemoteCertificate, $"Remote encryption certificate {profile.EncryptionCertificate?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid.{Environment.NewLine}" +
+                        logger.LogError(EventIds.RemoteCertificate,
+                            $"Remote encryption certificate {profile.EncryptionCertificate?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid.{Environment.NewLine}" +
                             $"Certificate error(s): {encryptionStatus}.");
                     }
                     else
                     {
-                        throw new MessagingException($"Remote encryption certificate {profile.EncryptionCertificate?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid.{Environment.NewLine}" +
+                        throw new MessagingException(
+                            $"Remote encryption certificate {profile.EncryptionCertificate?.SerialNumber} for {outgoingMessage.ToHerId.ToString()} is not valid.{Environment.NewLine}" +
                             $"Certificate error(s): {encryptionStatus}.")
                         {
                             EventId = EventIds.RemoteCertificate
                         };
                     }
                 }
+
                 // this is our certificate, something we can fix 
                 if (signatureStatus != CertificateErrors.None)
                 {
                     if (Core.Settings.IgnoreCertificateErrorOnSend)
                     {
-                        logger.LogError(EventIds.LocalCertificate, $"Locally installed signing certificate {Core.MessageProtection.SigningCertificate?.SerialNumber} is not valid.{Environment.NewLine}" +
+                        logger.LogError(EventIds.LocalCertificate,
+                            $"Locally installed signing certificate {Core.MessageProtection.SigningCertificate?.SerialNumber} is not valid.{Environment.NewLine}" +
                             $"Serial Number: {Core.MessageProtection.SigningCertificate?.SerialNumber}{Environment.NewLine}" +
                             $"Thumbprint: {Core.MessageProtection.SigningCertificate?.Thumbprint}.{Environment.NewLine}" +
                             $"Certificate error(s): {signatureStatus}.");
                     }
                     else
                     {
-                        throw new MessagingException($"Locally installed signing certificate {Core.MessageProtection.SigningCertificate?.SerialNumber} is not valid.{Environment.NewLine}" +
+                        throw new MessagingException(
+                            $"Locally installed signing certificate {Core.MessageProtection.SigningCertificate?.SerialNumber} is not valid.{Environment.NewLine}" +
                             $"Serial Number: {Core.MessageProtection.SigningCertificate?.SerialNumber}{Environment.NewLine}" +
                             $"Thumbprint: {Core.MessageProtection.SigningCertificate?.Thumbprint}{Environment.NewLine}" +
                             $"Certificate error(s): {signatureStatus}.")
@@ -203,24 +226,33 @@ namespace Helsenorge.Messaging.Amqp
                     }
                 }
             }
-            logger.LogBeforeEncryptingPayload(outgoingMessage.MessageFunction, Core.MessageProtection.SigningCertificate?.Thumbprint, profile?.EncryptionCertificate?.Thumbprint, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+
+            logger.LogBeforeEncryptingPayload(outgoingMessage.MessageFunction,
+                Core.MessageProtection.SigningCertificate?.Thumbprint, profile?.EncryptionCertificate?.Thumbprint,
+                outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
             stopwatch.Restart();
             // Encrypt the payload
-            var stream = Core.MessageProtection.Protect(outgoingMessage.Payload?.ToStream(), profile?.EncryptionCertificate);
+            var stream =
+                Core.MessageProtection.Protect(outgoingMessage.Payload?.ToStream(), profile?.EncryptionCertificate);
             stopwatch.Stop();
-            logger.LogAfterEncryptingPayload(outgoingMessage.MessageFunction, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
+            logger.LogAfterEncryptingPayload(outgoingMessage.MessageFunction, outgoingMessage.FromHerId,
+                outgoingMessage.ToHerId, outgoingMessage.MessageId, stopwatch.ElapsedMilliseconds.ToString());
 
-            logger.LogBeforeFactoryPoolCreateMessage(outgoingMessage.MessageFunction, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            logger.LogBeforeFactoryPoolCreateMessage(outgoingMessage.MessageFunction, outgoingMessage.FromHerId,
+                outgoingMessage.ToHerId, outgoingMessage.MessageId);
             // Create an empty message
             stopwatch.Restart();
             var messagingMessage = await FactoryPool.CreateMessageAsync(logger, stream).ConfigureAwait(false);
-            logger.LogAfterFactoryPoolCreateMessage(outgoingMessage.MessageFunction, outgoingMessage.FromHerId, outgoingMessage.ToHerId, outgoingMessage.MessageId);
+            logger.LogAfterFactoryPoolCreateMessage(outgoingMessage.MessageFunction, outgoingMessage.FromHerId,
+                outgoingMessage.ToHerId, outgoingMessage.MessageId);
 
             if (queueType != QueueType.SynchronousReply)
             {
                 messagingMessage.ReplyTo =
-                    replyTo ?? await ConstructQueueNameAsync(logger, outgoingMessage.FromHerId, queueType).ConfigureAwait(false);
+                    replyTo ?? await ConstructQueueNameAsync(logger, outgoingMessage.FromHerId, queueType)
+                        .ConfigureAwait(false);
             }
+
             messagingMessage.ContentType = Core.MessageProtection.ContentType;
             messagingMessage.MessageId = outgoingMessage.MessageId;
             messagingMessage.To = queueName;
@@ -235,7 +267,7 @@ namespace Helsenorge.Messaging.Amqp
 
             ExtractAndAddMetaDataPropertiesIfEnabled(messagingMessage, outgoingMessage.Payload, logger);
 
-            if(profile.CpaId != Guid.Empty)
+            if (profile.CpaId != Guid.Empty)
             {
                 messagingMessage.CpaId = profile.CpaId.ToString("D");
             }
@@ -243,28 +275,35 @@ namespace Helsenorge.Messaging.Amqp
             await SendAsync(logger, messagingMessage).ConfigureAwait(false);
 
             stopwatch.Stop();
-            logger.LogEndSend(queueType, messagingMessage.MessageFunction, messagingMessage.FromHerId, messagingMessage.ToHerId, messagingMessage.MessageId, stopwatch.ElapsedMilliseconds);
+            logger.LogEndSend(queueType, messagingMessage.MessageFunction, messagingMessage.FromHerId,
+                messagingMessage.ToHerId, messagingMessage.MessageId, stopwatch.ElapsedMilliseconds);
         }
 
-        private void ExtractAndAddMetaDataPropertiesIfEnabled(IAmqpMessage amqpMessage, XDocument payload, ILogger logger)
+        private void ExtractAndAddMetaDataPropertiesIfEnabled(IAmqpMessage amqpMessage, XDocument payload,
+            ILogger logger)
         {
             if (Core.Settings.SkipAddingPayloadMetadataIntoApplicationProperties) return;
 
             try
             {
                 var sw = Stopwatch.StartNew();
-                logger.LogInformation($"Before-AddingPayloadMetadata: {amqpMessage.MessageFunction} FromHerId: {amqpMessage.FromHerId} ToHerId: {amqpMessage.ToHerId}  MessageId: {amqpMessage.MessageId}");
-                var metaDataProperties = MetadataHelper.ExtractMessageProperties(payload) ?? new Dictionary<string, string>();
+                logger.LogInformation(
+                    $"Before-AddingPayloadMetadata: {amqpMessage.MessageFunction} FromHerId: {amqpMessage.FromHerId} ToHerId: {amqpMessage.ToHerId}  MessageId: {amqpMessage.MessageId}");
+                var metaDataProperties =
+                    MetadataHelper.ExtractMessageProperties(payload) ?? new Dictionary<string, string>();
                 foreach (var metaDataProperty in metaDataProperties)
                 {
                     amqpMessage.SetApplicationPropertyValue(metaDataProperty.Key, metaDataProperty.Value);
                 }
+
                 sw.Stop();
-                logger.LogInformation($"After-AddingPayloadMetadata: {amqpMessage.MessageFunction} FromHerId: {amqpMessage.FromHerId} ToHerId: {amqpMessage.ToHerId}  MessageId: {amqpMessage.MessageId} Elapsed: {sw.ElapsedMilliseconds} ms");
+                logger.LogInformation(
+                    $"After-AddingPayloadMetadata: {amqpMessage.MessageFunction} FromHerId: {amqpMessage.FromHerId} ToHerId: {amqpMessage.ToHerId}  MessageId: {amqpMessage.MessageId} Elapsed: {sw.ElapsedMilliseconds} ms");
             }
             catch (Exception e)
             {
-                logger.LogWarning(e, $"Exception when AddingPayloadMetadata: {amqpMessage.MessageFunction} FromHerId: {amqpMessage.FromHerId} ToHerId: {amqpMessage.ToHerId}  MessageId: {amqpMessage.MessageId}");
+                logger.LogWarning(e,
+                    $"Exception when AddingPayloadMetadata: {amqpMessage.MessageFunction} FromHerId: {amqpMessage.FromHerId} ToHerId: {amqpMessage.ToHerId}  MessageId: {amqpMessage.MessageId}");
             }
         }
 
@@ -286,14 +325,17 @@ namespace Helsenorge.Messaging.Amqp
                 stopwatch.Start();
 
                 logger.LogInformation("Start-CreateCachedMessageSenderAsync");
-                messageSender = await SenderPool.CreateCachedMessageSenderAsync(logger, message.To).ConfigureAwait(false);
-                logger.LogInformation($"End-CreateCachedMessageSenderAsync: Execution time: {stopwatch.ElapsedMilliseconds}");
+                messageSender = await SenderPool.CreateCachedMessageSenderAsync(logger, message.To)
+                    .ConfigureAwait(false);
+                logger.LogInformation(
+                    $"End-CreateCachedMessageSenderAsync: Execution time: {stopwatch.ElapsedMilliseconds} ms");
 
                 stopwatch.Restart();
 
                 logger.LogInformation("Start-MessageSenderSendAsync");
                 await messageSender.SendAsync(message).ConfigureAwait(false);
-                logger.LogInformation($"End-MessageSenderSendAsync: Execution time: {stopwatch.ElapsedMilliseconds}");
+                logger.LogInformation(
+                    $"End-MessageSenderSendAsync: Execution time: {stopwatch.ElapsedMilliseconds} ms");
             }
             catch (Exception ex)
             {
@@ -322,7 +364,9 @@ namespace Helsenorge.Messaging.Amqp
         /// <param name="errorDescription">The error description to report</param>
         /// <param name="additionalData">Additional information to include</param>
         /// <returns></returns>
-        private async Task SendErrorAsync(ILogger logger, IAmqpMessage originalMessage, string errorCode, string errorDescription, IEnumerable<string> additionalData) //TODO: Sjekk at SendError fungerer med Http-meldinger
+        private async Task SendErrorAsync(ILogger logger, IAmqpMessage originalMessage, string errorCode,
+            string errorDescription,
+            IEnumerable<string> additionalData) //TODO: Sjekk at SendError fungerer med Http-meldinger
         {
             var stopwatch = Stopwatch.StartNew();
             if (originalMessage == null) throw new ArgumentNullException(nameof(originalMessage));
@@ -338,23 +382,28 @@ namespace Helsenorge.Messaging.Amqp
             // Clones original message, but leaves out the payload
             var clonedMessage = originalMessage.Clone(false);
             // update some properties on the cloned message
-            clonedMessage.To = await ConstructQueueNameAsync(logger, originalMessage.FromHerId, QueueType.Error).ConfigureAwait(false); // change target 
+            clonedMessage.To = await ConstructQueueNameAsync(logger, originalMessage.FromHerId, QueueType.Error)
+                .ConfigureAwait(false); // change target 
             clonedMessage.TimeToLive = Settings.Error.TimeToLive;
             clonedMessage.FromHerId = originalMessage.ToHerId;
             clonedMessage.ToHerId = originalMessage.FromHerId;
-            
+
             if (clonedMessage.Properties.ContainsKey(OriginalMessageIdHeaderKey) == false)
             {
                 clonedMessage.SetApplicationPropertyValue(OriginalMessageIdHeaderKey, originalMessage.MessageId);
             }
+
             if (clonedMessage.Properties.ContainsKey(ReceiverTimestampHeaderKey) == false)
             {
-                clonedMessage.SetApplicationPropertyValue(ReceiverTimestampHeaderKey, DateTime.UtcNow.ToString(DateTimeFormatInfo.InvariantInfo));
+                clonedMessage.SetApplicationPropertyValue(ReceiverTimestampHeaderKey,
+                    DateTime.UtcNow.ToString(DateTimeFormatInfo.InvariantInfo));
             }
+
             if (clonedMessage.Properties.ContainsKey(ErrorConditionHeaderKey) == false)
             {
                 clonedMessage.SetApplicationPropertyValue(ErrorConditionHeaderKey, errorCode);
             }
+
             if (clonedMessage.Properties.ContainsKey(ErrorDescriptionHeaderKey) == false)
             {
                 clonedMessage.SetApplicationPropertyValue(ErrorDescriptionHeaderKey, errorDescription);
@@ -372,6 +421,7 @@ namespace Helsenorge.Messaging.Amqp
                         sb.Append($"{item};");
                     }
                 }
+
                 additionDataValue = sb.ToString();
 
                 if (clonedMessage.Properties.ContainsKey(ErrorConditionDataHeaderKey) == false)
@@ -380,12 +430,17 @@ namespace Helsenorge.Messaging.Amqp
                 }
             }
 
-            logger.LogWarning("Reporting error to sender. FromHerId: {0} ToHerId: {1} ErrorCode: {2} ErrorDescription: {3} AdditionalData: {4}", originalMessage.FromHerId, originalMessage.ToHerId, errorCode, errorDescription, additionDataValue);
 
-            logger.LogStartSend(QueueType.Error, clonedMessage.MessageFunction, clonedMessage.FromHerId, clonedMessage.ToHerId, clonedMessage.MessageId, additionDataValue, null);
+            logger.LogWarning(
+                "Reporting error to sender. FromHerId: {0} ToHerId: {1} ErrorCode: {2} ErrorDescription: {3} AdditionalData: {4}",
+                originalMessage.FromHerId, originalMessage.ToHerId, errorCode, errorDescription, additionDataValue);
+
+            logger.LogStartSend(QueueType.Error, clonedMessage.MessageFunction, clonedMessage.FromHerId,
+                clonedMessage.ToHerId, clonedMessage.MessageId, additionDataValue, null);
             await SendAsync(logger, clonedMessage).ConfigureAwait(false);
             stopwatch.Stop();
-            logger.LogEndSend(QueueType.Error, clonedMessage.MessageFunction, clonedMessage.FromHerId, clonedMessage.ToHerId, clonedMessage.MessageId, stopwatch.ElapsedMilliseconds);
+            logger.LogEndSend(QueueType.Error, clonedMessage.MessageFunction, clonedMessage.FromHerId,
+                clonedMessage.ToHerId, clonedMessage.MessageId, stopwatch.ElapsedMilliseconds);
         }
 
         /// <summary>
@@ -490,7 +545,7 @@ namespace Helsenorge.Messaging.Amqp
         /// <param name="ex"></param>
         internal async void DeadLetterProcessedMessageAsync(
             ILogger logger,
-            EventId id, 
+            EventId id,
             IAmqpMessage message,
             string description,
             Exception ex = null)
@@ -500,11 +555,13 @@ namespace Helsenorge.Messaging.Amqp
             logger.LogWarning(id, ex, description);
             await message.RejectAsync();
         }
+
         /// <summary>
         /// Registers an alternate messaging factory
         /// </summary>
         /// <param name="factory"></param>
-        public void RegisterAlternateMessagingFactory(IAmqpFactory factory) => FactoryPool.RegisterAlternateMessagingFactoryAsync(factory);
+        public void RegisterAlternateMessagingFactory(IAmqpFactory factory) =>
+            FactoryPool.RegisterAlternateMessagingFactoryAsync(factory);
 
         /// <summary>
         /// Find CPA/CPP
@@ -521,7 +578,8 @@ namespace Helsenorge.Messaging.Amqp
             if (Core.Settings.MessageFunctionsExcludedFromCpaResolve.Contains(messageFunction))
             {
                 // MessageFunction is defined in exception list, return a dummy CollaborationProtocolProfile
-                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AddressRegistry, logger, message.ToHerId, messageFunction);
+                return await DummyCollaborationProtocolProfileFactory.CreateAsync(AddressRegistry, logger,
+                    message.ToHerId, messageFunction);
             }
 
 
@@ -532,8 +590,10 @@ namespace Helsenorge.Messaging.Amqp
                 return profile;
 
             // if we cannot find agreement, we fallback to protocol (which may return a dummy protocol if things are really missing in AR)
-            logger.LogInformation($"Could not find agreement for HerId {message.FromHerId} and {message.ToHerId}. Falling back to protocol profile.");
-            profile = await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(message.ToHerId).ConfigureAwait(false);
+            logger.LogInformation(
+                $"Could not find agreement for HerId {message.FromHerId} and {message.ToHerId}. Falling back to protocol profile.");
+            profile = await CollaborationProtocolRegistry.FindProtocolForCounterpartyAsync(message.ToHerId)
+                .ConfigureAwait(false);
             if (profile == null)
                 logger.LogInformation($"Could not find protocol profile for HerId {message.FromHerId}");
 
