@@ -6,6 +6,14 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using Amqp;
+using Amqp.Framing;
+using Helsenorge.Messaging.Amqp;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Globalization;
+using System.IO;
+
 namespace Helsenorge.Messaging.Tests.Amqp
 {
     [TestClass]
