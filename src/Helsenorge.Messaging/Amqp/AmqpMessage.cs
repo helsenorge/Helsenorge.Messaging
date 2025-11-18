@@ -6,11 +6,6 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
-using Amqp;
-using Amqp.Framing;
-using Amqp.Types;
-using Helsenorge.Messaging.Abstractions;
-using Helsenorge.Messaging.Amqp.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,6 +14,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Amqp;
+using Amqp.Framing;
+using Amqp.Types;
+using Helsenorge.Messaging.Abstractions;
+using Helsenorge.Messaging.Amqp.Exceptions;
 
 namespace Helsenorge.Messaging.Amqp
 {
@@ -47,37 +47,33 @@ namespace Helsenorge.Messaging.Amqp
 
         public int FromHerId
         {
-            [DebuggerStepThrough]
-            get => GetApplicationPropertyValue(AmqpCore.FromHerIdHeaderKey, 0);
-            [DebuggerStepThrough]
-            set => SetApplicationPropertyValue(AmqpCore.FromHerIdHeaderKey, value);
+            [DebuggerStepThrough] get => GetApplicationPropertyValue(AmqpCore.FromHerIdHeaderKey, 0);
+            [DebuggerStepThrough] set => SetApplicationPropertyValue(AmqpCore.FromHerIdHeaderKey, value);
         }
+
         public int ToHerId
         {
-            [DebuggerStepThrough]
-            get => GetApplicationPropertyValue(AmqpCore.ToHerIdHeaderKey, 0);
-            [DebuggerStepThrough]
-            set => SetApplicationPropertyValue(AmqpCore.ToHerIdHeaderKey, value);
+            [DebuggerStepThrough] get => GetApplicationPropertyValue(AmqpCore.ToHerIdHeaderKey, 0);
+            [DebuggerStepThrough] set => SetApplicationPropertyValue(AmqpCore.ToHerIdHeaderKey, value);
         }
+
         public DateTime ApplicationTimestamp
         {
             get => GetApplicationPropertyValue(AmqpCore.ApplicationTimestampHeaderKey, DateTime.MinValue);
-            [DebuggerStepThrough]
-            set => SetApplicationPropertyValue(AmqpCore.ApplicationTimestampHeaderKey, value);
+            [DebuggerStepThrough] set => SetApplicationPropertyValue(AmqpCore.ApplicationTimestampHeaderKey, value);
         }
+
         public string CpaId
         {
-            [DebuggerStepThrough]
-            get => GetApplicationPropertyValue(AmqpCore.CpaIdHeaderKey, string.Empty);
-            [DebuggerStepThrough]
-            set => SetApplicationPropertyValue(AmqpCore.CpaIdHeaderKey, value);
+            [DebuggerStepThrough] get => GetApplicationPropertyValue(AmqpCore.CpaIdHeaderKey, string.Empty);
+            [DebuggerStepThrough] set => SetApplicationPropertyValue(AmqpCore.CpaIdHeaderKey, value);
         }
+
         public object OriginalObject => _implementation;
 
         public DateTime EnqueuedTimeUtc
         {
-            [DebuggerStepThrough]
-            get => GetApplicationPropertyValue(AmqpCore.EnqueuedTimeUtc, DateTime.MaxValue);
+            [DebuggerStepThrough] get => GetApplicationPropertyValue(AmqpCore.EnqueuedTimeUtc, DateTime.MaxValue);
         }
 
         public DateTime ExpiresAtUtc
@@ -88,6 +84,7 @@ namespace Helsenorge.Messaging.Amqp
                 {
                     return DateTime.MaxValue;
                 }
+
                 return EnqueuedTimeUtc.Add(TimeToLive);
             }
         }
@@ -119,6 +116,7 @@ namespace Helsenorge.Messaging.Amqp
                 {
                     return data.Binary.Length;
                 }
+
                 return 0;
             }
         }
@@ -129,6 +127,7 @@ namespace Helsenorge.Messaging.Amqp
             {
                 _implementation.Properties = new Properties();
             }
+
             return _implementation.Properties;
         }
 
@@ -138,59 +137,54 @@ namespace Helsenorge.Messaging.Amqp
             {
                 _implementation.ApplicationProperties = new ApplicationProperties();
             }
+
             return _implementation.ApplicationProperties;
         }
 
         public string ContentType
         {
-            [DebuggerStepThrough]
-            get => GetMessageProperties().ContentType;
-            [DebuggerStepThrough]
-            set => GetMessageProperties().ContentType = value;
+            [DebuggerStepThrough] get => GetMessageProperties().ContentType;
+            [DebuggerStepThrough] set => GetMessageProperties().ContentType = value;
         }
+
         public string CorrelationId
         {
-            [DebuggerStepThrough]
-            get => ValidateIdentifier(GetMessageProperties().GetCorrelationId())?.ToString();
-            [DebuggerStepThrough]
-            set => GetMessageProperties().CorrelationId = value;
+            [DebuggerStepThrough] get => ValidateIdentifier(GetMessageProperties().GetCorrelationId())?.ToString();
+            [DebuggerStepThrough] set => GetMessageProperties().CorrelationId = value;
         }
+
         public string MessageFunction
         {
-            [DebuggerStepThrough]
-            get => GetMessageProperties().Subject;
-            [DebuggerStepThrough]
-            set => GetMessageProperties().Subject = value;
+            [DebuggerStepThrough] get => GetMessageProperties().Subject;
+            [DebuggerStepThrough] set => GetMessageProperties().Subject = value;
         }
+
         public string MessageId
         {
-            [DebuggerStepThrough]
-            get => ValidateIdentifier(GetMessageProperties().GetMessageId())?.ToString();
+            [DebuggerStepThrough] get => ValidateIdentifier(GetMessageProperties().GetMessageId())?.ToString();
 
-            [DebuggerStepThrough]
-            set => GetMessageProperties().MessageId = value;
+            [DebuggerStepThrough] set => GetMessageProperties().MessageId = value;
         }
+
         public string GroupId
         {
-            [DebuggerStepThrough]
-            get => GetMessageProperties().GroupId;
+            [DebuggerStepThrough] get => GetMessageProperties().GroupId;
 
-            [DebuggerStepThrough]
-            set => GetMessageProperties().GroupId = value;
+            [DebuggerStepThrough] set => GetMessageProperties().GroupId = value;
         }
 
         public string ReplyTo
         {
-            [DebuggerStepThrough]
-            get => GetMessageProperties().ReplyTo;
-            [DebuggerStepThrough]
-            set => GetMessageProperties().ReplyTo = value;
+            [DebuggerStepThrough] get => GetMessageProperties().ReplyTo;
+            [DebuggerStepThrough] set => GetMessageProperties().ReplyTo = value;
         }
 
         public TimeSpan TimeToLive
         {
             [DebuggerStepThrough]
-            get => _implementation.Header == null ? TimeSpan.MaxValue : TimeSpan.FromMilliseconds(_implementation.Header.Ttl);
+            get => _implementation.Header == null
+                ? TimeSpan.MaxValue
+                : TimeSpan.FromMilliseconds(_implementation.Header.Ttl);
             [DebuggerStepThrough]
             set
             {
@@ -201,18 +195,16 @@ namespace Helsenorge.Messaging.Amqp
                 }
             }
         }
+
         public string To
         {
-            [DebuggerStepThrough]
-            get => GetMessageProperties().To;
-            [DebuggerStepThrough]
-            set => GetMessageProperties().To = value;
+            [DebuggerStepThrough] get => GetMessageProperties().To;
+            [DebuggerStepThrough] set => GetMessageProperties().To = value;
         }
 
         public bool FirstAcquirer
         {
-            [DebuggerStepThrough]
-            get => _implementation.Header == null ? false : _implementation.Header.FirstAcquirer;
+            [DebuggerStepThrough] get => _implementation.Header == null ? false : _implementation.Header.FirstAcquirer;
         }
 
         public int DeliveryCount
@@ -304,6 +296,12 @@ namespace Helsenorge.Messaging.Amqp
                 }
             }
 
+            if (!includePayload)
+            {
+                clone.BodySection = new Data
+                    { Binary = new byte[] { } }; //Fix for issue observed when upgrading RabbitMQ to 4.2.0
+            }
+
             return new AmqpMessage(clone)
             {
                 CompleteAction = CompleteAction,
@@ -329,11 +327,13 @@ namespace Helsenorge.Messaging.Amqp
 
         public void Release() => ReleaseAction.Invoke();
 
-        public async Task RelaseAsync() =>  await ReleaseActionAsync.Invoke().ConfigureAwait(false);
+        public async Task RelaseAsync() => await ReleaseActionAsync.Invoke().ConfigureAwait(false);
 
-        public void Modify(bool deliveryFailed, bool undeliverableHere = false) => ModifyAction.Invoke(deliveryFailed, undeliverableHere);
+        public void Modify(bool deliveryFailed, bool undeliverableHere = false) =>
+            ModifyAction.Invoke(deliveryFailed, undeliverableHere);
 
-        public async Task ModifyAsync(bool deliveryFailed, bool undeliverableHere = false) => await ModifyActionAsync.Invoke(deliveryFailed, undeliverableHere).ConfigureAwait(false);
+        public async Task ModifyAsync(bool deliveryFailed, bool undeliverableHere = false) =>
+            await ModifyActionAsync.Invoke(deliveryFailed, undeliverableHere).ConfigureAwait(false);
 
         [DebuggerStepThrough]
         public void Dispose() => _implementation.Dispose();
@@ -359,13 +359,13 @@ namespace Helsenorge.Messaging.Amqp
             if (ex == null) throw new ArgumentNullException(nameof(ex));
 
             var data = new Dictionary<string, object>
-                {
-                    { "BrokeredMessageId", MessageId },
-                    { "CorrelationId", CorrelationId },
-                    { "Label", MessageFunction },
-                    { "To", To },
-                    { "ReplyTo", ReplyTo },
-                };
+            {
+                { "BrokeredMessageId", MessageId },
+                { "CorrelationId", CorrelationId },
+                { "Label", MessageFunction },
+                { "To", To },
+                { "ReplyTo", ReplyTo },
+            };
             foreach (var key in data.Keys)
             {
                 try
@@ -380,31 +380,40 @@ namespace Helsenorge.Messaging.Amqp
         }
 
         public void SetApplicationPropertyValue(string key, string value) => GetApplicationProperties()[key] = value;
-        public void SetApplicationPropertyValue(string key, DateTime value) => GetApplicationProperties()[key] = value.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo);
-        public void SetApplicationPropertyValue(string key, int value) => GetApplicationProperties()[key] = value.ToString(CultureInfo.InvariantCulture);
 
-        private string GetApplicationPropertyValue(string key, string value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
-            ? GetApplicationProperties()[key].ToString()
-            : value;
+        public void SetApplicationPropertyValue(string key, DateTime value) => GetApplicationProperties()[key] =
+            value.ToString(StringFormatConstants.IsoDateTime, DateTimeFormatInfo.InvariantInfo);
 
-        private int GetApplicationPropertyValue(string key, int value) => GetApplicationProperties()?.Map.ContainsKey(key) == true
-            ? int.Parse(GetApplicationProperties()[key].ToString())
-            : value;
+        public void SetApplicationPropertyValue(string key, int value) =>
+            GetApplicationProperties()[key] = value.ToString(CultureInfo.InvariantCulture);
+
+        private string GetApplicationPropertyValue(string key, string value) =>
+            GetApplicationProperties()?.Map.ContainsKey(key) == true
+                ? GetApplicationProperties()[key].ToString()
+                : value;
+
+        private int GetApplicationPropertyValue(string key, int value) =>
+            GetApplicationProperties()?.Map.ContainsKey(key) == true
+                ? int.Parse(GetApplicationProperties()[key].ToString())
+                : value;
+
         private DateTime GetApplicationPropertyValue(string key, DateTime value)
         {
             if (GetApplicationProperties()?.Map.ContainsKey(key) == false)
                 return value;
 
-            return DateTime.TryParse(GetApplicationProperties()[key].ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDateTime)
-                    ? parsedDateTime
-                    : value;
+            return DateTime.TryParse(GetApplicationProperties()[key].ToString(), CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out var parsedDateTime)
+                ? parsedDateTime
+                : value;
         }
 
         static object ValidateIdentifier(object id)
         {
             if (id != null && !(id is string || id is Guid))
             {
-                throw new UnexpectedMessageIdentifierTypeException($"And identifier of type {id.GetType().FullName} is not supported.");
+                throw new UnexpectedMessageIdentifierTypeException(
+                    $"And identifier of type {id.GetType().FullName} is not supported.");
             }
 
             return id;
