@@ -21,5 +21,8 @@ internal class RequestParameters
 
     public string BearerToken { get; set; }
 
+    public string Dpop { get; set; }
+    public string Proof { get; set; }
+
     public string AcceptHeader {  get; set; }
 }

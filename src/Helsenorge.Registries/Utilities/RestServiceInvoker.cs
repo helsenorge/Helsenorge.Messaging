@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Helsenorge.Registries.Configuration;
 using Duende.IdentityModel.Client;
 using Microsoft.Extensions.Logging;
+using HelseId.Library;
 
 namespace Helsenorge.Registries.Utilities;
 
@@ -39,6 +40,25 @@ internal class RestServiceInvoker
         var httpClient = _proxyHttpClientFactory.CreateHttpClient();
         var absoluteUri = new Uri(httpClient.BaseAddress, httpRequest.RequestUri);
 
+
+        var request2 = new HttpRequestMessage
+        {
+            Method = request.Method,
+            RequestUri = new Uri(request.Path)
+        };
+
+        if(httpClient.BaseAddress.AbsoluteUri.Contains("v2"))
+        {
+            request2.SetDPoPTokenAndProof(request.Dpop, request.Proof);
+        }
+        else
+        {
+            request2.SetBearerToken(request.BearerToken);
+            request2.Headers.Add("DPoP", request.Proof);
+        }
+
+        request2.Headers.Add("Accept", request.AcceptHeader);
+        
         try
         {
             var stopwatch = Stopwatch.StartNew();
@@ -47,6 +67,7 @@ internal class RestServiceInvoker
             stopwatch.Start();
 
             var response = await httpClient.SendAsync(httpRequest);
+
             if (response.IsSuccessStatusCode == false)
             {
                 await TryLogContent(response);

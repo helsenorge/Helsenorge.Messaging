@@ -6,6 +6,11 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using HelseId.Library;
+using HelseId.Library.ClientCredentials;
+using HelseId.Library.ClientCredentials.Interfaces;
+using HelseId.Library.Interfaces.Caching;
+using HelseId.Library.Services.Caching;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Security;
 using Helsenorge.Registries;
@@ -15,6 +20,7 @@ using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -89,8 +95,38 @@ namespace Helsenorge.Messaging.Client
             var collaborationProtocolRegistryRestSettings = new CollaborationProtocolRegistryRestSettings();
             configurationRoot.GetSection("CollaborationProtocolRegistryRestSettings").Bind(collaborationProtocolRegistryRestSettings);
 
+
+            //-------------------------------------------------------------HELSEID START
+            var serviceCollection = new ServiceCollection();
+            var helseIdConfig_v2 = new HelseId.Library.Configuration.HelseIdConfiguration
+            {
+                ClientId = helseidConfiguratrion.ClientId,
+                Scope = helseidConfiguratrion.ScopeName,
+                IssuerUri = "https://helseid-sts.test.nhn.no",
+                SelvbetjeningConfiguration = new HelseId.Library.Configuration.SelvbetjeningConfiguration { SelvbetjeningScope = " ", UpdateClientSecretEndpoint = "" }
+            };
+            var helseIdBuilder = serviceCollection.AddHelseIdClientCredentials(helseIdConfig_v2);
+
+            //See HelseIdServiceCollectionExtensions.AddHelseIdDistributedCaching extension
+            helseIdBuilder.RemoveServiceRegistrations<ITokenCache>();
+            helseIdBuilder.RemoveServiceRegistrations<IDiscoveryDocumentCache>();
+            helseIdBuilder.Services.AddSingleton<ITokenCache>(new DistributedTokenCache(distributedCache));
+            helseIdBuilder.Services.AddSingleton<IDiscoveryDocumentCache, DistributedDiscoveryDocumentCache>();
+
+
+            //Register Certificate
+            //See HelseIdServiceCollectionExtensions for other auth methods
+            helseIdBuilder.AddSigningCredentialForClientAuthentication(new SigningCredentials
+                (provider.GetSecurityKey(), SecurityAlgorithms.RsaSha512));
+
+
+            // Register a service that will call HelseID
+            helseIdBuilder.Services.AddHttpClient<ProxyHttpClientFactory>();
+
+            //-------------------------------------------------------------HELSEID END
+
             var collaborationProtocolRestRegistry = new CollaborationProtocolRegistryRest(collaborationProtocolRegistryRestSettings,
-                               distributedCache, addressRegistry, _logger, helseIdClient);
+                               distributedCache, addressRegistry, _logger, helseIdClient, IHelseIdClientCredentialsFlow);
 
             _clientSettings = new ClientSettings();
             configurationRoot.GetSection("ClientSettings").Bind(_clientSettings);

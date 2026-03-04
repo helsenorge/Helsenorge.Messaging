@@ -13,6 +13,9 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using HelseId.Library.ClientCredentials.Interfaces;
+using HelseId.Library.Interfaces.JwtTokens;
+using HelseId.Library.Services.JwtTokens;
 using Helsenorge.Registries.Abstractions;
 using Helsenorge.Registries.Configuration;
 using Helsenorge.Registries.HelseId;
@@ -35,6 +38,8 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     private readonly IHelseIdClient _helseIdClient;
     private readonly XNamespace _ns = "http://www.oasis-open.org/committees/ebxml-cppa/schema/cpp-cpa-2_0.xsd";
     private readonly CollaborationProtocolRegistryRestSettings _settings;
+    private readonly IHelseIdClientCredentialsFlow _helseIdClientCredentialsFlow;
+    private readonly IDPoPProofCreatorForApiRequests _dPoPProofCreator;
 
     /// <summary>
     ///     The certificate validator to use
@@ -54,7 +59,9 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         IDistributedCache cache,
         IAddressRegistry addressRegistry,
         ILogger logger,
-        IHelseIdClient helseIdClient)
+        IHelseIdClient helseIdClient,
+        IHelseIdClientCredentialsFlow helseIdClientCredentialsFlow,
+        IDPoPProofCreatorForApiRequests dPoPProofCreator)
     {
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _cache = cache ?? throw new ArgumentNullException(nameof(cache));
@@ -63,6 +70,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         _addressRegistry = addressRegistry ?? throw new ArgumentNullException(nameof(addressRegistry));
 
         var httpClientFactory = new ProxyHttpClientFactory(settings.RestConfiguration);
+        _helseIdClientCredentialsFlow = helseIdClientCredentialsFlow;
         _restServiceInvoker = new RestServiceInvoker(_logger, httpClientFactory);
         CertificateValidator = new CertificateValidator(_logger, _settings.UseOnlineRevocationCheck);
     }
@@ -71,6 +79,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     public async Task<CollaborationProtocolProfile> FindProtocolForCounterpartyAsync(int counterpartyHerId)
     {
         _logger.LogDebug($"FindProtocolForCounterpartyAsync {counterpartyHerId}");
+
 
         var key = $"CPA_FindProtocolForCounterpartyAsync_Rest_{counterpartyHerId}";
         var profile = await CacheExtensions.ReadValueFromCacheAsync<CollaborationProtocolProfile>(_logger, _cache, key).ConfigureAwait(false);
@@ -292,13 +301,29 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
 
     private async Task<RequestParameters> CreateRequestMessageAsync(HttpMethod method, string path)
     {
+        var tokenResponse = await _helseIdClientCredentialsFlow.GetTokenResponseAsync("", new HelseId.Library.Models.DetailsFromClient.OrganizationNumbers());
+        if (!tokenResponse.IsSuccessful(out var accessTokenResponse))
+        {
+            // Handle an error response from HelseID
+            var errorResponse = tokenResponse.AsError();
+            Console.WriteLine(errorResponse.Error + " " + errorResponse.ErrorDescription);
+            
+        }
+        var dpopProof = await _dPoPProofCreator.CreateDPoPProofForApiRequest(
+            HttpMethod.Post,
+            path,
+            accessTokenResponse);
+
         var request = new RequestParameters()
         {
             Method = method,
             Path = path,
             BearerToken = await _helseIdClient.CreateJwtAccessTokenAsync(),
+            Dpop = tokenResponse.RawResponse,
+            Proof = dpopProof,
             AcceptHeader = "application/xml"
         };
+
         return request;
     }
 }
