@@ -9,7 +9,6 @@
 using System;
 using System.Net;
 using System.Net.Http;
-using HelseId.Library.ClientCredentials;
 
 namespace Helsenorge.Registries.Configuration;
 
@@ -57,27 +56,4 @@ public class ProxyHttpClientFactory
 
         return httpClient;
     }
-
-    public HttpClient GetHttpClient()
-    {
-     //   throw new NotImplementedException();
-        IHelseIdClientCredentialsFlow clientCredentialsFlowMock = new HelseIdClientCredentialsFlow("access token", "scope");
-        //var dpopProofCreatorMock = new DPoPProofCreatorMock("DPoP proof");
-
-        var handler = new HelseIdDPoPDelegatingHandler(clientCredentialsFlowMock,
-            dpopProofCreatorMock,
-            "scope");
-
-        //var mockHttpMessageHandler = new MockHttpMessageHandler();
-        //mockHttpMessageHandler
-        //    .Expect(HttpMethod.Get, "https://helseid.no")
-        //    .WithHeaders("Authorization", "DPoP access token")
-        //    .WithHeaders("DPoP", "DPoP proof")
-        //    .Respond(JsonContent.Create(new
-        //    {
-        //        success = true
-        //    }));
-        //handler.InnerHandler = mockHttpMessageHandler;
-    }
-
 }

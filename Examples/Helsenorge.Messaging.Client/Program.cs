@@ -8,14 +8,12 @@
 
 using HelseId.Library;
 using HelseId.Library.ClientCredentials;
-using HelseId.Library.ClientCredentials.Interfaces;
 using HelseId.Library.Interfaces.Caching;
 using HelseId.Library.Services.Caching;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Security;
 using Helsenorge.Registries;
 using Helsenorge.Registries.Configuration;
-using Helsenorge.Registries.HelseId;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -69,7 +67,7 @@ namespace Helsenorge.Messaging.Client
 
 
             // read configuration values
-            var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+            var builder = new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appsettings.json", false)
                 .AddJsonFile($"{profile}.json", false);
@@ -86,10 +84,10 @@ namespace Helsenorge.Messaging.Client
             var addressRegistry = new AddressRegistry(addressRegistrySettings, distributedCache, _logger);
 
             // set up HelseIdClient
-            var helseidConfiguratrion = new HelseIdConfiguration();
-            configurationRoot.GetSection("HelseIdConfiguration").Bind(helseidConfiguratrion);
+            //var helseidConfiguratrion = new HelseId.Library.Configuration.HelseIdConfiguration();
+            //configurationRoot.GetSection("HelseIdConfiguration").Bind(helseidConfiguratrion);
             var provider = new SecurityKeyProvider();
-            var helseIdClient = new HelseIdClient(helseidConfiguratrion, provider);
+            //var helseIdClient = new HelseIdClient(helseidConfiguratrion, provider);
 
             // set up collaboration rest registry
             var collaborationProtocolRegistryRestSettings = new CollaborationProtocolRegistryRestSettings();
@@ -98,15 +96,18 @@ namespace Helsenorge.Messaging.Client
 
             //-------------------------------------------------------------HELSEID START
             var serviceCollection = new ServiceCollection();
+            //Alternative configurationRoot.GetSection("HelseIdConfiguration").Bind(helseidConfiguratrion);
+
+            //nhn client
             var helseIdConfig_v2 = new HelseId.Library.Configuration.HelseIdConfiguration
             {
-                ClientId = helseidConfiguratrion.ClientId,
-                Scope = helseidConfiguratrion.ScopeName,
+                ClientId = "39d6ffea-9e66-4681-94ad-109867e553c9", 
+                Scope = "nhn:cppa/access",
                 IssuerUri = "https://helseid-sts.test.nhn.no",
                 SelvbetjeningConfiguration = new HelseId.Library.Configuration.SelvbetjeningConfiguration { SelvbetjeningScope = " ", UpdateClientSecretEndpoint = "" }
             };
             var helseIdBuilder = serviceCollection.AddHelseIdClientCredentials(helseIdConfig_v2);
-
+            
             //See HelseIdServiceCollectionExtensions.AddHelseIdDistributedCaching extension
             helseIdBuilder.RemoveServiceRegistrations<ITokenCache>();
             helseIdBuilder.RemoveServiceRegistrations<IDiscoveryDocumentCache>();
@@ -119,14 +120,18 @@ namespace Helsenorge.Messaging.Client
             helseIdBuilder.AddSigningCredentialForClientAuthentication(new SigningCredentials
                 (provider.GetSecurityKey(), SecurityAlgorithms.RsaSha512));
 
-
             // Register a service that will call HelseID
             helseIdBuilder.Services.AddHttpClient<ProxyHttpClientFactory>();
 
+            serviceCollection.AddSingleton(new HelseId.Library.Models.DetailsFromClient.OrganizationNumbers("parent", "child"));
+
+            ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+
+            var collaborationProtocolRestRegistry = serviceProvider.GetRequiredService<CollaborationProtocolRegistryRest>();
+
             //-------------------------------------------------------------HELSEID END
 
-            var collaborationProtocolRestRegistry = new CollaborationProtocolRegistryRest(collaborationProtocolRegistryRestSettings,
-                               distributedCache, addressRegistry, _logger, helseIdClient, IHelseIdClientCredentialsFlow);
+
 
             _clientSettings = new ClientSettings();
             configurationRoot.GetSection("ClientSettings").Bind(_clientSettings);
@@ -160,7 +165,7 @@ namespace Helsenorge.Messaging.Client
 
                 Configure(profileArgument.Value, noProtection.HasValue(), noProtection.HasValue());
 
-                if (Directory.Exists(_clientSettings.SourceDirectory) == false)
+                if (!Directory.Exists(_clientSettings.SourceDirectory))
                 {
                     _logger.LogError("Directory does not exist");
                     command.ShowHelp();
@@ -181,7 +186,7 @@ namespace Helsenorge.Messaging.Client
                         for (var s = GetNextPath(); !string.IsNullOrEmpty(s); s = GetNextPath())
                         {
                             _logger.LogInformation($"Processing file {s}");
-                            Task.WaitAll(_messagingClient.SendAndContinueAsync(new OutgoingMessage()
+                            _messagingClient.SendAndContinueAsync(new OutgoingMessage()
                             {
                                 MessageFunction = _clientSettings.MessageFunction,
                                 FromHerId = fromHerId.Value,
@@ -189,7 +194,7 @@ namespace Helsenorge.Messaging.Client
                                 MessageId = Guid.NewGuid().ToString("D"),
                                 PersonalId = "99999999999",
                                 Payload = XDocument.Load(File.OpenRead(s))
-                            }));
+                            }).Wait();
                         }
                     }));
                 }
@@ -213,7 +218,7 @@ namespace Helsenorge.Messaging.Client
                 }
                 Configure(profileArgument.Value, noProtection.HasValue(), noProtection.HasValue());
 
-                if (Directory.Exists(_clientSettings.SourceDirectory) == false)
+                if (!Directory.Exists(_clientSettings.SourceDirectory))
                 {
                     _logger.LogError("Directory does not exist");
                     command.ShowHelp();

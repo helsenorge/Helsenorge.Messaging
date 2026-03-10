@@ -19,10 +19,13 @@ internal class RequestParameters
 
     public string Path { get; set; }
 
+    public string Query { get; set; }
+
     public string BearerToken { get; set; }
 
-    public string Dpop { get; set; }
-    public string Proof { get; set; }
-
     public string AcceptHeader {  get; set; }
+
+    public bool IsDpopEnabled { get; set; }
+
+    public string PathAndQuery => $"{Path}{Query}";
 }

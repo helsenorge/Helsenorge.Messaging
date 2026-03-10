@@ -1,11 +1,20 @@
 ﻿/*
- * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
- * See the file CONTRIBUTORS for details.
- *
- * This file is licensed under the MIT license
- * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
- */
+* Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
+* See the file CONTRIBUTORS for details.
+*
+* This file is licensed under the MIT license
+* available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
+*/
 
+using HelseId.Library.ClientCredentials.Interfaces;
+using HelseId.Library.Configuration;
+using HelseId.Library.Interfaces.JwtTokens;
+using HelseId.Library.Models.DetailsFromClient;
+using Helsenorge.Registries.Abstractions;
+using Helsenorge.Registries.Configuration;
+using Helsenorge.Registries.Utilities;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -13,15 +22,6 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using HelseId.Library.ClientCredentials.Interfaces;
-using HelseId.Library.Interfaces.JwtTokens;
-using HelseId.Library.Services.JwtTokens;
-using Helsenorge.Registries.Abstractions;
-using Helsenorge.Registries.Configuration;
-using Helsenorge.Registries.HelseId;
-using Helsenorge.Registries.Utilities;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Registries;
 
@@ -35,11 +35,9 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     private readonly IAddressRegistry _addressRegistry;
     private readonly RestServiceInvoker _restServiceInvoker;
     private readonly ILogger _logger;
-    private readonly IHelseIdClient _helseIdClient;
     private readonly XNamespace _ns = "http://www.oasis-open.org/committees/ebxml-cppa/schema/cpp-cpa-2_0.xsd";
     private readonly CollaborationProtocolRegistryRestSettings _settings;
-    private readonly IHelseIdClientCredentialsFlow _helseIdClientCredentialsFlow;
-    private readonly IDPoPProofCreatorForApiRequests _dPoPProofCreator;
+
 
     /// <summary>
     ///     The certificate validator to use
@@ -59,19 +57,18 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         IDistributedCache cache,
         IAddressRegistry addressRegistry,
         ILogger logger,
-        IHelseIdClient helseIdClient,
         IHelseIdClientCredentialsFlow helseIdClientCredentialsFlow,
-        IDPoPProofCreatorForApiRequests dPoPProofCreator)
+        IDPoPProofCreatorForApiRequests dPoPProofCreator,
+        OrganizationNumbers organizationNumbers,
+        HelseIdConfiguration helseIdConfiguration)
     {
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _cache = cache ?? throw new ArgumentNullException(nameof(cache));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _helseIdClient = helseIdClient ?? throw new ArgumentNullException(nameof(helseIdClient));
         _addressRegistry = addressRegistry ?? throw new ArgumentNullException(nameof(addressRegistry));
 
         var httpClientFactory = new ProxyHttpClientFactory(settings.RestConfiguration);
-        _helseIdClientCredentialsFlow = helseIdClientCredentialsFlow;
-        _restServiceInvoker = new RestServiceInvoker(_logger, httpClientFactory);
+        _restServiceInvoker = new RestServiceInvoker(_logger, httpClientFactory, helseIdClientCredentialsFlow, dPoPProofCreator, organizationNumbers, helseIdConfiguration);
         CertificateValidator = new CertificateValidator(_logger, _settings.UseOnlineRevocationCheck);
     }
 
@@ -79,7 +76,6 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     public async Task<CollaborationProtocolProfile> FindProtocolForCounterpartyAsync(int counterpartyHerId)
     {
         _logger.LogDebug($"FindProtocolForCounterpartyAsync {counterpartyHerId}");
-
 
         var key = $"CPA_FindProtocolForCounterpartyAsync_Rest_{counterpartyHerId}";
         var profile = await CacheExtensions.ReadValueFromCacheAsync<CollaborationProtocolProfile>(_logger, _cache, key).ConfigureAwait(false);
@@ -101,7 +97,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         {
             _logger.LogInformation($"{key} - Retrive from registry");
             xmlString = await FindProtocolForCounterpartyVirtualAsync(counterpartyHerId);
-            
+
         }
         catch (HttpRequestException ex)
         {
@@ -156,7 +152,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         _logger.LogDebug($"FindAgreementByIdAsync {id}");
 
         var key = $"CPA_FindAgreementByIdAsync_Rest_{id}";
-        var result = forceUpdate ? null 
+        var result = forceUpdate ? null
             : await CacheExtensions.ReadValueFromCacheAsync<CollaborationProtocolProfile>(_logger, _cache, key).ConfigureAwait(false);
 
         if (result != null)
@@ -301,29 +297,14 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
 
     private async Task<RequestParameters> CreateRequestMessageAsync(HttpMethod method, string path)
     {
-        var tokenResponse = await _helseIdClientCredentialsFlow.GetTokenResponseAsync("", new HelseId.Library.Models.DetailsFromClient.OrganizationNumbers());
-        if (!tokenResponse.IsSuccessful(out var accessTokenResponse))
-        {
-            // Handle an error response from HelseID
-            var errorResponse = tokenResponse.AsError();
-            Console.WriteLine(errorResponse.Error + " " + errorResponse.ErrorDescription);
-            
-        }
-        var dpopProof = await _dPoPProofCreator.CreateDPoPProofForApiRequest(
-            HttpMethod.Post,
-            path,
-            accessTokenResponse);
-
         var request = new RequestParameters()
         {
             Method = method,
             Path = path,
-            BearerToken = await _helseIdClient.CreateJwtAccessTokenAsync(),
-            Dpop = tokenResponse.RawResponse,
-            Proof = dpopProof,
-            AcceptHeader = "application/xml"
+            BearerToken = "",// await _helseIdClient.CreateJwtAccessTokenAsync(),
+            AcceptHeader = "application/xml",
+            IsDpopEnabled = _settings.RestConfiguration.IsDpopEnabled
         };
-
         return request;
     }
 }

@@ -10,13 +10,16 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Helsenorge.Registries.Configuration;
+using HelseId.Library.Configuration;
 using Duende.IdentityModel;
 using Duende.IdentityModel.Client;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Helsenorge.Registries.HelseId;
 
+/*TODO can be discontinued?
+ * If yes, remove ref to Duende library
+ * */
 public class HelseIdClient : IHelseIdClient
 {
     private readonly HelseIdConfiguration _configuration;
@@ -34,7 +37,7 @@ public class HelseIdClient : IHelseIdClient
     /// <returns>Jwt access token</returns>
     public async Task<string> CreateJwtAccessTokenAsync()
     {
-        var scopeName = _configuration.ScopeName;
+        var scopeName = _configuration.Scope;
         string tokenKey = $"HelseIdJwtAccessToken_{scopeName}";
 
         if (TokenCache.TryGetToken(tokenKey, out var cachedToken))
@@ -58,7 +61,7 @@ public class HelseIdClient : IHelseIdClient
         var request = new ClientCredentialsTokenRequest
         {
             ClientId = _configuration.ClientId,
-            Address = _configuration.TokenEndpoint,
+            Address = _configuration.IssuerUri,
             Scope = scopeName,
             GrantType = OidcConstants.GrantTypes.ClientCredentials,
             ClientCredentialStyle = ClientCredentialStyle.PostBody,
@@ -77,7 +80,7 @@ public class HelseIdClient : IHelseIdClient
         var securityKey = _securityKeyProvider.GetSecurityKey();
         var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha512);
         var header = new JwtHeader(signingCredentials, outboundAlgorithmMap: null, tokenType: "client-authentication+jwt");
-        var endpointUri = new Uri(_configuration.TokenEndpoint);
+        var endpointUri = new Uri(_configuration.IssuerUri);
         var payload = new JwtPayload
         {
             [JwtRegisteredClaimNames.Iss] = _configuration.ClientId,
