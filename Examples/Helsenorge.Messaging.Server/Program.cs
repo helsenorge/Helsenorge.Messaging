@@ -136,6 +136,7 @@ namespace Helsenorge.Messaging.Server
             // Register a service that will call HelseID
             helseIdBuilder.Services.AddHttpClient<Registries.Configuration.ProxyHttpClientFactory>();
 
+            //Nothing for single tenant ??
             serviceCollection.AddSingleton(new HelseId.Library.Models.DetailsFromClient.OrganizationNumbers("parent", "child"));
 
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
