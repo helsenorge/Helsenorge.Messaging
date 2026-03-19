@@ -57,12 +57,12 @@ namespace Helsenorge.Registries.Tests
             _registry.SetupFindAgreementById(i =>
             {
                 var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_{i:D}.xml"));
-                return File.Exists(file) == false ? null : File.ReadAllText(file);
+                return !File.Exists(file) ? null : File.ReadAllText(file);
             });
             _registry.SetupFindAgreementForCounterparty(i =>
             {
                 var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_{i}.xml"));
-                return File.Exists(file) == false ? null : File.ReadAllText(file);
+                return !File.Exists(file) ? null : File.ReadAllText(file);
             });
             _registry.SetupFindProtocolForCounterparty(i =>
             {
@@ -71,7 +71,7 @@ namespace Helsenorge.Registries.Tests
                     throw new FaultException(new FaultReason("Dummy fault from mock"), new FaultCode("Client"), string.Empty);
                 }
                 var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPP_{i}.xml"));
-                return File.Exists(file) == false ? null : File.ReadAllText(file);
+                return !File.Exists(file) ? null : File.ReadAllText(file);
             });
         }
 
@@ -133,8 +133,8 @@ namespace Helsenorge.Registries.Tests
             var profile = DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, 93238, "NO_CPA_MESSAGE").Result;
             Assert.IsNotNull(profile);
             Assert.AreEqual("MessageFunctionExceptionProfile", profile.Name);
-            Assert.AreEqual("NO_CPA_MESSAGE", profile.Roles.First().SendMessages.First().Name);
-            Assert.AreEqual("NO_CPA_MESSAGE", profile.Roles.First().SendMessages.First().Action);
+            Assert.AreEqual("NO_CPA_MESSAGE", profile.Roles[0].SendMessages[0].Name);
+            Assert.AreEqual("NO_CPA_MESSAGE", profile.Roles[0].SendMessages[0].Action);
         }
 
         [TestMethod]
@@ -143,8 +143,8 @@ namespace Helsenorge.Registries.Tests
             var profile = DummyCollaborationProtocolProfileFactory.CreateAsync(_addressRegistry, _logger, 93238, null).Result;
             Assert.IsNotNull(profile);
             Assert.AreEqual("DummyCollaborationProtocolProfile", profile.Name);
-            Assert.AreEqual("APPREC", profile.Roles.First().SendMessages.First().Name);
-            Assert.AreEqual("APPREC", profile.Roles.First().SendMessages.First().Action);
+            Assert.AreEqual("APPREC", profile.Roles[0].SendMessages[0].Name);
+            Assert.AreEqual("APPREC", profile.Roles[0].SendMessages[0].Action);
         }
 
         [TestMethod]
@@ -378,7 +378,7 @@ namespace Helsenorge.Registries.Tests
             _registry.SetupFindAgreementById(i =>
             {
                 var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_v2_{i:D}.xml"));
-                return File.Exists(file) == false ? null : File.ReadAllText(file);
+                return !File.Exists(file) ? null : File.ReadAllText(file);
             });
 
             var profile = _registry.FindAgreementByIdAsync(Guid.Parse("51795e2c-9d39-44e0-9168-5bee38f20819"), 5678).Result;
@@ -401,7 +401,7 @@ namespace Helsenorge.Registries.Tests
             _registry.SetupFindAgreementById(i =>
             {
                 var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_v2_{i:D}.xml"));
-                return File.Exists(file) == false ? null : File.ReadAllText(file);
+                return !File.Exists(file) ? null : File.ReadAllText(file);
             });
 
             var profile = _registry.FindAgreementByIdAsync(Guid.Parse("51795e2c-9d39-44e0-9168-5bee38f20819"), 5678).Result;
@@ -439,12 +439,10 @@ namespace Helsenorge.Registries.Tests
             CacheExtensions.WriteValueToCacheAsync(_logger, distributedCache, key, profile, TimeSpan.FromDays(1)).Wait();
             var cached = CacheExtensions.ReadValueFromCacheAsync<Abstractions.CollaborationProtocolProfile>(_logger, distributedCache, key).Result;
             Assert.IsNotNull(cached);
-            using (var rsa = cached.EncryptionCertificate.GetRSAPublicKey())
-            {
-                var encrypted = rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA1);
-                Assert.IsNotNull(encrypted);
-                Assert.IsNotEmpty(encrypted);
-            }
+            using var rsa = cached.EncryptionCertificate.GetRSAPublicKey();
+            var encrypted = rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA1);
+            Assert.IsNotNull(encrypted);
+            Assert.IsNotEmpty(encrypted);
         }
     }
 }

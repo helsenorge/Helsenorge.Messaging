@@ -6,6 +6,15 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using HelseId.Library.ClientCredentials.Interfaces;
+using HelseId.Library.Configuration;
+using HelseId.Library.Interfaces.JwtTokens;
+using HelseId.Library.Models.DetailsFromClient;
+using Helsenorge.Registries.Abstractions;
+using Helsenorge.Registries.Configuration;
+using Helsenorge.Registries.Utilities;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -13,12 +22,6 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Helsenorge.Registries.Abstractions;
-using Helsenorge.Registries.Configuration;
-using Helsenorge.Registries.HelseId;
-using Helsenorge.Registries.Utilities;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Registries;
 
@@ -32,7 +35,6 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     private readonly IAddressRegistry _addressRegistry;
     private readonly RestServiceInvoker _restServiceInvoker;
     private readonly ILogger _logger;
-    private readonly IHelseIdClient _helseIdClient;
     private readonly XNamespace _ns = "http://www.oasis-open.org/committees/ebxml-cppa/schema/cpp-cpa-2_0.xsd";
     private readonly CollaborationProtocolRegistryRestSettings _settings;
 
@@ -48,29 +50,34 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     /// <param name="cache">Cache implementation to use</param>
     /// <param name="addressRegistry">AddressRegistry implementation to use</param>
     /// <param name="logger">The ILogger object used to log diagnostics.</param>
-    /// <param name="helseIdClient">The HelseIdClient object used to retrive authentication token.</param>
+    /// <param name="helseIdClientCredentialsFlow" cref="IHelseIdClientCredentialsFlow">The IHelseIdClientCredentialsFlow implementation to use</param>
+    /// <param name="dPoPProofCreator" cref="IDPoPProofCreatorForApiRequests">The IDPoPProofCreatorForApiRequests implementation to use</param>
+    /// <param name="organizationNumbers">Your organization numbers</param>
+    /// <param name="helseIdConfiguration">Your HelseId configuration</param>
     public CollaborationProtocolRegistryRest(
         CollaborationProtocolRegistryRestSettings settings,
         IDistributedCache cache,
         IAddressRegistry addressRegistry,
         ILogger logger,
-        IHelseIdClient helseIdClient)
+        IHelseIdClientCredentialsFlow helseIdClientCredentialsFlow,
+        IDPoPProofCreatorForApiRequests dPoPProofCreator,
+        OrganizationNumbers organizationNumbers,
+        HelseIdConfiguration helseIdConfiguration)
     {
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _cache = cache ?? throw new ArgumentNullException(nameof(cache));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _helseIdClient = helseIdClient ?? throw new ArgumentNullException(nameof(helseIdClient));
         _addressRegistry = addressRegistry ?? throw new ArgumentNullException(nameof(addressRegistry));
 
         var httpClientFactory = new ProxyHttpClientFactory(settings.RestConfiguration);
-        _restServiceInvoker = new RestServiceInvoker(_logger, httpClientFactory);
+        _restServiceInvoker = new RestServiceInvoker(_logger, httpClientFactory, helseIdClientCredentialsFlow, dPoPProofCreator, organizationNumbers, helseIdConfiguration);
         CertificateValidator = new CertificateValidator(_logger, _settings.UseOnlineRevocationCheck);
     }
 
     /// <inheritdoc cref="FindProtocolForCounterpartyAsync"/>
     public async Task<CollaborationProtocolProfile> FindProtocolForCounterpartyAsync(int counterpartyHerId)
     {
-        _logger.LogDebug($"FindProtocolForCounterpartyAsync {counterpartyHerId}");
+        _logger.LogDebug("FindProtocolForCounterpartyAsync {CounterpartyHerId}", counterpartyHerId);
 
         var key = $"CPA_FindProtocolForCounterpartyAsync_Rest_{counterpartyHerId}";
         var profile = await CacheExtensions.ReadValueFromCacheAsync<CollaborationProtocolProfile>(_logger, _cache, key).ConfigureAwait(false);
@@ -90,7 +97,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
 
         try
         {
-            _logger.LogInformation($"{key} - Retrive from registry");
+            _logger.LogInformation("{Key} - Retrive from registry", key);
             xmlString = await FindProtocolForCounterpartyVirtualAsync(counterpartyHerId);
             
         }
@@ -106,7 +113,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
             }
 
             // if this happens, we fall back to the dummy profile further down
-            _logger.LogWarning($"Could not find or resolve protocol for counterparty when using HerId {counterpartyHerId}, fallback to generate dummy profile. Message: {ex.Message}");
+            _logger.LogWarning(ex, "Could not find or resolve protocol for counterparty when using HerId {CounterpartyHerId}, fallback to generate dummy profile.", counterpartyHerId);
         }
         if (string.IsNullOrEmpty(xmlString))
         {
@@ -131,20 +138,20 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     [ExcludeFromCodeCoverage] // requires wire communication
     protected virtual async Task<string> FindProtocolForCounterpartyVirtualAsync(int counterpartyHerId)
     {
-        var request = await CreateRequestMessageAsync(HttpMethod.Get, $"/Profiles/{counterpartyHerId}");
+        var request = await CreateRequestMessageAsync(HttpMethod.Get, $"Profiles/{counterpartyHerId}");
         return await _restServiceInvoker.ExecuteAsync(request, nameof(FindProtocolForCounterpartyAsync));
     }
 
-    /// <inheritdoc cref="FindAgreementByIdAsync(System.Guid,int)"/>
+    /// <inheritdoc cref="FindAgreementByIdAsync(Guid,int)"/>
     public async Task<CollaborationProtocolProfile> FindAgreementByIdAsync(Guid id, int myHerId)
     {
         return await FindAgreementByIdAsync(id, myHerId, false).ConfigureAwait(false);
     }
 
-    /// <inheritdoc cref="FindAgreementByIdAsync(System.Guid,int,bool)"/>
+    /// <inheritdoc cref="FindAgreementByIdAsync(Guid,int,bool)"/>
     public async Task<CollaborationProtocolProfile> FindAgreementByIdAsync(Guid id, int myHerId, bool forceUpdate)
     {
-        _logger.LogDebug($"FindAgreementByIdAsync {id}");
+        _logger.LogDebug("FindAgreementByIdAsync {Id}", id);
 
         var key = $"CPA_FindAgreementByIdAsync_Rest_{id}";
         var result = forceUpdate ? null 
@@ -199,7 +206,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     [ExcludeFromCodeCoverage] // requires wire communication
     protected virtual async Task<string> FindAgreementByIdVirtualAsync(Guid id)
     {
-        var request = await CreateRequestMessageAsync(HttpMethod.Get, $"/Agreements/{id}");
+        var request = await CreateRequestMessageAsync(HttpMethod.Get, $"Agreements/{id}");
         return await _restServiceInvoker.ExecuteAsync(request, nameof(FindAgreementByIdAsync));
     }
 
@@ -235,7 +242,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         catch (HttpRequestException ex)
         {
             // if there are error getting a proper CPA, we fallback to getting CPP.
-            _logger.LogWarning($"Failed to resolve CPA between {myHerId} and {counterpartyHerId}. Fallback to CPP. Message: {ex.Message}");
+            _logger.LogWarning(ex, "Failed to resolve CPA between {MyHerId} and {CounterpartyHerId}. Fallback to CPP.", myHerId, counterpartyHerId);
             return await FindProtocolForCounterpartyAsync(counterpartyHerId).ConfigureAwait(false);
         }
 
@@ -263,8 +270,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     [ExcludeFromCodeCoverage] // requires wire communication
     protected virtual async Task<string> FindAgreementForCounterpartyVirtualAsync(int myHerId, int counterpartyHerId)
     {
-        var request = await CreateRequestMessageAsync(HttpMethod.Get,
-            $"/Agreements/HerIds/{myHerId}/{counterpartyHerId}");
+        var request = await CreateRequestMessageAsync(HttpMethod.Get, $"Agreements/HerIds/{myHerId}/{counterpartyHerId}");
         return await _restServiceInvoker.ExecuteAsync(request, nameof(FindAgreementForCounterpartyVirtualAsync));
     }
 
@@ -279,7 +285,7 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     [ExcludeFromCodeCoverage]
     protected virtual async Task PingAsyncInternal(int herId)
     {
-        var request = await CreateRequestMessageAsync(HttpMethod.Get, $"/Profiles/{herId}");
+        var request = await CreateRequestMessageAsync(HttpMethod.Get, $"Profiles/{herId}");
         await _restServiceInvoker.ExecuteAsync(request, nameof(PingAsync));
     }
 
@@ -296,8 +302,8 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         {
             Method = method,
             Path = path,
-            BearerToken = await _helseIdClient.CreateJwtAccessTokenAsync(),
-            AcceptHeader = "application/xml"
+            AcceptHeader = "application/xml",
+            IsDpopEnabled = _settings.RestConfiguration.IsDpopEnabled
         };
         return request;
     }

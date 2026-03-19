@@ -7,13 +7,14 @@
  */
 
 using Helsenorge.Messaging.Amqp;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Helsenorge.Messaging.Tests.Amqp;
 
+[TestClass]
 public class AmqpConnectionStringTests
 {
-    [Fact]
+    [TestMethod]
     public void Construct_ConnectionString_Using_Default_Values_And_Password_Unencoded()
     {
         var expectedConnectionString = "amqps://a_user_name:a_password@host_name:5671/";
@@ -24,10 +25,10 @@ public class AmqpConnectionStringTests
             Password = "a_password",
         };
 
-        Assert.Equal(expectedConnectionString, connectionString.ToString());
+        Assert.AreEqual(expectedConnectionString, connectionString.ToString());
     }
 
-    [Fact]
+    [TestMethod]
     public void Construct_ConnectionString_Using_Default_Values_And_Password_Encoded()
     {
         var expectedConnectionString = "amqps://a_user_name:a_password_%24%25-%2A-%2F%3A%21%23%2B%2C67@host_name:5671/";
@@ -38,10 +39,10 @@ public class AmqpConnectionStringTests
             Password = "a_password_$%-*-/:!#+,67",
         };
 
-        Assert.Equal(expectedConnectionString, connectionString.ToString());
+        Assert.AreEqual(expectedConnectionString, connectionString.ToString());
     }
 
-    [Fact]
+    [TestMethod]
     public void Construct_ConnectionString_With_Exchange_Specified()
     {
         var expectedConnectionString = "amqps://a_user_name:a_password@host_name:5671/an_exchange";
@@ -53,10 +54,10 @@ public class AmqpConnectionStringTests
             Password = "a_password",
         };
 
-        Assert.Equal(expectedConnectionString, connectionString.ToString());
+        Assert.AreEqual(expectedConnectionString, connectionString.ToString());
     }
 
-    [Fact]
+    [TestMethod]
     public void Construct_ConnectionString_Setting_UseTls_To_False()
     {
         var expectedConnectionString = "amqp://a_user_name:a_password@host_name:5672/";
@@ -68,10 +69,10 @@ public class AmqpConnectionStringTests
             UseTls = false
         };
 
-        Assert.Equal(expectedConnectionString, connectionString.ToString());
+        Assert.AreEqual(expectedConnectionString, connectionString.ToString());
     }
 
-    [Fact]
+    [TestMethod]
     public void Construct_ConnectionString_Override_Port_Setting()
     {
         var expectedConnectionString = "amqps://a_user_name:a_password@host_name:56721/";
@@ -83,6 +84,6 @@ public class AmqpConnectionStringTests
             Port = 56721
         };
 
-        Assert.Equal(expectedConnectionString, connectionString.ToString());
+        Assert.AreEqual(expectedConnectionString, connectionString.ToString());
     }
 }

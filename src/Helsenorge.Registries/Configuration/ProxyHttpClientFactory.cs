@@ -30,8 +30,6 @@ public class ProxyHttpClientFactory
     /// <exception cref="ArgumentException">Requires a endpoint to be configured</exception>
     public HttpClient CreateHttpClient()
     {
-        if (_configuration == null)
-            throw new ArgumentNullException(nameof(_configuration));
         if (string.IsNullOrEmpty(_configuration.Address))
             throw new ArgumentException(nameof(_configuration.Address));
 
@@ -48,6 +46,10 @@ public class ProxyHttpClientFactory
             httpClientHandler.Proxy = new WebProxy(_configuration.ProxyAddress.AbsoluteUri,
                 _configuration.BypassProxyOnLocal ?? false);
         }
+
+        var uri = new Uri(_configuration.Address);
+        if (uri.Segments.Length > 1 && !uri.AbsolutePath.EndsWith('/'))
+            throw new ArgumentException($"Invalid Address format. {_configuration.Address} must end with / ");
 
         var httpClient = new HttpClient(httpClientHandler)
         {

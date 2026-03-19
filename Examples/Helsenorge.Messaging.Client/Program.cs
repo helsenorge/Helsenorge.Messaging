@@ -6,15 +6,19 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using HelseId.Library;
+using HelseId.Library.ClientCredentials;
+using HelseId.Library.Configuration;
+using HelseId.Library.Models.DetailsFromClient;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Security;
 using Helsenorge.Registries;
-using Helsenorge.Registries.Configuration;
-using Helsenorge.Registries.HelseId;
+using Helsenorge.Registries.Abstractions;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -58,18 +62,16 @@ namespace Helsenorge.Messaging.Client
 
         private static void Configure(string profile, bool ignoreCertificateErrors, bool noProtection)
         {
-
-
-
-
             // read configuration values
-            var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+            var builder = new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appsettings.json", false)
                 .AddJsonFile($"{profile}.json", false);
             var configurationRoot = builder.Build();
 
-            CreateLogger(configurationRoot);
+            var serviceCollection = new ServiceCollection();
+
+            CreateLogger(serviceCollection);
 
             // configure caching
             var distributedCache = DistributedCacheFactory.Create();
@@ -79,18 +81,33 @@ namespace Helsenorge.Messaging.Client
             configurationRoot.GetSection("AddressRegistrySettings").Bind(addressRegistrySettings);
             var addressRegistry = new AddressRegistry(addressRegistrySettings, distributedCache, _logger);
 
-            // set up HelseIdClient
-            var helseidConfiguratrion = new HelseIdConfiguration();
-            configurationRoot.GetSection("HelseIdConfiguration").Bind(helseidConfiguratrion);
-            var provider = new SecurityKeyProvider();
-            var helseIdClient = new HelseIdClient(helseidConfiguratrion, provider);
-
             // set up collaboration rest registry
             var collaborationProtocolRegistryRestSettings = new CollaborationProtocolRegistryRestSettings();
             configurationRoot.GetSection("CollaborationProtocolRegistryRestSettings").Bind(collaborationProtocolRegistryRestSettings);
 
-            var collaborationProtocolRestRegistry = new CollaborationProtocolRegistryRest(collaborationProtocolRegistryRestSettings,
-                               distributedCache, addressRegistry, _logger, helseIdClient);
+            // set up HelseIdClient
+            var helseidConfiguratrion = HelseIdConfiguration.ConfigurationFromAppSettings(configurationRoot.GetSection("HelseIdConfiguration"));
+
+            //setup OrganizationNumbers according to your tenant style. This is a tipycall single-tenant org
+            var organizationNumbers = new OrganizationNumbers();
+
+            var provider = new SecurityKeyProvider();
+            var jsonWebKey = provider.GetSecurityKey() as JsonWebKey;
+
+            serviceCollection.AddSingleton(addressRegistrySettings);
+            serviceCollection.AddSingleton(collaborationProtocolRegistryRestSettings);
+            serviceCollection.AddSingleton(organizationNumbers);
+            serviceCollection.AddSingleton(distributedCache);
+            serviceCollection.AddSingleton<IAddressRegistry>(addressRegistry);
+
+            var helseIdBuilder = serviceCollection.AddHelseIdClientCredentials(helseidConfiguratrion)
+                .AddHelseIdDistributedCaching()
+                .AddSigningCredentialForClientAuthentication(new SigningCredentials(jsonWebKey, jsonWebKey.Alg));
+
+            serviceCollection.AddSingleton<ICollaborationProtocolRegistry, CollaborationProtocolRegistryRest>();
+
+            // Register a service that will call HelseID
+            helseIdBuilder.Services.AddHttpClient();
 
             _clientSettings = new ClientSettings();
             configurationRoot.GetSection("ClientSettings").Bind(_clientSettings);
@@ -102,10 +119,14 @@ namespace Helsenorge.Messaging.Client
             messagingSettings.IgnoreCertificateErrorOnSend = ignoreCertificateErrors;
             messagingSettings.LogPayload = true;
 
-            if(noProtection)
-                _messagingClient = new MessagingClient(messagingSettings, _loggerFactory, collaborationProtocolRestRegistry, addressRegistry, null, null, new NoMessageProtection());
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            _loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+            _logger = _loggerFactory.CreateLogger("TestServer");
+
+            if (noProtection)
+                _messagingClient = new MessagingClient(messagingSettings, _loggerFactory, serviceProvider.GetRequiredService<ICollaborationProtocolRegistry>(), addressRegistry, null, null, new NoMessageProtection());
             else
-                _messagingClient = new MessagingClient(messagingSettings, _loggerFactory, collaborationProtocolRestRegistry, addressRegistry);
+                _messagingClient = new MessagingClient(messagingSettings, _loggerFactory, serviceProvider.GetRequiredService<ICollaborationProtocolRegistry>(), addressRegistry);
         }
 
         private static void HandleAsyncMessage(CommandLineApplication command)
@@ -124,7 +145,7 @@ namespace Helsenorge.Messaging.Client
 
                 Configure(profileArgument.Value, noProtection.HasValue(), noProtection.HasValue());
 
-                if (Directory.Exists(_clientSettings.SourceDirectory) == false)
+                if (!Directory.Exists(_clientSettings.SourceDirectory))
                 {
                     _logger.LogError("Directory does not exist");
                     command.ShowHelp();
@@ -144,7 +165,7 @@ namespace Helsenorge.Messaging.Client
                     {
                         for (var s = GetNextPath(); !string.IsNullOrEmpty(s); s = GetNextPath())
                         {
-                            _logger.LogInformation($"Processing file {s}");
+                            _logger.LogInformation("Processing file {S}", s);
                             Task.WaitAll(_messagingClient.SendAndContinueAsync(new OutgoingMessage()
                             {
                                 MessageFunction = _clientSettings.MessageFunction,
@@ -177,7 +198,7 @@ namespace Helsenorge.Messaging.Client
                 }
                 Configure(profileArgument.Value, noProtection.HasValue(), noProtection.HasValue());
 
-                if (Directory.Exists(_clientSettings.SourceDirectory) == false)
+                if (!Directory.Exists(_clientSettings.SourceDirectory))
                 {
                     _logger.LogError("Directory does not exist");
                     command.ShowHelp();
@@ -193,7 +214,7 @@ namespace Helsenorge.Messaging.Client
                 // since we are synchronous, we don't fire off multiple tasks, we do them sequentially
                 for (var s = GetNextPath(); !string.IsNullOrEmpty(s); s = GetNextPath())
                 {
-                    _logger.LogInformation($"Processing file {s}");
+                    _logger.LogInformation("Processing file {S}", s);
                     var result = _messagingClient.SendAndWaitAsync(new OutgoingMessage()
                     {
                         MessageFunction = _clientSettings.MessageFunction,
@@ -223,16 +244,12 @@ namespace Helsenorge.Messaging.Client
             return null;
         }
 
-        private static void CreateLogger(IConfigurationRoot configurationRoot)
+        private static void CreateLogger(ServiceCollection serviceCollection)
         {
-            var serviceCollection = new ServiceCollection();
             serviceCollection.AddLogging(loggerConfiguration =>
             {
                 loggerConfiguration.AddConsole();
             });
-            var provider = serviceCollection.BuildServiceProvider();
-            _loggerFactory = provider.GetRequiredService<ILoggerFactory>();
-            _logger = _loggerFactory.CreateLogger("TestClient");
         }
     }
 
