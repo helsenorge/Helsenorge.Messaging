@@ -47,10 +47,6 @@ public class ProxyHttpClientFactory
                 _configuration.BypassProxyOnLocal ?? false);
         }
 
-        var uri = new Uri(_configuration.Address);
-        if (uri.Segments.Length > 1 && !uri.AbsolutePath.EndsWith('/'))
-            throw new ArgumentException($"Invalid Address format. {_configuration.Address} must end with / ");
-
         var httpClient = new HttpClient(httpClientHandler)
         {
             BaseAddress = new Uri(_configuration.Address)

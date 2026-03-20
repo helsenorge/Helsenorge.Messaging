@@ -86,13 +86,10 @@ namespace Helsenorge.Messaging.Client
             configurationRoot.GetSection("CollaborationProtocolRegistryRestSettings").Bind(collaborationProtocolRegistryRestSettings);
 
             // set up HelseIdClient
-            var helseidConfiguratrion = HelseIdConfiguration.ConfigurationFromAppSettings(configurationRoot.GetSection("HelseIdConfiguration"));
+            var helseidConfiguratrion = HelseIdConfiguration.ConfigurationFromAppSettings(configurationRoot.GetSection("CppaHelseIdConfiguration"));
 
             //setup OrganizationNumbers according to your tenant style. This is a tipycall single-tenant org
             var organizationNumbers = new OrganizationNumbers();
-
-            var provider = new SecurityKeyProvider();
-            var jsonWebKey = provider.GetSecurityKey() as JsonWebKey;
 
             serviceCollection.AddSingleton(addressRegistrySettings);
             serviceCollection.AddSingleton(collaborationProtocolRegistryRestSettings);
@@ -100,8 +97,12 @@ namespace Helsenorge.Messaging.Client
             serviceCollection.AddSingleton(distributedCache);
             serviceCollection.AddSingleton<IAddressRegistry>(addressRegistry);
 
+            //See HelseId.Library for other ways to register Auth
+            var provider = new SecurityKeyProvider();
+            var jsonWebKey = provider.GetSecurityKey() as JsonWebKey;
+
             var helseIdBuilder = serviceCollection.AddHelseIdClientCredentials(helseidConfiguratrion)
-                .AddHelseIdDistributedCaching()
+                .AddHelseIdDistributedCaching() //See HelseId.Library.Interfaces.Caching.ITokenCache for other options
                 .AddSigningCredentialForClientAuthentication(new SigningCredentials(jsonWebKey, jsonWebKey.Alg));
 
             serviceCollection.AddSingleton<ICollaborationProtocolRegistry, CollaborationProtocolRegistryRest>();
