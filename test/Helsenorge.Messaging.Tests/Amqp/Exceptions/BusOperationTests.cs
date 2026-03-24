@@ -23,7 +23,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Exceptions
     [TestClass]
     public class BusOperationTests
     {
-        public static object[][] RecoverableExceptions =
+        public static readonly object[][] RecoverableExceptions =
         {
             new object[]{new AmqpCommunicationException(string.Empty), typeof(AmqpCommunicationException)},
             new object[]{new ServerBusyException(string.Empty), typeof(ServerBusyException) },
@@ -32,7 +32,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Exceptions
             new object[]{new AmqpException(new Error(AmqpClientConstants.ServerBusyError)), typeof(ServerBusyException) }
         };
 
-        public static object[][] NonRecoverableExceptions =
+        public static readonly object[][] NonRecoverableExceptions =
         {
             new object[]{new AuthenticationException(), typeof(AuthenticationException) },
             new object[]{new ArgumentException(), typeof(ArgumentException) },
@@ -53,14 +53,13 @@ namespace Helsenorge.Messaging.Tests.Amqp.Exceptions
             new object[]{new AmqpException(new Error(AmqpClientConstants.MessageNotFoundError)), typeof(MessageNotFoundException) }
         };
 
-        private MockLoggerProvider _mockLoggerProvider = new MockLoggerProvider(null);
         private readonly ILogger _logger;
         private readonly TestTimeManager _timeManager = new TestTimeManager();
 
 
         public BusOperationTests()
         {
-            _logger = _mockLoggerProvider.CreateLogger("TestLogger");
+            _logger = new MockLoggerProvider(null).CreateLogger("TestLogger");
         }
 
         [TestMethod]
@@ -82,7 +81,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Exceptions
                     throw e;
                 }).PerformAsync());
 
-            Assert.IsInstanceOfType(exception.GetType(), resultingExceptionType);
+            Assert.IsInstanceOfType(exception, resultingExceptionType);
             Assert.AreEqual(6, attempts);
             Assert.HasCount(5, _timeManager.Delays);
 
@@ -110,7 +109,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Exceptions
                     throw e;
                 }).PerformAsync());
 
-            Assert.IsInstanceOfType(exception.GetType(), resultingExceptionType);
+            Assert.IsInstanceOfType(exception, resultingExceptionType);
             Assert.AreEqual(1, attempts);
         }
 
