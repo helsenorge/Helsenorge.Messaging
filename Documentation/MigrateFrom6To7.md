@@ -12,7 +12,8 @@ Det er nødvendig å gjøre seg kjent med biblioteket for å forstå endringene 
 ### Hva er fjernet
 - Alle referanser til xUnit pakker i test prosjekter
 
-[!TIP]
-Når du er klar til å bruke CPPA sin Dpop-enabled endepunktet, sørg for at:
+> [!TIP] 
+
+> Når du er klar til å bruke CPPA sin Dpop-enabled endepunktet, sørg for at:
 1) RestConfiguration.Address har / på slutten (https://cppa.grunndata.nhn.no/v2/) 
 2) Deres HelseID klient har tilgang til scopet nhn:cppa/access_with_dpop og legges inn i konfigureringen HelseId.Library.Configuration.HelseIdConfiguration.Scope
