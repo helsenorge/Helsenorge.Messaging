@@ -129,27 +129,24 @@ internal class RestServiceInvoker
             throw new HttpRequestException($"{errorResponse.Error} {errorResponse.ErrorDescription}");
         }
 
-        var proofUri = baseAddress + request.Path;
-        _logger.LogInformation("Generate DPOP proof for endpoint {ProofUri}", proofUri);
-
-        var dpopProof = await _dPoPProofCreator.CreateDPoPProofForApiRequest(
-            request.Method,
-            proofUri,
-            accessTokenResponse);
-
         if (request.IsDpopEnabled)
         {
+            var proofUri = baseAddress.AbsoluteUri + request.Path;
+
+            _logger.LogInformation("Generate DPOP proof for {ProofUri}", proofUri);
+            var dpopProof = await _dPoPProofCreator.CreateDPoPProofForApiRequest(
+                request.Method,
+                proofUri,
+                accessTokenResponse);
+
             httpRequest.SetDPoPTokenAndProof(accessTokenResponse, dpopProof);
-            _logger.LogInformation("Use Authorization DPOP");
-            httpRequest.Headers.Authorization = new AuthenticationHeaderValue("DPoP", accessTokenResponse.AccessToken);
+            _logger.LogInformation("Authorization DPOP");
         }
         else
         {
-            _logger.LogInformation("Use Authorization Bearer");
-            httpRequest.Headers.Add("DPoP", dpopProof);
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessTokenResponse.AccessToken);
+            _logger.LogInformation("Authorization Bearer");
         }
-
         return httpRequest;
     }
 
