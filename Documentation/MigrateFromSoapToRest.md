@@ -5,7 +5,7 @@ støtten for SOAP-endepunktet vil fjernes i en fremtidig versjon. Derfor anbefal
 til det nye REST-endepunktet så tidlig som mulig.
 
 For å autentisere mot det nye REST endepunktet så krever det at man har HelseId klient satt opp med scopet 
-"nhn:cppa/access".
+"nhn:cppa/access" eller "nhn:cppa/access-with-dpop" for dpop autentisering.
 
 ### Konfigurasjonsrelaterte endringer
 
