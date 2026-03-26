@@ -10,10 +10,12 @@
     <RepositoryUrl>https://github.com/helsenorge/Helsenorge.Messaging</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>images\helsenorge-kvadrat-32x32.png</PackageIcon>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE" Pack="true" PackagePath="" />
     <None Include="..\..\helsenorge-kvadrat-32x32.png" Pack="true" PackagePath="images\helsenorge-kvadrat-32x32.png" />
+    <None Include="..\..\readme.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
