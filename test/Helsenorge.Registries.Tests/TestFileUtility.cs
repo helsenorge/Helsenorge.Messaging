@@ -26,7 +26,7 @@ namespace Helsenorge.Registries.Tests
         {
             string pathAssembly = Assembly.GetExecutingAssembly().Location;
             string folderAssembly = Path.GetDirectoryName(pathAssembly);
-            if (folderAssembly.EndsWith(Path.DirectorySeparatorChar) == false) folderAssembly += Path.DirectorySeparatorChar;
+            if (!folderAssembly.EndsWith(Path.DirectorySeparatorChar)) folderAssembly += Path.DirectorySeparatorChar;
             string path = Path.GetFullPath(folderAssembly + $"..{Path.DirectorySeparatorChar}..{Path.DirectorySeparatorChar}..{Path.DirectorySeparatorChar}");
             return path;
         }

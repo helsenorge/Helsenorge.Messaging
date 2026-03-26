@@ -12,7 +12,7 @@ using System.Diagnostics;
 
 namespace Helsenorge.Messaging.Tests.Mocks
 {
-    class MockLogger : ILogger
+    public class MockLogger : ILogger
     {
         private readonly Func<string, LogLevel, bool> _filter; 
         private readonly string _name;

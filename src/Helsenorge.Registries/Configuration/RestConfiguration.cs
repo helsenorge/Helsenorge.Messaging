@@ -33,4 +33,9 @@ public class RestConfiguration
     ///     Gets or sets the URI address of the HTTP proxy.
     /// </summary>
     public Uri ProxyAddress { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value that indicates whether the enpoint requires DPOP Authorization
+    /// </summary>
+    public bool IsDpopEnabled { get; set; }
 }

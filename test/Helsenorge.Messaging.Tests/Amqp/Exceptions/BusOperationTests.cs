@@ -15,14 +15,15 @@ using System.Security.Authentication;
 using System.Threading.Tasks;
 using Amqp.Framing;
 using Helsenorge.Messaging.Tests.Mocks;
-using Xunit;
 using AmqpException = Amqp.AmqpException;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Helsenorge.Messaging.Tests.Amqp.Exceptions
 {
+    [TestClass]
     public class BusOperationTests
     {
-        public static object[][] RecoverableExceptions =
+        public static readonly object[][] RecoverableExceptions =
         {
             new object[]{new AmqpCommunicationException(string.Empty), typeof(AmqpCommunicationException)},
             new object[]{new ServerBusyException(string.Empty), typeof(ServerBusyException) },
@@ -31,7 +32,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Exceptions
             new object[]{new AmqpException(new Error(AmqpClientConstants.ServerBusyError)), typeof(ServerBusyException) }
         };
 
-        public static object[][] NonRecoverableExceptions =
+        public static readonly object[][] NonRecoverableExceptions =
         {
             new object[]{new AuthenticationException(), typeof(AuthenticationException) },
             new object[]{new ArgumentException(), typeof(ArgumentException) },
@@ -52,23 +53,22 @@ namespace Helsenorge.Messaging.Tests.Amqp.Exceptions
             new object[]{new AmqpException(new Error(AmqpClientConstants.MessageNotFoundError)), typeof(MessageNotFoundException) }
         };
 
-        private MockLoggerProvider _mockLoggerProvider = new MockLoggerProvider(null);
         private readonly ILogger _logger;
         private readonly TestTimeManager _timeManager = new TestTimeManager();
 
 
         public BusOperationTests()
         {
-            _logger = _mockLoggerProvider.CreateLogger("TestLogger");
+            _logger = new MockLoggerProvider(null).CreateLogger("TestLogger");
         }
 
-        [Theory]
-        [MemberData(nameof(RecoverableExceptions))]
+        [TestMethod]
+        [DynamicData(nameof(RecoverableExceptions))]
         public async Task Should_Retry_For_Recoverable_Exceptions(Exception e, Type resultingExceptionType)
         {
             var attempts = 0;
 
-            var exception = await Assert.ThrowsAsync(resultingExceptionType, () =>
+            var exception = await Assert.ThrowsAsync<Exception>(() =>
                 new AmqpOperationBuilder(_logger, e.GetType().Name)
                 {
                     TimeManager = _timeManager,
@@ -81,25 +81,25 @@ namespace Helsenorge.Messaging.Tests.Amqp.Exceptions
                     throw e;
                 }).PerformAsync());
 
-            Assert.Equal(resultingExceptionType, exception.GetType());
-            Assert.Equal(6, attempts);
-            Assert.Equal(5, _timeManager.Delays.Count);
+            Assert.IsInstanceOfType(exception, resultingExceptionType);
+            Assert.AreEqual(6, attempts);
+            Assert.HasCount(5, _timeManager.Delays);
 
             var previousDelay = TimeSpan.Zero;
             foreach (var delay in _timeManager.Delays)
             {
-                Assert.True(delay > previousDelay);
+                Assert.IsGreaterThan(previousDelay, delay);
                 previousDelay = delay;
             }
         }
 
-        [Theory]
-        [MemberData(nameof(NonRecoverableExceptions))]
+        [TestMethod]
+        [DynamicData(nameof(NonRecoverableExceptions))]
         public async Task Should_Not_Retry_For_Non_Recoverable_Exceptions(Exception e, Type resultingExceptionType)
         {
             var attempts = 0;
 
-            var exception = await Assert.ThrowsAsync(resultingExceptionType, () =>
+            var exception = await Assert.ThrowsAsync<Exception>(() =>
                 new AmqpOperationBuilder(_logger, e.GetType().Name)
                 {
                     TimeManager = _timeManager
@@ -109,8 +109,8 @@ namespace Helsenorge.Messaging.Tests.Amqp.Exceptions
                     throw e;
                 }).PerformAsync());
 
-            Assert.Equal(resultingExceptionType, exception.GetType());
-            Assert.Equal(1, attempts);
+            Assert.IsInstanceOfType(exception, resultingExceptionType);
+            Assert.AreEqual(1, attempts);
         }
 
         private sealed class TestTimeManager : ITimeManager

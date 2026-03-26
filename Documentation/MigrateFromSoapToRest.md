@@ -5,21 +5,26 @@ støtten for SOAP-endepunktet vil fjernes i en fremtidig versjon. Derfor anbefal
 til det nye REST-endepunktet så tidlig som mulig.
 
 For å autentisere mot det nye REST endepunktet så krever det at man har HelseId klient satt opp med scopet 
-"nhn:cppa/access".
+"nhn:cppa/access" eller "nhn:cppa/access-with-dpop" for dpop autentisering.
 
 ### Konfigurasjonsrelaterte endringer
+
 Nye konfigurasjoner er CollaborationProtocolRegistryRestSettings og HelseIdConfiguration. 
 CollaborationProtocolRegistryRestSettings inneholder RestConfiguration,CachingInterval, UseOnlineRevocationCheck 
 og ThrowMessageIfNoCpp. Det brukes i stedet for CollaborationProtocolRegistrySettings når man skal ta i bruk
 nye REST endepunktet.
 
 I RestConfiguration setter man URL adressen til CPPA (https://cppa.test.grunndata.nhn.no og 
-https://cppa.grunndata.nhn.no). Man kan også sette opp proxy instillinger ved hjelp av UseDefaultWebProxy, 
+https://cppa.grunndata.nhn.no) eller (https://cppa.test.grunndata.nhn.no/v2/ og 
+https://cppa.grunndata.nhn.no/v2/) for dpop støtte. 
+Man kan også sette opp proxy instillinger ved hjelp av UseDefaultWebProxy, 
 BypassProxyOnLocal og ProxyAddress. 
 
 For å autentisere seg mot det nye endepunktet må man sette opp HelseIdConfiguration. HelseIdConfiguration inneholder
-ClientId, TokenEndpoint (https://helseid-sts.test.nhn.no/connect/token og https://helseid-sts.nhn.no/connect/token) og 
+ClientId, IssuerUri (https://helseid-sts.test.nhn.no og https://helseid-sts.nhn.no) og 
 ScopeName. HelseIdConfiguration blir brukt i HelseIdClient.
+
+Det er viktig å bli kjent med biblioteket https://github.com/NorskHelsenett/HelseID.Library som brukes for å håndtere kall til endepunkter med dpop støtte.
 
 For oppdatert liste over URLer kan du se her: 
 https://helsenorge.atlassian.net/wiki/spaces/HELSENORGE/pages/690913297/Meldingsutveksling+med+Helsenorge
@@ -29,11 +34,14 @@ Det er lagt inn en ny klasse CollaborationProtocolRegistryRest for å kommuniser
 implementerer ICollaborationProtocolRegistry. Når config er satt opp så kan du ganske enkelt endre fra 
 CollaborationProtocolRegistry til CollaborationProtocolRegistryRest.
 
-Endring fra CollaborationProtocolRegistry til CollaborationProtocolRegistryRest så tar konstuktøren inn konfigurasjonen
-CollaborationProtocolRegistryRestSettings og IHelseIdClient. IHelseIdClient settes opp til å bruke HelseIdClient,
-beskrevet nærmere nedenfor. 
+Endring fra CollaborationProtocolRegistry til CollaborationProtocolRegistryRest så tar konstuktøren inn 
+- CollaborationProtocolRegistryRestSettings
+- IHelseIdClientCredentialsFlow for å generere access token 
+- IDPoPProofCreatorForApiRequests for generer dpop-bevis
+- OrganizationNumbers (over og/eller under enheten avhengig av Tenant oppsett)
+- HelseIdConfiguration 
 
 ### Sette opp autentisering for nye endepunktet via HelseId
-For å autentisere via HelseId for the nye endepunktet må man sette opp ISecurityProvider for bruk i HelseIdClient.
+For å autentisere via HelseId for the nye endepunktet må man sette opp ISecurityProvider (se HelseId.Library.HelseIdServiceCollectionExtensions.xxxAuthentication for alternativer) for bruk i HelseIdClient.
 Det er lagt et eksempel på hvordan man kan sette opp denne ved bruk av PEM key i SecurityKeyProvider.cs under 
 Helsenorge.Messaging.Client. Om man har en PEM Key så base64 encoder man PEM keyen før man leser den ut. 

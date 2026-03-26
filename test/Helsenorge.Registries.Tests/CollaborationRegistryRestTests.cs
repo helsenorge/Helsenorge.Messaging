@@ -6,6 +6,17 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using HelseId.Library.ClientCredentials.Interfaces;
+using HelseId.Library.Configuration;
+using HelseId.Library.Interfaces.JwtTokens;
+using HelseId.Library.Models.DetailsFromClient;
+using Helsenorge.Registries.Abstractions;
+using Helsenorge.Registries.Configuration;
+using Helsenorge.Registries.Tests.Mocks;
+using Helsenorge.Registries.Utilities;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
 using System.Linq;
@@ -13,14 +24,6 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.Text;
-using Helsenorge.Registries.Abstractions;
-using Helsenorge.Registries.Configuration;
-using Helsenorge.Registries.HelseId;
-using Helsenorge.Registries.Tests.Mocks;
-using Helsenorge.Registries.Utilities;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Helsenorge.Registries.Tests
 {
@@ -31,48 +34,68 @@ namespace Helsenorge.Registries.Tests
         private IAddressRegistry addressRegistry;
         private ILoggerFactory _loggerFactory;
         private ILogger _logger;
-        private IHelseIdClient _helseIdClientCppa;
+
+        private readonly HelseIdConfiguration _helseIdConfigCppa = new()
+        {
+            ClientId = "client-id",
+            IssuerUri = "https://localhost",
+            Scope = "testscopeCppa"
+        };
+        private readonly CollaborationProtocolRegistryRestSettings collaborationSettings = new CollaborationProtocolRegistryRestSettings()
+        {
+            RestConfiguration = new RestConfiguration()
+            {
+                Address = "https://localhost"
+            },
+            CachingInterval = TimeSpan.FromSeconds(5),
+        };
+
+        private IServiceProvider _serviceProvider;
 
         [TestInitialize]
         public void Setup()
         {
-            var collaborationSettings = new CollaborationProtocolRegistryRestSettings()
-            {
-                RestConfiguration = new RestConfiguration()
-                {
-                    Address = "https://localhost"
-                },
-                CachingInterval = TimeSpan.FromSeconds(5),
-            };
-
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddLogging(loggingBuilder => loggingBuilder.AddDebug());
-            var loggingProvider = serviceCollection.BuildServiceProvider();
-            _loggerFactory = loggingProvider.GetRequiredService<ILoggerFactory>();
-            _logger = _loggerFactory.CreateLogger<CollaborationRegistryRestTests>();
+            serviceCollection.AddSingleton<CollaborationProtocolRegistryRest, CollaborationProtocolRegistryRestMock>();
+
+
+            serviceCollection.AddSingleton<IHelseIdClientCredentialsFlow, HelseIdClientCredentialsFlowMock>();
+            serviceCollection.AddSingleton<IDPoPProofCreatorForApiRequests>(new DPoPProofCreatorMock("some proof"));
 
             var distributedCache = DistributedCacheFactory.CreatePartlyMockedDistributedCache();
+            serviceCollection.AddSingleton(distributedCache);
 
-            var helseIdConfigCppa = new HelseIdConfiguration()
-            {
-                ClientId = "client-id",
-                TokenEndpoint = "https://localhost",
-                ScopeName = "testscopeCppa"
-            };
+            _serviceProvider = serviceCollection.BuildServiceProvider();
 
-            _helseIdClientCppa = new HelseIdClientMock();
+            _loggerFactory = _serviceProvider.GetRequiredService<ILoggerFactory>();
+            _logger = _loggerFactory.CreateLogger<CollaborationRegistryRestTests>();
+            serviceCollection.AddSingleton(_logger);
 
             addressRegistry = AddressRegistryTests.GetDefaultAddressRegistryMock(_logger);
-            _registry = new CollaborationProtocolRegistryRestMock(collaborationSettings, addressRegistry, distributedCache, _logger, _helseIdClientCppa);
+            _registry = new CollaborationProtocolRegistryRestMock(
+                collaborationSettings, 
+                addressRegistry, 
+                distributedCache, 
+                _logger, 
+                _serviceProvider.GetRequiredService<IHelseIdClientCredentialsFlow>(),
+                _serviceProvider.GetRequiredService<IDPoPProofCreatorForApiRequests>(),
+                new OrganizationNumbers(),
+                _helseIdConfigCppa);
+            SetupDefaultRegistryData();
+        }
+
+        private void SetupDefaultRegistryData()
+        {
             _registry.SetupFindAgreementById(i =>
             {
                 var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_Rest_{i:D}.xml"));
-                return File.Exists(file) == false ? null : File.ReadAllText(file);
+                return !File.Exists(file) ? null : File.ReadAllText(file);
             });
             _registry.SetupFindAgreementForCounterparty(i =>
             {
                 var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_Rest_{i}.xml"));
-                return File.Exists(file) == false ? null : File.ReadAllText(file);
+                return !File.Exists(file) ? null : File.ReadAllText(file);
             });
             _registry.SetupFindProtocolForCounterparty(i =>
             {
@@ -81,7 +104,7 @@ namespace Helsenorge.Registries.Tests
                     throw new FaultException(new FaultReason("Dummy fault from mock"), new FaultCode("Client"), string.Empty);
                 }
                 var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPP_Rest_{i}.xml"));
-                return File.Exists(file) == false ? null : File.ReadAllText(file);
+                return !File.Exists(file) ? null : File.ReadAllText(file);
             });
         }
 
@@ -90,12 +113,21 @@ namespace Helsenorge.Registries.Tests
         {
             var distributedCache = DistributedCacheFactory.Create();
             addressRegistry =
-                new AddressRegistryMock(new AddressRegistrySettings { WcfConfiguration = new WcfConfiguration() },
-                    distributedCache, _logger);
+                new AddressRegistryMock(
+                    new AddressRegistrySettings { WcfConfiguration = new WcfConfiguration() },
+                    distributedCache, 
+                    _logger);
 
             Assert.Throws<ArgumentNullException>(() =>
-                new CollaborationProtocolRegistryRest(null, distributedCache, addressRegistry, _logger,
-                    _helseIdClientCppa));
+                new CollaborationProtocolRegistryRest(
+                    null, 
+                distributedCache, 
+                addressRegistry, 
+                _logger,
+                _serviceProvider.GetRequiredService<IHelseIdClientCredentialsFlow>(),
+                _serviceProvider.GetRequiredService<IDPoPProofCreatorForApiRequests>(),
+                new OrganizationNumbers(),
+                _helseIdConfigCppa));
         }
 
         [TestMethod]
@@ -107,8 +139,14 @@ namespace Helsenorge.Registries.Tests
                     distributedCache, _logger);
 
             Assert.Throws<ArgumentNullException>(() =>
-                new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), null,
-                    addressRegistry, _logger, _helseIdClientCppa));
+                new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(),
+                null,
+                addressRegistry,
+                _logger,
+                _serviceProvider.GetRequiredService<IHelseIdClientCredentialsFlow>(),
+                _serviceProvider.GetRequiredService<IDPoPProofCreatorForApiRequests>(),
+                new OrganizationNumbers(),
+                _helseIdConfigCppa));
         }
 
         [TestMethod]
@@ -117,8 +155,16 @@ namespace Helsenorge.Registries.Tests
             var distributedCache = DistributedCacheFactory.Create();
 
             Assert.Throws<ArgumentNullException>(() =>
-                new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache,
-                    null, _logger, _helseIdClientCppa));
+                new CollaborationProtocolRegistryRest(
+                new CollaborationProtocolRegistryRestSettings(),
+                distributedCache,
+                null,
+                _logger,
+                _serviceProvider.GetRequiredService<IHelseIdClientCredentialsFlow>(),
+                _serviceProvider.GetRequiredService<IDPoPProofCreatorForApiRequests>(),
+                new OrganizationNumbers(),
+                _helseIdConfigCppa));
+                    
         }
 
         [TestMethod]
@@ -130,12 +176,19 @@ namespace Helsenorge.Registries.Tests
                     distributedCache, _logger);
 
             Assert.Throws<ArgumentNullException>(() =>
-                new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache,
-                    addressRegistry, null, _helseIdClientCppa));
+                new CollaborationProtocolRegistryRest(
+                    new CollaborationProtocolRegistryRestSettings(), 
+                    distributedCache,
+                    addressRegistry, 
+                    null,
+                _serviceProvider.GetRequiredService<IHelseIdClientCredentialsFlow>(),
+                _serviceProvider.GetRequiredService<IDPoPProofCreatorForApiRequests>(),
+                new OrganizationNumbers(),
+                _helseIdConfigCppa));
         }
 
         [TestMethod]
-        public void RestCpa_Constructor_HelseIdClient_Null()
+        public void RestCpa_Constructor_IHelseIdClientCredentialsFlow_Null()
         {
             var distributedCache = DistributedCacheFactory.Create();
             addressRegistry =
@@ -143,8 +196,75 @@ namespace Helsenorge.Registries.Tests
                     distributedCache, _logger);
 
             Assert.Throws<ArgumentNullException>(() =>
-                new CollaborationProtocolRegistryRest(new CollaborationProtocolRegistryRestSettings(), distributedCache,
-                    addressRegistry, _logger, null));
+                new CollaborationProtocolRegistryRest(
+                    new CollaborationProtocolRegistryRestSettings(), 
+                    distributedCache,
+                    addressRegistry, 
+                    _logger, 
+                    null,
+                _serviceProvider.GetRequiredService<IDPoPProofCreatorForApiRequests>(),
+                new OrganizationNumbers(),
+                _helseIdConfigCppa));
+        }
+
+        [TestMethod]
+        public void RestCpa_Constructor_IDPoPProofCreatorForApiRequests_Null()
+        {
+            var distributedCache = DistributedCacheFactory.Create();
+            addressRegistry =
+                new AddressRegistryMock(new AddressRegistrySettings { WcfConfiguration = new WcfConfiguration() },
+                    distributedCache, _logger);
+
+            Assert.Throws<ArgumentNullException>(() =>
+                new CollaborationProtocolRegistryRest(
+                    new CollaborationProtocolRegistryRestSettings(),
+                    distributedCache,
+                    addressRegistry,
+                    _logger,
+                _serviceProvider.GetRequiredService<IHelseIdClientCredentialsFlow>(),
+                null,
+                new OrganizationNumbers(),
+                _helseIdConfigCppa));
+        }
+
+        [TestMethod]
+        public void RestCpa_Constructor_OrganizationNumbers_Null()
+        {
+            var distributedCache = DistributedCacheFactory.Create();
+            addressRegistry =
+                new AddressRegistryMock(new AddressRegistrySettings { WcfConfiguration = new WcfConfiguration() },
+                    distributedCache, _logger);
+
+            Assert.Throws<ArgumentNullException>(() =>
+                new CollaborationProtocolRegistryRest(
+                    new CollaborationProtocolRegistryRestSettings(),
+                    distributedCache,
+                    addressRegistry,
+                    _logger,
+                _serviceProvider.GetRequiredService<IHelseIdClientCredentialsFlow>(),
+                _serviceProvider.GetRequiredService<IDPoPProofCreatorForApiRequests>(),
+                null,
+                _helseIdConfigCppa));
+        }
+
+        [TestMethod]
+        public void RestCpa_Constructor_HelseIdConfiguration_Null()
+        {
+            var distributedCache = DistributedCacheFactory.Create();
+            addressRegistry =
+                new AddressRegistryMock(new AddressRegistrySettings { WcfConfiguration = new WcfConfiguration() },
+                    distributedCache, _logger);
+
+            Assert.Throws<ArgumentNullException>(() =>
+                new CollaborationProtocolRegistryRest(
+                    new CollaborationProtocolRegistryRestSettings(),
+                    distributedCache,
+                    addressRegistry,
+                    _logger,
+                _serviceProvider.GetRequiredService<IHelseIdClientCredentialsFlow>(),
+                _serviceProvider.GetRequiredService<IDPoPProofCreatorForApiRequests>(),
+                new OrganizationNumbers(),
+                null));
         }
 
         [TestMethod]
@@ -156,7 +276,7 @@ namespace Helsenorge.Registries.Tests
             }
             catch (AggregateException ex)
             {
-                Assert.IsInstanceOfType(ex.InnerException, typeof(RegistriesException));
+                Assert.IsInstanceOfType<RegistriesException>(ex.InnerException);
             }
         }
 
@@ -166,8 +286,8 @@ namespace Helsenorge.Registries.Tests
             var profile = DummyCollaborationProtocolProfileFactory.CreateAsync(addressRegistry, _logger, 93238, "NO_CPA_MESSAGE").Result;
             Assert.IsNotNull(profile);
             Assert.AreEqual("MessageFunctionExceptionProfile", profile.Name);
-            Assert.AreEqual("NO_CPA_MESSAGE", profile.Roles.First().SendMessages.First().Name);
-            Assert.AreEqual("NO_CPA_MESSAGE", profile.Roles.First().SendMessages.First().Action);
+            Assert.AreEqual("NO_CPA_MESSAGE", profile.Roles[0].SendMessages[0].Name);
+            Assert.AreEqual("NO_CPA_MESSAGE", profile.Roles[0].SendMessages[0].Action);
         }
 
         [TestMethod]
@@ -408,7 +528,7 @@ namespace Helsenorge.Registries.Tests
             _registry.SetupFindAgreementById(i =>
             {
                 var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_v2_{i:D}.xml"));
-                return File.Exists(file) == false ? null : File.ReadAllText(file);
+                return !File.Exists(file) ? null : File.ReadAllText(file);
             });
 
             var profile = _registry.FindAgreementByIdAsync(Guid.Parse("51795e2c-9d39-44e0-9168-5bee38f20819"), 5678).Result;
@@ -431,7 +551,7 @@ namespace Helsenorge.Registries.Tests
             _registry.SetupFindAgreementById(i =>
             {
                 var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPA_v2_{i:D}.xml"));
-                return File.Exists(file) == false ? null : File.ReadAllText(file);
+                return !File.Exists(file) ? null : File.ReadAllText(file);
             });
 
             var profile = _registry.FindAgreementByIdAsync(Guid.Parse("51795e2c-9d39-44e0-9168-5bee38f20819"), 5678).Result;
@@ -467,14 +587,12 @@ namespace Helsenorge.Registries.Tests
 
             var profile = _registry.FindProtocolForCounterpartyAsync(93238).Result;
             CacheExtensions.WriteValueToCacheAsync(_logger, distributedCache, key, profile, TimeSpan.FromDays(1)).Wait();
-            var cached = CacheExtensions.ReadValueFromCacheAsync<Abstractions.CollaborationProtocolProfile>(_logger, distributedCache, key).Result;
+            var cached = CacheExtensions.ReadValueFromCacheAsync<CollaborationProtocolProfile>(_logger, distributedCache, key).Result;
             Assert.IsNotNull(cached);
-            using (var rsa = cached.EncryptionCertificate.GetRSAPublicKey())
-            {
-                var encrypted = rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA1);
-                Assert.IsNotNull(encrypted);
-                Assert.IsNotEmpty(encrypted);
-            }
+            using var rsa = cached.EncryptionCertificate.GetRSAPublicKey();
+            var encrypted = rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA1);
+            Assert.IsNotNull(encrypted);
+            Assert.IsNotEmpty(encrypted);
         }
     }
 }

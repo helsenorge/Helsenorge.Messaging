@@ -6,14 +6,17 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using HelseId.Library.ClientCredentials.Interfaces;
+using HelseId.Library.Configuration;
+using HelseId.Library.Interfaces.JwtTokens;
+using HelseId.Library.Models.DetailsFromClient;
+using Helsenorge.Registries.Abstractions;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.ServiceModel;
 using System.Threading.Tasks;
-using Helsenorge.Registries.Abstractions;
-using Helsenorge.Registries.HelseId;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Registries.Tests.Mocks
 {
@@ -37,8 +40,11 @@ namespace Helsenorge.Registries.Tests.Mocks
             CollaborationProtocolRegistryRestSettings settings,
             IAddressRegistry addressRegistry,
             IDistributedCache cache,
-            ILogger logger, 
-            IHelseIdClient helseIdClient) : base(settings, cache, addressRegistry, logger, helseIdClient)
+            ILogger logger,
+        IHelseIdClientCredentialsFlow helseIdClientCredentialsFlow,
+        IDPoPProofCreatorForApiRequests dPoPProofCreator,
+        OrganizationNumbers organizationNumbers,
+        HelseIdConfiguration helseIdConfiguration) : base(settings, cache, addressRegistry, logger, helseIdClientCredentialsFlow, dPoPProofCreator, organizationNumbers, helseIdConfiguration)
         {
         }
 

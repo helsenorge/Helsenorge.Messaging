@@ -5,9 +5,10 @@
       "Password": "???"
     }
   },
-  "HelseIdConfiguration": {
+  "CppaHelseIdConfiguration": {
     "ClientId": "???",
     "TokenEndpoint": "???",
+    "IssuerUri": "???",
     "ScopeName": "???"
   },
   "MessagingSettings": {

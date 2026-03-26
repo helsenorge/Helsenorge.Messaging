@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.6.33723.286
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11527.330 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helsenorge.Messaging", "src\Helsenorge.Messaging\Helsenorge.Messaging.csproj", "{A0BA02E7-C2EA-496B-85ED-10ACD42B4DE8}"
 EndProject
@@ -48,6 +48,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		Documentation\MigrateFrom3To4.md = Documentation\MigrateFrom3To4.md
 		Documentation\MigrateFrom4To5.md = Documentation\MigrateFrom4To5.md
 		Documentation\MigrateFrom5To6.md = Documentation\MigrateFrom5To6.md
+		Documentation\MigrateFrom6To7.md = Documentation\MigrateFrom6To7.md
 		Documentation\MottaMeldinger.md = Documentation\MottaMeldinger.md
 		Documentation\OppdaterProxyKlasser.md = Documentation\OppdaterProxyKlasser.md
 		Documentation\Registre.md = Documentation\Registre.md

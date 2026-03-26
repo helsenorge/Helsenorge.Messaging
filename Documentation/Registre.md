@@ -9,9 +9,11 @@ Før man kan sette opp infrastrukturen for meldinger, så må man ha registerint
 Denne koden bruker klasser fra andre Microsoft.Extensions.* pakkker. Se også Helsenorge.Messaging.Client prosjektet for eksempler på hvordan det kan settes opp.
 
 ```cs
-var loggerFactory = new LoggerFactory();
-loggerFactory.AddConsole();
-var logger = loggerFactory.CreateLogger<Program>();
+var serviceCollection = new ServiceCollection();
+serviceCollection.AddLogging(loggerConfiguration =>
+            {
+                loggerConfiguration.AddConsole();
+            });
 
 var distributedCache = new MemoryDistributedCache(new MemoryCache(new MemoryCacheOptions()));
 
@@ -23,16 +25,25 @@ addressRegistrySettings.CachingInterval = TimeSpan.FromHours(12);
             
 var addressRegistry = new AddressRegistry(addressRegistrySettings, distributedCache, new Logger());
 
-var helseidConfiguratrion = new HelseIdConfiguration();
-helseidConfiguratrion.ClientId = "HelseId klient id"
-helseidConfiguratrion.TokenEndpoint = "Endepunkt til helseid"
-helseidConfiguratrion.ScopeName = "scopet til endepunktet"
-ISecurityKeyProvider provider = new () //Implementasjon av ISecurityKeyProvider
-var helseIdClient = new HelseIdClient(helseidConfiguratrion, provider);
-
 var collaborationProtocolRegistrySettings = new CollaborationProtocolRegistryRestSettings();
 collaborationProtocolRegistrySettings.RestConfiguration.Address = "adresse til CPPA tjenesten";
+collaborationProtocolRegistrySettings.RestConfiguration.IsDpopEnabled = false; //eller true for endepunkt med dpop støtte
 collaborationProtocolRegistrySettings.CachingInterval = TimeSpan.FromHours(12);			
+
+var cppaHelseidConfiguratrion = new HelseIdConfiguration("HelseId klient id", "scopet til endepunktet", "IssuerUri");
+
+ISecurityKeyProvider provider = new () //Implementasjon av ISecurityKeyProvider. Se HelseId.Library.HelseIdServiceCollectionExtensions for alternativer
+var jsonWebKey = provider.GetSecurityKey() as JsonWebKey;
+
+var helseIdBuilder = serviceCollection.AddHelseIdClientCredentials(cppaHelseidConfiguratrion)
+            .AddHelseIdInMemoryCaching() 
+            .AddSigningCredentialForClientAuthentication(new SigningCredentials(jsonWebKey, jsonWebKey.Alg));
             
-var collaborationProtocolRegistry = new CollaborationProtocolRegistryRest(collaborationProtocolRegistrySettings, distributedCache, addressRegistry, new Logger(), helseIdClient);
+// Register a service that will call HelseID
+helseIdBuilder.Services.AddHttpClient();
+
+var serviceProvider = serviceCollection.BuildServiceProvider();
+var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+var logger = loggerFactory.CreateLogger<Program>();
+
 ```

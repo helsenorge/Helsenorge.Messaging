@@ -6,13 +6,19 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using HelseId.Library;
+using HelseId.Library.ClientCredentials;
+using HelseId.Library.Configuration;
+using HelseId.Library.Models.DetailsFromClient;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Server.NLog;
 using Helsenorge.Registries;
+using Helsenorge.Registries.Abstractions;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using NLog;
 using NLog.Config;
 using System;
@@ -20,8 +26,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Helsenorge.Registries.Configuration;
-using Helsenorge.Registries.HelseId;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Helsenorge.Messaging.Server
@@ -29,7 +33,6 @@ namespace Helsenorge.Messaging.Server
     class Program
     {
         private static ILogger _logger;
-        private static ILoggerFactory _loggerFactory;
         private static IMessagingServer _messagingServer;
         private static ServerSettings _serverSettings;
 
@@ -76,13 +79,15 @@ namespace Helsenorge.Messaging.Server
         private static void Configure(string profile)
         {
             // read configuration values
-            var builder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+            var builder = new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appsettings.json", false)
                 .AddJsonFile($"{profile}.json", false);
             var configurationRoot = builder.Build();
 
-            CreateLogger(configurationRoot);
+            var serviceCollection = new ServiceCollection();
+
+            CreateLogger(serviceCollection);
 
             // configure caching
             var distributedCache = DistributedCacheFactory.Create();
@@ -92,18 +97,34 @@ namespace Helsenorge.Messaging.Server
             configurationRoot.GetSection("AddressRegistrySettings").Bind(addressRegistrySettings);
             var addressRegistry = new AddressRegistry(addressRegistrySettings, distributedCache, _logger);
 
-            // set up HelseIdClient
-            var helseidConfiguratrion = new HelseIdConfiguration();
-            configurationRoot.GetSection("HelseIdConfiguration").Bind(helseidConfiguratrion);
-            var provider = new SecurityKeyProvider();
-            var helseIdClient = new HelseIdClient(helseidConfiguratrion, provider);
-
             // set up collaboration rest registry
             var collaborationProtocolRegistryRestSettings = new CollaborationProtocolRegistryRestSettings();
             configurationRoot.GetSection("CollaborationProtocolRegistryRestSettings").Bind(collaborationProtocolRegistryRestSettings);
 
-            var collaborationProtocolRestRegistry = new CollaborationProtocolRegistryRest(collaborationProtocolRegistryRestSettings,
-                distributedCache, addressRegistry, _logger, helseIdClient);
+            // set up HelseIdClient
+            var cppaHelseidConfiguratrion = HelseIdConfiguration.ConfigurationFromAppSettings(configurationRoot.GetSection("CppaHelseIdConfiguration"));
+
+            //setup OrganizationNumbers according to your tenant style. This is a tipycall single-tenant org
+            var organizationNumbers = new OrganizationNumbers();
+
+            serviceCollection.AddSingleton(addressRegistrySettings);
+            serviceCollection.AddSingleton(collaborationProtocolRegistryRestSettings);
+            serviceCollection.AddSingleton(organizationNumbers);
+            serviceCollection.AddSingleton(distributedCache);
+            serviceCollection.AddSingleton<IAddressRegistry>(addressRegistry);
+
+            //See HelseId.Library for other ways to register Auth
+            var provider = new SecurityKeyProvider();
+            var jsonWebKey = provider.GetSecurityKey() as JsonWebKey;
+
+            var helseIdBuilder = serviceCollection.AddHelseIdClientCredentials(cppaHelseidConfiguratrion)
+                .AddHelseIdDistributedCaching() //See HelseId.Library.Interfaces.Caching.ITokenCache for other options
+                .AddSigningCredentialForClientAuthentication(new SigningCredentials(jsonWebKey, jsonWebKey.Alg));
+
+            serviceCollection.AddSingleton<ICollaborationProtocolRegistry, CollaborationProtocolRegistryRest>();
+
+            // Register a service that will call HelseID
+            helseIdBuilder.Services.AddHttpClient();
 
             _serverSettings = new ServerSettings();
             configurationRoot.GetSection("ServerSettings").Bind(_serverSettings);
@@ -115,11 +136,16 @@ namespace Helsenorge.Messaging.Server
             messagingSettings.AmqpSettings.Synchronous.ReplyQueueMapping.Add(Environment.MachineName, "DUMMY"); // we just need a value, it will never be used
             messagingSettings.LogPayload = true;
 
-            _messagingServer = new MessagingServer(messagingSettings, _loggerFactory, collaborationProtocolRestRegistry, addressRegistry);
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+            _logger = loggerFactory.CreateLogger("TestServer");
 
+            _messagingServer = new MessagingServer(messagingSettings, loggerFactory, serviceProvider.GetRequiredService<ICollaborationProtocolRegistry>(), addressRegistry);
+
+            const string propKeyCorrelationId = "correlationId";
             _messagingServer.RegisterAsynchronousMessageReceivedStartingCallbackAsync((listener, message) =>
             {
-                ScopeContext.PushProperty("correlationId", message.MessageId);
+                ScopeContext.PushProperty(propKeyCorrelationId, message.MessageId);
                 return Task.CompletedTask;
             });
             _messagingServer.RegisterAsynchronousMessageReceivedCallbackAsync(async (m) =>
@@ -130,7 +156,7 @@ namespace Helsenorge.Messaging.Server
                 }
 
                 var path = Path.Combine(_serverSettings.DestinationDirectory, "Asynchronous");
-                if (Directory.Exists(path) == false)
+                if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
                 }
@@ -141,19 +167,19 @@ namespace Helsenorge.Messaging.Server
             });
             _messagingServer.RegisterAsynchronousMessageReceivedCompletedCallbackAsync((m) =>
             {
-                ScopeContext.PushProperty("correlationId", m.MessageId);
+                ScopeContext.PushProperty(propKeyCorrelationId, m.MessageId);
                 return Task.CompletedTask;
             });
 
             _messagingServer.RegisterSynchronousMessageReceivedStartingCallbackAsync((m) =>
             {
-                ScopeContext.PushProperty("correlationId", string.Empty);// reset correlation id
+                ScopeContext.PushProperty(propKeyCorrelationId, string.Empty);// reset correlation id
                 return Task.CompletedTask;
             });
             _messagingServer.RegisterSynchronousMessageReceivedCallbackAsync(async (m) =>
             {
                 var path = Path.Combine(_serverSettings.DestinationDirectory, "Synchronous");
-                if (Directory.Exists(path) == false)
+                if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);
                 }
@@ -166,24 +192,20 @@ namespace Helsenorge.Messaging.Server
             });
             _messagingServer.RegisterSynchronousMessageReceivedCompletedCallbackAsync((m) =>
             {
-                ScopeContext.PushProperty("correlationId", string.Empty); // reset correlation id
+                ScopeContext.PushProperty(propKeyCorrelationId, string.Empty); // reset correlation id
                 return Task.CompletedTask;
             });
         }
 
-        private static void CreateLogger(IConfigurationRoot configurationRoot)
+        private static void CreateLogger(ServiceCollection serviceCollection)
         {
             LogManager.Configuration = new XmlLoggingConfiguration("NLog.config");
             LogManager.ThrowConfigExceptions = true;
-            var serviceCollection = new ServiceCollection();
             serviceCollection.AddLogging(loggingBuilder =>
             {
                 loggingBuilder.AddConsole();
                 loggingBuilder.AddNLog();
             });
-            var provider = serviceCollection.BuildServiceProvider();
-            _loggerFactory = provider.GetRequiredService<ILoggerFactory>();
-            _logger = _loggerFactory.CreateLogger("TestServer");
         }
     }
 

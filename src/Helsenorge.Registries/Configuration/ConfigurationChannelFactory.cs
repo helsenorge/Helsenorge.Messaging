@@ -16,10 +16,7 @@ namespace Helsenorge.Registries.Configuration
     {
         public ConfigurationChannelFactory(WcfConfiguration configuration) : base(typeof(TChannel))
         {
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
+            ArgumentNullException.ThrowIfNull(configuration);
 
             if (string.IsNullOrEmpty(configuration.Address))
             {
