@@ -1,20 +1,20 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Amqp.Senders;
+using Helsenorge.Registries;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using Helsenorge.Registries;
 
 namespace Helsenorge.Messaging
 {
@@ -188,6 +188,7 @@ namespace Helsenorge.Messaging
             if ((profile != null && DummyCollaborationProtocolProfileFactory.IsDummyProfile(profile))
                 || (collaborationProtocolMessage == null && messageFunction.ToUpper().Contains("DIALOG_INNBYGGER_TIMERESERVASJON")))
             {
+                logger.LogInformation($"Message Function {messageFunction} not found in CPA Id: {profile?.CpaId} or CPP Id: {profile?.CppId}. Applying hack for DIALOG_INNBYGGER_TIMERESERVASJON.");
                 // HACK: This whole section inside this if statement is a hack to support communication parties which do not have the process DIALOG_INNBYGGER_TIMERESERVASJON configured.
                 // FIXME: This hack is to be removed in the future and external parties should start to use DIALOG_INNBYGGER_AVTALEUSTENDING and DIALOG_INNBYGGER_AVTALEAVBESTILLING.
                 var communicationParty = await AddressRegistry.FindCommunicationPartyDetailsAsync(message.ToHerId).ConfigureAwait(false);

@@ -1,7 +1,7 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
@@ -59,6 +59,9 @@ public static class DummyCollaborationProtocolProfileFactory
         }
 
         var deliveryChannel = communicationParty.AsynchronousQueueName;
+
+        logger.LogInformation(
+            $"Creating dummy CPP for HerId {herId} with delivery channel {deliveryChannel} and message function {messageFunction}");
         return CreateDummyCollaborationProtocolProfile(herId,
             await addressRegistry.GetCertificateDetailsForEncryptionAsync(herId).ConfigureAwait(false),
             await addressRegistry.GetCertificateDetailsForValidatingSignatureAsync(herId).ConfigureAwait(false),
