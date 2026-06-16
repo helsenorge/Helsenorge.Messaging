@@ -23,7 +23,7 @@
     <PackageReference Include="HelseID.Library.ClientCredentials" Version="1.1.3" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="10.0.7" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.5" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.16.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.19.1" />
     <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.3" />
   </ItemGroup>
   
