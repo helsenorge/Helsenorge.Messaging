@@ -15,16 +15,14 @@ jobs:
         platform: [ windows-latest, ubuntu-latest, macos-14 ]
     steps:
     - uses: actions/checkout@v6
-    - name: Setup .NET 8.0 and 9.0
+    - name: Setup .NET
       uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: |
-          8.0.x
-          9.0.x
+        global-json-file: global.json
     - name: Install dependencies
-      run: dotnet restore Messaging.sln
+      run: dotnet restore Messaging.slnx
     - name: Build
-      run: dotnet build Messaging.sln --configuration Release --no-restore
+      run: dotnet build Messaging.slnx --configuration Release --no-restore
     - name: Unit tests
       run: |
         dotnet test "./test/Helsenorge.Messaging.Tests/Helsenorge.Messaging.Tests.csproj"

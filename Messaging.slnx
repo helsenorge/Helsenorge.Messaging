@@ -1,0 +1,58 @@
+<Solution>
+  <Folder Name="/Examples/">
+    <Project Path="Examples/Helsenorge.Messaging.Client/Helsenorge.Messaging.Client.csproj" />
+    <Project Path="Examples/Helsenorge.Messaging.Server/Helsenorge.Messaging.Server.csproj" />
+    <Project Path="Examples/PooledReceiver/PooledReceiver.csproj" />
+    <Project Path="Examples/PooledSender/PooledSender.csproj" />
+    <Project Path="Examples/ReceiveDecryptAndValidate/ReceiveDecryptAndValidate.csproj" />
+    <Project Path="Examples/RepublishExample/RepublishExample.csproj" />
+    <Project Path="Examples/SearchByIdAndGetOrganizationDetailsExample/SearchByIdAndGetOrganizationDetailsExample.csproj" />
+    <Project Path="Examples/SignEncryptAndSend/SignEncryptAndSend.csproj" />
+    <Project Path="Examples/SimpleReceiver/SimpleReceiver.csproj" />
+    <Project Path="Examples/SimpleSender/SimpleSender.csproj" />
+    <Project Path="Examples/SubscriptionExample/SubscriptionExample.csproj" />
+  </Folder>
+  <Folder Name="/SolutionItems/">
+    <File Path="LICENSE" />
+    <File Path="readme.md" />
+  </Folder>
+  <Folder Name="/SolutionItems/Documentation/">
+    <File Path="Documentation/Biztalk.md" />
+    <File Path="Documentation/CPPA.md" />
+    <File Path="Documentation/Eksempler.md" />
+    <File Path="Documentation/Feilkoder.md" />
+    <File Path="Documentation/FeilOgLogging.md" />
+    <File Path="Documentation/Forutsetninger.md" />
+    <File Path="Documentation/Konfigurasjon.md" />
+    <File Path="Documentation/KrypteringOgSignering.md" />
+    <File Path="Documentation/MigrateFrom3To4.md" />
+    <File Path="Documentation/MigrateFrom4To5.md" />
+    <File Path="Documentation/MigrateFrom5To6.md" />
+    <File Path="Documentation/MigrateFrom6To7.md" />
+    <File Path="Documentation/MottaMeldinger.md" />
+    <File Path="Documentation/OppdaterProxyKlasser.md" />
+    <File Path="Documentation/Registre.md" />
+    <File Path="Documentation/SendeMeldinger.md" />
+    <File Path="Documentation/Testmiljøer.md" />
+    <File Path="Documentation/Troubleshooting.md" />
+  </Folder>
+  <Folder Name="/SolutionItems/Tools/">
+    <File Path="Directory.Build.props" />
+    <File Path="tools/key.snk" />
+  </Folder>
+  <Folder Name="/SolutionItems/Tools/.github/">
+    <File Path=".github/dependabot.yml" />
+  </Folder>
+  <Folder Name="/SolutionItems/Tools/.github/workflows/">
+    <File Path=".github/workflows/build.yml" />
+    <File Path=".github/workflows/codeql-analysis.yml" />
+    <File Path=".github/workflows/nuget-deploy.yml" />
+  </Folder>
+  <Project Path="src/Helsenorge.Messaging.AdminLib/Helsenorge.Messaging.AdminLib.csproj" />
+  <Project Path="src/Helsenorge.Messaging/Helsenorge.Messaging.csproj" />
+  <Project Path="src/Helsenorge.Registries/Helsenorge.Registries.csproj" />
+  <Project Path="test/Helsenorge.Messaging.AdminLib.Tests/Helsenorge.Messaging.AdminLib.Tests.csproj" />
+  <Project Path="test/Helsenorge.Messaging.Tests.Mocks/Helsenorge.Messaging.Tests.Mocks.csproj" />
+  <Project Path="test/Helsenorge.Messaging.Tests/Helsenorge.Messaging.Tests.csproj" />
+  <Project Path="test/Helsenorge.Registries.Tests/Helsenorge.Registries.Tests.csproj" />
+</Solution>
