@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -378,36 +379,30 @@ namespace Helsenorge.Messaging.Amqp
                 logger.LogWarning(EventIds.MissingField, "FromHerId is missing. No idea where to send the error");
                 return;
             }
+            /*
+                Build a brand new, unique error message instead of cloning the original.
+                Cloning carries over broker-managed headers, delivery-/message-annotations
+                (e.g. x-opt-locked-until) and other transport state that causes follow-on
+                errors when the message is re-sent. We only set the properties defined by the documentation.           
+            */
+            var errorMessage = await FactoryPool.CreateMessageAsync(logger, new MemoryStream()).ConfigureAwait(false);
 
-            // Clones original message, but leaves out the payload
-            var clonedMessage = originalMessage.Clone(false);
-            // update some properties on the cloned message
-            clonedMessage.To = await ConstructQueueNameAsync(logger, originalMessage.FromHerId, QueueType.Error)
-                .ConfigureAwait(false); // change target 
-            clonedMessage.TimeToLive = Settings.Error.TimeToLive;
-            clonedMessage.FromHerId = originalMessage.ToHerId;
-            clonedMessage.ToHerId = originalMessage.FromHerId;
+            errorMessage.MessageId = Guid.NewGuid().ToString("N");
+            errorMessage.MessageFunction = originalMessage.MessageFunction;
+            errorMessage.To = await ConstructQueueNameAsync(logger, originalMessage.FromHerId, QueueType.Error)
+                .ConfigureAwait(false); // send to the sender's error queue
+            errorMessage.TimeToLive = Settings.Error.TimeToLive;
+           
+            // the error travels in the opposite direction of the original message
+            errorMessage.FromHerId = originalMessage.ToHerId;
+            errorMessage.ToHerId = originalMessage.FromHerId;
+            errorMessage.ApplicationTimestamp = DateTime.UtcNow;
 
-            if (clonedMessage.Properties.ContainsKey(OriginalMessageIdHeaderKey) == false)
-            {
-                clonedMessage.SetApplicationPropertyValue(OriginalMessageIdHeaderKey, originalMessage.MessageId);
-            }
-
-            if (clonedMessage.Properties.ContainsKey(ReceiverTimestampHeaderKey) == false)
-            {
-                clonedMessage.SetApplicationPropertyValue(ReceiverTimestampHeaderKey,
-                    DateTime.UtcNow.ToString(DateTimeFormatInfo.InvariantInfo));
-            }
-
-            if (clonedMessage.Properties.ContainsKey(ErrorConditionHeaderKey) == false)
-            {
-                clonedMessage.SetApplicationPropertyValue(ErrorConditionHeaderKey, errorCode);
-            }
-
-            if (clonedMessage.Properties.ContainsKey(ErrorDescriptionHeaderKey) == false)
-            {
-                clonedMessage.SetApplicationPropertyValue(ErrorDescriptionHeaderKey, errorDescription);
-            }
+            errorMessage.SetApplicationPropertyValue(OriginalMessageIdHeaderKey, originalMessage.MessageId);
+            errorMessage.SetApplicationPropertyValue(ReceiverTimestampHeaderKey,
+                DateTime.UtcNow.ToString(DateTimeFormatInfo.InvariantInfo));
+            errorMessage.SetApplicationPropertyValue(ErrorConditionHeaderKey, errorCode);
+            errorMessage.SetApplicationPropertyValue(ErrorDescriptionHeaderKey, errorDescription);
 
             var additionDataValue = "None";
             if (additionalData != null)
@@ -424,23 +419,19 @@ namespace Helsenorge.Messaging.Amqp
 
                 additionDataValue = sb.ToString();
 
-                if (clonedMessage.Properties.ContainsKey(ErrorConditionDataHeaderKey) == false)
-                {
-                    clonedMessage.SetApplicationPropertyValue(ErrorConditionDataHeaderKey, additionDataValue);
-                }
+                errorMessage.SetApplicationPropertyValue(ErrorConditionDataHeaderKey, additionDataValue);
             }
-
 
             logger.LogWarning(
                 "Reporting error to sender. FromHerId: {0} ToHerId: {1} ErrorCode: {2} ErrorDescription: {3} AdditionalData: {4}",
                 originalMessage.FromHerId, originalMessage.ToHerId, errorCode, errorDescription, additionDataValue);
 
-            logger.LogStartSend(QueueType.Error, clonedMessage.MessageFunction, clonedMessage.FromHerId,
-                clonedMessage.ToHerId, clonedMessage.MessageId, additionDataValue, null);
-            await SendAsync(logger, clonedMessage).ConfigureAwait(false);
+            logger.LogStartSend(QueueType.Error, errorMessage.MessageFunction, errorMessage.FromHerId,
+                errorMessage.ToHerId, errorMessage.MessageId, additionDataValue, null);
+            await SendAsync(logger, errorMessage).ConfigureAwait(false);
             stopwatch.Stop();
-            logger.LogEndSend(QueueType.Error, clonedMessage.MessageFunction, clonedMessage.FromHerId,
-                clonedMessage.ToHerId, clonedMessage.MessageId, stopwatch.ElapsedMilliseconds);
+            logger.LogEndSend(QueueType.Error, errorMessage.MessageFunction, errorMessage.FromHerId,
+                errorMessage.ToHerId, errorMessage.MessageId, stopwatch.ElapsedMilliseconds);
         }
 
         /// <summary>
