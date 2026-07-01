@@ -24,6 +24,7 @@ Dette biblioteket støtter oppunder basisbehovet for en kommunikasjonsløsning v
 15. [Migrere fra SOAP til REST for 5.2 og senere versjoner](Documentation/MigrateFromSoapToRest.md)
 16. [Migrere fra 5.0 til 6.0](Documentation/MigrateFrom5To6.md)
 17. [Migrere fra 6.0 til 7.0](Documentation/MigrateFrom6To7.md)
+18. [Migrere fra 7.0 til 8.0](Documentation/MigrateFrom7To8.md)
 
 
 
