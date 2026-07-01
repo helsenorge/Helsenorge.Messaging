@@ -1,7 +1,7 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
@@ -9,12 +9,14 @@
 using System;
 using System.IO;
 using System.Security;
-using System.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography.Pkcs;
-using Helsenorge.Messaging.Abstractions;
 using System.Security.Cryptography;
-using Microsoft.Extensions.Logging;
+using System.Security.Cryptography.Pkcs;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography.Xml;
+using System.Text;
+using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Amqp.Receivers;
+using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.Security
 {
@@ -31,7 +33,7 @@ namespace Helsenorge.Messaging.Security
         /// <summary>
         /// Initializes a new instance of the <see cref="SignThenEncryptMessageProtection"/> class with the required certificates for signing and encrypting data.
         /// </summary>
-        /// <param name="signingCertificate">Certificcate that will be used to sign data</param>
+        /// <param name="signingCertificate">Certificate that will be used to sign data</param>
         /// <param name="encryptionCertificate">Certificate that will be used to encrypt data</param>
         /// <param name="logger"></param>
         /// <param name="legacyEncryptionCertificate">A legacy certificate that can be used when swapping certificates.</param>
@@ -151,12 +153,14 @@ namespace Helsenorge.Messaging.Security
 
                 envelopedCms.Decrypt(envelopedCms.RecipientInfos[0], encryptionCertificates);
             }
-            catch (System.Security.Cryptography.CryptographicException ce)
+            catch (CryptographicException ce)
             {
-                var cert = envelopedCms?.RecipientInfos[0]?.RecipientIdentifier?.Value as System.Security.Cryptography.Xml.X509IssuerSerial?;
+                var cert = envelopedCms?.RecipientInfos[0]?.RecipientIdentifier?.Value as X509IssuerSerial?;
                 if (cert.HasValue)
+                {
                     throw new SecurityException($"Message encrypted with certificate SerialNumber {cert.Value.SerialNumber}, IssueName {cert.Value.IssuerName} " +
-                                            $"could not be decrypted. Certification details: {cert} Exception: {ce.Message}");
+                                                $"could not be decrypted. Certification details: {cert} Exception: {ce.Message}");
+                }
 
                 throw new SecurityException($"Encryption certificate not found. Exception: {ce.Message}");
             }
@@ -169,17 +173,29 @@ namespace Helsenorge.Messaging.Security
 
             // there have been cases when the sender doesn't specify a FromHerId; makes it impossible to find the signature certificate
             // the decryption certificate will be ours, so we since we sign first, we can decrypt the data and see if that gives us any clues
-            // if no decryption certicate has been provided, we assume we don't have valid certificate
+            // if no decryption certificate has been provided, we assume we don't have valid certificate
             if (signingCertificate != null)
             {
                 // check if the certificate is in the list of certificates used to sign the package
-                // there may be more than one; have seen the root certificate being included some times
+                // there may be more than one; have seen the root/intermediate CA certificate(s) being included some times
                 if (signedCms.Certificates.Find(X509FindType.FindBySerialNumber, signingCertificate.SerialNumber, false).Count == 0)
                 {
-                    var actualSignedCertificate = signedCms.Certificates.Count > 0
-                        ? signedCms.Certificates[signedCms.Certificates.Count - 1] : null;
+                    /*
+                        The SignedCms.Certificates collection can contain more than one certificate (senders sometimes bundle the root/intermediate CA certificates). 
+                        Simply taking the last certificate in the collection is unreliable, since it is often a CA/root
+                        certificate (e.g. Buypass) rather than the actual end-entity signing certificate.
+                    */
+                    var actualSignedCertificate = ResolveActualSigningCertificate(signedCms);
 
-                    // it looks like that last certificate in the collection is the one at the end of the chain
+                    // Log every certificate that was included so we can diagnose what the sender actually sent.
+                    if (_logger != null && signedCms.Certificates.Count > 0)
+                    {
+                        _logger.LogWarning(
+                            $"Expected signing certificate was not found in the message. " +
+                            $"The message included {signedCms.Certificates.Count} certificate(s): " +
+                            $"{Environment.NewLine}{DescribeCertificates(signedCms.Certificates)}");
+                    }
+
                     throw new CertificateMessagePayloadException(
                         $"Expected signingcertificate: {Environment.NewLine} {signingCertificate} {Environment.NewLine}{Environment.NewLine}" +
                         $"Actual signingcertificate: {Environment.NewLine} {actualSignedCertificate} {Environment.NewLine}{Environment.NewLine}",
@@ -190,6 +206,76 @@ namespace Helsenorge.Messaging.Security
             }
             // Return the raw content (without a signature).
             return signedCms.ContentInfo.Content;
+        }
+
+        /// <summary>
+        /// Determines which certificate was actually used to sign the message.
+        /// The <see cref="SignedCms.Certificates"/> collection may contain more than one certificate,
+        /// e.g. when a sender bundles the root/intermediate CA certificates together with the
+        /// end-entity signing certificate. This method resolves the real signer instead of
+        /// blindly picking the last certificate in the collection.
+        /// </summary>
+        internal static X509Certificate2 ResolveActualSigningCertificate(SignedCms signedCms)
+        {
+            if (signedCms.Certificates.Count == 0)
+            {
+                return null;
+            }
+
+            // Prefer the certificate that the SignerInfo actually points to. This is the most reliable source, as it is derived from the signature itself.
+            foreach (SignerInfo signerInfo in signedCms.SignerInfos)
+            {
+                if (signerInfo.Certificate != null)
+                {
+                    return signerInfo.Certificate;
+                }
+            }
+
+            // Fall back to the first end-entity (non-CA) certificate. Root/intermediate CA certificates (e.g. Buypass) are excluded so we report the leaf/signing certificate.
+            foreach (var certificate in signedCms.Certificates)
+            {
+                if (!IsCertificateAuthority(certificate))
+                {
+                    return certificate;
+                }
+            }
+
+            // 3. As a last resort keep the previous behaviour and return the last certificate.
+            return signedCms.Certificates[signedCms.Certificates.Count - 1];
+        }
+
+        /// <summary>
+        /// Returns <c>true</c> if the certificate is a CA (root or intermediate) certificate.
+        /// </summary>
+        internal static bool IsCertificateAuthority(X509Certificate2 certificate)
+        {
+            foreach (var extension in certificate.Extensions)
+            {
+                if (extension is X509BasicConstraintsExtension basicConstraints)
+                {
+                    return basicConstraints.CertificateAuthority;
+                }
+            }
+
+            // No BasicConstraints extension: treat a self-issued certificate as a root/CA certificate.
+            return string.Equals(certificate.SubjectName.Name, certificate.IssuerName.Name, StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Builds a human-readable description of all certificates in the collection for diagnostics.
+        /// </summary>
+        private static string DescribeCertificates(X509Certificate2Collection certificates)
+        {
+            var builder = new StringBuilder();
+            var index = 0;
+            foreach (var certificate in certificates)
+            {
+                builder.AppendLine(
+                    $"[{index++}] Subject: {certificate.Subject}, Issuer: {certificate.Issuer}, " +
+                    $"SerialNumber: {certificate.SerialNumber}, Thumbprint: {certificate.Thumbprint}, " +
+                    $"IsCertificateAuthority: {IsCertificateAuthority(certificate)}");
+            }
+            return builder.ToString();
         }
 
         private EnvelopedCms GetEnvelope(byte[] rawContent)

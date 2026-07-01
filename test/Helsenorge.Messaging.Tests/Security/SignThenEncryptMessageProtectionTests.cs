@@ -1,7 +1,7 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
@@ -9,6 +9,8 @@
 using System;
 using System.IO;
 using System.Security;
+using System.Security.Cryptography;
+using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Xml.Linq;
@@ -152,6 +154,89 @@ namespace Helsenorge.Messaging.Tests.Security
             var result = partyBProtection.Unprotect(stream, null);
 
             Assert.AreEqual(_content.ToString(), result.ToXDocument().ToString());
+        }
+
+        [TestMethod]
+        public void IsCertificateAuthority_WithBasicConstraintsCaTrue_ReturnsTrue()
+        {
+            using var caCertificate = CreateCertificate("CN=Test Buypass Class 3 CA 3", isCertificateAuthority: true);
+
+            Assert.IsTrue(SignThenEncryptMessageProtection.IsCertificateAuthority(caCertificate));
+        }
+
+        [TestMethod]
+        public void IsCertificateAuthority_WithBasicConstraintsCaFalse_ReturnsFalse()
+        {
+            using var leafCertificate = CreateCertificate("CN=Test Norsk Helsenett", isCertificateAuthority: false);
+
+            Assert.IsFalse(SignThenEncryptMessageProtection.IsCertificateAuthority(leafCertificate));
+        }
+
+        [TestMethod]
+        public void IsCertificateAuthority_SelfIssuedWithoutBasicConstraints_ReturnsTrue()
+        {
+            // A self-issued certificate (Subject == Issuer) without a BasicConstraints extension
+            // should be treated as a root/CA certificate.
+            using var selfIssued = CreateCertificate("CN=Test Root", isCertificateAuthority: null);
+
+            Assert.IsTrue(SignThenEncryptMessageProtection.IsCertificateAuthority(selfIssued));
+        }
+
+        [TestMethod]
+        public void ResolveActualSigningCertificate_UsesSignerInfo_WhenRootIsBundled()
+        {
+            // The message is signed by the leaf certificate, but the sender also bundles the root CA certificate. The old logic returned the last certificate in the collection (the root); the new logic must return the actual signer (the leaf).
+            using var leafCertificate = CreateCertificate("CN=Test Norsk Helsenett Signing", isCertificateAuthority: false);
+            using var rootCertificate = CreateCertificate("CN=Test Buypass Class 3 CA 3", isCertificateAuthority: true);
+
+            var signedCms = new SignedCms(new ContentInfo(Encoding.UTF8.GetBytes(_content.ToString())));
+            var signer = new CmsSigner(leafCertificate) { IncludeOption = X509IncludeOption.EndCertOnly };
+            signedCms.ComputeSignature(signer);
+            // Simulate the sender bundling the root certificate in addition to the leaf.
+            signedCms.AddCertificate(rootCertificate);
+
+            var actual = SignThenEncryptMessageProtection.ResolveActualSigningCertificate(signedCms);
+
+            Assert.IsNotNull(actual);
+            Assert.AreEqual(leafCertificate.Thumbprint, actual.Thumbprint);
+        }
+
+        [TestMethod]
+        public void ResolveActualSigningCertificate_FallsBackToNonCaCertificate_WhenSignerNotEmbedded()
+        {
+            // When the signer certificate is not embedded in the message (SignerInfo.Certificate is null)
+            // and both a CA and an end-entity certificate are bundled, we should report the non-CA (leaf) one.
+            using var signingCertificate = CreateCertificate("CN=Test Signer Not Embedded", isCertificateAuthority: false);
+            using var otherLeafCertificate = CreateCertificate("CN=Test Other Leaf", isCertificateAuthority: false);
+            using var rootCertificate = CreateCertificate("CN=Test Buypass Class 3 CA 3", isCertificateAuthority: true);
+
+            var signedCms = new SignedCms(new ContentInfo(Encoding.UTF8.GetBytes(_content.ToString())));
+            var signer = new CmsSigner(signingCertificate) { IncludeOption = X509IncludeOption.None };
+            signedCms.ComputeSignature(signer);
+            // The signer certificate is intentionally NOT added; only the root and an unrelated leaf are bundled.
+            signedCms.AddCertificate(rootCertificate);
+            signedCms.AddCertificate(otherLeafCertificate);
+
+            var actual = SignThenEncryptMessageProtection.ResolveActualSigningCertificate(signedCms);
+
+            Assert.IsNotNull(actual);
+            Assert.AreEqual(otherLeafCertificate.Thumbprint, actual.Thumbprint);
+            Assert.AreNotEqual(rootCertificate.Thumbprint, actual.Thumbprint);
+        }
+
+        private static X509Certificate2 CreateCertificate(string subjectName, bool? isCertificateAuthority)
+        {
+            using var rsa = RSA.Create(2048);
+            var request = new CertificateRequest(subjectName, rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+
+            // isCertificateAuthority == null means "do not add a BasicConstraints extension at all".
+            if (isCertificateAuthority.HasValue)
+            {
+                request.CertificateExtensions.Add(
+                    new X509BasicConstraintsExtension(isCertificateAuthority.Value, false, 0, true));
+            }
+
+            return request.CreateSelfSigned(DateTimeOffset.UtcNow.AddDays(-1), DateTimeOffset.UtcNow.AddDays(1));
         }
     }
 }
