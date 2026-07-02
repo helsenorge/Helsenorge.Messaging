@@ -54,9 +54,10 @@ namespace Helsenorge.Messaging
         public bool LogPayload { get; set; }
         /// <summary>
         /// Indicates if you want to use the new Amqp Address v2 format. Documented here: https://www.rabbitmq.com/docs/amqp#target-address-v2
-        /// Default is false
+        /// IMPORTANT: Address format v2 requires RabbitMQ 4.0 or later. Do NOT enable this against brokers
+        /// running an earlier version. Default is false (address format v1).
         /// </summary>
-        public bool UseAmqpAdressV2 { get; set; }
+        public bool UseAmqpAddressV2 { get; set; }
         /// <summary>
         /// A Dictionary with additional application properties which will be added to <see cref="Message"/>.
         /// </summary>
@@ -191,15 +192,15 @@ namespace Helsenorge.Messaging
         /// Indicates if you want to use the new Address v2 documented here: https://www.rabbitmq.com/docs/amqp#target-address-v2
         /// IMPORTANT: Address format v2 requires RabbitMQ 4.0 or later. Do NOT enable this against brokers
         /// running an earlier version. Default is false (address format v1).
-        /// Proxies <see cref="MessagingSettings.UseAmqpAdressV2"/> when this instance was created from a <see cref="MessagingSettings"/>.
+        /// Proxies <see cref="MessagingSettings.UseAmqpAddressV2"/> when this instance was created from a <see cref="MessagingSettings"/>.
         /// </summary>
         public bool UseAmqpAddressV2
         {
-            get => _settings?.UseAmqpAdressV2 ?? _useAmqpAddressV2;
+            get => _settings?.UseAmqpAddressV2 ?? _useAmqpAddressV2;
             set
             {
                 if (_settings != null)
-                    _settings.UseAmqpAdressV2 = value;
+                    _settings.UseAmqpAddressV2 = value;
                 else
                     _useAmqpAddressV2 = value;
             }

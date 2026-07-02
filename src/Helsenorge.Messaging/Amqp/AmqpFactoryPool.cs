@@ -40,10 +40,7 @@ namespace Helsenorge.Messaging.Amqp
         protected override Task<IAmqpFactory> CreateEntityAsync(ILogger logger, string id)
         {
             if (_alternateAmqpFactor != null) return Task.FromResult(_alternateAmqpFactor);
-            var connection = new AmqpConnection(_settings.ConnectionString?.ToString(), _settings.MessageBrokerDialect, _settings.MaxLinksPerSession, _settings.MaxSessionsPerConnection)
-            {
-                UseAmqpAddressV2 = _settings.UseAmqpAddressV2,
-            };
+            var connection = new AmqpConnection(_settings.ConnectionString?.ToString(), _settings.MessageBrokerDialect, _settings.MaxLinksPerSession, _settings.MaxSessionsPerConnection, _settings.UseAmqpAddressV2);
             return Task.FromResult<IAmqpFactory>(new AmqpFactory(logger, connection, _applicationProperties));
         }
         public async Task<IAmqpMessage> CreateMessageAsync(ILogger logger, Stream stream)

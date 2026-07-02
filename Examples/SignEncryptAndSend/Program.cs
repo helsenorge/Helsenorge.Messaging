@@ -30,7 +30,7 @@ namespace SignEncryptAndSend
         // supports the new v2 address format, and v1 will be removed in a future RabbitMQ release:
         // https://www.rabbitmq.com/docs/amqp#target-address-v2
         // To use the v2 address format (requires RabbitMQ 4.0 or later), enable it on the connection
-        // (connection.UseAmqpAdressV2 = true) and pass the plain queue name instead:
+        // (connection.UseAmqpAddressV2 = true) and pass the plain queue name instead:
         // private static readonly string Queue = "12345_async";
         private static readonly string Queue = "/exchange/NHNTESTServiceBus/12345_async";
 

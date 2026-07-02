@@ -42,9 +42,10 @@ namespace Helsenorge.Messaging.Amqp
         /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells BusConnection what kind of Message Broker we are communicating with.</param>
         /// <param name="maxLinksPerSession">The max links that will be allowed per session.</param>
         /// <param name="maxSessionsPerConnection">The max sessions that will be allowed per connection.</param>
+        /// <param name="useAmqpAddressV2">Indicates if the RabbitMQ AMQP 1.0 Address format v2 should be used when constructing entity names. Requires RabbitMQ 4.0 or later. Default is false (address format v1).</param>
         /// <exception cref="ArgumentException" />
         /// <exception cref="ArgumentNullException" />
-        public AmqpConnection(string connectionString, MessageBrokerDialect messageBrokerDialect, int maxLinksPerSession, ushort maxSessionsPerConnection)
+        public AmqpConnection(string connectionString, MessageBrokerDialect messageBrokerDialect, int maxLinksPerSession, ushort maxSessionsPerConnection, bool useAmqpAddressV2 = false)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -53,6 +54,7 @@ namespace Helsenorge.Messaging.Amqp
 
             _address = new Address(connectionString);
             MessageBrokerDialect = messageBrokerDialect;
+            UseAmqpAddressV2 = useAmqpAddressV2;
 
             if (!string.IsNullOrEmpty(_address.Path))
             {
