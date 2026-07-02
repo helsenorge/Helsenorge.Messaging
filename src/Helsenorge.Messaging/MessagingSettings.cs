@@ -1,7 +1,7 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
@@ -52,27 +52,28 @@ namespace Helsenorge.Messaging
         /// Indicates if the payload should be logged. This is false by default since the payload can contain sensitive information
         /// </summary>
         public bool LogPayload { get; set; }
-
+        /// <summary>
+        /// Indicates if you want to use the new Amqp Address v2 format. Documented here: https://www.rabbitmq.com/docs/amqp#target-address-v2
+        /// IMPORTANT: Address format v2 requires RabbitMQ 4.0 or later. Do NOT enable this against brokers
+        /// running an earlier version. Default is false (address format v1).
+        /// </summary>
+        public bool UseAmqpAddressV2 { get; set; }
         /// <summary>
         /// A Dictionary with additional application properties which will be added to <see cref="Message"/>.
         /// </summary>
         public IDictionary<string, object> ApplicationProperties { get; } = new Dictionary<string, object>();
-
         /// <summary>
         /// Indicates if we should NOT add metadata from payload into application properties. default: true
         /// </summary>
         public bool SkipAddingPayloadMetadataIntoApplicationProperties  { get; set; }
-
         /// <summary>
         /// Indicates what encryption types get rejected in messaging
         /// </summary>
         public MessagingEncryptionType RejectionMessagingEncryptionType { get; set; } = MessagingEncryptionType.None;
-
         /// <summary>
         /// Skip CPA lookup for message functions in this list. Instead use an internal dummy CPA.
         /// </summary>
         public List<string> MessageFunctionsExcludedFromCpaResolve { get; set; } = new List<string>();
-
         /// <summary>
         /// Specifies the encryption type used in messaging
         /// </summary>
@@ -86,7 +87,6 @@ namespace Helsenorge.Messaging
         {
             IgnoreCertificateErrorOnSend = false;
             LogPayload = false;
-
             AmqpSettings = new AmqpSettings(this);
         }
 
@@ -114,6 +114,7 @@ namespace Helsenorge.Messaging
         internal const int DefaultTimeoutInMilliseconds = 60000;
 
         private readonly MessagingSettings _settings;
+        private bool _useAmqpAddressV2;
 
         /// <summary>Initializes a new instance of the <see cref="AmqpSettings" /> class.</summary>
         public AmqpSettings()
@@ -187,6 +188,23 @@ namespace Helsenorge.Messaging
         /// If true logs every the MessageListener has finished a read call to the broker.
         /// </summary>
         public bool LogReadTime { get; set; } = false;
+        /// <summary>
+        /// Indicates if you want to use the new Address v2 documented here: https://www.rabbitmq.com/docs/amqp#target-address-v2
+        /// IMPORTANT: Address format v2 requires RabbitMQ 4.0 or later. Do NOT enable this against brokers
+        /// running an earlier version. Default is false (address format v1).
+        /// Proxies <see cref="MessagingSettings.UseAmqpAddressV2"/> when this instance was created from a <see cref="MessagingSettings"/>.
+        /// </summary>
+        public bool UseAmqpAddressV2
+        {
+            get => _settings?.UseAmqpAddressV2 ?? _useAmqpAddressV2;
+            set
+            {
+                if (_settings != null)
+                    _settings.UseAmqpAddressV2 = value;
+                else
+                    _useAmqpAddressV2 = value;
+            }
+        }
         /// <summary>
         /// The HER-ids we are representing.
         /// </summary>
