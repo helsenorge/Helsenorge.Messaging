@@ -25,6 +25,12 @@ namespace PooledSender
         private static string Password = "guest";
         // More information about routing and addressing on RabbitMQ:
         // https://github.com/rabbitmq/rabbitmq-server/tree/main/deps/rabbitmq_amqp1_0#routing-and-addressing
+        // NOTE: The address below uses the deprecated v1 address format. RabbitMQ 4.0 and later also
+        // supports the new v2 address format, and v1 will be removed in a future RabbitMQ release:
+        // https://www.rabbitmq.com/docs/amqp#target-address-v2
+        // To use the v2 address format (requires RabbitMQ 4.0 or later), enable it on the settings
+        // (settings.AmqpSettings.UseAmqpAdressV2 = true) and pass the plain queue name instead:
+        // private static readonly string Queue = "12345_async";
         private static readonly string Queue = "/exchange/NHNTESTServiceBus/12345_async";
 
         static async Task Main(string[] args)
