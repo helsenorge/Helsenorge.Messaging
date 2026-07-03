@@ -7,6 +7,11 @@ namespace AmqpNetLiteExample;
 class Program
 {
     private static readonly string _connectionString = "amqp://guest:guest@127.0.0.1:5672";
+    // NOTE: The address below uses the deprecated v1 address format. RabbitMQ 4.0 and later also
+    // supports the new v2 address format, and v1 will be removed in a future RabbitMQ release:
+    // https://www.rabbitmq.com/docs/amqp#addresses
+    // v2 equivalent (requires RabbitMQ 4.0 or later):
+    // private static readonly string _queue = "/queues/123_async";
     private static readonly string _queue = "/amq/queue/123_async";
 
     static async Task Main(string[] args)
@@ -21,6 +26,8 @@ class Program
         {
             var message = await link.ReceiveAsync();
             if (message == null) break;
+
+            i++;
 
             Console.WriteLine($"Message Id: {message.Properties.GetMessageId()}");
 

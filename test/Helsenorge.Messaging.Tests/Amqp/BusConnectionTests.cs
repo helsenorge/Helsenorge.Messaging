@@ -7,8 +7,6 @@
  */
 
 using Helsenorge.Messaging.Amqp;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Helsenorge.Messaging.Tests.Amqp
@@ -48,6 +46,59 @@ namespace Helsenorge.Messaging.Tests.Amqp
             var connection = new AmqpConnection(ConnectionString, MessageBrokerDialect.ServiceBus);
             var entityName = connection.GetEntityName("my-queue-name", LinkRole.Sender);
             Assert.AreEqual("NameSpaceTest/my-queue-name", entityName);
+        }
+
+        [TestMethod]
+        public void CanGetEnityNameForReceiverLinkForRabbitMQWithAddressV2()
+        {
+            var connection = new AmqpConnection(ConnectionString, MessageBrokerDialect.RabbitMQ)
+            {
+                UseAmqpAddressV2 = true,
+            };
+            var entityName = connection.GetEntityName("my-queue-name", LinkRole.Receiver);
+            Assert.AreEqual("/queues/my-queue-name", entityName);
+        }
+
+        [TestMethod]
+        public void CanGetEnityNameForSenderLinkForRabbitMQWithAddressV2()
+        {
+            var connection = new AmqpConnection(ConnectionString, MessageBrokerDialect.RabbitMQ)
+            {
+                UseAmqpAddressV2 = true,
+            };
+            var entityName = connection.GetEntityName("my-queue-name", LinkRole.Sender);
+            Assert.AreEqual("/exchanges/NameSpaceTest/my-queue-name", entityName);
+        }
+
+        [TestMethod]
+        public void CanGetEnityNameForSenderLinkForRabbitMQWithAddressV2WithoutNamespace()
+        {
+            var connection = new AmqpConnection("amqps://guest:guest@messagebroker.nhn.no", MessageBrokerDialect.RabbitMQ)
+            {
+                UseAmqpAddressV2 = true,
+            };
+            var entityName = connection.GetEntityName("my-queue-name", LinkRole.Sender);
+            Assert.AreEqual("/queues/my-queue-name", entityName);
+        }
+
+        [TestMethod]
+        public void EntityNamesArePercentEncodedForRabbitMQWithAddressV2()
+        {
+            var connection = new AmqpConnection(ConnectionString, MessageBrokerDialect.RabbitMQ)
+            {
+                UseAmqpAddressV2 = true,
+            };
+            var entityName = connection.GetEntityName("my queue/name", LinkRole.Receiver);
+            Assert.AreEqual("/queues/my%20queue%2Fname", entityName);
+        }
+
+        [TestMethod]
+        public void AddressV2IsDisabledByDefaultForRabbitMQ()
+        {
+            var connection = new AmqpConnection(ConnectionString, MessageBrokerDialect.RabbitMQ);
+            Assert.IsFalse(connection.UseAmqpAddressV2);
+            Assert.AreEqual("/amq/queue/my-queue-name", connection.GetEntityName("my-queue-name", LinkRole.Receiver));
+            Assert.AreEqual("/exchange/NameSpaceTest/my-queue-name", connection.GetEntityName("my-queue-name", LinkRole.Sender));
         }
     }
 }

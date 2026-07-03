@@ -1,18 +1,18 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
-using System.IO;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace Helsenorge.Messaging.Amqp
 {
@@ -40,7 +40,7 @@ namespace Helsenorge.Messaging.Amqp
         protected override Task<IAmqpFactory> CreateEntityAsync(ILogger logger, string id)
         {
             if (_alternateAmqpFactor != null) return Task.FromResult(_alternateAmqpFactor);
-            var connection = new AmqpConnection(_settings.ConnectionString?.ToString(), _settings.MessageBrokerDialect, _settings.MaxLinksPerSession, _settings.MaxSessionsPerConnection);
+            var connection = new AmqpConnection(_settings.ConnectionString?.ToString(), _settings.MessageBrokerDialect, _settings.MaxLinksPerSession, _settings.MaxSessionsPerConnection, _settings.UseAmqpAddressV2);
             return Task.FromResult<IAmqpFactory>(new AmqpFactory(logger, connection, _applicationProperties));
         }
         public async Task<IAmqpMessage> CreateMessageAsync(ILogger logger, Stream stream)

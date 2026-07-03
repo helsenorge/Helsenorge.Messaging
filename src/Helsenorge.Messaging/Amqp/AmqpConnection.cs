@@ -6,9 +6,9 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
-using Amqp;
 using System;
 using System.Threading.Tasks;
+using Amqp;
 using Microsoft.Extensions.Logging;
 
 namespace Helsenorge.Messaging.Amqp
@@ -42,9 +42,10 @@ namespace Helsenorge.Messaging.Amqp
         /// <param name="messageBrokerDialect">A <see cref="MessageBrokerDialect"/> which tells BusConnection what kind of Message Broker we are communicating with.</param>
         /// <param name="maxLinksPerSession">The max links that will be allowed per session.</param>
         /// <param name="maxSessionsPerConnection">The max sessions that will be allowed per connection.</param>
+        /// <param name="useAmqpAddressV2">Indicates if the RabbitMQ AMQP 1.0 Address format v2 should be used when constructing entity names. Requires RabbitMQ 4.0 or later. Default is false (address format v1).</param>
         /// <exception cref="ArgumentException" />
         /// <exception cref="ArgumentNullException" />
-        public AmqpConnection(string connectionString, MessageBrokerDialect messageBrokerDialect, int maxLinksPerSession, ushort maxSessionsPerConnection)
+        public AmqpConnection(string connectionString, MessageBrokerDialect messageBrokerDialect, int maxLinksPerSession, ushort maxSessionsPerConnection, bool useAmqpAddressV2 = false)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -53,6 +54,7 @@ namespace Helsenorge.Messaging.Amqp
 
             _address = new Address(connectionString);
             MessageBrokerDialect = messageBrokerDialect;
+            UseAmqpAddressV2 = useAmqpAddressV2;
 
             if (!string.IsNullOrEmpty(_address.Path))
             {
@@ -81,6 +83,14 @@ namespace Helsenorge.Messaging.Amqp
         /// Returns what kind of Message Broker Dialect we should use.
         /// </summary>
         public MessageBrokerDialect MessageBrokerDialect { get; protected set; }
+
+        /// <summary>
+        /// Indicates if the RabbitMQ AMQP 1.0 Address format v2 should be used when constructing entity names.
+        /// See https://www.rabbitmq.com/docs/amqp#addresses for more details.
+        /// IMPORTANT: Address format v2 requires RabbitMQ 4.0 or later. Do NOT enable this against brokers
+        /// running an earlier version. Default is false (address format v1).
+        /// </summary>
+        public bool UseAmqpAddressV2 { get; set; }
 
         /// <summary>Let's you get access to the internal <see cref="IConnection"/>.</summary>
         /// <returns>Returns a <see cref="IConnection"/>.</returns>
@@ -167,12 +177,33 @@ namespace Helsenorge.Messaging.Amqp
             string entityPath;
             if (MessageBrokerDialect == MessageBrokerDialect.RabbitMQ)
             {
-                // For more information on Routing and Addressing in RabbitMQ see:
-                // https://github.com/rabbitmq/rabbitmq-server/tree/master/deps/rabbitmq_amqp1_0#routing-and-addressing
-                if (string.IsNullOrEmpty(ns))
-                    entityPath = $"{id}";
+                if (UseAmqpAddressV2)
+                {
+                    // RabbitMQ AMQP 1.0 Address format v2 (requires RabbitMQ 4.0 or later):
+                    // https://www.rabbitmq.com/docs/amqp#target-address-v2
+                    // Sender (target):   /exchanges/{exchange}/{routing-key} or /queues/{queue}
+                    // Receiver (source): /queues/{queue}
+                    // Exchange, routing key and queue names must be percent-encoded.
+                    if (role == LinkRole.Sender)
+                    {
+                        entityPath = string.IsNullOrEmpty(ns)
+                            ? $"/queues/{Uri.EscapeDataString(id)}"
+                            : $"/exchanges/{Uri.EscapeDataString(ns)}/{Uri.EscapeDataString(id)}";
+                    }
+                    else
+                    {
+                        entityPath = $"/queues/{Uri.EscapeDataString(id)}";
+                    }
+                }
                 else
-                    entityPath = role == LinkRole.Sender ? $"/exchange/{ns}/{id}" : $"/amq/queue/{id}";
+                {
+                    // For more information on Routing and Addressing in RabbitMQ see:
+                    // https://github.com/rabbitmq/rabbitmq-server/tree/master/deps/rabbitmq_amqp1_0#routing-and-addressing
+                    if (string.IsNullOrEmpty(ns))
+                        entityPath = $"{id}";
+                    else
+                        entityPath = role == LinkRole.Sender ? $"/exchange/{ns}/{id}" : $"/amq/queue/{id}";
+                }
             }
             else
             {
