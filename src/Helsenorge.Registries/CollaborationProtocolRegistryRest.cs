@@ -361,9 +361,9 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         return ex.StatusCode switch
         {
             HttpStatusCode.RequestTimeout => true,        // 408
-            HttpStatusCode.TooManyRequests => true,       // 429
-            HttpStatusCode.InternalServerError => true,   // 500
-            HttpStatusCode.BadGateway => true,            // 502
+            HttpStatusCode.TooManyRequests => true,       // 429 //Diskuteres i selve PR hvilke vi skal ha beholde her
+            //HttpStatusCode.InternalServerError => true,   // 500
+            //HttpStatusCode.BadGateway => true,            // 502
             HttpStatusCode.ServiceUnavailable => true,    // 503
             HttpStatusCode.GatewayTimeout => true,        // 504
             _ => false
