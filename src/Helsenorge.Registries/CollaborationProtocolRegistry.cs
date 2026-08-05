@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
@@ -14,9 +14,11 @@ using System.ServiceModel;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Helsenorge.Registries.Abstractions;
+using Helsenorge.Registries.CPAService;
 using Helsenorge.Registries.Utilities;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using CollaborationProtocolProfile = Helsenorge.Registries.Abstractions.CollaborationProtocolProfile;
 
 namespace Helsenorge.Registries
 {
@@ -105,6 +107,16 @@ namespace Helsenorge.Registries
                 // if this happens, we fall back to the dummy profile further down
                 _logger.LogWarning($"Could not find or resolve protocol for counterparty when using HerId {counterpartyHerId}. ErrorCode: {ex.Detail.ErrorCode} Message: {ex.Detail.Message}");
             }
+            catch (Exception ex) when (ex is (CommunicationException and not FaultException) or TimeoutException)
+            {
+                // The service is down/unreachable. This is a transient condition, we must not fall back to a
+                // dummy profile since that would misrepresent the counterparty's actual CPP.
+                throw new RegistriesUnavailableException($"The CPP/CPA registry is unavailable. Failed to resolve protocol for counterparty with HerId {counterpartyHerId}.", ex)
+                {
+                    EventId = EventIds.CollaborationProfile,
+                    Data = { { "HerId", counterpartyHerId } }
+                };
+            }
             catch (Exception ex)
             {
                 throw new RegistriesException(ex.Message, ex)
@@ -164,7 +176,7 @@ namespace Helsenorge.Registries
                 }
             }
 
-            CPAService.CpaXmlDetails details;
+            CpaXmlDetails details;
 
             try
             {
@@ -174,6 +186,14 @@ namespace Helsenorge.Registries
             catch (FaultException ex)
             {
                 throw new RegistriesException(ex.Message, ex)
+                {
+                    EventId = EventIds.CollaborationAgreement,
+                    Data = { { "CpaId", id } }
+                };
+            }
+            catch (Exception ex) when (ex is CommunicationException or TimeoutException)
+            {
+                throw new RegistriesUnavailableException($"The CPP/CPA registry is unavailable. Failed to resolve agreement with CpaId {id}.", ex)
                 {
                     EventId = EventIds.CollaborationAgreement,
                     Data = { { "CpaId", id } }
@@ -201,7 +221,7 @@ namespace Helsenorge.Registries
         /// <param name="id"></param>
         /// <returns></returns>
         [ExcludeFromCodeCoverage] // requires wire communication
-        internal virtual Task<CPAService.CpaXmlDetails> FindAgreementById(Guid id)
+        internal virtual Task<CpaXmlDetails> FindAgreementById(Guid id)
             => Invoke(_logger, x => x.GetCpaXmlAsync(id), "GetCpaXmlAsync");
 
         /// <inheritdoc cref="FindAgreementForCounterpartyAsync(int,int)"/>
@@ -230,7 +250,7 @@ namespace Helsenorge.Registries
                 }
             }
 
-            CPAService.CpaXmlDetails details;
+            CpaXmlDetails details;
 
             try
             {
@@ -242,6 +262,16 @@ namespace Helsenorge.Registries
                 // if there are error getting a proper CPA, we fallback to getting CPP.
                 _logger.LogWarning($"Failed to resolve CPA between {myHerId} and {counterpartyHerId}. {ex.Message}");
                 return await FindProtocolForCounterpartyAsync(counterpartyHerId).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (ex is CommunicationException or TimeoutException)
+            {
+                // The service is down/unreachable. This is a transient condition, we must not fall back to
+                // CPP resolution since that would end up producing a dummy profile misrepresenting the counterparty.
+                throw new RegistriesUnavailableException($"The CPP/CPA registry is unavailable. Failed to resolve CPA between {myHerId} and {counterpartyHerId}.", ex)
+                {
+                    EventId = EventIds.CollaborationAgreement,
+                    Data = { { "MyHerId", myHerId }, { "CounterpartyHerId", counterpartyHerId } }
+                };
             }
 
             if (string.IsNullOrEmpty(details?.CollaborationProtocolAgreementXml)) return null;
@@ -287,11 +317,11 @@ namespace Helsenorge.Registries
         /// <param name="counterpartyHerId"></param>
         /// <returns></returns>
         [ExcludeFromCodeCoverage] // requires wire communication
-        internal virtual Task<CPAService.CpaXmlDetails> FindAgreementForCounterparty(int myHerId, int counterpartyHerId)
+        internal virtual Task<CpaXmlDetails> FindAgreementForCounterparty(int myHerId, int counterpartyHerId)
             => Invoke(_logger, x => x.GetCpaForCommunicationPartiesXmlAsync(myHerId, counterpartyHerId), "GetCpaForCommunicationPartiesXmlAsync");
 
         [ExcludeFromCodeCoverage] // requires wire communication
-        private Task<T> Invoke<T>(ILogger logger, Func<CPAService.ICPPAService, Task<T>> action, string methodName)
+        private Task<T> Invoke<T>(ILogger logger, Func<ICPPAService, Task<T>> action, string methodName)
             => _invoker.ExecuteAsync(logger, action, methodName);
     }
 }

@@ -1,11 +1,21 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using System;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.ServiceModel;
+using System.Text;
+using System.Threading.Tasks;
 using HelseId.Library.ClientCredentials.Interfaces;
 using HelseId.Library.Configuration;
 using HelseId.Library.Interfaces.JwtTokens;
@@ -17,13 +27,6 @@ using Helsenorge.Registries.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.ServiceModel;
-using System.Text;
 
 namespace Helsenorge.Registries.Tests
 {
@@ -106,6 +109,40 @@ namespace Helsenorge.Registries.Tests
                 var file = TestFileUtility.GetFullPathToFile(Path.Combine("Files", $"CPP_Rest_{i}.xml"));
                 return !File.Exists(file) ? null : File.ReadAllText(file);
             });
+        }
+
+        [TestMethod]
+        public async Task RestCpa_Read_CollaborationProfile_ServiceUnavailable_ThrowsRegistriesUnavailableException()
+        {
+            _registry.SetupFindProtocolForCounterparty(i =>
+                throw new HttpRequestException("Service is down", inner: null, statusCode: HttpStatusCode.ServiceUnavailable));
+            await Assert.ThrowsAsync<RegistriesUnavailableException>(() => _registry.FindProtocolForCounterpartyAsync(93252));
+        }
+
+        [TestMethod]
+        public async Task RestCpa_Read_CollaborationProfile_ConnectionFailure_ThrowsRegistriesUnavailableException()
+        {
+            // no status code means the request never received an HTTP response (DNS failure, connection refused, etc.)
+            _registry.SetupFindProtocolForCounterparty(i => throw new HttpRequestException("Connection refused"));
+            await Assert.ThrowsAsync<RegistriesUnavailableException>(() => _registry.FindProtocolForCounterpartyAsync(93252));
+        }
+
+        [TestMethod]
+        public async Task RestCpa_Read_CollaborationProfile_NotFound_FallsBackToDummyProfile()
+        {
+            _registry.SetupFindProtocolForCounterparty(i =>
+                throw new HttpRequestException("Not found", inner: null, statusCode: HttpStatusCode.NotFound));
+            var profile = await _registry.FindProtocolForCounterpartyAsync(93252);
+            Assert.IsNotNull(profile);
+            Assert.AreEqual("DummyCollaborationProtocolProfile", profile.Name);
+        }
+
+        [TestMethod]
+        public async Task RestCpa_Read_CollaborationAgreement_ServiceUnavailable_ThrowsRegistriesUnavailableException()
+        {
+            _registry.SetupFindAgreementForCounterparty(i =>
+                throw new HttpRequestException("Service is down", inner: null, statusCode: HttpStatusCode.ServiceUnavailable));
+            await Assert.ThrowsAsync<RegistriesUnavailableException>(() => _registry.FindAgreementForCounterpartyAsync(5678, 93252));
         }
 
         [TestMethod]

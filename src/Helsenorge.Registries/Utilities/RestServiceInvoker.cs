@@ -6,6 +6,12 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using System;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using HelseId.Library;
 using HelseId.Library.ClientCredentials.Interfaces;
 using HelseId.Library.Configuration;
@@ -15,12 +21,6 @@ using HelseId.Library.Models;
 using HelseId.Library.Models.DetailsFromClient;
 using Helsenorge.Registries.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
 
 namespace Helsenorge.Registries.Utilities;
 
@@ -75,7 +75,9 @@ internal class RestServiceInvoker
             {
                 await TryLogContent(response);
                 throw new HttpRequestException(
-                    $"Error calling {operationName} on {absoluteUri}. Status code: {response.StatusCode}");
+                    $"Error calling {operationName} on {absoluteUri}. Status code: {response.StatusCode}",
+                    inner: null,
+                    statusCode: response.StatusCode);
             }
             var result = await response.Content.ReadAsStringAsync();
 

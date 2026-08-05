@@ -1,7 +1,7 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
@@ -146,6 +146,10 @@ namespace Helsenorge.Messaging.Abstractions
         /// Local certificate has been revoked.
         /// </summary>
         public static EventId LocalCertificateRevocationOffline = new EventId(43, EventIdName);
+        /// <summary>
+        /// A registry (e.g. the CPP/CPA registry) is temporarily unavailable.
+        /// </summary>
+        public static EventId RegistryUnavailable = new EventId(44, EventIdName);
 
         /// <summary>
         /// Event Id used for informational purposes when starting/ending the Receive process.

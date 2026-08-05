@@ -1,7 +1,7 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
@@ -13,6 +13,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.Text;
+using System.Threading.Tasks;
 using Helsenorge.Registries.Abstractions;
 using Helsenorge.Registries.Configuration;
 using Helsenorge.Registries.Tests.Mocks;
@@ -125,6 +126,20 @@ namespace Helsenorge.Registries.Tests
             var profile = _registry.FindProtocolForCounterpartyAsync(93252).Result;
             Assert.IsNotNull(profile);
             Assert.AreEqual("DummyCollaborationProtocolProfile", profile.Name);
+        }
+
+        [TestMethod]
+        public async Task Read_CollaborationProfile_ServiceUnavailable_ThrowsRegistriesUnavailableException()
+        {
+            _registry.SetupFindProtocolForCounterparty(i => throw new EndpointNotFoundException("Service is down"));
+            await Assert.ThrowsAsync<RegistriesUnavailableException>(() => _registry.FindProtocolForCounterpartyAsync(93252));
+        }
+
+        [TestMethod]
+        public async Task Read_CollaborationAgreement_ServiceUnavailable_ThrowsRegistriesUnavailableException()
+        {
+            _registry.SetupFindAgreementForCounterparty(i => throw new EndpointNotFoundException("Service is down"));
+            await Assert.ThrowsAsync<RegistriesUnavailableException>(() => _registry.FindAgreementForCounterpartyAsync(5678, 93252));
         }
 
         [TestMethod]
@@ -437,7 +452,7 @@ namespace Helsenorge.Registries.Tests
 
             var profile = _registry.FindProtocolForCounterpartyAsync(93238).Result;
             CacheExtensions.WriteValueToCacheAsync(_logger, distributedCache, key, profile, TimeSpan.FromDays(1)).Wait();
-            var cached = CacheExtensions.ReadValueFromCacheAsync<Abstractions.CollaborationProtocolProfile>(_logger, distributedCache, key).Result;
+            var cached = CacheExtensions.ReadValueFromCacheAsync<CollaborationProtocolProfile>(_logger, distributedCache, key).Result;
             Assert.IsNotNull(cached);
             using var rsa = cached.EncryptionCertificate.GetRSAPublicKey();
             var encrypted = rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA1);

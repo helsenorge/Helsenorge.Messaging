@@ -1,7 +1,7 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2023, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
@@ -12,18 +12,20 @@ using System.IO;
 using System.Linq;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.ServiceModel;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Amqp;
 using Helsenorge.Messaging.Amqp.Receivers;
+using Helsenorge.Messaging.Security;
 using Helsenorge.Messaging.Tests.Mocks;
 using Helsenorge.Registries.Abstractions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Logging;
-using Helsenorge.Messaging.Security;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Helsenorge.Messaging.Tests.Amqp.Receivers
 {
@@ -306,6 +308,32 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             },
             wait: () => _unhandledExceptionCalled,
             received: (m) => { throw new ArgumentOutOfRangeException(); },
+            messageModification: (m) => { });
+        }
+        [TestMethod]
+        public async Task Asynchronous_Receive_CpaRegistryUnavailable_MessageIsRetried()
+        {
+            // simulate the CPP/CPA registry being down
+            CollaborationRegistry.SetupFindAgreementForCounterparty(i => throw new EndpointNotFoundException("Service is down"));
+            CollaborationRegistry.SetupFindProtocolForCounterparty(i => throw new EndpointNotFoundException("Service is down"));
+
+            await RunAsynchronousReceive(
+            postValidation: () =>
+            {
+                // the message should remain on our queue for retry and NOT be sent to the sender's error queue
+                Assert.HasCount(1, MockFactory.Helsenorge.Asynchronous.Messages);
+                Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
+                Assert.IsFalse(_receivedCalled);
+                // the listener may pick up and retry the message several times while the test is running
+                var logEntries = MockLoggerProvider.Entries
+                    .Where(a =>
+                        a.LogLevel == LogLevel.Warning &&
+                        a.Message.Contains("The CPP/CPA registry is unavailable, the message will be retried"))
+                    .ToList();
+                Assert.IsNotEmpty(logEntries);
+            },
+            wait: () => _handledExceptionCalled,
+            received: (m) => Task.CompletedTask,
             messageModification: (m) => { });
         }
         [TestMethod]
@@ -678,7 +706,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
             /// <summary>
             /// Gets the content type applied to protected data
             /// </summary>
-            public string ContentType => Messaging.Abstractions.ContentType.SignedAndEnveloped;
+            public string ContentType => Abstractions.ContentType.SignedAndEnveloped;
             /// <summary>
             /// Gets the signing certificate, but it's not used in this implementation.
             /// </summary>
@@ -789,7 +817,7 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                 if(DateTime.UtcNow > max) throw new TimeoutException();
 
                 if (check()) return;
-                System.Threading.Thread.Sleep(50);
+                Thread.Sleep(50);
             }
         }
 

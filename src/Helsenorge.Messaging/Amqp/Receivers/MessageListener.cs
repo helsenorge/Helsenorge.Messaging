@@ -1,7 +1,7 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
@@ -18,8 +18,8 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using Helsenorge.Messaging.Abstractions;
-using Helsenorge.Messaging.Security;
 using Helsenorge.Messaging.Amqp.Exceptions;
+using Helsenorge.Messaging.Security;
 using Helsenorge.Registries;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -327,6 +327,25 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 await AmqpCore.ReportErrorToExternalSenderAsync(Logger, EventIds.CouldNotVerifyCertificate, message, "transport:unverified-certificate", ex.Message, new [] { "FromHerId", $"{ex.HerId}" }, ex).ConfigureAwait(false);
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
             }
+            catch (RegistriesUnavailableException ex) // the CPP/CPA registry is down, transient error, retry without notifying the sender
+            {
+                Logger.LogWarning(EventIds.RegistryUnavailable, ex,
+                    $"The CPP/CPA registry is unavailable, the message will be retried. Sender will not be notified. " +
+                    $"MessageFunction: {message.MessageFunction} FromHerId: {message.FromHerId} ToHerId: {message.ToHerId} " +
+                    $"MessageId: {message.MessageId} CorrelationId: {message.CorrelationId} DeliveryCount: {message.DeliveryCount} " +
+                    $"Message expires at UTC {message.ExpiresAtUtc}");
+
+                if (alwaysRemoveMessage)
+                {
+                    AmqpCore.RemoveMessageFromQueueAfterError(Logger, message);
+                }
+                await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
+
+                // Start a thread which will await until we reach LockedUntilUtc
+                // before releasing the message so that it becomes available for redelivery.
+                RunMessageReleaseThread(message);
+                disposeMessage = false;
+            }
             catch (Exception ex) // unknown error
             {
                 message.AddDetailsToException(ex);
@@ -381,8 +400,8 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 {
                     return await AmqpCore.CollaborationProtocolRegistry.FindAgreementByIdAsync(id, message.ToHerId).ConfigureAwait(false);
                 }
-                //Continue if not able to find CPA by Id
-                catch (RegistriesException ex)
+                //Continue if not able to find CPA by Id, but not if the registry itself is unavailable
+                catch (RegistriesException ex) when (ex is not RegistriesUnavailableException)
                 {
                     Logger.LogInformation($"Tried to fetch Cpa from CpaID, continuing as if there wasn't a CpaId. Error message: {ex.Message}");
                 }

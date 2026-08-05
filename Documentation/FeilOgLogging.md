@@ -63,6 +63,15 @@ Avsender skal varsles om en annen feil. errorCondition = transport:internal-erro
 throw new NotifySenderException("Error description");
 ```
 Avsender blir ikke varslet, og meldingen blir liggende på køen før vi prøver på nytt.
+Kast en exception-type som biblioteket ikke kjenner igjen dersom prosesseringen feiler av en midlertidig årsak.
 ```cs
 throw new ArgumentOutOfRangeException();
 ```
+
+### Utilgjengelig CPP/CPA-register
+Biblioteket håndterer selv at CPP/CPA-registeret er midlertidig utilgjengelig (nede, timeout, tilkoblingsfeil eller 5xx-svar).
+I slike tilfeller kastes `RegistriesUnavailableException` fra registeroppslaget i stedet for at det faller tilbake til en
+dummy-profil. Meldingen blir da liggende på køen og prøvd på nytt (EventId `MUG-000044`), og avsender blir *ikke* varslet på sin error-kø.
+Et autoritativt negativt svar fra registeret (f.eks. 404 Not Found / fault fra tjenesten) behandles som før, med fallback til
+CPP-oppslag/dummy-profil.
+

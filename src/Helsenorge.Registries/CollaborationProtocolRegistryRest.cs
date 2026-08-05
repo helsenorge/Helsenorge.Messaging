@@ -6,6 +6,14 @@
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
 
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 using HelseId.Library.ClientCredentials.Interfaces;
 using HelseId.Library.Configuration;
 using HelseId.Library.Interfaces.JwtTokens;
@@ -15,13 +23,6 @@ using Helsenorge.Registries.Configuration;
 using Helsenorge.Registries.Utilities;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Helsenorge.Registries;
 
@@ -103,8 +104,23 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         }
         catch (HttpRequestException ex)
         {
+            _logger.LogInformation(ex, "Error resolving protocol for counterparty HerId {CounterpartyHerId}. StatusCode: {StatusCode}. Message: {Message}", counterpartyHerId, ex.StatusCode, ex.Message);
+
+            if (IsTransientError(ex))
+            {
+                // The service is down/unreachable. This is a transient condition, we must not fall back to a
+                // dummy profile since that would misrepresent the counterparty's actual CPP.
+                _logger.LogInformation(ex, "Transient error resolving protocol for counterparty HerId {CounterpartyHerId}. StatusCode: {StatusCode}", counterpartyHerId, ex.StatusCode);
+                throw new RegistriesUnavailableException($"The CPP/CPA registry is unavailable. Failed to resolve protocol for counterparty with HerId {counterpartyHerId}.", ex)
+                {
+                    EventId = EventIds.CollaborationProfile,
+                    Data = { { "HerId", counterpartyHerId } }
+                };
+            }
+
             if (_settings.ThrowMessageIfNoCpp)
             {
+                _logger.LogInformation(ex, "Error resolving protocol for counterparty HerId {CounterpartyHerId}. StatusCode: {StatusCode}", counterpartyHerId, ex.StatusCode);
                 throw new RegistriesException(ex.Message, ex)
                 {
                     EventId = EventIds.CollaborationProfile,
@@ -176,6 +192,17 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         }
         catch (HttpRequestException ex)
         {
+            if (IsTransientError(ex))
+            {
+                _logger.LogInformation(ex, "Transient error resolving agreement with CpaId {CpaId}. StatusCode: {StatusCode}", id, ex.StatusCode);
+                throw new RegistriesUnavailableException($"The CPP/CPA registry is unavailable. Failed to resolve agreement with CpaId {id}.", ex)
+                {
+                    EventId = EventIds.CollaborationAgreement,
+                    Data = { { "CpaId", id } }
+                };
+            }
+
+            _logger.LogInformation(ex, "Error resolving agreement with CpaId {CpaId}. StatusCode: {StatusCode}", id, ex.StatusCode);
             throw new RegistriesException(ex.Message, ex)
             {
                 EventId = EventIds.CollaborationAgreement,
@@ -241,6 +268,18 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
         }
         catch (HttpRequestException ex)
         {
+            if (IsTransientError(ex))
+            {
+                // The service is down/unreachable. This is a transient condition, we must not fall back to
+                // CPP resolution since that would end up producing a dummy profile misrepresenting the counterparty.
+                _logger.LogInformation(ex, "Transient error resolving CPA between {MyHerId} and {CounterpartyHerId}. StatusCode: {StatusCode}", myHerId, counterpartyHerId, ex.StatusCode);
+                throw new RegistriesUnavailableException($"The CPP/CPA registry is unavailable. Failed to resolve CPA between {myHerId} and {counterpartyHerId}.", ex)
+                {
+                    EventId = EventIds.CollaborationAgreement,
+                    Data = { { "MyHerId", myHerId }, { "CounterpartyHerId", counterpartyHerId } }
+                };
+            }
+
             // if there are error getting a proper CPA, we fallback to getting CPP.
             _logger.LogWarning(ex, "Failed to resolve CPA between {MyHerId} and {CounterpartyHerId}. Fallback to CPP.", myHerId, counterpartyHerId);
             return await FindProtocolForCounterpartyAsync(counterpartyHerId).ConfigureAwait(false);
@@ -306,5 +345,28 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
             IsDpopEnabled = _settings.RestConfiguration.IsDpopEnabled
         };
         return request;
+    }
+
+    /// <summary>
+    /// Determines whether an <see cref="HttpRequestException"/> represents a transient error, i.e. the
+    /// CPP/CPA service being down or unreachable, as opposed to an authoritative negative answer (e.g. 404 Not Found).
+    /// A missing status code means the request never received an HTTP response (DNS failure, connection refused,
+    /// connection reset, etc.) and is therefore considered transient.
+    /// </summary>
+    private static bool IsTransientError(HttpRequestException ex)
+    {
+        if (ex.StatusCode == null)
+            return true;
+
+        return ex.StatusCode switch
+        {
+            HttpStatusCode.RequestTimeout => true,        // 408
+            HttpStatusCode.TooManyRequests => true,       // 429
+            HttpStatusCode.InternalServerError => true,   // 500
+            HttpStatusCode.BadGateway => true,            // 502
+            HttpStatusCode.ServiceUnavailable => true,    // 503
+            HttpStatusCode.GatewayTimeout => true,        // 504
+            _ => false
+        };
     }
 }
