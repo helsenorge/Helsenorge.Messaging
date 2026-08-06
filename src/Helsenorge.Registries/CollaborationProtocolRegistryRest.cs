@@ -11,6 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -131,6 +132,17 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
             // if this happens, we fall back to the dummy profile further down
             _logger.LogWarning(ex, "Could not find or resolve protocol for counterparty when using HerId {CounterpartyHerId}, fallback to generate dummy profile.", counterpartyHerId);
         }
+        catch (AuthenticationException ex)
+        {
+            // Failure to authenticate towards the CPP/CPA service (e.g. the HelseID STS being unreachable) is an
+            // infrastructure problem on our side and must not result in a dummy profile or an error to the sender.
+            _logger.LogWarning(ex, "Authentication failure resolving protocol for counterparty HerId {CounterpartyHerId}.", counterpartyHerId);
+            throw new RegistriesUnavailableException($"Failed to authenticate towards the CPP/CPA registry. Failed to resolve protocol for counterparty with HerId {counterpartyHerId}.", ex)
+            {
+                EventId = EventIds.CollaborationProfile,
+                Data = { { "HerId", counterpartyHerId } }
+            };
+        }
         if (string.IsNullOrEmpty(xmlString))
         {
             // Fix that enables substitutes and interns without CPP to reply to messages on behalf of the GP
@@ -204,6 +216,17 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
 
             _logger.LogInformation(ex, "Error resolving agreement with CpaId {CpaId}. StatusCode: {StatusCode}", id, ex.StatusCode);
             throw new RegistriesException(ex.Message, ex)
+            {
+                EventId = EventIds.CollaborationAgreement,
+                Data = { { "CpaId", id } }
+            };
+        }
+        catch (AuthenticationException ex)
+        {
+            // Failure to authenticate towards the CPP/CPA service (e.g. the HelseID STS being unreachable) is an
+            // infrastructure problem on our side and must not result in an error to the sender.
+            _logger.LogWarning(ex, "Authentication failure resolving agreement with CpaId {CpaId}.", id);
+            throw new RegistriesUnavailableException($"Failed to authenticate towards the CPP/CPA registry. Failed to resolve agreement with CpaId {id}.", ex)
             {
                 EventId = EventIds.CollaborationAgreement,
                 Data = { { "CpaId", id } }
@@ -283,6 +306,18 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
             // if there are error getting a proper CPA, we fallback to getting CPP.
             _logger.LogWarning(ex, "Failed to resolve CPA between {MyHerId} and {CounterpartyHerId}. Fallback to CPP.", myHerId, counterpartyHerId);
             return await FindProtocolForCounterpartyAsync(counterpartyHerId).ConfigureAwait(false);
+        }
+        catch (AuthenticationException ex)
+        {
+            // Failure to authenticate towards the CPP/CPA service (e.g. the HelseID STS being unreachable) is an
+            // infrastructure problem on our side. We must not fall back to CPP resolution since that would end up
+            // producing a dummy profile misrepresenting the counterparty.
+            _logger.LogWarning(ex, "Authentication failure resolving CPA between {MyHerId} and {CounterpartyHerId}.", myHerId, counterpartyHerId);
+            throw new RegistriesUnavailableException($"Failed to authenticate towards the CPP/CPA registry. Failed to resolve CPA between {myHerId} and {counterpartyHerId}.", ex)
+            {
+                EventId = EventIds.CollaborationAgreement,
+                Data = { { "MyHerId", myHerId }, { "CounterpartyHerId", counterpartyHerId } }
+            };
         }
 
         if (string.IsNullOrEmpty(details)) return null;

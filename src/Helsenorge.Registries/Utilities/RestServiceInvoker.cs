@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using HelseId.Library;
 using HelseId.Library.ClientCredentials.Interfaces;
@@ -128,7 +129,7 @@ internal class RestServiceInvoker
             // Handle an error response from HelseID
             var errorResponse = response.AsError();
 
-            throw new HttpRequestException($"{errorResponse.Error} {errorResponse.ErrorDescription}");
+            throw new AuthenticationException($"Failed to authenticate towards the service. Error: {errorResponse.Error} {errorResponse.ErrorDescription}");
         }
 
         if (request.IsDpopEnabled)

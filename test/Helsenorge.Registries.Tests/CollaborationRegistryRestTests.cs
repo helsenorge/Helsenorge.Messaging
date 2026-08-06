@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
@@ -125,6 +126,23 @@ namespace Helsenorge.Registries.Tests
             // no status code means the request never received an HTTP response (DNS failure, connection refused, etc.)
             _registry.SetupFindProtocolForCounterparty(i => throw new HttpRequestException("Connection refused"));
             await Assert.ThrowsAsync<RegistriesUnavailableException>(() => _registry.FindProtocolForCounterpartyAsync(93252));
+        }
+
+        [TestMethod]
+        public async Task RestCpa_Read_CollaborationProfile_AuthenticationFailure_ThrowsRegistriesUnavailableException()
+        {
+            // e.g. the HelseID STS being unreachable: "No such host is known. (helseid-sts.test.nhn.no:443)"
+            _registry.SetupFindProtocolForCounterparty(i =>
+                throw new AuthenticationException("Failed to authenticate towards the service. Error: Exception No such host is known. (helseid-sts.test.nhn.no:443)"));
+            await Assert.ThrowsAsync<RegistriesUnavailableException>(() => _registry.FindProtocolForCounterpartyAsync(93252));
+        }
+
+        [TestMethod]
+        public async Task RestCpa_Read_CollaborationAgreement_AuthenticationFailure_ThrowsRegistriesUnavailableException()
+        {
+            _registry.SetupFindAgreementForCounterparty(i =>
+                throw new AuthenticationException("Failed to authenticate towards the service. Error: Exception No such host is known. (helseid-sts.test.nhn.no:443)"));
+            await Assert.ThrowsAsync<RegistriesUnavailableException>(() => _registry.FindAgreementForCounterpartyAsync(5678, 93252));
         }
 
         [TestMethod]

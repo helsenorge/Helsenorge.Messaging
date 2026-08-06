@@ -341,8 +341,7 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 }
                 await MessagingNotification.NotifyHandledExceptionAsync(message, ex).ConfigureAwait(false);
 
-                // Start a thread which will await until we reach LockedUntilUtc
-                // before releasing the message so that it becomes available for redelivery.
+                // Start a thread which will wait until we reach LockedUntilUtc, before releasing the message so that it becomes available for redelivery.
                 RunMessageReleaseThread(message);
                 disposeMessage = false;
             }
