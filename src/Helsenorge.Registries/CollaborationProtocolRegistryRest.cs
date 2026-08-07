@@ -9,28 +9,9 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using HelseId.Library.ClientCredentials.Interfaces;
-using HelseId.Library.Configuration;
-using HelseId.Library.Interfaces.JwtTokens;
-using HelseId.Library.Models.DetailsFromClient;
-using Helsenorge.Registries.Abstractions;
-using Helsenorge.Registries.Configuration;
-using Helsenorge.Registries.Utilities;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Logging;using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -410,7 +391,9 @@ public class CollaborationProtocolRegistryRest : ICollaborationProtocolRegistry
     private static bool IsTransientError(HttpRequestException ex)
     {
         if (ex.StatusCode == null)
+        {
             return true;
+        }
 
         return ex.StatusCode switch
         {
