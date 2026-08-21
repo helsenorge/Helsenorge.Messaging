@@ -18,7 +18,6 @@ namespace Helsenorge.Messaging.Amqp
         private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> StartReceive;
         private static readonly Action<ILogger, QueueType, string, int, int, string, long, Exception> EndReceive;
         private static readonly Action<ILogger, QueueType, string, int, int, string, string, Exception> StartSend;
-        private static readonly Action<ILogger, string, Exception> StartSendPayload;
         private static readonly Action<ILogger, QueueType, string, int, int, string, long, Exception> EndSend;
         private static readonly Action<ILogger, string, int, int, string, string, Exception> ResponseTime;
         private static readonly Action<ILogger, string, string, int, Exception> LogTimeout;
@@ -56,11 +55,8 @@ namespace Helsenorge.Messaging.Amqp
         public static void LogStartSend(this ILogger logger, QueueType queueType, string function, int fromHerId, int toHerId, string messageId, string additionalData, XDocument xml)
         {
             StartSend(logger, queueType, function, fromHerId, toHerId, messageId, additionalData, null);
-            if (xml != null && logger.IsEnabled(LogLevel.Debug))
-            {
-                StartSendPayload(logger, xml.ToString(), null);
-            }
         }
+        
         public static void LogEndSend(this ILogger logger, QueueType queueType, string function, int fromHerId, int toHerId, string messageId, long elapsedMilliseconds)
         {
             EndSend(logger, queueType, function, fromHerId, toHerId, messageId, elapsedMilliseconds, null);
@@ -156,12 +152,7 @@ namespace Helsenorge.Messaging.Amqp
                 LogLevel.Information,
                 EventIds.ServiceBusSend,
                 "Start-ServiceBusSend{QueueType}: {MessageFunction} FromHerId: {FromHerId} ToHerId: {ToHerId} MessageId: {MessageId} Additional Data: {AdditionalData}");
-
-            StartSendPayload = LoggerMessage.Define<string>(
-                LogLevel.Debug,
-                EventIds.ServiceBusSend,
-                "Start-ServiceBusSend payload: {Xml}");
-
+           
             EndSend = LoggerMessage.Define<QueueType, string, int, int, string, long>(
                 LogLevel.Information,
                 EventIds.ServiceBusSend,
