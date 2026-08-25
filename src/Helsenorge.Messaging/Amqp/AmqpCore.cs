@@ -147,7 +147,7 @@ namespace Helsenorge.Messaging.Amqp
 
             logger.LogStartSend(queueType, outgoingMessage.MessageFunction, outgoingMessage.FromHerId,
                 outgoingMessage.ToHerId, outgoingMessage.MessageId,
-                $"Sending message using host and queue: {HostnameAndPath}/{queueName}", outgoingMessage.Payload);
+                $"Sending message using host and queue: {HostnameAndPath}/{queueName}");
             if (MessagingSettings.LogPayload)
             {
                 logger.LogDebug("Raw payload: " + outgoingMessage.Payload.ToString().Replace("\"\"","\""));
@@ -443,7 +443,7 @@ namespace Helsenorge.Messaging.Amqp
                 originalMessage.FromHerId, originalMessage.ToHerId, errorCode, errorDescription, additionDataValue);
 
             logger.LogStartSend(QueueType.Error, errorMessage.MessageFunction, errorMessage.FromHerId,
-                errorMessage.ToHerId, errorMessage.MessageId, additionDataValue, null);
+                errorMessage.ToHerId, errorMessage.MessageId, additionDataValue);
             await SendAsync(logger, errorMessage).ConfigureAwait(false);
             stopwatch.Stop();
             logger.LogEndSend(QueueType.Error, errorMessage.MessageFunction, errorMessage.FromHerId,

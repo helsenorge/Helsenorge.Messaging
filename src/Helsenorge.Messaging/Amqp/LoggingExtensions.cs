@@ -7,7 +7,6 @@
  */
 
 using System;
-using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Microsoft.Extensions.Logging;
 
@@ -52,7 +51,7 @@ namespace Helsenorge.Messaging.Amqp
             EndReceive(logger, queueType, message.MessageFunction, message.FromHerId, message.ToHerId, message.MessageId, elapsedMilliseconds, null);
         }
 
-        public static void LogStartSend(this ILogger logger, QueueType queueType, string function, int fromHerId, int toHerId, string messageId, string additionalData, XDocument xml)
+        public static void LogStartSend(this ILogger logger, QueueType queueType, string function, int fromHerId, int toHerId, string messageId, string additionalData)
         {
             StartSend(logger, queueType, function, fromHerId, toHerId, messageId, additionalData, null);
         }
