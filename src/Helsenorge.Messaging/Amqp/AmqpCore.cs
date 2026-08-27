@@ -147,8 +147,11 @@ namespace Helsenorge.Messaging.Amqp
 
             logger.LogStartSend(queueType, outgoingMessage.MessageFunction, outgoingMessage.FromHerId,
                 outgoingMessage.ToHerId, outgoingMessage.MessageId,
-                $"Sending message using host and queue: {HostnameAndPath}/{queueName}", outgoingMessage.Payload);
-
+                $"Sending message using host and queue: {HostnameAndPath}/{queueName}");
+            if (MessagingSettings.LogPayload)
+            {
+                logger.LogDebug("Raw payload: " + outgoingMessage.Payload.ToString().Replace("\"\"","\""));
+            }
             var profile = await FindProfileAsync(logger, outgoingMessage);
 
             var stopwatch = new Stopwatch();
@@ -389,6 +392,19 @@ namespace Helsenorge.Messaging.Amqp
 
             errorMessage.MessageId = Guid.NewGuid().ToString("N");
             errorMessage.MessageFunction = originalMessage.MessageFunction;
+            // ContentType is required by the receiving side's header validation. Fall back to text/plain
+            // if the original message lacked one, since the error message carries no payload anyway.
+            errorMessage.ContentType = string.IsNullOrEmpty(originalMessage.ContentType)
+                ? ContentType.Text
+                : originalMessage.ContentType;
+            // Carry over the correlation id so the recipient can correlate the error with the message they sent
+            errorMessage.CorrelationId = string.IsNullOrEmpty(originalMessage.CorrelationId)
+                ? originalMessage.MessageId
+                : originalMessage.CorrelationId;
+            if (!string.IsNullOrEmpty(originalMessage.CpaId))
+            {
+                errorMessage.CpaId = originalMessage.CpaId;
+            }
             errorMessage.To = await ConstructQueueNameAsync(logger, originalMessage.FromHerId, QueueType.Error)
                 .ConfigureAwait(false); // send to the sender's error queue
             errorMessage.TimeToLive = Settings.Error.TimeToLive;
@@ -427,7 +443,7 @@ namespace Helsenorge.Messaging.Amqp
                 originalMessage.FromHerId, originalMessage.ToHerId, errorCode, errorDescription, additionDataValue);
 
             logger.LogStartSend(QueueType.Error, errorMessage.MessageFunction, errorMessage.FromHerId,
-                errorMessage.ToHerId, errorMessage.MessageId, additionDataValue, null);
+                errorMessage.ToHerId, errorMessage.MessageId, additionDataValue);
             await SendAsync(logger, errorMessage).ConfigureAwait(false);
             stopwatch.Stop();
             logger.LogEndSend(QueueType.Error, errorMessage.MessageFunction, errorMessage.FromHerId,
