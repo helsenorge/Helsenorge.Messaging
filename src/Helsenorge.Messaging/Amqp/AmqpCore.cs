@@ -382,6 +382,13 @@ namespace Helsenorge.Messaging.Amqp
                 logger.LogWarning(EventIds.MissingField, "FromHerId is missing. No idea where to send the error");
                 return;
             }
+            
+            if (string.IsNullOrWhiteSpace(originalMessage.MessageFunction))
+            {
+                logger.LogWarning(EventIds.MissingField, "MessageFunction is missing. MessageFunction/Subject is essential for the routing of the error message. Message will not be sent");
+                return;
+            }
+            
             /*
                 Build a brand new, unique error message instead of cloning the original.
                 Cloning carries over broker-managed headers, delivery-/message-annotations
