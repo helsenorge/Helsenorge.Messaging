@@ -38,4 +38,11 @@ public class RestConfiguration
     /// Gets or sets a value that indicates whether the enpoint requires DPOP Authorization
     /// </summary>
     public bool IsDpopEnabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the timeout used for requests made with the <see cref="System.Net.Http.HttpClient"/>
+    /// created from this configuration. When not set, the <see cref="System.Net.Http.HttpClient"/> default
+    /// of 100 seconds is used.
+    /// </summary>
+    public TimeSpan? Timeout { get; set; }
 }
