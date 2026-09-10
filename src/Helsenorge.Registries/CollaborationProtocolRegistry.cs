@@ -62,7 +62,7 @@ namespace Helsenorge.Registries
             _addressRegistry = addressRegistry;
             _logger = logger;
             _invoker = new SoapServiceInvoker(settings.WcfConfiguration);
-            CertificateValidator = new CertificateValidator(logger, _settings.UseOnlineRevocationCheck);
+            CertificateValidator = new CertificateValidator(logger, _settings.UseOnlineRevocationCheck, _settings.UrlRetrievalTimeout);
         }
 
         /// <inheritdoc cref="FindProtocolForCounterpartyAsync"/>
