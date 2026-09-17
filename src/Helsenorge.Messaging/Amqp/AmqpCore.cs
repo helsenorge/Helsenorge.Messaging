@@ -383,12 +383,6 @@ namespace Helsenorge.Messaging.Amqp
                 return;
             }
             
-            if (string.IsNullOrWhiteSpace(originalMessage.MessageFunction))
-            {
-                logger.LogWarning(EventIds.MissingField, "MessageFunction is missing. MessageFunction/Subject is essential for the routing of the error message. Message will not be sent");
-                return;
-            }
-            
             /*
                 Build a brand new, unique error message instead of cloning the original.
                 Cloning carries over broker-managed headers, delivery-/message-annotations
