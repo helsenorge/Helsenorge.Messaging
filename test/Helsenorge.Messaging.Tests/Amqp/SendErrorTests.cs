@@ -12,12 +12,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Tests.Mocks;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Helsenorge.Messaging.Tests.Amqp
 {
     /// <summary>
     /// Tests the different scenarios in AmqpCore.SendErrorAsync (via ReportErrorToExternalSenderAsync).
+    /// These tests document the current behavior, including known pitfalls, so that any future
+    /// change to these semantics is a conscious decision.
     /// </summary>
     [TestClass]
     public class SendErrorTests : BaseTest
@@ -167,6 +170,83 @@ namespace Helsenorge.Messaging.Tests.Amqp
         }
 
         [TestMethod]
+        public async Task ErrorMessage_PingPongBetweenTwoParties_IsDiscardedByErrorListener_WhenItComesBack()
+        {
+            // Simulates the full ping-pong scenario between two instances of this library:
+            //
+            // 1. The other party (93252) sends us a message with a whitespace-only label.
+            //    We fail to process it and report an error back (SendErrorAsync copies the
+            //    label verbatim) -> the error message lands on the other party's error queue.
+            // 2. The other party's instance also fails to process the error message and
+            //    reports an error back to *our* error queue - still with the whitespace label.
+            // 3. Our ErrorMessageListener receives the bounced message. It passes header
+            //    validation (the label is not empty, only whitespace), and is then discarded
+            //    by the listener's empty-label check - breaking the ping-pong.
+            //
+            // Note: a *fully* empty label fails header validation on every hop and keeps
+            // bouncing (see ErrorMessage_WithoutLabel_FailsHeaderValidation_And_TriggersNewErrorMessage);
+            // the whitespace case is the one the listener can terminate.
+
+            // Hop 1: we receive a message with a whitespace label from the other party and report an error
+            var originalMessage = CreateOriginalMessage();
+            originalMessage.MessageFunction = " ";
+            await ReportError(originalMessage, "transport:invalid-field-value", "Label is missing");
+
+            // the "ping" is now on the other party's error queue, with the whitespace label preserved
+            Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+            var ping = (MockMessage)MockFactory.OtherParty.Error.Messages.Single();
+            Assert.AreEqual(" ", ping.MessageFunction);
+
+            // Hop 2: the other party's instance of the library fails to process the error
+            // message and reports an error back to our error queue (the "pong")
+            ping.DeadLetterQueue = MockFactory.OtherParty.DeadLetter.Messages;
+            await Client.AmqpCore.ReportErrorToExternalSenderAsync(
+                Logger,
+                EventIds.MissingField,
+                ping,
+                "transport:invalid-field-value",
+                "Label is missing",
+                null);
+
+            Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
+            Assert.AreEqual(1, MockFactory.Helsenorge.Error.Messages.Count);
+            var pong = (MockMessage)MockFactory.Helsenorge.Error.Messages.Single();
+            Assert.AreEqual(" ", pong.MessageFunction);
+            pong.DeadLetterQueue = MockFactory.Helsenorge.DeadLetter.Messages;
+
+            // Hop 3: our ErrorMessageListener receives the bounced message and discards it
+            var errorReceiveCalled = false;
+            Server.RegisterErrorMessageReceivedCallbackAsync(_ =>
+            {
+                errorReceiveCalled = true;
+                return Task.CompletedTask;
+            });
+            await Server.StartAsync();
+            Wait(15, () => MockFactory.Helsenorge.Error.Messages.Count == 0);
+            await Server.StopAsync();
+
+            // the message passed header validation - it was not rejected as malformed
+            Assert.IsNull(MockLoggerProvider.Entries
+                .FirstOrDefault(e => e.Message.Contains("One or more fields are missing")));
+
+            // it was discarded by the ErrorMessageListener with a warning
+            var warning = MockLoggerProvider.Entries
+                .FirstOrDefault(e => e.LogLevel == LogLevel.Warning
+                                     && e.Message.Contains("empty label (MessageFunction)"));
+            Assert.IsNotNull(warning, "Expected a warning about empty label (MessageFunction)");
+            Assert.IsTrue(warning.Message.Contains(pong.MessageId), "Warning should contain the MessageId");
+
+            // the error callback was never invoked and no external reported error was logged
+            Assert.IsFalse(errorReceiveCalled, "Error message received callback should not be called for discarded messages");
+            Assert.IsNull(MockLoggerProvider.FindEntry(EventIds.ExternalReportedError));
+
+            // and crucially: the ping-pong is over - no new error message was sent back
+            Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
+            Assert.IsEmpty(MockFactory.Helsenorge.Error.Messages);
+            Assert.IsEmpty(MockFactory.Helsenorge.DeadLetter.Messages);
+        }
+
+        [TestMethod]
         public async Task SendError_MissingFromHerId_LogsWarning_And_DoesNotSendErrorMessage()
         {
             var originalMessage = CreateOriginalMessage();
@@ -312,6 +392,3 @@ namespace Helsenorge.Messaging.Tests.Amqp
         }
     }
 }
-
-
-
