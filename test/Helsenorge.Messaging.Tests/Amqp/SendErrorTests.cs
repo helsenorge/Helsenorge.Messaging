@@ -71,7 +71,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
             await ReportError(originalMessage);
 
             // the error message carries the unexpected content type verbatim
-            Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+            Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
             var errorMessage = MockFactory.OtherParty.Error.Messages.Single();
             Assert.AreEqual(UnexpectedContentType, errorMessage.ContentType);
 
@@ -98,7 +98,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
             Assert.IsEmpty(MockFactory.Helsenorge.Error.Messages);
             var externalReportedError = MockLoggerProvider.FindEntry(EventIds.ExternalReportedError);
             Assert.IsNotNull(externalReportedError);
-            Assert.IsTrue(externalReportedError.Message.Contains("errorCondition: transport:internal-error"));
+            Assert.Contains("errorCondition: transport:internal-error", externalReportedError.Message);
         }
 
         [TestMethod]
@@ -109,7 +109,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
 
             await ReportError(originalMessage);
 
-            Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+            Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
             var errorMessage = MockFactory.OtherParty.Error.Messages.Single();
             // ContentType is required by the receiving side's header validation,
             // so SendErrorAsync falls back to text/plain
@@ -127,7 +127,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
             // Pitfall: SendErrorAsync copies MessageFunction verbatim without any fallback.
             // The error message is sent without a label and will fail header validation
             // ("Label" missing) on the receiving side.
-            Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+            Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
             var errorMessage = MockFactory.OtherParty.Error.Messages.Single();
             Assert.IsTrue(string.IsNullOrEmpty(errorMessage.MessageFunction));
         }
@@ -193,7 +193,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
             await ReportError(originalMessage, "transport:invalid-field-value", "Label is missing");
 
             // the "ping" is now on the other party's error queue, with the whitespace label preserved
-            Assert.AreEqual(1, MockFactory.OtherParty.Error.Messages.Count);
+            Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
             var ping = (MockMessage)MockFactory.OtherParty.Error.Messages.Single();
             Assert.AreEqual(" ", ping.MessageFunction);
 
@@ -209,7 +209,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
                 null);
 
             Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
-            Assert.AreEqual(1, MockFactory.Helsenorge.Error.Messages.Count);
+            Assert.HasCount(1, MockFactory.Helsenorge.Error.Messages);
             var pong = (MockMessage)MockFactory.Helsenorge.Error.Messages.Single();
             Assert.AreEqual(" ", pong.MessageFunction);
             pong.DeadLetterQueue = MockFactory.Helsenorge.DeadLetter.Messages;
@@ -234,7 +234,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
                 .FirstOrDefault(e => e.LogLevel == LogLevel.Warning
                                      && e.Message.Contains("empty label (MessageFunction)"));
             Assert.IsNotNull(warning, "Expected a warning about empty label (MessageFunction)");
-            Assert.IsTrue(warning.Message.Contains(pong.MessageId), "Warning should contain the MessageId");
+            Assert.Contains(pong.MessageId, warning.Message, "Warning should contain the MessageId");
 
             // the error callback was never invoked and no external reported error was logged
             Assert.IsFalse(errorReceiveCalled, "Error message received callback should not be called for discarded messages");
@@ -243,6 +243,8 @@ namespace Helsenorge.Messaging.Tests.Amqp
             // and crucially: the ping-pong is over - no new error message was sent back
             Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
             Assert.IsEmpty(MockFactory.Helsenorge.Error.Messages);
+            // the DLQ is not a destination in the error flow; this only verifies that the discard
+            // happened by completing the message (removed from the queue) and not by rejecting it
             Assert.IsEmpty(MockFactory.Helsenorge.DeadLetter.Messages);
         }
 
@@ -259,7 +261,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
             Assert.IsEmpty(MockFactory.Helsenorge.Error.Messages);
             var warning = MockLoggerProvider.FindEntry(EventIds.MissingField);
             Assert.IsNotNull(warning);
-            Assert.IsTrue(warning.Message.Contains("FromHerId is missing"));
+            Assert.Contains("FromHerId is missing", warning.Message);
             // but the original message is still removed from the processing queue
             Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
         }
@@ -285,7 +287,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
             Assert.IsNotNull(messagingException, "Expected a MessagingException");
             Assert.AreEqual(EventIds.SenderMissingInAddressRegistryEventId.Id, messagingException.EventId.Id);
             Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
-            Assert.AreEqual(1, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+            Assert.HasCount(1, MockFactory.Helsenorge.Asynchronous.Messages);
         }
 
         [TestMethod]
@@ -345,7 +347,7 @@ namespace Helsenorge.Messaging.Tests.Amqp
 
             Assert.IsNotNull(argumentNullException, "Expected an ArgumentNullException");
             // Pitfall: the exception propagates and the original message is *not* removed from the queue
-            Assert.AreEqual(1, MockFactory.Helsenorge.Asynchronous.Messages.Count);
+            Assert.HasCount(1, MockFactory.Helsenorge.Asynchronous.Messages);
         }
 
         [TestMethod]
@@ -392,3 +394,4 @@ namespace Helsenorge.Messaging.Tests.Amqp
         }
     }
 }
+
