@@ -1,7 +1,7 @@
-﻿/* 
+﻿/*
  * Copyright (c) 2020-2024, Norsk Helsenett SF and contributors
  * See the file CONTRIBUTORS for details.
- * 
+ *
  * This file is licensed under the MIT license
  * available at https://raw.githubusercontent.com/helsenorge/Helsenorge.Messaging/master/LICENSE
  */
@@ -62,6 +62,14 @@ namespace Helsenorge.Messaging.Amqp.Receivers
         {
             if (rawMessage == null) throw new ArgumentNullException(nameof(rawMessage));
             if (message == null) throw new ArgumentNullException(nameof(message));
+            
+            if (string.IsNullOrWhiteSpace(message.MessageFunction))
+            {
+                Logger.LogWarning(
+                    "Received a message on the error queue with an empty label (MessageFunction). Discarding the message. MessageId: {MessageId} CorrelationId: {CorrelationId} FromHerId: {FromHerId} ToHerId: {ToHerId}",
+                    message.MessageId, message.CorrelationId, message.FromHerId, message.ToHerId);
+                return;
+            }
             
             var stringBuilder = new StringBuilder();
             stringBuilder.Append($"Label: {message.MessageFunction} ");

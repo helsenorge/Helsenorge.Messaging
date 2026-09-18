@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Helsenorge.Messaging.Abstractions;
 using Helsenorge.Messaging.Tests.Mocks;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Helsenorge.Messaging.Tests.Amqp.Receivers
@@ -73,6 +74,37 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                 {
                     m.ContentType = ContentType.Soap;
                     m.MessageFunction = "AMQP_SOAP_FAULT";
+                });
+        }
+
+        [TestMethod]
+        public async Task Error_Receive_WhitespaceMessageFunction_LogsWarningAndDiscardsMessage()
+        {
+            string messageId = null;
+            await RunReceive(
+                GenericMessage,
+                postValidation: () =>
+                {
+                    // the message has been removed from the error queue
+                    Assert.IsEmpty(MockFactory.Helsenorge.Error.Messages);
+                    // the error message received callback was never invoked
+                    Assert.IsFalse(_errorReceiveCalled, "Error message received callback should not be called for messages with an empty label");
+                    Assert.IsTrue(_errorStartingCalled, "Error message received starting callback not called");
+                    // a warning has been logged with the message details
+                    var warning = MockLoggerProvider.Entries
+                        .FirstOrDefault(e => e.LogLevel == LogLevel.Warning
+                                             && e.Message.Contains("empty label (MessageFunction)"));
+                    Assert.IsNotNull(warning, "Expected a warning about empty label (MessageFunction)");
+                    Assert.IsTrue(warning.Message.Contains(messageId), "Warning should contain the MessageId");
+                    // no external reported error has been logged
+                    Assert.IsNull(MockLoggerProvider.FindEntry(EventIds.ExternalReportedError));
+                },
+                wait: () => MockFactory.Helsenorge.Error.Messages.Count == 0,
+                messageModification: (m) =>
+                {
+                    messageId = m.MessageId;
+                    // whitespace-only passes the generic header validation, but must be discarded by the ErrorMessageListener
+                    m.MessageFunction = "   ";
                 });
         }
 

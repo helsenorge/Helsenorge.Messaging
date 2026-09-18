@@ -382,6 +382,7 @@ namespace Helsenorge.Messaging.Amqp
                 logger.LogWarning(EventIds.MissingField, "FromHerId is missing. No idea where to send the error");
                 return;
             }
+            
             /*
                 Build a brand new, unique error message instead of cloning the original.
                 Cloning carries over broker-managed headers, delivery-/message-annotations
