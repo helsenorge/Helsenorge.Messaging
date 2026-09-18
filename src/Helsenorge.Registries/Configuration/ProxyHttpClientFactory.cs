@@ -52,6 +52,11 @@ public class ProxyHttpClientFactory
             BaseAddress = new Uri(_configuration.Address)
         };
 
+        if (_configuration.Timeout.HasValue)
+        {
+            httpClient.Timeout = _configuration.Timeout.Value;
+        }
+
         return httpClient;
     }
 }
