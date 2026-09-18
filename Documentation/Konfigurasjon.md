@@ -18,7 +18,8 @@ Dette er et eksempel på hvordan en slik fil kan se ut.
     "CollaborationProtocolRegistryRestSettings": {
         "RestConfiguration": {
             "Address": "https://cppa.grunndata.nhn.no",
-            "IsDpopEnabled":  false
+            "IsDpopEnabled":  false,
+            "Timeout": "00:01:00"
         },
         "CachingInterval": "00:05:00"
     },
