@@ -11,6 +11,9 @@ Problemer med å finne CPP for en motpart
 ### REG-000003
 Problemer med å finne CPA for en motpart.
 
+### REG-000004
+Problemer med å hente sertifikatdetaljer.
+
 ## Helsenorge.Messaging
 
 ### MUG-000001
@@ -96,6 +99,18 @@ Non-successful authentication or connection attempt to the message broker.
 
 ### MUG-000040
 Invalid HER-id.
+
+### MUG-000041
+Kunne ikke verifisere sertifikatet.
+
+### MUG-000042
+Revokeringssjekk av avsenders sertifikat kunne ikke gjennomføres (offline).
+
+### MUG-000043
+Revokeringssjekk av lokalt sertifikat kunne ikke gjennomføres (offline).
+
+### MUG-000044
+Registeret er midlertidig utilgjengelig.
 
 ### MUG-001001
 Informasjonsformål når mottaksprosessen starter/avslutter

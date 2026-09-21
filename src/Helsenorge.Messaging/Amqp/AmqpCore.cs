@@ -302,7 +302,7 @@ namespace Helsenorge.Messaging.Amqp
 
                 sw.Stop();
                 logger.LogInformation(
-                    $"After-AddingPayloadMetadata: {amqpMessage.MessageFunction} FromHerId: {amqpMessage.FromHerId} ToHerId: {amqpMessage.ToHerId}  MessageId: {amqpMessage.MessageId} Elapsed: {sw.ElapsedMilliseconds} ms");
+                    $"After-AddingPayloadMetadata: {amqpMessage.MessageFunction} FromHerId: {amqpMessage.FromHerId} ToHerId: {amqpMessage.ToHerId}  MessageId: {amqpMessage.MessageId} Execution time: {sw.ElapsedMilliseconds} ms");
             }
             catch (Exception e)
             {
