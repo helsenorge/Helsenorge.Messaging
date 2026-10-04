@@ -45,6 +45,10 @@ namespace Helsenorge.Messaging
         /// </summary>
         public bool UseOnlineRevocationCheck { get; set; } = true;
         /// <summary>
+        /// Timeout used when retrieving the certificate revocation list online. Optional, defaults to 30 seconds.
+        /// </summary>
+        public TimeSpan? UrlRetrievalTimeout { get; set; }
+        /// <summary>
         /// Provides access to service bus settings
         /// </summary>
         public AmqpSettings AmqpSettings { get; }

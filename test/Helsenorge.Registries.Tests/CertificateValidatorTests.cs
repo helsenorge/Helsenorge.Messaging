@@ -8,6 +8,7 @@
 
 using System.Security.Cryptography;
 using System;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Helsenorge.Registries.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
@@ -93,8 +94,29 @@ namespace Helsenorge.Registries.Tests
             var error = validator.Validate(TestCertificates.CounterpartyPublicSignatureInvalidStart,
                 X509KeyUsageFlags.KeyEncipherment);
             // Added RevokedUnknown as build server add this error
-            Assert.IsTrue(error == (CertificateErrors.StartDate | CertificateErrors.Usage) 
+            Assert.IsTrue(error == (CertificateErrors.StartDate | CertificateErrors.Usage)
                 || error == (CertificateErrors.StartDate | CertificateErrors.Usage | CertificateErrors.RevokedUnknown));
+        }
+
+        [TestMethod]
+        public void CertificateValidator_DefaultUrlRetrievalTimeout_Is30Seconds()
+        {
+            var validator = new CertificateValidator(_logger);
+            Assert.AreEqual(TimeSpan.FromSeconds(30), GetUrlRetrievalTimeout(validator));
+        }
+
+        [TestMethod]
+        public void CertificateValidator_CustomUrlRetrievalTimeout_IsApplied()
+        {
+            var timeout = TimeSpan.FromSeconds(5);
+            var validator = new CertificateValidator(_logger, urlRetrievalTimeout: timeout);
+            Assert.AreEqual(timeout, GetUrlRetrievalTimeout(validator));
+        }
+
+        private static TimeSpan GetUrlRetrievalTimeout(CertificateValidator validator)
+        {
+            var field = typeof(CertificateValidator).GetField("_urlRetrievalTimeout", BindingFlags.NonPublic | BindingFlags.Instance);
+            return (TimeSpan)field.GetValue(validator);
         }
     }
 }

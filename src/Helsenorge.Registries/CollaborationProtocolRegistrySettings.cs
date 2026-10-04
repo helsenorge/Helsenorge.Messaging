@@ -32,6 +32,11 @@ namespace Helsenorge.Registries
         public bool UseOnlineRevocationCheck { get; set; } = true;
 
         /// <summary>
+        /// Timeout used when retrieving the certificate revocation list online. Optional, defaults to 30 seconds.
+        /// </summary>
+        public TimeSpan? UrlRetrievalTimeout { get; set; }
+
+        /// <summary>
         /// Throws a fault exception if both CPA and CPP checks fail. Default false.
         /// </summary>
         public bool ThrowMessageIfNoCpp { get; set; } = false;
