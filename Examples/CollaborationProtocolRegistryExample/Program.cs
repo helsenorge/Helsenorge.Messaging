@@ -10,6 +10,7 @@ namespace CollaborationProtocolRegistryExample
     {
         private static async Task Main(string[] args)
         {
+            var myHerId = 8093239;
             var counterPartyHerId = 8141333;
 
             var loggerFactory = new NullLoggerFactory();
@@ -25,10 +26,10 @@ namespace CollaborationProtocolRegistryExample
                         MaxBufferSize = 2147483647,
                         MaxBufferPoolSize = 2147483647,
                         MaxReceivedMessageSize = 2147483647,
-                        UserName = "Kenneth.Myhra@helsedir.no",
-                        Password = "d8JIq7Sa",
+                        UserName = "<username>",
+                        Password = "<password>",
                     },
-                }, cache);
+                }, cache, logger);
 
             var settings = new CollaborationProtocolRegistrySettings
             {
@@ -38,10 +39,9 @@ namespace CollaborationProtocolRegistryExample
                     MaxBufferSize = 2147483647,
                     MaxBufferPoolSize = 2147483647,
                     MaxReceivedMessageSize = 2147483647,
-                    UserName = "Kenneth.Myhra@helsedir.no",
-                    Password = "d8JIq7Sa",
+                    UserName = "<username>",
+                    Password = "<password>",
                 },
-                MyHerId = 8093239
             };
 
             // var communicationPartyDetails = await addressRegistry.FindCommunicationPartyDetailsAsync(logger, counterPartyHerId);
@@ -52,9 +52,9 @@ namespace CollaborationProtocolRegistryExample
             //var messageFunction = "APPREC";
             var messageFunction = "DIALOG_INNBYGGER_EKONSULTASJON";
 
-            var collaborationProtocolRegistry = new CollaborationProtocolRegistry(settings, cache, addressRegistry);
+            var collaborationProtocolRegistry = new CollaborationProtocolRegistry(settings, cache, addressRegistry, logger);
 
-            var collaborationProtocolAgreement = await collaborationProtocolRegistry.FindAgreementForCounterpartyAsync(logger, counterPartyHerId);
+            var collaborationProtocolAgreement = await collaborationProtocolRegistry.FindAgreementForCounterpartyAsync(myHerId, counterPartyHerId);
             if (collaborationProtocolAgreement != null)
             {
                 Console.WriteLine($"CPA Id: {collaborationProtocolAgreement.CpaId}");
@@ -72,7 +72,7 @@ namespace CollaborationProtocolRegistryExample
                 }
             }
 
-            var collaborationProtocolProfile = await collaborationProtocolRegistry.FindProtocolForCounterpartyAsync(logger, counterPartyHerId);
+            var collaborationProtocolProfile = await collaborationProtocolRegistry.FindProtocolForCounterpartyAsync(counterPartyHerId);
             //Console.WriteLine($"CPA Id: {collaborationProtocolProfile.CpaId}");
             Console.WriteLine($"CPP Id: {collaborationProtocolProfile.CppId}");
             Console.WriteLine($"collaborationProtocolProfile.Name: {collaborationProtocolProfile.Name}");
