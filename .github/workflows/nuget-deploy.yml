@@ -9,10 +9,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Setup .NET 9.0
+      - name: Setup .NET 10.0
         uses: actions/setup-dotnet@v6
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
       - name: Build
         run: |
           dotnet pack "./src/Helsenorge.Messaging/Helsenorge.Messaging.csproj" -c Release
