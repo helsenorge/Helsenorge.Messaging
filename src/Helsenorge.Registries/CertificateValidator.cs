@@ -18,18 +18,23 @@ namespace Helsenorge.Registries
     /// </summary>
     public class CertificateValidator : ICertificateValidator
     {
+        private static readonly TimeSpan DefaultUrlRetrievalTimeout = TimeSpan.FromSeconds(30);
+
         private readonly ILogger _logger;
         private readonly bool _useOnlineRevocationCheck;
+        private readonly TimeSpan _urlRetrievalTimeout;
 
         /// <summary>
         /// CertificateValidator constructor
         /// </summary>
         /// <param name="logger">Default logger</param>
         /// <param name="useOnlineRevocationCheck">Should online certificate revocation list be used. Optional, default true.</param>
-        public CertificateValidator(ILogger logger, bool useOnlineRevocationCheck = true)
+        /// <param name="urlRetrievalTimeout">Timeout used when retrieving the certificate revocation list online. Optional, default 30 seconds.</param>
+        public CertificateValidator(ILogger logger, bool useOnlineRevocationCheck = true, TimeSpan? urlRetrievalTimeout = null)
         {
             _logger = logger;
             _useOnlineRevocationCheck = useOnlineRevocationCheck;
+            _urlRetrievalTimeout = urlRetrievalTimeout ?? DefaultUrlRetrievalTimeout;
         }
 
         /// <summary>
@@ -63,7 +68,7 @@ namespace Helsenorge.Registries
                 {
                     RevocationMode = _useOnlineRevocationCheck ? X509RevocationMode.Online : X509RevocationMode.NoCheck,
                     RevocationFlag = X509RevocationFlag.EntireChain,
-                    UrlRetrievalTimeout = TimeSpan.FromSeconds(30),
+                    UrlRetrievalTimeout = _urlRetrievalTimeout,
                     VerificationTime = DateTime.Now,
                 }
             };

@@ -21,7 +21,8 @@ Dette er et eksempel på hvordan en slik fil kan se ut.
             "IsDpopEnabled":  false,
             "Timeout": "00:01:00"
         },
-        "CachingInterval": "00:05:00"
+        "CachingInterval": "00:05:00",
+        "UrlRetrievalTimeout": "00:00:30"
     },
     "MessagingSettings": {
         "MyHerIds": [ "1234" ],
@@ -29,6 +30,7 @@ Dette er et eksempel på hvordan en slik fil kan se ut.
             "X-SystemIdentifier": "SomeSystemIdentifier"
         },
         "IgnoreCertificateErrorOnSend": "false",
+        "UrlRetrievalTimeout": "00:00:30",
         "AmqpSettings": {
             "ConnectionString": "",
             "MaxReceivers": 5,
