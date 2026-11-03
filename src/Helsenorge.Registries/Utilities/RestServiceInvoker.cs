@@ -15,6 +15,7 @@ using HelseId.Library.Models;
 using HelseId.Library.Models.DetailsFromClient;
 using Helsenorge.Registries.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -126,7 +127,7 @@ internal class RestServiceInvoker
             // Handle an error response from HelseID
             var errorResponse = response.AsError();
 
-            throw new HttpRequestException($"{errorResponse.Error} {errorResponse.ErrorDescription}");
+            throw new SecurityTokenException($"{errorResponse.Error} {errorResponse.ErrorDescription}");
         }
 
         if (request.IsDpopEnabled)
