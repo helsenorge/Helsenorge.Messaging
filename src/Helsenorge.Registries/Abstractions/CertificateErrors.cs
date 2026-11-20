@@ -48,6 +48,14 @@ namespace Helsenorge.Registries.Abstractions
         /// <summary>
         /// Unable to determine revocation status. Service is unavailable
         /// </summary>
-        RevokedOffline = 64
+        RevokedOffline = 64,
+        /// <summary>
+        /// Certificate comes from untrusted root
+        /// </summary>
+        UntrustedRoot = 128,
+        /// <summary>
+        /// Chain couldn't be built up to a root (missing issuer)
+        /// </summary>
+        PartialChain = 256
     }
 }

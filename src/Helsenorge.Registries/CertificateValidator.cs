@@ -37,24 +37,23 @@ namespace Helsenorge.Registries
             _urlRetrievalTimeout = urlRetrievalTimeout ?? DefaultUrlRetrievalTimeout;
         }
 
-        /// <summary>
-        /// Validates the provided certificate
-        /// </summary>
-        /// <param name="certificate">The certificate to validate</param>
-        /// <param name="usage">The type of usage the certificate is specified for</param>
-        /// <returns>A bitcoded status indicating if the certificate is valid or not</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        /// <inheritdoc/>
         public CertificateErrors Validate(X509Certificate2 certificate, X509KeyUsageFlags usage)
+            => Validate(certificate, usage, null);
+
+        /// <inheritdoc/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        public CertificateErrors Validate(X509Certificate2 certificate, X509KeyUsageFlags usage, X509Certificate2Collection separateValidationCerts)
         {
             if (certificate == null) return CertificateErrors.Missing;
 
             var result = CertificateErrors.None;
 
-            if (DateTime.Now < certificate.NotBefore)
+            if (DateTime.UtcNow < certificate.NotBefore.ToUniversalTime())
             {
                 result |= CertificateErrors.StartDate;
             }
-            if (DateTime.Now > certificate.NotAfter)
+            if (DateTime.UtcNow > certificate.NotAfter.ToUniversalTime())
             {
                 result |= CertificateErrors.EndDate;
             }
@@ -75,6 +74,14 @@ namespace Helsenorge.Registries
 
             using (chain)
             {
+                // User passed other certs to validate against, use these instead of default store
+                if (separateValidationCerts != null && separateValidationCerts.Count > 0)
+                {
+                    chain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust; // Different root in use, need to change TrustMode
+                    chain.ChainPolicy.CustomTrustStore.AddRange(separateValidationCerts);
+                    chain.ChainPolicy.ExtraStore.AddRange(separateValidationCerts); // Precaution, in case some certs are intermediate
+                }
+                
                 if (chain.Build(certificate)) return result;
 
                 foreach (var status in chain.ChainStatus)
@@ -92,6 +99,12 @@ namespace Helsenorge.Registries
                             break;
                         case X509ChainStatusFlags.Revoked:
                             result |= CertificateErrors.Revoked;
+                            break;
+                        case X509ChainStatusFlags.UntrustedRoot:
+                            result |= CertificateErrors.UntrustedRoot;
+                            break;
+                        case X509ChainStatusFlags.PartialChain:
+                            result |= CertificateErrors.PartialChain;
                             break;
                     }
                 }
