@@ -46,6 +46,10 @@ namespace Helsenorge.Registries.Tests
             var validator = new CertificateValidator(_logger);
             var error = validator.Validate(TestCertificates.CounterpartyPublicSignature,
                 X509KeyUsageFlags.NonRepudiation);
+            // Since self signed, expect untrusted root. Then negate to test the other expected results
+            Assert.IsTrue(error.HasFlag(CertificateErrors.UntrustedRoot));
+            error &= ~CertificateErrors.UntrustedRoot;
+            
             // Added RevokedUnknown as build server add this error
             Assert.IsTrue(error == CertificateErrors.None
                 || error == CertificateErrors.RevokedUnknown);
@@ -56,6 +60,10 @@ namespace Helsenorge.Registries.Tests
             var validator = new CertificateValidator(_logger);
             var error = validator.Validate(TestCertificates.CounterpartyPublicSignatureInvalidStart,
                 X509KeyUsageFlags.NonRepudiation);
+            // Since self signed, expect untrusted root. Then negate to test the other expected results
+            Assert.IsTrue(error.HasFlag(CertificateErrors.UntrustedRoot));
+            error &= ~CertificateErrors.UntrustedRoot;
+            
             // Added RevokedUnknown as build server add this error
             Assert.IsTrue(error == CertificateErrors.StartDate
                 || error == (CertificateErrors.StartDate | CertificateErrors.RevokedUnknown));
@@ -66,6 +74,10 @@ namespace Helsenorge.Registries.Tests
             var validator = new CertificateValidator(_logger);
             var error = validator.Validate(TestCertificates.CounterpartyPublicSignatureInvalidEnd,
                 X509KeyUsageFlags.NonRepudiation);
+            // Since self signed, expect untrusted root. Then negate to test the other expected results
+            Assert.IsTrue(error.HasFlag(CertificateErrors.UntrustedRoot));
+            error &= ~CertificateErrors.UntrustedRoot;
+            
             // Added RevokedUnknown as build server add this error
             Assert.IsTrue(error == CertificateErrors.EndDate
                 || error == (CertificateErrors.EndDate | CertificateErrors.RevokedUnknown));
@@ -76,6 +88,10 @@ namespace Helsenorge.Registries.Tests
             var validator = new CertificateValidator(_logger);
             var error = validator.Validate(TestCertificates.CounterpartyPublicSignature,
                 X509KeyUsageFlags.KeyEncipherment);
+            // Since self signed, expect untrusted root. Then negate to test the other expected results
+            Assert.IsTrue(error.HasFlag(CertificateErrors.UntrustedRoot));
+            error &= ~CertificateErrors.UntrustedRoot;
+            
             // Added RevokedUnknown as build server add this error
             Assert.IsTrue(error == CertificateErrors.Usage
                 || error == (CertificateErrors.Usage | CertificateErrors.RevokedUnknown));
@@ -93,9 +109,63 @@ namespace Helsenorge.Registries.Tests
             var validator = new CertificateValidator(_logger);
             var error = validator.Validate(TestCertificates.CounterpartyPublicSignatureInvalidStart,
                 X509KeyUsageFlags.KeyEncipherment);
+            // Since self signed, expect untrusted root. Then negate to test the other expected results
+            Assert.IsTrue(error.HasFlag(CertificateErrors.UntrustedRoot));
+            error &= ~CertificateErrors.UntrustedRoot;
+            
             // Added RevokedUnknown as build server add this error
             Assert.IsTrue(error == (CertificateErrors.StartDate | CertificateErrors.Usage)
                 || error == (CertificateErrors.StartDate | CertificateErrors.Usage | CertificateErrors.RevokedUnknown));
+        }
+
+        [TestMethod]
+        public void CertificateValidation_SeparateValidationCerts_SelfSigned_None()
+        {
+            var validator = new CertificateValidator(_logger, useOnlineRevocationCheck: false);
+            var certificate = TestCertificates.CounterpartyPublicSignature;
+            var error = validator.Validate(certificate, X509KeyUsageFlags.NonRepudiation,
+                new X509Certificate2Collection(certificate));
+            Assert.AreEqual(CertificateErrors.None, error);
+        }
+
+        [TestMethod]
+        public void CertificateValidation_SeparateValidationCerts_IssuedByCertificateAuthority_None()
+        {
+            var validator = new CertificateValidator(_logger, useOnlineRevocationCheck: false);
+            var certificateAuthority = TestCertificates.CertificateAuthority;
+            var error = validator.Validate(TestCertificates.CounterpartyPublicSignatureIssuedBy(certificateAuthority),
+                X509KeyUsageFlags.NonRepudiation, new X509Certificate2Collection(certificateAuthority));
+            Assert.AreEqual(CertificateErrors.None, error);
+        }
+
+        [TestMethod]
+        public void CertificateValidation_SeparateValidationCerts_Multiple()
+        {
+            var validator = new CertificateValidator(_logger, useOnlineRevocationCheck: false);
+            var certificate = TestCertificates.CounterpartyPublicSignatureInvalidStart;
+            var error = validator.Validate(certificate, X509KeyUsageFlags.KeyEncipherment,
+                new X509Certificate2Collection(certificate));
+            Assert.AreEqual(CertificateErrors.StartDate | CertificateErrors.Usage, error);
+        }
+
+        [TestMethod]
+        public void CertificateValidation_SeparateValidationCerts_IssuerMissing_PartialChain()
+        {
+            var validator = new CertificateValidator(_logger, useOnlineRevocationCheck: false);
+            var issuingCertificateAuthority = TestCertificates.CertificateAuthority;
+            var unrelatedCertificateAuthority = TestCertificates.CertificateAuthority;
+            var error = validator.Validate(TestCertificates.CounterpartyPublicSignatureIssuedBy(issuingCertificateAuthority),
+                X509KeyUsageFlags.NonRepudiation, new X509Certificate2Collection(unrelatedCertificateAuthority));
+            Assert.AreEqual(CertificateErrors.PartialChain, error);
+        }
+
+        [TestMethod]
+        public void CertificateValidation_SeparateValidationCerts_SelfSignedNotInCollection_UntrustedRoot()
+        {
+            var validator = new CertificateValidator(_logger, useOnlineRevocationCheck: false);
+            var error = validator.Validate(TestCertificates.CounterpartyPublicSignature,
+                X509KeyUsageFlags.NonRepudiation, new X509Certificate2Collection(TestCertificates.CertificateAuthority));
+            Assert.AreEqual(CertificateErrors.UntrustedRoot, error);
         }
 
         [TestMethod]

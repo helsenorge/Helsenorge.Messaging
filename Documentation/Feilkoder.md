@@ -97,6 +97,18 @@ Non-successful authentication or connection attempt to the message broker.
 ### MUG-000040
 Invalid HER-id.
 
+### MUG-000044
+Remote certificate has untrusted root.
+
+### MUG-000045
+Local certificate has untrusted root.
+
+### MUG-000046
+Remote certificate has partial chain.
+
+### MUG-000047
+Local certificate has partial chain.
+
 ### MUG-001001
 Informasjonsformål når mottaksprosessen starter/avslutter
 

@@ -146,6 +146,22 @@ namespace Helsenorge.Messaging.Abstractions
         /// Local certificate has been revoked.
         /// </summary>
         public static EventId LocalCertificateRevocationOffline = new EventId(43, EventIdName);
+        /// <summary>
+        /// Remote certificate has untrusted root.
+        /// </summary>
+        public static EventId RemoteCertificateUntrustedRoot = new EventId(44, EventIdName);
+        /// <summary>
+        /// Local certificate has untrusted root.
+        /// </summary>
+        public static EventId LocalCertificateUntrustedRoot = new EventId(45, EventIdName);
+        /// <summary>
+        /// Remote certificate has partial chain.
+        /// </summary>
+        public static EventId RemoteCertificatePartialChain = new EventId(46, EventIdName);
+        /// <summary>
+        /// Local certificate has partial chain.
+        /// </summary>
+        public static EventId LocalCertificatePartialChain = new EventId(47, EventIdName);
 
         /// <summary>
         /// Event Id used for informational purposes when starting/ending the Receive process.

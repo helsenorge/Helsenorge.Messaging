@@ -22,5 +22,15 @@ namespace Helsenorge.Registries.Abstractions
         /// <param name="usage">The type of usage the certificate is specified for</param>
         /// <returns>A bitcoded status indicating if the certificate is valid or not</returns>
         CertificateErrors Validate(X509Certificate2 certificate, X509KeyUsageFlags usage);
+        
+        /// <summary>
+        /// Validates the provided certificate
+        /// </summary>
+        /// <param name="certificate">The certificate to validate</param>
+        /// <param name="usage">The type of usage the certificate is specified for</param>
+        /// <param name="separateValidationCerts">A collection of certificates used for validating the incoming certificate instead of the base store. If null or empty, use base store.</param>
+        /// <returns>A bitcoded status indicating if the certificate is valid or not</returns>
+        CertificateErrors Validate(X509Certificate2 certificate, X509KeyUsageFlags usage, X509Certificate2Collection separateValidationCerts)
+            => Validate(certificate, usage);
     }
 }

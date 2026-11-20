@@ -514,6 +514,12 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 case CertificateErrors.RevokedOffline:
                     throw new CertificateException(error, "transport:revoked-certificate-offline", "Unable to determine revocation status. Service is unavailable",
                         EventIds.RemoteCertificateRevocationOffline, AdditionalInformation(certificate));
+                case CertificateErrors.UntrustedRoot:
+                    throw new CertificateException(error, "transport:untrusted-root", "Certificate has untrusted root",
+                        EventIds.RemoteCertificateUntrustedRoot, AdditionalInformation(certificate));
+                case CertificateErrors.PartialChain:
+                    throw new CertificateException(error, "transport:partial-chain", "Building the entire chain did not lead to a root",
+                        EventIds.RemoteCertificatePartialChain, AdditionalInformation(certificate));
                 default: // since the value is bit-coded
                     throw new CertificateException(error, "transport:invalid-certificate", "More than one error with certificate",
                         EventIds.RemoteCertificate, AdditionalInformation(certificate));
@@ -560,6 +566,14 @@ namespace Helsenorge.Messaging.Amqp.Receivers
                 case CertificateErrors.RevokedOffline:
                     description = "Unable to determine revocation status. Service is unavailable";
                     id = EventIds.LocalCertificateRevocationOffline;
+                    break;
+                case CertificateErrors.UntrustedRoot:
+                    description = "Certificate has untrusted root";
+                    id = EventIds.LocalCertificateUntrustedRoot;
+                    break;
+                case CertificateErrors.PartialChain:
+                    description = "Building the entire chain did not lead to a root";
+                    id = EventIds.LocalCertificatePartialChain;
                     break;
                 default: // since the value is bit-coded
                     description = "More than one error with certificate";
