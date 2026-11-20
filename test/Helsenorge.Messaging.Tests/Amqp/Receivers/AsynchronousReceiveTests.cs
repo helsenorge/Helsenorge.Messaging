@@ -414,6 +414,48 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                messageModification: (m) => { });
         }
         [TestMethod]
+        public async Task Asynchronous_Receive_LocalCertificateUntrustedRoot()
+        {
+            CertificateValidator.SetError(
+                (c, u) => (u == X509KeyUsageFlags.KeyEncipherment) ? CertificateErrors.UntrustedRoot : CertificateErrors.None);
+
+            await RunAsynchronousReceive(
+               postValidation: () =>
+               {
+                   Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                   Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
+                   Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificateUntrustedRoot));
+               },
+               wait: () => _completedCalled,
+               received: (m) => 
+               { 
+                   Assert.AreNotEqual(CertificateErrors.None, m.DecryptionError);
+                   return Task.CompletedTask;
+               },
+               messageModification: (m) => { });
+        }
+        [TestMethod]
+        public async Task Asynchronous_Receive_LocalCertificatePartialChain()
+        {
+            CertificateValidator.SetError(
+                (c, u) => (u == X509KeyUsageFlags.KeyEncipherment) ? CertificateErrors.PartialChain : CertificateErrors.None);
+
+            await RunAsynchronousReceive(
+               postValidation: () =>
+               {
+                   Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                   Assert.IsEmpty(MockFactory.OtherParty.Error.Messages);
+                   Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.LocalCertificatePartialChain));
+               },
+               wait: () => _completedCalled,
+               received: (m) => 
+               { 
+                   Assert.AreNotEqual(CertificateErrors.None, m.DecryptionError);
+                   return Task.CompletedTask;
+               },
+               messageModification: (m) => { });
+        }
+        [TestMethod]
         public async Task Asynchronous_Receive_LocalCertificateMultiple()
         {
             CertificateValidator.SetError(
@@ -547,6 +589,50 @@ namespace Helsenorge.Messaging.Tests.Amqp.Receivers
                       return Task.CompletedTask;
                   },
                   messageModification: (m) => { });
+        }
+        [TestMethod]
+        public async Task Asynchronous_Receive_RemoteCertificateUntrustedRoot()
+        {
+            CertificateValidator.SetError(
+                  (c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.UntrustedRoot : CertificateErrors.None);
+
+            await RunAsynchronousReceive(
+               postValidation: () =>
+               {
+                   Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                   Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
+                   Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificateUntrustedRoot));
+                   CheckError(MockFactory.OtherParty.Error.Messages, "transport:untrusted-root", "Certificate has untrusted root", string.Empty);
+               },
+               wait: () => _handledExceptionCalled,
+               received: (m) => 
+               { 
+                   Assert.AreNotEqual(CertificateErrors.None, m.SignatureError);
+                   return Task.CompletedTask;
+               },
+               messageModification: (m) => { });
+        }
+        [TestMethod]
+        public async Task Asynchronous_Receive_RemoteCertificatePartialChain()
+        {
+            CertificateValidator.SetError(
+                  (c, u) => (u == X509KeyUsageFlags.NonRepudiation) ? CertificateErrors.PartialChain : CertificateErrors.None);
+
+            await RunAsynchronousReceive(
+               postValidation: () =>
+               {
+                   Assert.IsEmpty(MockFactory.Helsenorge.Asynchronous.Messages);
+                   Assert.HasCount(1, MockFactory.OtherParty.Error.Messages);
+                   Assert.IsNotNull(MockLoggerProvider.FindEntry(EventIds.RemoteCertificatePartialChain));
+                   CheckError(MockFactory.OtherParty.Error.Messages, "transport:partial-chain", "Building the entire chain did not lead to a root", string.Empty);
+               },
+               wait: () => _handledExceptionCalled,
+               received: (m) => 
+               { 
+                   Assert.AreNotEqual(CertificateErrors.None, m.SignatureError);
+                   return Task.CompletedTask;
+               },
+               messageModification: (m) => { });
         }
 
         [TestMethod]
