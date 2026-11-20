@@ -57,5 +57,28 @@ namespace Helsenorge.Registries.Tests
                 return testCertificate;
             }
         }
+
+        public static X509Certificate2 CertificateAuthority
+        {
+            get
+            {
+                var notBefore = DateTime.Now.AddDays(-10);
+                var notAfter = DateTime.Now.AddDays(10);
+                var testCertificate =
+                    CertificateGenerator.GenerateCertificateAuthority("Test Certificate Authority", notBefore, notAfter);
+                return testCertificate;
+            }
+        }
+
+        public static X509Certificate2 CounterpartyPublicSignatureIssuedBy(X509Certificate2 issuer)
+        {
+            var notBefore = DateTime.Now.AddDays(-1);
+            var notAfter = DateTime.Now.AddDays(1);
+            var keyUsage = X509KeyUsageFlags.NonRepudiation;
+            var testCertificate =
+                CertificateGenerator.GenerateCertificateIssuedBy("Test Certificate", issuer, notBefore, notAfter,
+                    keyUsage);
+            return testCertificate;
+        }
     }
 }
